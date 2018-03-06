@@ -1,0 +1,3 @@
+[submodule "submodules/vipr"]
+	path = submodules/vipr
+	url = https://github.com/Microsoft/Vipr.git
