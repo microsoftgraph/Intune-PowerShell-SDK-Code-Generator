@@ -18,7 +18,7 @@ namespace PowerShellGraphSDK
                environmentParameters.ResourceId,
                environmentParameters.ClientId,
                new Uri(environmentParameters.RedirectLink),
-               new PlatformParameters(PromptBehavior.Auto));
+               new PlatformParameters(PromptBehavior.Always));
             EnvironmentParameters = environmentParameters;
 
             return EnvironmentParameters.AuthResult;
