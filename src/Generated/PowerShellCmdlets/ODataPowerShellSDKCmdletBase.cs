@@ -37,11 +37,12 @@ namespace PowerShellGraphSDK
 
             // Auth
             AuthenticationResult authResult = environmentParameters?.AuthResult;
+            string cmdletName = $"{PowerShellCmdlets.Connect.CmdletVerb}-{PowerShellCmdlets.Connect.CmdletNoun}";
             if (authResult == null)
             {
                 // User has not authenticated
                 throw new PSAuthenticationError(
-                    new InvalidOperationException("Not authenticated.  Please use the 'Connect-Intune' cmdlet to authenticate."),
+                    new InvalidOperationException($"Not authenticated.  Please use the '{cmdletName}' cmdlet to authenticate."),
                     "NotAuthenticated",
                     ErrorCategory.AuthenticationError,
                     null);
@@ -50,7 +51,7 @@ namespace PowerShellGraphSDK
             {
                 // Expired token
                 throw new PSAuthenticationError(
-                    new InvalidOperationException("Authentication has expired.  Please use the 'Connect-Intune' cmdlet to authenticate."),
+                    new InvalidOperationException($"Authentication has expired.  Please use the '{cmdletName}' cmdlet to authenticate."),
                     "AuthenticationExpired",
                     ErrorCategory.AuthenticationError,
                     authResult);
@@ -294,7 +295,6 @@ namespace PowerShellGraphSDK
         /// <returns>The converted object</returns>
         internal virtual object ReadResponse(string content)
         {
-
             JToken jsonToken = JsonUtils.ReadJson(content);
             PSObject result = JsonUtils.ToPowerShellObject(jsonToken);
             return result;

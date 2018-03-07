@@ -63,7 +63,7 @@
     <Compile Include="PowerShellCmdlets\ODataGetPowerShellSDKCmdlet.cs" />
     <Compile Include="PowerShellCmdlets\Generated\DeviceAppManagement.cs" />
     <Compile Include="PowerShellCmdlets\ODataPowerShellSDKCmdletBase.cs" />
-    <Compile Include="PowerShellCmdlets\Utils\UtilCmdlets.cs" />
+    <Compile Include="PowerShellCmdlets\Utility\UtilCmdlets.cs" />
     <Compile Include="PowerShellCmdlets\Generated\DeviceAppManagement\MobileApps.cs" />
     <Compile Include="PowerShellCmdlets\ODataPowerShellSDKCmdlet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

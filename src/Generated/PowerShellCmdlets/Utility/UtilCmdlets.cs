@@ -9,10 +9,13 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
     [Cmdlet(
-        VerbsCommunications.Connect, "Intune",
+        CmdletVerb, CmdletNoun,
         ConfirmImpact = ConfirmImpact.Low)]
-    public class GetGraphAccessToken : PSCmdlet
+    public class Connect : PSCmdlet
     {
+        public const string CmdletVerb = VerbsCommunications.Connect;
+        public const string CmdletNoun = "MSGraph";
+
         private const string ParameterSetPSCredential = "PSCredential";
         private const string ParameterSetCertificate = "Certificate";
 
@@ -48,15 +51,18 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             }
 
             // Write token to pipeline
-            this.WriteObject(authResult.AccessToken);
+            //this.WriteObject(authResult.AccessToken);
         }
     }
 
     [Cmdlet(
-        VerbsCommon.Get, "GraphMetadata",
+        CmdletVerb, CmdletNoun,
         ConfirmImpact = ConfirmImpact.Low)]
-    public class GetGraphMetadata : ODataPowerShellSDKCmdlet
+    public class GetMetadata : ODataPowerShellSDKCmdlet
     {
+        public const string CmdletVerb = VerbsCommon.Get;
+        public const string CmdletNoun = "MSGraphMetadata";
+
         internal override string GetResourcePath()
         {
             return "$metadata";
@@ -69,10 +75,13 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     }
 
     [Cmdlet(
-        VerbsCommon.Get, "GraphNextPage",
+        CmdletVerb, CmdletNoun,
         ConfirmImpact = ConfirmImpact.Low)]
-    public class GetGraphNextPage : ODataPowerShellSDKCmdletBase // Use the base class to not allow any query parameters
+    public class GetNextPage : ODataPowerShellSDKCmdletBase // Use the base class to not allow any query parameters
     {
+        public const string CmdletVerb = VerbsCommon.Get;
+        public const string CmdletNoun = "MSGraphNextPage";
+
         [Parameter(Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
         [Alias("@odata.nextLink")]
         public string nextLink { get; set; }
@@ -84,10 +93,13 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     }
 
     [Cmdlet(
-        VerbsLifecycle.Invoke, "GraphRequest",
+        CmdletVerb, CmdletNoun,
         ConfirmImpact = ConfirmImpact.Low)]
-    public class InvokeGraphRequest : ODataPowerShellSDKCmdlet
+    public class InvokeRequest : ODataPowerShellSDKCmdlet
     {
+        public const string CmdletVerb = VerbsLifecycle.Invoke;
+        public const string CmdletNoun = "MSGraphRequest";
+
         [Parameter(
             Mandatory = true,
             ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
@@ -100,7 +112,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         [ValidateUrl]
         public string Url { get; set; }
 
-        // TODO: document that this parameter can be a string, a PSObject or an HttpContent object
+        // TODO: document that this parameter can be a string, PSObject, Hashtable or an HttpContent object
         [Parameter(ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
         [ValidateType(typeof(string), typeof(PSObject), typeof(Hashtable), typeof(HttpContent))]
         public object Content { get; set; }
@@ -143,7 +155,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
 
             }
 
-            // PSObject
+            // Hashtable or PSObject
             if (content is Hashtable || content is PSObject)
             {
                 // Convert the object into JSON
