@@ -6,14 +6,23 @@ namespace PowerShellGraphSDK
     using System.Linq;
     using System.Management.Automation;
 
-    public abstract class ODataPowerShellSDKCmdlet : ODataPowerShellSDKCmdletBase
+    /// <summary>
+    /// The common behavior between all OData PowerShell SDK cmdlets that support $select and $expand query parameters.
+    /// </summary>
+    public abstract class ODataGetPowerShellSDKCmdlet : ODataPowerShellSDKCmdletBase
     {
+        /// <summary>
+        /// The list of $select query option values (i.e. property names).
+        /// </summary>
         [Parameter]
         public string[] Select { get; set; }
 
+        /// <summary>
+        /// The list of $expand query option values (i.e. property names).
+        /// </summary>
         [Parameter]
         public string[] Expand { get; set; }
-
+        
         internal override IDictionary<string, string> GetUrlQueryOptions()
         {
             IDictionary<string, string> queryOptions = base.GetUrlQueryOptions();

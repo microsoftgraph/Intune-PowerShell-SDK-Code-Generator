@@ -42,23 +42,22 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             switch (this.ParameterSetName)
             {
                 case ParameterSetPSCredential:
+                    // TODO: Implement PSCredential auth
                     throw new PSNotImplementedException();
                 case ParameterSetCertificate:
+                    // TODO: Implement Certificate auth
                     throw new PSNotImplementedException();
                 default:
                     authResult = GraphAuthentication.Auth(environmentParameters).GetAwaiter().GetResult();
                     break;
             }
-
-            // Write token to pipeline
-            //this.WriteObject(authResult.AccessToken);
         }
     }
 
     [Cmdlet(
         CmdletVerb, CmdletNoun,
         ConfirmImpact = ConfirmImpact.Low)]
-    public class GetMetadata : ODataPowerShellSDKCmdlet
+    public class GetMetadata : ODataGetPowerShellSDKCmdlet
     {
         public const string CmdletVerb = VerbsCommon.Get;
         public const string CmdletNoun = "MSGraphMetadata";
@@ -68,9 +67,10 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             return "$metadata";
         }
 
-        internal override object ReadResponse(string content)
+        internal override PSObject ReadResponse(string content)
         {
-            return content;
+            // Return the raw response body
+            return PSObject.AsPSObject(content);
         }
     }
 
@@ -95,7 +95,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     [Cmdlet(
         CmdletVerb, CmdletNoun,
         ConfirmImpact = ConfirmImpact.Low)]
-    public class InvokeRequest : ODataPowerShellSDKCmdlet
+    public class InvokeRequest : ODataGetPowerShellSDKCmdlet
     {
         public const string CmdletVerb = VerbsLifecycle.Invoke;
         public const string CmdletNoun = "MSGraphRequest";
@@ -112,14 +112,14 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         [ValidateUrl]
         public string Url { get; set; }
 
-        // TODO: document that this parameter can be a string, PSObject, Hashtable or an HttpContent object
+        // TODO: Document that this parameter can be a string, PSObject, Hashtable or an HttpContent object
         [Parameter(ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
         [ValidateType(typeof(string), typeof(PSObject), typeof(Hashtable), typeof(HttpContent))]
         public object Content { get; set; }
 
-        internal override HttpMethod GetHttpMethod()
+        internal override string GetHttpMethod()
         {
-            return new HttpMethod(this.HttpMethod);
+            return this.HttpMethod;
         }
 
         internal override string GetResourcePath()
@@ -166,12 +166,13 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             }
 
             // We should have returned before here
-            throw new PSArgumentException($"Unknown content type: '{this.Content.GetType()}'");
+            throw new PSArgumentException($"Unknown content type: '{this.Content.GetType()}'", nameof(this.Content));
         }
 
-        internal override object ReadResponse(string content)
+        internal override PSObject ReadResponse(string content)
         {
-            return content;
+            // Return the raw response body
+            return PSObject.AsPSObject(content);
         }
     }
 }

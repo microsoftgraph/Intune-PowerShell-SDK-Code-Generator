@@ -2,18 +2,19 @@
 
 namespace PowerShellGraphSDK.PowerShellCmdlets
 {
-    using System;
     using System.Linq;
     using System.Management.Automation;
-    using System.Net.Http;
     
     [Cmdlet(
         CmdletVerb, CmdletNoun,
         ConfirmImpact = ConfirmImpact.Low)]
-    public class GetMobileApp : ODataGetPowerShellSDKCmdlet
+    public class GetMobileApp : ODataGetOrSearchPowerShellSDKCmdlet
     {
         public const string CmdletVerb = VerbsCommon.Get;
         public const string CmdletNoun = "IntuneMobileApp";
+
+        [Parameter(ParameterSetName = ParameterSetGet, Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
+        public string id { get; set; }
 
         internal override string GetResourcePath()
         {
@@ -27,7 +28,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             }
         }
 
-        internal override object ReadResponse(string content)
+        internal override PSObject ReadResponse(string content)
         {
             object result = base.ReadResponse(content);
             // If this result is for a SEARCH call and there is only 1 page in the result, return only the result objects
@@ -39,11 +40,11 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 result = response.Members["value"].Value;
             }
 
-            return result;
+            return PSObject.AsPSObject(result);
         }
     }
 
-    // TODO: Implement app creation and update for a few app types
+    // TODO: Implement POST and PATCH for a few app types
 
     //[Cmdlet(
     //    CmdletVerb, CmdletNoun,
@@ -76,7 +77,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     [Cmdlet(
         CmdletVerb, CmdletNoun,
         ConfirmImpact = ConfirmImpact.High)]
-    public class RemoveMobileApp : ODataPowerShellSDKCmdlet
+    public class RemoveMobileApp : PowerShellGraphSDK.ODataGetPowerShellSDKCmdlet
     {
         public const string CmdletVerb = VerbsCommon.Remove;
         public const string CmdletNoun = "IntuneMobileApp";
@@ -85,9 +86,9 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         [ValidateNotNullOrEmpty]
         public string id { get; set; }
 
-        internal override HttpMethod GetHttpMethod()
+        internal override string GetHttpMethod()
         {
-            return HttpMethod.Delete;
+            return "DELETE";
         }
 
         internal override string GetResourcePath()

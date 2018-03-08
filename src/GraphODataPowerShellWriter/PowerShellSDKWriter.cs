@@ -10,7 +10,6 @@ namespace GraphODataPowerShellTemplateWriter
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils;
     using Vipr.Core;
     using Vipr.Core.CodeModel;
-    using Vipr.Core.CodeModel.Vocabularies.Capabilities;
 
     public class PowerShellSDKWriter : IOdcmWriter
     {
@@ -34,9 +33,11 @@ namespace GraphODataPowerShellTemplateWriter
         /// <returns>The TextFile objects representing the generated SDK.</returns>
         public static IEnumerable<TextFile> GeneratePowerShellSDK(OdcmModel model)
         {
-            // Convert ODCM model into intermediate types
-            OdcmModelProcessingBehavior processingBehavior = new OdcmModelProcessingBehavior(model, CmdletPrefix);
-            IEnumerable<Resource> resources = processingBehavior.ConvertToResources();
+            // Convert the ODCM model into a tree structure that is easier to navigate
+            OdcmNode odcmTree = model.ConvertToOdcmTree();
+
+            // Convert the tree structure into abstract representations of the PowerShell cmdlets
+            IEnumerable<Resource> resources = odcmTree.ConvertOdcmTreeToResources();
 
             // Generate the text files by inserting data from the intermediate types into templates
             IEnumerable<TextFile> outputFiles = resources.Select(resource => resource.ToTextFile());
@@ -51,19 +52,11 @@ namespace GraphODataPowerShellTemplateWriter
             int indentLevel = 0;
 
             output += "Entity Container: " + model.EntityContainer.FullName + " - " + model.EntityContainer.Namespace.Name;
-            //output += "\n" + StringUtils.DefaultSingleIndentString + "Properties:\n" + string.Join("\n", model.EntityContainer.Properties.Select(prop => prop.Name + " (" + prop.Type.FullName + ")").OrderBy(val => val));
-            //output += "\n" + StringUtils.DefaultSingleIndentString + "Methods:\n" + string.Join("\n", model.EntityContainer.Methods.Select(prop => prop.FullName));
-            //output += "\n\n";
 
             indentLevel++;
             foreach (OdcmProperty property in model.EntityContainer.Properties)
             {
                 output += "\n" + StringUtils.Indent(indentLevel, property.Name);
-                indentLevel++;
-
-                
-
-                indentLevel--;
             }
             indentLevel--;
 

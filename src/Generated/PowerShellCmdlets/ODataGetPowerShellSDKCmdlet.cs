@@ -1,19 +1,19 @@
 ﻿// Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 
-namespace PowerShellGraphSDK.PowerShellCmdlets
+namespace PowerShellGraphSDK
 {
     using System.Collections.Generic;
     using System.Linq;
     using System.Management.Automation;
 
-    public abstract class ODataGetPowerShellSDKCmdlet : ODataPowerShellSDKCmdlet
+    /// <summary>
+    /// The common behavior between all OData PowerShell SDK cmdlets that support
+    /// $select, $expand, $filter, $orderBy, $skip and $top query parameters.
+    /// </summary>
+    public abstract class ODataGetOrSearchPowerShellSDKCmdlet : ODataGetPowerShellSDKCmdlet
     {
         public const string ParameterSetGet = "Get";
         public const string ParameterSetSearch = "Search";
-
-        [Parameter(ParameterSetName = ParameterSetGet, Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
-        [ValidateNotNullOrEmpty]
-        public string id { get; set; }
 
         [Parameter(ParameterSetName = ParameterSetSearch)]
         public string Filter { get; set; }
@@ -25,7 +25,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         public int? Skip { get; set; }
 
         [Parameter(ParameterSetName = ParameterSetSearch)]
-        [Alias("First")] // To be compatible with the PowerShell paging parameters
+        [Alias("First")] // Required to be compatible with the PowerShell paging parameters
         public int? Top { get; set; }
 
         internal override IDictionary<string, string> GetUrlQueryOptions()

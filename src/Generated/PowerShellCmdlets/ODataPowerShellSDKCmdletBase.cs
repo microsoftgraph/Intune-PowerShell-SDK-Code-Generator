@@ -12,24 +12,165 @@ namespace PowerShellGraphSDK
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
     using Newtonsoft.Json.Linq;
 
+    /// <summary>
+    /// The common behavior between all OData PowerShell SDK cmdlets.
+    /// </summary>
+    /// <remarks>
+    /// Overridable methods are executed in this order:
+    /// <list type="number">
+    ///     <listheader>
+    ///         <term>Method</term>
+    ///         <description>Description</description>
+    ///     </listheader>
+    ///     <item>
+    ///         <term><see cref="GetResourcePath"/></term>
+    ///         <description>Gets the relative URL of the OData resource</description>
+    ///     </item>
+    ///     <item>
+    ///         <term><see cref="GetUrlQueryOptions"/></term>
+    ///         <description>Gets the query options for the call</description>
+    ///     </item>
+    ///     <item>
+    ///         <term><see cref="GetHttpMethod"/></term>
+    ///         <description>Gets the HTTP method to use when making the call</description>
+    ///     </item>
+    ///     <item>
+    ///         <term><see cref="GetContent"/></term>
+    ///         <description>Gets the request body for the HTTP call</description>
+    ///     </item>
+    ///     <item>
+    ///         <term><see cref="ReadResponse(string)"/></term>
+    ///         <description>Converts the HTTP response body into a native PowerShell object</description>
+    ///     </item>
+    /// </list>
+    /// </remarks>
     public abstract class ODataPowerShellSDKCmdletBase : PSCmdlet
     {
+        /// <summary>
+        /// The Graph schema version to use when making a Graph call.
+        /// </summary>
         [Parameter]
         public string GraphVersion { get; set; } = "v1.0";
 
+        /// <summary>
+        /// The method that the PowerShell runtime will call.  This is the entry point for the cmdlet.
+        /// </summary>
         protected override sealed void ProcessRecord()
         {
             try
             {
+                // Try to run the cmdlet behavior
                 this.Run();
             }
             catch (Exception ex)
             {
-                // Unknown error type
+                // Write any errors to the console
                 this.WriteError(ex);
             }
         }
 
+        /// <summary>
+        /// Returns the HTTP method to be used for the network call.  This method should never return null.
+        /// </summary>
+        /// <remarks>
+        /// This method returns "GET" if it is not overridden.
+        /// </remarks>
+        /// <returns>The HTTP method</returns>
+        internal virtual string GetHttpMethod()
+        {
+            return "GET";
+        }
+
+        /// <summary>
+        /// Returns the path to the resource.  This may be either a relative or absolute URL.  This method should never return null.
+        /// </summary>
+        /// <returns>The path to the resource</returns>
+        internal abstract string GetResourcePath();
+
+        /// <summary>
+        /// Returns a mapping of query options to their values.  This method should never return null.
+        /// Implementations of this method should first call <code>base.GetUrlQueryOptions()</code> and then
+        /// add additional query options to the result.
+        /// </summary>
+        /// <remarks>
+        /// The keys should be the full query option name (i.e. WITH the "$" prefix for "$select", "$expand", etc.).
+        /// </remarks>
+        /// <returns>The mapping of query options to their values</returns>
+        internal virtual IDictionary<string, string> GetUrlQueryOptions()
+        {
+            return new Dictionary<string, string>();
+        }
+
+        /// <summary>
+        /// Returns the content to be sent in the network call.  This method may return null if there is no content to send.
+        /// </summary>
+        /// <remarks>
+        /// This method returns null if it is not overridden.
+        /// </remarks>
+        /// <returns>The request content</returns>
+        internal virtual object GetContent()
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Converts the content obtained from the <see cref="GetContent"/> method into an <see cref="HttpContent"/> object.
+        /// </summary>
+        /// <remarks>
+        /// This method defaults to converting the object to a JSON string and then wrapping it in a <see cref="StringContent"/> object.
+        /// </remarks>
+        /// <param name="content">The content to be converted</param>
+        /// <returns>The converted HttpContent object</returns>
+        internal virtual HttpContent WriteContent(object content)
+        {
+            string contentString = JsonUtils.WriteJson(content);
+            HttpContent result = new StringContent(contentString);
+            return result;
+        }
+
+        /// <summary>
+        /// Converts the body of an HTTP response to a C# object.
+        /// </summary>
+        /// <remarks>
+        /// This method defaults to assuming a JSON response body, and then converting it to a <see cref="PSObject"/> instance.
+        /// </remarks>
+        /// <param name="content">The HTTP response body</param>
+        /// <returns>The converted object</returns>
+        internal virtual PSObject ReadResponse(string content)
+        {
+            JToken jsonToken = JsonUtils.ReadJson(content);
+            PSObject result = JsonUtils.ToPowerShellObject(jsonToken);
+            return result;
+        }
+
+        /// <summary>
+        /// Writes an exception to the PowerShell console.  If the exception does not represent a PowerShell error,
+        /// it will be wrapped in a PowerShell error object before being written to the console.
+        /// </summary>
+        /// <param name="ex">The exception to write to the console</param>
+        private void WriteError(Exception ex)
+        {
+            ErrorRecord errorRecord;
+            IContainsErrorRecord powerShellError = ex as IContainsErrorRecord;
+            if (powerShellError != null)
+            {
+                errorRecord = powerShellError.ErrorRecord;
+            }
+            else
+            {
+                errorRecord = new ErrorRecord(
+                    ex,
+                    PSGraphSDKException.ErrorPrefix + "UnknownError",
+                    ErrorCategory.OperationStopped,
+                    null);
+            }
+
+            this.WriteError(errorRecord);
+        }
+
+        /// <summary>
+        /// Runs a cmdlet.
+        /// </summary>
         private void Run()
         {
             // Get the environment parameters
@@ -69,7 +210,7 @@ namespace PowerShellGraphSDK
                     resourcePath);
             }
             string baseAddress = environmentParameters.ResourceBaseAddress;
-            string tempPath = resourcePath.TrimStart('/'); // remove leading slash if it exists so relative URLs get treated as such
+            string tempPath = resourcePath.TrimStart('/'); // remove leading slash if it exists so relative URLs don't get treated as absolute URLs
             if (Uri.IsWellFormedUriString(tempPath, UriKind.Absolute))
             {
                 requestUrl = tempPath;
@@ -112,15 +253,16 @@ namespace PowerShellGraphSDK
             }
 
             // Get HTTP method
-            HttpMethod httpMethod = this.GetHttpMethod();
-            if (httpMethod == null)
+            string httpMethodString = this.GetHttpMethod();
+            if (string.IsNullOrWhiteSpace(httpMethodString))
             {
                 throw new PSGraphSDKException(
                     new ArgumentNullException(nameof(this.GetHttpMethod)),
-                    "InvalidResourceUrl",
+                    "InvalidHttpMethod",
                     ErrorCategory.InvalidArgument,
-                    resourcePath);
+                    httpMethodString);
             }
+            HttpMethod httpMethod = new HttpMethod(httpMethodString);
 
             // Get content
             HttpContent content = null;
@@ -148,7 +290,7 @@ namespace PowerShellGraphSDK
             if (responseMessage.IsSuccessStatusCode)
             {
                 // Get the result
-                object cmdletResult = null;
+                PSObject cmdletResult = null;
                 if (!string.IsNullOrWhiteSpace(responseContent))
                 {
                     cmdletResult = this.ReadResponse(responseContent);
@@ -207,97 +349,6 @@ namespace PowerShellGraphSDK
                     ErrorCategory.ConnectionError,
                     powerShellErrorObject);
             }
-        }
-
-        private void WriteError(Exception ex)
-        {
-            ErrorRecord errorRecord;
-            IContainsErrorRecord powerShellError = ex as IContainsErrorRecord;
-            if (powerShellError != null)
-            {
-                errorRecord = powerShellError.ErrorRecord;
-            }
-            else
-            {
-                errorRecord = new ErrorRecord(
-                    ex,
-                    PSGraphSDKException.ErrorPrefix + "UnknownError",
-                    ErrorCategory.OperationStopped,
-                    null);
-            }
-
-            this.WriteError(errorRecord);
-        }
-
-        /// <summary>
-        /// Returns a mapping of query options to their values.  This method should never return null.
-        /// Implementations of this method should first call <code>base.GetUrlQueryOptions()</code> and then
-        /// add additional query options to the result.
-        /// 
-        /// <para>
-        /// NOTE: The keys should be the full query option name (e.g. WITH the "$" prefix for "$select", "$expand", etc.).
-        /// </para>
-        /// </summary>
-        /// <returns>The mapping of query options to their values</returns>
-        internal virtual IDictionary<string, string> GetUrlQueryOptions()
-        {
-            return new Dictionary<string, string>();
-        }
-
-        /// <summary>
-        /// Returns the HTTP method to be used for the network call.  This method should never return null.
-        /// 
-        /// <para>This method returns <see cref="HttpMethod.Get"/> if it is not overridden.</para>
-        /// </summary>
-        /// <returns>The HTTP method</returns>
-        internal virtual HttpMethod GetHttpMethod()
-        {
-            return HttpMethod.Get;
-        }
-
-        /// <summary>
-        /// Returns the path to the resource.  This may be either a relative or absolute URL.  This method should never return null.
-        /// </summary>
-        /// <returns>The path to the resource</returns>
-        internal abstract string GetResourcePath();
-
-        /// <summary>
-        /// Returns the content to be sent in the network call.  This method may return null if there is no content to send.
-        /// 
-        /// <para>This method returns null if it is not overridden.</para>
-        /// </summary>
-        /// <returns>The request content</returns>
-        internal virtual object GetContent()
-        {
-            return null;
-        }
-
-        /// <summary>
-        /// Converts the content obtained from the <see cref="GetContent"/> method into an <see cref="HttpContent"/> object.
-        /// 
-        /// <para>This method defaults to converting the object to a JSON string and then wrapping it in a <see cref="StringContent"/> object.</para>
-        /// </summary>
-        /// <param name="content">The content to be converted</param>
-        /// <returns>The converted HttpContent object</returns>
-        internal virtual HttpContent WriteContent(object content)
-        {
-            string contentString = JsonUtils.WriteJson(content);
-            HttpContent result = new StringContent(contentString);
-            return result;
-        }
-
-        /// <summary>
-        /// Converts the body of an HTTP response to a C# object.
-        /// 
-        /// <para>This method defaults to assuming a JSON response body, and then converting it to a <see cref="PSObject"/> instance.</para>
-        /// </summary>
-        /// <param name="content">The HTTP response body</param>
-        /// <returns>The converted object</returns>
-        internal virtual object ReadResponse(string content)
-        {
-            JToken jsonToken = JsonUtils.ReadJson(content);
-            PSObject result = JsonUtils.ToPowerShellObject(jsonToken);
-            return result;
         }
     }
 }

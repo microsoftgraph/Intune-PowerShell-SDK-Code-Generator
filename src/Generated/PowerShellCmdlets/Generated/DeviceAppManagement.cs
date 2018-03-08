@@ -7,7 +7,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     [Cmdlet(
         CmdletVerb, CmdletNoun,
         ConfirmImpact = ConfirmImpact.Low)]
-    public class GetDeviceAppManagement : ODataPowerShellSDKCmdlet
+    public class GetDeviceAppManagement : ODataGetPowerShellSDKCmdlet
     {
         public const string CmdletVerb = VerbsCommon.Get;
         public const string CmdletNoun = "IntuneDeviceAppManagement";
@@ -17,6 +17,8 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             return "deviceAppManagement";
         }
     }
+
+    // TODO: Implement PATCH on deviceAppManagement
 
     //[Cmdlet(
     //    VerbsData.Update, "GraphDeviceAppManagement",

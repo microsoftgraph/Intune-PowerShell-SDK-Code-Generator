@@ -1,10 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 
-using System;
-using System.Net.Http;
-
 namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 {
+    using System;
+
     /// <summary>
     /// An abstract representation of a PowerShell cmdlet.
     /// </summary>
@@ -18,7 +17,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <summary>
         /// The HTTP method to be used when making the call.
         /// </summary>
-        public HttpMethod HttpMethod { get; set; } = HttpMethod.Get;
+        public string HttpMethod { get; set; } = "GET";
 
         /// <summary>
         /// The absolute or relative url to be used when making the call.  For relative URLs, the base

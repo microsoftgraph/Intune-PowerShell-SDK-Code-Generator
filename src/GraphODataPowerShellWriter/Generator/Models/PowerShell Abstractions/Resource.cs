@@ -5,7 +5,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.IO;
 
     public class Resource : IEnumerable<Cmdlet>
     {
@@ -15,29 +14,26 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public string OutputFilePath { get; }
 
         /// <summary>
-        /// The relative URL where the resource (that this cmdlet interacts with) is located.
+        /// The set of cmdlets in a Dictionary format for fast lookup.
         /// </summary>
-        public string Url { get; }
+        private IDictionary<string, Cmdlet> _cmdlets { get; set; } = new Dictionary<string, Cmdlet>();
 
-        private IDictionary<string, Cmdlet> Cmdlets { get; set; } = new Dictionary<string, Cmdlet>();
-
-        public Resource(string outputFilePath, string url)
+        /// <summary>
+        /// Creates a new Resource object.
+        /// </summary>
+        /// <param name="outputFilePath">The relative file path to use when writing this Resource as a file to disk</param>
+        public Resource(string outputFilePath)
         {
             if (string.IsNullOrWhiteSpace(outputFilePath))
             {
                 throw new ArgumentException("Output file path cannot be null or whitespace", nameof(outputFilePath));
             }
-            if (string.IsNullOrWhiteSpace(url))
-            {
-                throw new ArgumentException("URL cannot be null or whitespace", nameof(url));
-            }
 
             this.OutputFilePath = outputFilePath;
-            this.Url = url;
         }
 
         /// <summary>
-        /// A safe accessor for cmdlets.
+        /// A safe accessor for cmdlets.  Returns null if a cmdlet with the given name does not exist.
         /// </summary>
         /// <param name="cmdletName">The cmdlet name</param>
         /// <returns>The cmdlet if it exists, otherwise null.</returns>
@@ -46,7 +42,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             get
             {
                 Cmdlet result;
-                if (!string.IsNullOrWhiteSpace(cmdletName) && this.Cmdlets.TryGetValue(cmdletName, out result))
+                if (!string.IsNullOrWhiteSpace(cmdletName) && this._cmdlets.TryGetValue(cmdletName, out result))
                 {
                     return result;
                 }
@@ -63,7 +59,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
                     throw new ArgumentNullException(nameof(cmdletName));
                 }
 
-                this.Cmdlets[cmdletName] = value;
+                this._cmdlets[cmdletName] = value;
             }
         }
 
@@ -77,7 +73,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             get
             {
                 Cmdlet result;
-                if (cmdletName != null && this.Cmdlets.TryGetValue(cmdletName.ToString(), out result))
+                if (cmdletName != null && this._cmdlets.TryGetValue(cmdletName.ToString(), out result))
                 {
                     return result;
                 }
@@ -94,7 +90,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
                     throw new ArgumentNullException(nameof(cmdletName));
                 }
 
-                this.Cmdlets[cmdletName.ToString()] = value;
+                this._cmdlets[cmdletName.ToString()] = value;
             }
         }
 
@@ -105,7 +101,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <returns>True if this resource contains a cmdlet by the given name, otherwise false</returns>
         public bool Contains(string cmdletName)
         {
-            return this.Cmdlets.ContainsKey(cmdletName);
+            return this._cmdlets.ContainsKey(cmdletName);
         }
 
         /// <summary>
@@ -120,7 +116,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
                 throw new ArgumentNullException(nameof(cmdletName));
             }
 
-            return this.Cmdlets.ContainsKey(cmdletName.ToString());
+            return this._cmdlets.ContainsKey(cmdletName.ToString());
         }
 
         /// <summary>
@@ -179,17 +175,17 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
                 throw new ArgumentNullException(nameof(cmdletName));
             }
 
-            return this.Cmdlets.Remove(cmdletName);
+            return this._cmdlets.Remove(cmdletName);
         }
 
         public IEnumerator<Cmdlet> GetEnumerator()
         {
-            return Cmdlets.Values.GetEnumerator();
+            return _cmdlets.Values.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return Cmdlets.Values.GetEnumerator();
+            return _cmdlets.Values.GetEnumerator();
         }
     }
 }
