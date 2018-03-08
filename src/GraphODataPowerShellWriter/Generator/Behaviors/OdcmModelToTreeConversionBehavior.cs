@@ -29,14 +29,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
             // Create a stack to allow us to traverse the model in a depth-first manner.
             // Change this to a queue to traverse in a breadth-first manner.
-            Stack<OdcmNode> remaining = new Stack<OdcmNode>();
-            remaining.Push(root);
+            Stack<OdcmNode> unvisited = new Stack<OdcmNode>();
+            unvisited.Push(root);
             
             // Continue adding to the tree until there are no more nodes to expand
-            while (remaining.Any())
+            while (unvisited.Any())
             {
                 // Get the next node to expand
-                OdcmNode currentNode = remaining.Pop();
+                OdcmNode currentNode = unvisited.Pop();
 
                 // Expand the node
                 IEnumerable<OdcmNode> childNodes = currentNode.CreateChildNodes(model);
@@ -44,7 +44,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 // Mark the child nodes to be expanded
                 foreach (OdcmNode childNode in childNodes)
                 {
-                    remaining.Push(childNode);
+                    unvisited.Push(childNode);
                 }
             }
 

@@ -22,7 +22,8 @@ namespace GraphODataPowerShellTemplateWriter
         /// <returns>The TextFile objects representing the generated SDK.</returns>
         public IEnumerable<TextFile> GenerateProxy(OdcmModel model)
         {
-            return GenerateTestOutput(model);
+            //return GenerateTestOutput_Simple(model);
+            return GenerateTestOutput_Tree(model);
             //return GeneratePowerShellSDK(model);
         }
 
@@ -46,7 +47,40 @@ namespace GraphODataPowerShellTemplateWriter
             return outputFiles;
         }
 
-        private static IEnumerable<TextFile> GenerateTestOutput(OdcmModel model)
+        private static IEnumerable<TextFile> GenerateTestOutput_Tree(OdcmModel model)
+        {
+            // Parse ODCM model into a tree structure
+            OdcmNode root = model.ConvertToOdcmTree();
+
+            // Create a stack to track tree nodes that we haven't visited yet
+            Stack<Tuple<OdcmNode, int>> unvisited = new Stack<Tuple<OdcmNode, int>>();
+            unvisited.Push(Tuple.Create(root, 1));
+
+            // Traverse the tree
+            string output = string.Empty;
+            while (unvisited.Any())
+            {
+                // Get the next node and it's depth
+                Tuple<OdcmNode, int> currentNodeWithDepth = unvisited.Pop();
+                OdcmNode currentNode = currentNodeWithDepth.Item1;
+                int depth = currentNodeWithDepth.Item2;
+
+                // Add children to the stack
+                IEnumerable<OdcmNode> childNodes = currentNode.Children;
+                foreach (OdcmNode child in childNodes)
+                {
+                    unvisited.Push(Tuple.Create(child, depth + 1));
+                }
+
+                // Write the node's information to the output
+                OdcmObject obj = currentNode.OdcmObject;
+                output += StringUtils.Indent(depth, $"{obj.Name}: {obj.GetOdcmObjectType()}\n");
+            }
+
+            yield return new TextFile("output.txt", output);
+        }
+
+        private static IEnumerable<TextFile> GenerateTestOutput_Simple(OdcmModel model)
         {
             string output = string.Empty;
             int indentLevel = 0;
