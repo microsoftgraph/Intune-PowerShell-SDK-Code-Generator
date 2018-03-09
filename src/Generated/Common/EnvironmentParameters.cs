@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-
 namespace PowerShellGraphSDK
 {
+    using Microsoft.IdentityModel.Clients.ActiveDirectory;
+
     /// <summary>
     /// Keeps track of the parameters used by an AAD environment.
     /// </summary>

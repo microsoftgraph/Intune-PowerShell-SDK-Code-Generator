@@ -10,9 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{6ACF6C
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphODataPowerShellSDKWriter", "GraphODataPowerShellWriter\GraphODataPowerShellSDKWriter.csproj", "{3B8C0953-5E14-4D77-98F3-411CA0A3CE78}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphODataPowerShellSDKWriter", "src\GraphODataPowerShellWriter\GraphODataPowerShellSDKWriter.csproj", "{3B8C0953-5E14-4D77-98F3-411CA0A3CE78}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerShellGraphSDK", "Generated\PowerShellGraphSDK.csproj", "{9D827326-2642-428E-8D87-1D0E7990CF7A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerShellGraphSDK", "src\Generated\PowerShellGraphSDK.csproj", "{9D827326-2642-428E-8D87-1D0E7990CF7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
