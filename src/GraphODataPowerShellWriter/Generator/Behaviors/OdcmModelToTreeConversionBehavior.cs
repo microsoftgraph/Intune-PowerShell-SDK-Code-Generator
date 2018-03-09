@@ -27,9 +27,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // the OData service, so treat this as the root of the tree
             OdcmNode root = new OdcmNode(model.EntityContainer);
 
-            // Create a stack to allow us to traverse the model in a depth-first manner.
-            // Change this to a queue to traverse in a breadth-first manner.
+            // Create a stack to allow us to traverse the model
             Stack<OdcmNode> unvisited = new Stack<OdcmNode>();
+
+            // Mark the root node as "to be expanded"
             unvisited.Push(root);
             
             // Continue adding to the tree until there are no more nodes to expand
@@ -41,7 +42,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 // Expand the node
                 IEnumerable<OdcmNode> childNodes = currentNode.CreateChildNodes(model);
 
-                // Mark the child nodes to be expanded
+                // Mark the child nodes as "to be expanded"
                 foreach (OdcmNode childNode in childNodes)
                 {
                     unvisited.Push(childNode);
@@ -55,57 +56,112 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
         /// <summary>
         /// Expands a node into child nodes.
         /// </summary>
-        /// <param name="currentNode">The node to expand</param>
+        /// <param name="node">The node to expand</param>
         /// <param name="model">The ODCM model</param>
         /// <returns>The child nodes if the node can be expanded, otherwise an empty list.</returns>
-        private static IEnumerable<OdcmNode> CreateChildNodes(this OdcmNode currentNode, OdcmModel model)
+        private static IEnumerable<OdcmNode> CreateChildNodes(this OdcmNode node, OdcmModel model)
         {
-            if (currentNode == null)
+            if (node == null)
             {
-                throw new ArgumentNullException(nameof(currentNode));
+                throw new ArgumentNullException(nameof(node));
+            }
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
             }
 
             // Identify the kind of ODCM element this node represents and expand it if we need to
-            OdcmObject obj = currentNode.OdcmObject;
+            OdcmObject obj = node.OdcmObject;
             OdcmObjectType objType = obj.GetOdcmObjectType();
+            IEnumerable<OdcmObject> childObjects;
             switch (objType)
             {
+                // Classes
                 case OdcmObjectType.Class:
+                case OdcmObjectType.ComplexClass:
+                case OdcmObjectType.EntityClass:
+                case OdcmObjectType.ServiceClass:
                     {
                         OdcmClass @class = obj as OdcmClass;
-
-                        // Get the properties and wrap each one in an OdcmNode
-                        foreach (OdcmProperty property in @class.Properties)
-                        {
-                            OdcmNode childNode = currentNode.CreateChildNode(property);
-                            currentNode.Children.Add(childNode);
-                            yield return childNode;
-                        }
+                        childObjects = @class.GetChildObjects(model);
                     }
                     break;
 
+                // Properties
+                case OdcmObjectType.Property:
                 case OdcmObjectType.SingletonProperty:
                 case OdcmObjectType.EntitySetProperty:
                     {
-                        OdcmNode childNode = currentNode.CreateChildNode(obj);
-                        currentNode.Children.Add(childNode);
-                        yield return childNode;
+                        OdcmProperty property = obj as OdcmProperty;
+                        childObjects = property.GetChildObjects(model);
                     }
                     break;
 
+                // Types that cannot be expanded
                 case OdcmObjectType.Method:
                 case OdcmObjectType.Enum:
                 case OdcmObjectType.PrimitiveType:
                 case OdcmObjectType.TypeDefinition:
                     {
                         // Nothing to return
+                        return Enumerable.Empty<OdcmNode>();
                     }
-                    break;
 
                 default:
                     {
-                        throw new ArgumentException($"Don't know how to handle ODCM object type: {obj.GetType()}", nameof(currentNode));
+                        throw new ArgumentException($"Don't know how to handle ODCM object type: {obj.GetType()}", nameof(node));
                     }
+            }
+
+            ICollection<string> parents = new HashSet<string>();
+            OdcmNode currentNode = node;
+            while (currentNode != null)
+            {
+                parents.Add(currentNode.OdcmObject.CanonicalName());
+                currentNode = currentNode.Parent;
+            }
+
+            return childObjects
+                // Filter out the children we've already seen so we can avoid loops
+                .Where(child => !parents.Contains(child.CanonicalName()))
+                // Add the child nodes to the current node
+                .Select(child => node.CreateAndAddChildNode(child));
+        }
+
+        /// <summary>
+        /// Gets child ODCM objects for an ODCM class.
+        /// </summary>
+        /// <param name="class">The ODCM class</param>
+        /// <param name="model">The ODCM model</param>
+        /// <returns>The child ODCM objects for the given ODCM class.</returns>
+        private static IEnumerable<OdcmObject> GetChildObjects(this OdcmClass @class, OdcmModel model)
+        {
+            // Return the properties of the class
+            foreach (OdcmProperty property in @class.Properties)
+            {
+                yield return property;
+            }
+        }
+
+        /// <summary>
+        /// Gets child ODCM objects for an ODCM property.
+        /// </summary>
+        /// <param name="class">The ODCM property</param>
+        /// <param name="model">The ODCM model</param>
+        /// <returns>The child ODCM objects for the given ODCM property.</returns>
+        private static IEnumerable<OdcmObject> GetChildObjects(this OdcmProperty property, OdcmModel model)
+        {
+            // Get the property's type and expand it to get it's properties
+            OdcmType propertyType = property.Type;
+            if (propertyType is OdcmClass @class)
+            {
+                // Return this class' properties
+                return @class.GetChildObjects(model);
+            }
+            else
+            {
+                // Return nothing
+                return Enumerable.Empty<OdcmObject>();
             }
         }
     }

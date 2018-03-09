@@ -5,9 +5,11 @@ namespace GraphODataPowerShellTemplateWriter
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils;
+    using Newtonsoft.Json.Linq;
     using Vipr.Core;
     using Vipr.Core.CodeModel;
 
@@ -53,31 +55,55 @@ namespace GraphODataPowerShellTemplateWriter
             OdcmNode root = model.ConvertToOdcmTree();
 
             // Create a stack to track tree nodes that we haven't visited yet
-            Stack<Tuple<OdcmNode, int>> unvisited = new Stack<Tuple<OdcmNode, int>>();
-            unvisited.Push(Tuple.Create(root, 1));
+            Stack<OdcmNode> unvisited = new Stack<OdcmNode>();
+            unvisited.Push(root);
+
+            // Track the path of each file
+            IDictionary<OdcmNode, string> paths = new Dictionary<OdcmNode, string>();
+            paths.Add(root, root.OdcmObject.Name);
 
             // Traverse the tree
-            string output = string.Empty;
             while (unvisited.Any())
             {
                 // Get the next node and it's depth
-                Tuple<OdcmNode, int> currentNodeWithDepth = unvisited.Pop();
-                OdcmNode currentNode = currentNodeWithDepth.Item1;
-                int depth = currentNodeWithDepth.Item2;
+                OdcmNode currentNode = unvisited.Pop();
 
-                // Add children to the stack
-                IEnumerable<OdcmNode> childNodes = currentNode.Children;
+                // Expand node and process children
+                IEnumerable<OdcmNode> childNodes = currentNode.Children.OrderBy(child => child.OdcmObject.Name);
+                JObject json = new JObject();
+                string currentPath = paths[currentNode];
                 foreach (OdcmNode child in childNodes)
                 {
-                    unvisited.Push(Tuple.Create(child, depth + 1));
+                    // Add children to the stack
+                    unvisited.Push(child);
+                    string childPath = $"{currentPath}/{child.OdcmObject.Name}";
+                    paths.Add(child, childPath);
+
+                    // Create the node's output
+                    string name = child.OdcmObject.CanonicalName();
+                    string value;
+                    if (child.OdcmObject is OdcmClass @class)
+                    {
+                        value = @class.Kind.ToString();
+                    }
+                    else if (child.OdcmObject is OdcmProperty property)
+                    {
+                        value = property.Type.CanonicalName();
+                    }
+                    else if (child.OdcmObject is OdcmEnum @enum)
+                    {
+                        value = "[" + string.Join(", ", @enum.Members.Select(enumValue => enumValue.Name)) + "]";
+                    }
+                    else
+                    {
+                        value = child.OdcmObject.Description;
+                    }
+                    json.Add(name, JToken.FromObject(value));
                 }
 
-                // Write the node's information to the output
-                OdcmObject obj = currentNode.OdcmObject;
-                output += StringUtils.Indent(depth, $"{obj.Name}: {obj.GetOdcmObjectType()}\n");
+                // Write the node's output
+                yield return new TextFile($"{currentPath}.json", json.ToString());
             }
-
-            yield return new TextFile("output.txt", output);
         }
 
         private static IEnumerable<TextFile> GenerateTestOutput_Simple(OdcmModel model)

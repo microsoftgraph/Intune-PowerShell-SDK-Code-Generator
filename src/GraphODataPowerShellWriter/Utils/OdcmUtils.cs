@@ -16,13 +16,28 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         {
             if (obj is OdcmType type)
             {
-                if (type is OdcmPrimitiveType primitiveType)
+                if (type is OdcmClass @class)
+                {
+                    if (@class is OdcmComplexClass complexClass)
+                    {
+                        return OdcmObjectType.ComplexClass;
+                    }
+                    else if (@class is OdcmEntityClass entityClass)
+                    {
+                        return OdcmObjectType.EntityClass;
+                    }
+                    else if (@class is OdcmServiceClass serviceClass)
+                    {
+                        return OdcmObjectType.ServiceClass;
+                    }
+                    else
+                    {
+                        return OdcmObjectType.Class;
+                    }
+                }
+                else if (type is OdcmPrimitiveType primitiveType)
                 {
                     return OdcmObjectType.PrimitiveType;
-                }
-                else if (type is OdcmClass @class)
-                {
-                    return OdcmObjectType.Class;
                 }
                 else if (type is OdcmEnum @enum)
                 {
@@ -53,7 +68,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 }
                 else
                 {
-                    throw new ArgumentException($"Unknown {typeof(OdcmProperty)} type: {property.GetType()}", nameof(obj));
+                    return OdcmObjectType.Property;
                 }
             }
             else

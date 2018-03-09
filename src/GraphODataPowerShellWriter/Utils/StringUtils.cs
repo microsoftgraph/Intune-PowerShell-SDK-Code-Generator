@@ -50,7 +50,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                     string line;
                     while ((line = reader.ReadLine()) != null)
                     {
-                        result += indentString + line;
+                        result += indentString + line + Environment.NewLine;
                     }
                 }
 

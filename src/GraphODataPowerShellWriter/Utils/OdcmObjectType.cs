@@ -4,12 +4,21 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 {
     public enum OdcmObjectType
     {
+        // Objects
         Class,
+        ServiceClass,
+        ComplexClass,
+        EntityClass,
+
+        // Properties
+        Property,
+        EntitySetProperty,
+        SingletonProperty,
+
+        // Primitives
         PrimitiveType,
         Enum,
         Method,
         TypeDefinition,
-        EntitySetProperty,
-        SingletonProperty,
     }
 }
