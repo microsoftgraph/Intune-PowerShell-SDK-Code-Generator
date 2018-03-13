@@ -9,7 +9,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
     /// <summary>
     /// The behavior to convert a Resource into a TextFile.
     /// </summary>
-    public static class TextFileGenerationBehavior
+    public static class ResourceToTextFileConversionBehavior
     {
         /// <summary>
         /// Converts a Resource into a TextFile.

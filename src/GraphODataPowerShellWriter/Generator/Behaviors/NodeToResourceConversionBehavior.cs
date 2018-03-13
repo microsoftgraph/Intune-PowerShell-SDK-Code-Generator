@@ -10,14 +10,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
     /// <summary>
     /// The behavior to convert an ODCM tree to a collection of resources.
     /// </summary>
-    public static class TreeToResourceConversionBehavior
+    public static class NodeToResourceConversionBehavior
     {
         /// <summary>
-        /// Converts an ODCM object tree to a collection of resources.
+        /// Converts an ODCM node to a resource.
         /// </summary>
-        /// <param name="rootNode">The root of the tree</param>
-        /// <returns>The collection of resources that were generated from the ODCM object tree.</returns>
-        public static IEnumerable<Resource> ConvertOdcmTreeToResources(this OdcmNode rootNode)
+        /// <param name="rootNode">The ODCM node</param>
+        /// <returns>The resource that was generated from the ODCM node.</returns>
+        public static Resource ConvertToResource(this OdcmNode node)
         {
             throw new NotImplementedException();
         }

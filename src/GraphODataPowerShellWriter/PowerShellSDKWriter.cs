@@ -9,7 +9,6 @@ namespace GraphODataPowerShellTemplateWriter
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils;
-    using Newtonsoft.Json.Linq;
     using Vipr.Core;
     using Vipr.Core.CodeModel;
 
@@ -25,7 +24,7 @@ namespace GraphODataPowerShellTemplateWriter
         public IEnumerable<TextFile> GenerateProxy(OdcmModel model)
         {
             //return GenerateTestOutput_Simple(model);
-            return GenerateTestOutput_Tree(model);
+            return GenerateTestOutput_Routes(model);
             //return GeneratePowerShellSDK(model);
         }
 
@@ -36,76 +35,38 @@ namespace GraphODataPowerShellTemplateWriter
         /// <returns>The TextFile objects representing the generated SDK.</returns>
         public static IEnumerable<TextFile> GeneratePowerShellSDK(OdcmModel model)
         {
-            // Convert the ODCM model into a tree structure that is easier to navigate
-            OdcmNode odcmTree = model.ConvertToOdcmTree();
-
-            // Convert the tree structure into abstract representations of the PowerShell cmdlets
-            IEnumerable<Resource> resources = odcmTree.ConvertOdcmTreeToResources();
-
-            // Generate the text files by inserting data from the intermediate types into templates
-            IEnumerable<TextFile> outputFiles = resources.Select(resource => resource.ToTextFile());
-
-            // Return the generated files
-            return outputFiles;
-        }
-
-        private static IEnumerable<TextFile> GenerateTestOutput_Tree(OdcmModel model)
-        {
-            // Parse ODCM model into a tree structure
-            OdcmNode root = model.ConvertToOdcmTree();
-
-            foreach (OdcmNode child in root.Children)
+            // Convert the ODCM model into the list of nodes (i.e. path segments)
+            foreach (OdcmNode node in model.ConvertToOdcmNodes())
             {
-                yield return new TextFile(child.OdcmObject.Name + ".json", TreeToJObject(child).ToString());
+                // Convert the tree structure into an abstract representation of the PowerShell cmdlets
+                Resource resource = node.ConvertToResource();
+
+                // Generate the text file by inserting data from the intermediate type into templates
+                TextFile outputFile = resource.ToTextFile();
+
+                // Return the generated file
+                yield return outputFile;
             }
         }
 
-        private static JToken TreeToJObject(OdcmNode node)
+        private static IEnumerable<TextFile> GenerateTestOutput_Routes(OdcmModel model)
         {
-            JToken result;
-            if (node.Children.Any())
+            StringBuilder output = new StringBuilder();
+            int maxLines = 10000; // max number of lines in a single output file (decrease this to reduce memory usage)
+            IEnumerator<OdcmNode> enumerator = model.ConvertToOdcmNodes().GetEnumerator();
+            for (int i = 0; enumerator.MoveNext(); i++)
             {
-                JObject resultObject = new JObject();
-                IEnumerable<OdcmNode> children = node.Children.OrderBy(child => child.OdcmObject.Name);
-                foreach (OdcmNode child in node.Children)
+                if (i != 0 && i % maxLines == 0)
                 {
-                    resultObject.Add(child.OdcmObject.Name, TreeToJObject(child));
+                    int fileNum = i / maxLines;
+                    yield return new TextFile($"output_{fileNum}.txt", output.ToString());
+
+                    output = new StringBuilder();
                 }
 
-                result = resultObject;
+                OdcmNode node = enumerator.Current;
+                output.AppendLine(node.EvaluatePath());
             }
-            else if (node.OdcmObject is OdcmClass @class)
-            {
-                result = @class.Kind.ToString();
-            }
-            else if (node.OdcmObject is OdcmProperty property)
-            {
-                OdcmType propertyType = property.Type;
-                if (propertyType is OdcmEnum @enum)
-                {
-                    JArray array = new JArray();
-                    foreach (OdcmEnumMember member in @enum.Members)
-                    {
-                        array.Add(member.CanonicalName());
-                    }
-
-                    JObject propertyTypeJson = new JObject();
-                    propertyTypeJson.Add("type", propertyType.CanonicalName());
-                    propertyTypeJson.Add("members", array);
-
-                    result = propertyTypeJson;
-                }
-                else
-                {
-                    result = propertyType.CanonicalName();
-                }
-            }
-            else
-            {
-                result = node.OdcmObject.Description;
-            }
-
-            return result;
         }
 
         private static IEnumerable<TextFile> GenerateTestOutput_Simple(OdcmModel model)

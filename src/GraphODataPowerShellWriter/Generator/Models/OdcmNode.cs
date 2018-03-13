@@ -10,39 +10,34 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
     {
         public OdcmNode Parent { get; }
 
-        private List<OdcmNode> _children = new List<OdcmNode>();
-        public IReadOnlyCollection<OdcmNode> Children => _children.AsReadOnly();
-
-        public bool IsRootNode => this.Parent == null;
-
-        public OdcmObject OdcmObject { get; }
+        public OdcmProperty OdcmProperty { get; }
 
         /// <summary>
-        /// Creates a root node for an ODCM tree.
+        /// Creates an ODCM node with no parent.
         /// </summary>
-        /// <param name="entityContainer">The entity container for the ODCM model</param>
-        public OdcmNode(OdcmClass entityContainer)
+        /// <param name="entityContainer">The ODCM property that this node represents</param>
+        public OdcmNode(OdcmProperty property)
         {
-            this.OdcmObject = entityContainer ?? throw new ArgumentNullException(nameof(entityContainer));
+            this.OdcmProperty = property ?? throw new ArgumentNullException(nameof(property));
         }
 
         /// <summary>
         /// Creates an OdcmNode.
         /// </summary>
         /// <param name="parent">The parent node</param>
-        /// <param name="odcmObject">The ODCM object which this node represents</param>
-        public OdcmNode(OdcmNode parent, OdcmObject odcmObject)
+        /// <param name="odcmProperty">The ODCM object which this node represents</param>
+        private OdcmNode(OdcmNode parent, OdcmProperty odcmProperty)
         {
             this.Parent = parent ?? throw new ArgumentNullException(nameof(parent));
-            this.OdcmObject = odcmObject ?? throw new ArgumentNullException(nameof(odcmObject));
+            this.OdcmProperty = odcmProperty ?? throw new ArgumentNullException(nameof(odcmProperty));
         }
 
         /// <summary>
-        /// Creates and adds a child to this node.
+        /// Creates a child for this node.
         /// </summary>
         /// <param name="childData">The ODCM object to be used as the child</param>
         /// <returns>The created child node.</returns>
-        public OdcmNode CreateAndAddChildNode(OdcmObject childData)
+        public OdcmNode CreateChildNode(OdcmProperty childData)
         {
             if (childData == null)
             {
@@ -50,7 +45,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             }
 
             OdcmNode childNode = new OdcmNode(this, childData);
-            this._children.Add(childNode);
 
             return childNode;
         }
@@ -61,7 +55,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <returns>The hash code for the ODCM object.</returns>
         public override int GetHashCode()
         {
-            return OdcmObject == null ? 0 : OdcmObject.GetHashCode();
+            return OdcmProperty == null ? 0 : OdcmProperty.GetHashCode();
         }
     }
 }
