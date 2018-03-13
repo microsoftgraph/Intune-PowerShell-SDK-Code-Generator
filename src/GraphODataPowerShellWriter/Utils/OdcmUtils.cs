@@ -32,7 +32,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                     }
                     else
                     {
-                        return OdcmObjectType.Class;
+                        throw new ArgumentException($"Unknown {typeof(OdcmClass)} type: {type.GetType()}", nameof(obj));
                     }
                 }
                 else if (type is OdcmPrimitiveType primitiveType)

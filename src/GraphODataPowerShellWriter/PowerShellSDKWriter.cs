@@ -54,56 +54,58 @@ namespace GraphODataPowerShellTemplateWriter
             // Parse ODCM model into a tree structure
             OdcmNode root = model.ConvertToOdcmTree();
 
-            // Create a stack to track tree nodes that we haven't visited yet
-            Stack<OdcmNode> unvisited = new Stack<OdcmNode>();
-            unvisited.Push(root);
-
-            // Track the path of each file
-            IDictionary<OdcmNode, string> paths = new Dictionary<OdcmNode, string>();
-            paths.Add(root, root.OdcmObject.Name);
-
-            // Traverse the tree
-            while (unvisited.Any())
+            foreach (OdcmNode child in root.Children)
             {
-                // Get the next node and it's depth
-                OdcmNode currentNode = unvisited.Pop();
+                yield return new TextFile(child.OdcmObject.Name + ".json", TreeToJObject(child).ToString());
+            }
+        }
 
-                // Expand node and process children
-                IEnumerable<OdcmNode> childNodes = currentNode.Children.OrderBy(child => child.OdcmObject.Name);
-                JObject json = new JObject();
-                string currentPath = paths[currentNode];
-                foreach (OdcmNode child in childNodes)
+        private static JToken TreeToJObject(OdcmNode node)
+        {
+            JToken result;
+            if (node.Children.Any())
+            {
+                JObject resultObject = new JObject();
+                IEnumerable<OdcmNode> children = node.Children.OrderBy(child => child.OdcmObject.Name);
+                foreach (OdcmNode child in node.Children)
                 {
-                    // Add children to the stack
-                    unvisited.Push(child);
-                    string childPath = $"{currentPath}/{child.OdcmObject.Name}";
-                    paths.Add(child, childPath);
-
-                    // Create the node's output
-                    string name = child.OdcmObject.CanonicalName();
-                    string value;
-                    if (child.OdcmObject is OdcmClass @class)
-                    {
-                        value = @class.Kind.ToString();
-                    }
-                    else if (child.OdcmObject is OdcmProperty property)
-                    {
-                        value = property.Type.CanonicalName();
-                    }
-                    else if (child.OdcmObject is OdcmEnum @enum)
-                    {
-                        value = "[" + string.Join(", ", @enum.Members.Select(enumValue => enumValue.Name)) + "]";
-                    }
-                    else
-                    {
-                        value = child.OdcmObject.Description;
-                    }
-                    json.Add(name, JToken.FromObject(value));
+                    resultObject.Add(child.OdcmObject.Name, TreeToJObject(child));
                 }
 
-                // Write the node's output
-                yield return new TextFile($"{currentPath}.json", json.ToString());
+                result = resultObject;
             }
+            else if (node.OdcmObject is OdcmClass @class)
+            {
+                result = @class.Kind.ToString();
+            }
+            else if (node.OdcmObject is OdcmProperty property)
+            {
+                OdcmType propertyType = property.Type;
+                if (propertyType is OdcmEnum @enum)
+                {
+                    JArray array = new JArray();
+                    foreach (OdcmEnumMember member in @enum.Members)
+                    {
+                        array.Add(member.CanonicalName());
+                    }
+
+                    JObject propertyTypeJson = new JObject();
+                    propertyTypeJson.Add("type", propertyType.CanonicalName());
+                    propertyTypeJson.Add("members", array);
+
+                    result = propertyTypeJson;
+                }
+                else
+                {
+                    result = propertyType.CanonicalName();
+                }
+            }
+            else
+            {
+                result = node.OdcmObject.Description;
+            }
+
+            return result;
         }
 
         private static IEnumerable<TextFile> GenerateTestOutput_Simple(OdcmModel model)
