@@ -3,13 +3,18 @@
 namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 {
     using System;
-    using System.Collections.Generic;
     using Vipr.Core.CodeModel;
 
     public class OdcmNode
     {
+        /// <summary>
+        /// The parent node.
+        /// </summary>
         public OdcmNode Parent { get; }
 
+        /// <summary>
+        /// The ODCM property that this node represents.
+        /// </summary>
         public OdcmProperty OdcmProperty { get; }
 
         /// <summary>

@@ -74,7 +74,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             }
 
             // Identify the kind of ODCM element this node represents and expand it if we need to
-            // TODO: Get the base type's properties when evaluating children
             OdcmProperty obj = node.OdcmProperty;
             IEnumerable<OdcmProperty> childObjects = obj.GetChildObjects(model);
 
@@ -102,14 +101,20 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
         /// <returns>The child ODCM objects for the given ODCM class.</returns>
         private static IEnumerable<OdcmProperty> GetChildObjects(this OdcmClass @class, OdcmModel model)
         {
-            // Return the properties of the class
-            foreach (OdcmProperty property in @class.Properties)
+            if (@class == null)
             {
-                // Only return properties that can be expanded
-                if (property.Type is OdcmClass)
-                {
-                    yield return property;
-                }
+                throw new ArgumentNullException(nameof(@class));
+            }
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+
+            // Return the properties of the class which can be part of the OData route
+            IEnumerable<OdcmProperty> properties = @class.Properties.Where(prop => prop.IsODataRouteSegment(model));
+            foreach (OdcmProperty property in properties)
+            {
+                yield return property;
             }
         }
 
@@ -121,6 +126,15 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
         /// <returns>The child ODCM objects for the given ODCM property.</returns>
         private static IEnumerable<OdcmProperty> GetChildObjects(this OdcmProperty property, OdcmModel model)
         {
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+
             // Get the property's type and expand it to get it's properties
             OdcmType propertyType = property.Type;
             if (propertyType is OdcmClass @class)
@@ -133,6 +147,38 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 // Return nothing
                 return Enumerable.Empty<OdcmProperty>();
             }
+        }
+
+        /// <summary>
+        /// Determines whether the property can be part of an OData route.
+        /// </summary>
+        /// <param name="property">The property</param>
+        /// <returns>True if the property can be part of an OData route, otherwise false.</returns>
+        private static bool IsODataRouteSegment(this OdcmProperty property, OdcmModel model)
+        {
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+
+            bool result = // Make sure that this property is:
+                // top-level
+                property.Class == model.EntityContainer
+                // OR
+                || (
+                    // a complex type
+                    property.Type is OdcmClass
+                    // which is a navigation property
+                    && property.IsLink
+                    // which is contained
+                    && property.ContainsTarget
+                );
+
+            return result;
         }
     }
 }

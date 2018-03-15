@@ -19,6 +19,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
         /// <returns>The resource that was generated from the ODCM node.</returns>
         public static Resource ConvertToResource(this OdcmNode node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             throw new NotImplementedException();
         }
 
@@ -38,6 +43,15 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
         private static IEnumerable<Cmdlet> GetCmdlets(this OdcmObject obj, string baseUrl)
         {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+            if (baseUrl == null)
+            {
+                throw new ArgumentNullException(nameof(baseUrl));
+            }
+
             // Get/Search
             Cmdlet getCmdlet = new Cmdlet(new CmdletName("Get", obj.Name))
             {

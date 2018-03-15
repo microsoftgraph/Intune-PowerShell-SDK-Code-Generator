@@ -3,8 +3,10 @@
 namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Text;
 
     /// <summary>
     /// String utilities.
@@ -30,31 +32,29 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 throw new ArgumentNullException(nameof(stringToIndent));
             }
 
-            string result = string.Empty;
-
             // Precalculate the indent string since this won't change
             string indentString = IndentPrefix(indentLevel, singleIndent);
 
-            // Indent the string
-            if (string.IsNullOrEmpty(indentString))
+            // Indent the string using a StringReader and not String.Replace() because
+            // we don't know what kind of newline char is used in this string
+            using (StringReader reader = new StringReader(stringToIndent))
             {
-                // No indentation required
-                return stringToIndent;
-            }
-            else
-            {
-                // Use a StringReader and not String.Replace() because we don't know
-                // what kind of newline char is used in this string
-                using (StringReader reader = new StringReader(stringToIndent))
+                IList<string> lines = new List<string>();
+                string line;
+                while ((line = reader.ReadLine()) != null)
                 {
-                    string line;
-                    while ((line = reader.ReadLine()) != null)
+                    if (!string.IsNullOrEmpty(line))
                     {
-                        result += indentString + line + Environment.NewLine;
+                        lines.Add(indentString + line);
+                    }
+                    else
+                    {
+                        lines.Add(line);
                     }
                 }
 
-                return result;
+                string resultString = string.Join(Environment.NewLine, lines);
+                return resultString;
             }
         }
 

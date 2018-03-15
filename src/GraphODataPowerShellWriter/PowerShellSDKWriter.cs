@@ -23,9 +23,11 @@ namespace GraphODataPowerShellTemplateWriter
         /// <returns>The TextFile objects representing the generated SDK.</returns>
         public IEnumerable<TextFile> GenerateProxy(OdcmModel model)
         {
-            //return GenerateTestOutput_Simple(model);
-            return GenerateTestOutput_Routes(model);
-            //return GeneratePowerShellSDK(model);
+            //IEnumerable<TextFile> generated =  GenerateTestOutput_Simple(model);
+            IEnumerable<TextFile> generated = GenerateTestOutput_Routes(model);
+            //IEnumerable<TextFile> generated =  GeneratePowerShellSDK(model);
+
+            return generated;
         }
 
         /// <summary>
@@ -52,20 +54,46 @@ namespace GraphODataPowerShellTemplateWriter
         private static IEnumerable<TextFile> GenerateTestOutput_Routes(OdcmModel model)
         {
             StringBuilder output = new StringBuilder();
-            int maxLines = 10000; // max number of lines in a single output file (decrease this to reduce memory usage)
+            int maxLines = 1000; // max number of lines in a single output file (decrease this to reduce memory usage)
             IEnumerator<OdcmNode> enumerator = model.ConvertToOdcmNodes().GetEnumerator();
-            for (int i = 0; enumerator.MoveNext(); i++)
+            int routeNum = 0;
+            while (enumerator.MoveNext())
             {
-                if (i != 0 && i % maxLines == 0)
+                // Every {maxLines} lines, write the output to a file
+                if (routeNum != 0 && routeNum % maxLines == 0)
                 {
-                    int fileNum = i / maxLines;
+                    int fileNum = routeNum / maxLines;
                     yield return new TextFile($"output_{fileNum}.txt", output.ToString());
 
                     output = new StringBuilder();
                 }
 
+                // Get the node
                 OdcmNode node = enumerator.Current;
-                output.AppendLine(node.EvaluatePath());
+
+                // Write the OData route to the node
+                output.AppendLine(node.EvaluateODataRoute());
+
+                // Write the type and it's properties
+                IEnumerable<OdcmProperty> properties = node.OdcmProperty.Type.EvaluateProperties();
+                // Write the properties in JSON format
+                output.AppendLine("{");
+                foreach (OdcmProperty prop in properties)
+                {
+                    output.AppendLine(StringUtils.Indent(1, $"\"{prop.CanonicalName()}\" : \"{prop.Type.CanonicalName()} ({prop.Class.CanonicalName()})\","));
+                }
+                output.AppendLine(StringUtils.Indent(1, $"\"@odata.type\" : \"{node.OdcmProperty.Type.CanonicalName()}\""));
+                output.AppendLine("}");
+
+                // Increment total count of found routes
+                routeNum++;
+            }
+
+            // Write the remaining lines to a file
+            if (output.Length > 0)
+            {
+                int fileNum = routeNum / maxLines;
+                yield return new TextFile($"output_{fileNum}.txt", output.ToString());
             }
         }
 
