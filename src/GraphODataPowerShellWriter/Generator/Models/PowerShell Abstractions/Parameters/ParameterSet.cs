@@ -10,7 +10,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
     /// <summary>
     /// Represents a parameter set for a PowerShell cmdlet.
     /// </summary>
-    public class ParameterSet : IEnumerable<Parameter>
+    public class CmdletParameterSet : IEnumerable<CmdletParameter>
     {
         /// <summary>
         /// The name of the parameter set.
@@ -22,17 +22,17 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// </summary>
         public const string DefaultParameterSetName = ParameterAttribute.AllParameterSets;
 
-        private IDictionary<string, Parameter> Parameters { get; } = new Dictionary<string, Parameter>();
+        private IDictionary<string, CmdletParameter> Parameters { get; } = new Dictionary<string, CmdletParameter>();
 
         /// <summary>
         /// Creates a new parameter set for the default parameter set (i.e. with the name defined in <see cref="DefaultParameterSetName"/>).
         /// </summary>
-        public ParameterSet()
+        public CmdletParameterSet()
         {
             this.Name = DefaultParameterSetName;
         }
 
-        public ParameterSet(string parameterSetName)
+        public CmdletParameterSet(string parameterSetName)
         {
             if (string.IsNullOrWhiteSpace(parameterSetName))
             {
@@ -47,11 +47,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// </summary>
         /// <param name="parameterName">The parameter name</param>
         /// <returns>The parameter if it exists, otherwise null.</returns>
-        public Parameter this[string parameterName]
+        public CmdletParameter this[string parameterName]
         {
             get
             {
-                Parameter result;
+                CmdletParameter result;
                 if (!string.IsNullOrWhiteSpace(parameterName) && this.Parameters.TryGetValue(parameterName, out result))
                 {
                     return result;
@@ -88,7 +88,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// </summary>
         /// <param name="parameterName">The name of the parameter to get</param>
         /// <returns>The parameter if it exists, otherwise null</returns>
-        public Parameter Get(string parameterName)
+        public CmdletParameter Get(string parameterName)
         {
             if (parameterName == null)
             {
@@ -102,7 +102,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// Adds a parameter to the parameter set.
         /// </summary>
         /// <param name="parameter">The parameter to add</param>
-        public void Add(Parameter parameter)
+        public void Add(CmdletParameter parameter)
         {
             if (parameter == null)
             {
@@ -131,7 +131,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// Returns an enumerator that iterates over Parameters.
         /// </summary>
         /// <returns>The enumerator</returns>
-        public IEnumerator<Parameter> GetEnumerator()
+        public IEnumerator<CmdletParameter> GetEnumerator()
         {
             return this.Parameters.Values.GetEnumerator();
         }

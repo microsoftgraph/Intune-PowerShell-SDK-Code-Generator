@@ -31,9 +31,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public string CallUrl { get; set; }
 
         /// <summary>
-        /// The parameters that this cmdlet accepts.
+        /// This cmdlet's parameter sets.
         /// </summary>
-        public CmdletParameters Parameters { get; } = new CmdletParameters();
+        public CmdletParameterSets ParameterSets { get; } = new CmdletParameterSets();
 
         /// <summary>
         /// Creates a new representation of a Graph SDK cmdlet.

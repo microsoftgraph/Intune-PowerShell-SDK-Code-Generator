@@ -6,7 +6,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using System.Text;
 
     /// <summary>
     /// String utilities.

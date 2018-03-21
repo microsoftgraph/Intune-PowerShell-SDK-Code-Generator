@@ -2,9 +2,11 @@
 
 namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 {
-    using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
     using System;
     using System.Collections.Generic;
+    using Inflector;
+    using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
+    using Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils;
     using Vipr.Core.CodeModel;
 
     /// <summary>
@@ -13,10 +15,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
     public static class NodeToResourceConversionBehavior
     {
         /// <summary>
-        /// Converts an ODCM node to a resource.
+        /// Converts an OData route to a resource.
         /// </summary>
-        /// <param name="rootNode">The ODCM node</param>
-        /// <returns>The resource that was generated from the ODCM node.</returns>
+        /// <param name="node">The ODCM node which represents the OData route</param>
+        /// <returns>The resource that was generated from the OData route.</returns>
         public static Resource ConvertToResource(this OdcmNode node)
         {
             if (node == null)
@@ -24,77 +26,100 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 throw new ArgumentNullException(nameof(node));
             }
 
-            throw new NotImplementedException();
+            // Get ODCM property
+            OdcmProperty property = node.OdcmProperty;
+
+            // Calculate route
+            ODataRoute oDataRoute = new ODataRoute(node);
+
+            // Create file system path
+            string fileSystemPath = oDataRoute.ToString(false);
+
+            // Create a resource
+            Resource resource = new Resource(fileSystemPath);
+
+            // Convert each ODCM property into a set of cmdlets
+            IEnumerable<Cmdlet> cmdlets = property.GetCmdlets(oDataRoute);
+
+            // Add the cmdlets to the resource
+            resource.AddAll(cmdlets);
+
+            return resource;
         }
 
-        private static Resource GetResource(this OdcmNode node)
+        /// <summary>
+        /// Creates a set of cmdlets for an ODCM property.
+        /// </summary>
+        /// <param name="property">The ODCM property</param>
+        /// <param name="oDataRoute">The route to the resource (with ID placeholders)</param>
+        /// <returns>The cmdlets.</returns>
+        private static IEnumerable<Cmdlet> GetCmdlets(this OdcmProperty property, ODataRoute oDataRoute)
         {
-            if (node == null)
+            if (property == null)
             {
-                throw new ArgumentNullException(nameof(node));
+                throw new ArgumentNullException(nameof(property));
             }
-
-            // TODO: Create a resource
-
-            // TODO: Call "GetCmdlets()" to convert each ODCM object into a set of cmdlets
-
-            throw new NotImplementedException();
-        }
-
-        private static IEnumerable<Cmdlet> GetCmdlets(this OdcmObject obj, string baseUrl)
-        {
-            if (obj == null)
+            if (oDataRoute == null)
             {
-                throw new ArgumentNullException(nameof(obj));
-            }
-            if (baseUrl == null)
-            {
-                throw new ArgumentNullException(nameof(baseUrl));
+                throw new ArgumentNullException(nameof(oDataRoute));
             }
 
             // Get/Search
-            Cmdlet getCmdlet = new Cmdlet(new CmdletName("Get", obj.Name))
-            {
-                HttpMethod = "GET",
-                CallUrl = baseUrl + obj.Name + "/",
-            };
-            // TODO: Add parameters to GET and SEARCH
-            yield return getCmdlet;
+            yield return property.CreateGetCmdlet(oDataRoute);
 
             // Post
-            if (obj.Projection.SupportsInsert())
+            if (property.Projection.SupportsInsert())
             {
                 // TODO: Support POST
-                //yield return postCmdlet;
+                //yield return property.CreatePostCmdlet();
             }
 
             // Patch
-            if (obj.Projection.SupportsUpdate())
+            if (property.Projection.SupportsUpdate())
             {
                 // TODO: Support PATCH
-                //yield return patchCmdlet;
+                //yield return property.CreatePatchCmdlet();
             }
 
             // Patch navigation property
-            if (obj.Projection.SupportsUpdateLink())
+            if (property.Projection.SupportsUpdateLink())
             {
                 // TODO: Support PATCH on navigation properties
-                //yield return patchLinkCmdlet;
+                //yield return property.CreateNavigationPatchCmdlet();
             }
 
             // Delete
-            if (obj.Projection.SupportsDelete())
+            if (property.Projection.SupportsDelete())
             {
                 // TODO: Support DELETE
-                //yield return deleteCmdlet;
+                //yield return property.CreateDeleteCmdlet();
             }
 
             // Delete navigation property
-            if (obj.Projection.SupportsDeleteLink())
+            if (property.Projection.SupportsDeleteLink())
             {
                 // TODO: Support DELETE on navigation properties
-                //yield return deleteLinkCmdlet;
+                //yield return property.CreateNavigationDeleteCmdlet();
             }
+        }
+
+        private static Cmdlet CreateGetCmdlet(this OdcmProperty property, ODataRoute oDataRoute)
+        {
+            Cmdlet result = new Cmdlet(new CmdletName("Get", Inflector.Pascalize(property.Name)))
+            {
+                HttpMethod = "GET",
+                CallUrl = $"{oDataRoute}/{property.Name}",
+            };
+
+            // Add ID parameter if required
+            string idParameterName = "id";
+            if (property.IsEnumeration())
+            {
+                result.ParameterSets.DefaultParameterSet.Add(new CmdletParameter(idParameterName, typeof(string)));
+                result.CallUrl += $"/{{{idParameterName} ?? string.Empty}}";
+            }
+
+            return result;
         }
     }
 }

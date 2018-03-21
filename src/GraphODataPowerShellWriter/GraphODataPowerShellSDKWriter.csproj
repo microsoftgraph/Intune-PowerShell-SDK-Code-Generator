@@ -57,6 +57,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Inflector, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Inflector.1.0.0.0\lib\net45\Inflector.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -77,6 +80,7 @@
     <Compile Include="Generator\Behaviors\OdcmModelToNodesConversionBehavior.cs" />
     <Compile Include="Generator\Behaviors\ResourceToTextFileConversionBehavior.cs" />
     <Compile Include="Generator\Behaviors\NodeToResourceConversionBehavior.cs" />
+    <Compile Include="Generator\Models\ODataRoute.cs" />
     <Compile Include="Generator\Models\OdcmNode.cs" />
     <Compile Include="PowerShellSDKWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

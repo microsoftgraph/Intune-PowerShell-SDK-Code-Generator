@@ -6,19 +6,22 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
     using System.Collections;
     using System.Collections.Generic;
 
-    public class CmdletParameters : IEnumerable<ParameterSet>
+    /// <summary>
+    /// A collection of parameter sets for a PowerShell cmdlet.
+    /// </summary>
+    public class CmdletParameterSets : IEnumerable<CmdletParameterSet>
     {
-        private IDictionary<string, ParameterSet> ParameterSets { get; } = new Dictionary<string, ParameterSet>();
+        private IDictionary<string, CmdletParameterSet> ParameterSets { get; } = new Dictionary<string, CmdletParameterSet>();
 
-        public ParameterSet DefaultParameterSet => this.Get(ParameterSet.DefaultParameterSetName);
+        public CmdletParameterSet DefaultParameterSet => this.Get(CmdletParameterSet.DefaultParameterSetName);
 
         /// <summary>
         /// Creates a new CmdletParameters instance.
         /// </summary>
-        public CmdletParameters()
+        public CmdletParameterSets()
         {
             // All Cmdlets must have the default parameter set
-            this.Add(new ParameterSet());
+            this.Add(new CmdletParameterSet());
         }
 
         /// <summary>
@@ -26,7 +29,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// </summary>
         /// <param name="parameterSetName">The parameter set name</param>
         /// <returns>The parameter set if it exists, otherwise null.</returns>
-        public ParameterSet this[string parameterSetName] => this.Get(parameterSetName);
+        public CmdletParameterSet this[string parameterSetName] => this.Get(parameterSetName);
 
         /// <summary>
         /// Determines whether this object contains a parameter set by the given name.
@@ -44,13 +47,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <param name="parameterSetName">The name of the parameter set to get</param>
         /// <returns>The parameter if it exists, otherwise null</returns>
         /// <exception cref="ArgumentNullException">If the <paramref name="parameterSetName"/> is null</exception>
-        public ParameterSet Get(string parameterSetName)
+        public CmdletParameterSet Get(string parameterSetName)
         {
             if (parameterSetName == null)
             {
                 throw new ArgumentNullException(nameof(parameterSetName));
             }
-            ParameterSet result;
+            CmdletParameterSet result;
             if (!string.IsNullOrWhiteSpace(parameterSetName) && this.ParameterSets.TryGetValue(parameterSetName, out result))
             {
                 return result;
@@ -68,7 +71,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <exception cref="ArgumentNullException">If the <paramref name="parameterSet"/> is null</exception>
         /// <exception cref="ArgumentException">If the <paramref name="parameterSet"/>'s name is null, empty or whitespace</exception>
         /// <exception cref="ArgumentException">If the <paramref name="parameterSet"/>'s name already exists</exception>
-        public void Add(ParameterSet parameterSet)
+        public void Add(CmdletParameterSet parameterSet)
         {
             if (parameterSet == null)
             {
@@ -92,26 +95,28 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <param name="parameterSetName">The name of the parameter set</param>
         /// <returns>True if the parameter set was successfully removed, otherwise false</returns>
         /// <exception cref="ArgumentNullException">If the <paramref name="parameterSetName"/> is null</exception>
-        /// <exception cref="ArgumentException">If the <paramref name="parameterSetName"/> is equal to <see cref="ParameterSet.DefaultParameterSetName"/></exception>
+        /// <exception cref="ArgumentException">If the <paramref name="parameterSetName"/> is equal to <see cref="CmdletParameterSet.DefaultParameterSetName"/></exception>
         public bool Remove(string parameterSetName)
         {
             if (parameterSetName == null)
             {
                 throw new ArgumentNullException(nameof(parameterSetName));
             }
-            if (parameterSetName == ParameterSet.DefaultParameterSetName)
+            if (parameterSetName == CmdletParameterSet.DefaultParameterSetName)
             {
-                throw new ArgumentException($"Cannot remove the default parameter set '{ParameterSet.DefaultParameterSetName}'");
+                throw new ArgumentException($"Cannot remove the default parameter set '{CmdletParameterSet.DefaultParameterSetName}'");
             }
 
             return this.ParameterSets.Remove(parameterSetName);
         }
 
+        // TODO: Add convenience methods to look up the list of parameter sets per parameter
+
         /// <summary>
         /// Returns an enumerator that iterates over ParameterSets.
         /// </summary>
         /// <returns>The enumerator</returns>
-        public IEnumerator<ParameterSet> GetEnumerator()
+        public IEnumerator<CmdletParameterSet> GetEnumerator()
         {
             return this.ParameterSets.Values.GetEnumerator();
         }

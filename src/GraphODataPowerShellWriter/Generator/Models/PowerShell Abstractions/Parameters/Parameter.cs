@@ -4,7 +4,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 {
     using System;
 
-    public class Parameter
+    /// <summary>
+    /// Represents a PowerShell cmdlet's parameter.
+    /// </summary>
+    public class CmdletParameter
     {
         /// <summary>
         /// The name of the parameter.
@@ -21,7 +24,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// </summary>
         public bool IsMandatory { get; set; } = true;
 
-        public Parameter(string parameterName, Type parameterType)
+        public CmdletParameter(string parameterName, Type parameterType)
         {
             if (string.IsNullOrWhiteSpace(parameterName))
             {

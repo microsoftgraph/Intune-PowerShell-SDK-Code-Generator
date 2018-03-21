@@ -5,6 +5,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
     using System;
     using Vipr.Core.CodeModel;
 
+    /// <summary>
+    /// Represents the final segment of the path to an ODCM property from the entity container.
+    /// Use the <see cref="Parent"/> property to access the previous segment.
+    /// </summary>
     public class OdcmNode
     {
         /// <summary>

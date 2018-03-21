@@ -12,10 +12,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public string VerbName { get; private set; }
         public string NounName { get; private set; }
 
+        private readonly string _compiledString;
+
         public CmdletName(string verbName, string nounName)
         {
             this.VerbName = verbName ?? throw new ArgumentNullException(nameof(verbName));
             this.NounName = nounName ?? throw new ArgumentNullException(nameof(nounName));
+
+            this._compiledString = $"{this.VerbName}-{this.NounName}";
         }
 
         /// <summary>
@@ -52,7 +56,88 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <returns>The string cmdlet name</returns>
         public override string ToString()
         {
-            return $"{this.VerbName}-{this.NounName}";
+            return this._compiledString;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj != null
+                && obj is CmdletName other
+                && other.ToString() == this.ToString())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.ToString().GetHashCode();
+        }
+
+        public static bool operator ==(CmdletName name1, CmdletName name2)
+        {
+            if (name1 is null && name2 is null)
+            {
+                return true;
+            }
+            else if (!(name1 is null) && !(name2 is null)
+                && name1.ToString() == name2.ToString())
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool operator !=(CmdletName name1, CmdletName name2)
+        {
+            return !(name1 == name2);
+        }
+
+        public static bool operator ==(CmdletName name1, string name2)
+        {
+            if (name1 is null && name2 is null)
+            {
+                return true;
+            }
+            else if (!(name1 is null) && !(name2 is null)
+                && name1.ToString() == name2)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool operator !=(CmdletName name1, string name2)
+        {
+            return !(name1 == name2);
+        }
+
+        public static bool operator ==(string name1, CmdletName name2)
+        {
+            return name2 == name1;
+        }
+
+        public static bool operator !=(string name1, CmdletName name2)
+        {
+            return !(name1 == name2);
+        }
+
+        public static implicit operator string(CmdletName name)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            return name.ToString();
         }
     }
 }

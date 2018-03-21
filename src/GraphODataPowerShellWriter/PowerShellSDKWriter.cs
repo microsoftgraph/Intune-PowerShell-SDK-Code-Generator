@@ -12,6 +12,9 @@ namespace GraphODataPowerShellTemplateWriter
     using Vipr.Core;
     using Vipr.Core.CodeModel;
 
+    /// <summary>
+    /// A writer module for Vipr which generates C# code that can be compiled into a PowerShell Graph SDK module.
+    /// </summary>
     public class PowerShellSDKWriter : IOdcmWriter
     {
         public const string CmdletPrefix = "Graph";
@@ -24,7 +27,9 @@ namespace GraphODataPowerShellTemplateWriter
         public IEnumerable<TextFile> GenerateProxy(OdcmModel model)
         {
             //IEnumerable<TextFile> generated =  GenerateTestOutput_Simple(model);
-            IEnumerable<TextFile> generated = GenerateTestOutput_Routes(model);
+            //IEnumerable<TextFile> generated = GenerateTestOutput_Routes(model);
+            IEnumerable<TextFile> generated = GenerateTestOutput_Resources(model);
+
             //IEnumerable<TextFile> generated =  GeneratePowerShellSDK(model);
 
             return generated;
@@ -37,10 +42,10 @@ namespace GraphODataPowerShellTemplateWriter
         /// <returns>The TextFile objects representing the generated SDK.</returns>
         public static IEnumerable<TextFile> GeneratePowerShellSDK(OdcmModel model)
         {
-            // Convert the ODCM model into the list of nodes (i.e. path segments)
+            // Convert the ODCM model into nodes (i.e. routes)
             foreach (OdcmNode node in model.ConvertToOdcmNodes())
             {
-                // Convert the tree structure into an abstract representation of the PowerShell cmdlets
+                // Convert the route into an abstract representation of the PowerShell cmdlets
                 Resource resource = node.ConvertToResource();
 
                 // Generate the text file by inserting data from the intermediate type into templates
@@ -51,48 +56,99 @@ namespace GraphODataPowerShellTemplateWriter
             }
         }
 
+        private static IEnumerable<TextFile> GenerateTestOutput_Resources(OdcmModel model)
+        {
+            IEnumerable<Resource> resources = model.ConvertToOdcmNodes().Select(node => node.ConvertToResource());
+            foreach (Resource resource in resources)
+            {
+                StringBuilder output = new StringBuilder();
+                int indent = 0;
+                foreach (Cmdlet cmdlet in resource.Cmdlets)
+                {
+                    // Cmdlet name
+                    output.AppendLine(StringUtils.Indent(indent, $"\"{cmdlet.Name}\" : {{"));
+                    indent++;
+
+                    // Cmdlet info
+                    output.AppendLine(StringUtils.Indent(indent, $"\"httpMethod\" : \"{cmdlet.HttpMethod}\","));
+                    output.AppendLine(StringUtils.Indent(indent, $"\"url\" : \"{cmdlet.CallUrl}\","));
+
+                    // Print parameter sets
+                    output.AppendLine(StringUtils.Indent(indent, "\"parameterSets\" : {"));
+                    indent++;
+                    foreach (CmdletParameterSet parameterSet in cmdlet.ParameterSets)
+                    {
+                        // Parameter set name
+                        output.AppendLine(StringUtils.Indent(indent, $"\"{parameterSet.Name}\" : {{"));
+
+                        // Print parameters
+                        indent++;
+                        CmdletParameter lastParameter = parameterSet.LastOrDefault();
+                        foreach (CmdletParameter parameter in parameterSet)
+                        {
+                            string endOfLine = parameter == lastParameter ? string.Empty : ",";
+                            output.AppendLine(StringUtils.Indent(indent, $"\"{parameter.Name}\" : \"{parameter.Type.ToString()}\"{endOfLine}"));
+                        }
+                        indent--;
+                        output.AppendLine(StringUtils.Indent(indent, "}"));
+                    }
+                    indent--;
+                    output.AppendLine(StringUtils.Indent(indent, "}"));
+
+                    indent--;
+                    output.AppendLine("}");
+                }
+
+                yield return new TextFile(resource.OutputFilePath + ".txt", output.ToString());
+            }
+        }
+
         private static IEnumerable<TextFile> GenerateTestOutput_Routes(OdcmModel model)
         {
             StringBuilder output = new StringBuilder();
-            int maxLines = 1000; // max number of lines in a single output file (decrease this to reduce memory usage)
-            IEnumerator<OdcmNode> enumerator = model.ConvertToOdcmNodes().GetEnumerator();
-            int routeNum = 0;
-            while (enumerator.MoveNext())
+            int maxRoutesPerFile = 1000; // max number of routes in a single output file (decrease this to reduce memory usage)
+            int routeCount = 0;
+            IEnumerable<OdcmNode> nodes = model.ConvertToOdcmNodes();
+            foreach (OdcmNode node in nodes)
             {
-                // Every {maxLines} lines, write the output to a file
-                if (routeNum != 0 && routeNum % maxLines == 0)
+                // Every {maxRoutesPerFile} routes, write the output to a file
+                if (routeCount != 0 && routeCount % maxRoutesPerFile == 0)
                 {
-                    int fileNum = routeNum / maxLines;
+                    int fileNum = routeCount / maxRoutesPerFile;
                     yield return new TextFile($"output_{fileNum}.txt", output.ToString());
 
                     output = new StringBuilder();
                 }
 
-                // Get the node
-                OdcmNode node = enumerator.Current;
+                // Create an OData route from the node
+                ODataRoute route = new ODataRoute(node);
 
-                // Write the OData route to the node
-                output.AppendLine(node.EvaluateODataRoute());
+                // Write the OData route to the output string
+                output.AppendLine(route.ToString());
 
-                // Write the type and it's properties
-                IEnumerable<OdcmProperty> properties = node.OdcmProperty.Type.EvaluateProperties();
-                // Write the properties in JSON format
+                // Get the ODCM property from the node
+                OdcmProperty currentProperty = node.OdcmProperty;
+
+                // Write the type and it's properties in JSON format
+                IEnumerable<OdcmProperty> properties = currentProperty.Type.EvaluateProperties();
+                OdcmClass currentClass = currentProperty.Type as OdcmClass;
                 output.AppendLine("{");
-                foreach (OdcmProperty prop in properties)
+                foreach (OdcmProperty prop in properties.OrderBy(p => p.CanonicalName()))
                 {
-                    output.AppendLine(StringUtils.Indent(1, $"\"{prop.CanonicalName()}\" : \"{prop.Type.CanonicalName()} ({prop.Class.CanonicalName()})\","));
+                    string inheritedClassName = prop.Class == currentClass ? string.Empty : $" (inherited from '{prop.Class.CanonicalName()}')";
+                    output.AppendLine(StringUtils.Indent(1, $"\"{prop.CanonicalName()}\" : \"{prop.Type.CanonicalName()}{inheritedClassName}\","));
                 }
                 output.AppendLine(StringUtils.Indent(1, $"\"@odata.type\" : \"{node.OdcmProperty.Type.CanonicalName()}\""));
                 output.AppendLine("}");
 
                 // Increment total count of found routes
-                routeNum++;
+                routeCount++;
             }
 
             // Write the remaining lines to a file
             if (output.Length > 0)
             {
-                int fileNum = routeNum / maxLines;
+                int fileNum = routeCount / maxRoutesPerFile;
                 yield return new TextFile($"output_{fileNum}.txt", output.ToString());
             }
         }

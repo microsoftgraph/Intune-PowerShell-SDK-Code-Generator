@@ -2,50 +2,36 @@
 
 namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 {
-    using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Inflector;
     using Vipr.Core.CodeModel;
 
+    /// <summary>
+    /// A set of utility methods to simplify operations on ODCM objects.
+    /// </summary>
     public static class OdcmUtils
     {
         /// <summary>
-        /// Evaluates the OData route which leads to the given node.
+        /// Tries to get the name of the parameter that represents the ID of this property.
         /// </summary>
-        /// <param name="node">The node</param>
-        /// <returns>The OData path.</returns>
-        public static string EvaluateODataRoute(this OdcmNode node)
+        /// <param name="property">The property</param>
+        /// <param name="idParameterName">The ID parameter's name if this property represents an enumeration, otherwise null</param>
+        /// <returns>True if successful, otherwise false.</returns>
+        public static bool TryGetIdParameterName(this OdcmProperty property, out string idParameterName)
         {
-            if (node == null)
+            if (!property.IsEnumeration())
             {
-                throw new ArgumentNullException(nameof(node));
+                idParameterName = null;
+                return false;
             }
-
-            // Track the segments in the route - use a stack so we don't have to reverse the list later
-            Stack<string> segments = new Stack<string>();
-
-            // Iterate over the node's parents
-            OdcmNode currentNode = node;
-            while (currentNode != null)
+            else
             {
-                // If this node represents a collection, add a segment for the ID
-                if (currentNode.OdcmProperty.IsEnumeration())
-                {
-                    segments.Push("{id}");
-                }
-
-                // Add this node to the route
-                segments.Push(currentNode.OdcmProperty.Name);
-
-                // Get the parent node
-                currentNode = currentNode.Parent;
+                string singularName = Inflector.Singularize(property.Name) ?? property.Name;
+                idParameterName = $"{singularName}Id";
+                return true;
             }
-
-            // Join the route segments
-            string result = string.Join("/", segments);
-
-            return result;
         }
 
         /// <summary>

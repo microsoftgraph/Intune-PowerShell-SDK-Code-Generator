@@ -3,10 +3,13 @@
 namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
 
-    public class Resource : IEnumerable<Cmdlet>
+    /// <summary>
+    /// An abstract representation of a C# file which contains a set of Graph PowerShell SDK cmdlets.
+    /// </summary>
+    public class Resource
     {
         /// <summary>
         /// The relative path on the file system where cmdlet will be written.
@@ -17,6 +20,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// The set of cmdlets in a Dictionary format for fast lookup.
         /// </summary>
         private IDictionary<string, Cmdlet> _cmdlets { get; set; } = new Dictionary<string, Cmdlet>();
+
+        /// <summary>
+        /// The cmdlets that expose operations for this resource.
+        /// </summary>
+        public IEnumerable<Cmdlet> Cmdlets => _cmdlets.Values;
 
         /// <summary>
         /// Creates a new Resource object.
@@ -153,6 +161,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// Adds a cmdlet to this resource.
         /// </summary>
         /// <param name="cmdlet">The cmdlet to add</param>
+        /// <exception cref="ArgumentException">If a cmdlet with the same name already exists on this resource.</exception>
         public void Add(Cmdlet cmdlet)
         {
             if (cmdlet == null)
@@ -160,7 +169,43 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
                 throw new ArgumentNullException(nameof(cmdlet));
             }
 
+            // Don't allow duplicates
+            if (this._cmdlets.Any(c => c.Key == cmdlet.Name))
+            {
+                throw new ArgumentException($"Cmdlet with the name {cmdlet.Name.ToString()} already exists", nameof(cmdlet));
+            }
+
             this[cmdlet.Name.ToString()] = cmdlet;
+        }
+
+        /// <summary>
+        /// Adds a collection of cmdlets to this resource.
+        /// </summary>
+        /// <param name="cmdlets">The cmdlets to add</param>
+        /// <exception cref="ArgumentException">If adding the given cmdlets would result in more than one cmdlet with the same name.</exception>
+        public void AddAll(IEnumerable<Cmdlet> cmdlets)
+        {
+            if (cmdlets == null)
+            {
+                throw new ArgumentNullException(nameof(cmdlets));
+            }
+
+            // Check for cmdlets that would result in duplicates
+            IEnumerable<string> duplicates = cmdlets.Concat(this._cmdlets.Values)
+                .GroupBy(cmdlet => cmdlet.Name)
+                .Where(group => group.Count() > 1)
+                .Select(group => $"'{group.Key}' ({group.Count()})");
+            // Throw if there are duplicates
+            if (duplicates.Any())
+            {
+                throw new ArgumentException($"Adding the given cmdlets would result in duplicates with the name(s): {string.Join(", ", duplicates)}", nameof(cmdlets));
+            }
+
+            // Add all the cmdlets
+            foreach (Cmdlet cmdlet in cmdlets)
+            {
+                this.Add(cmdlet);
+            }
         }
 
         /// <summary>
@@ -176,16 +221,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             }
 
             return this._cmdlets.Remove(cmdletName);
-        }
-
-        public IEnumerator<Cmdlet> GetEnumerator()
-        {
-            return _cmdlets.Values.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return _cmdlets.Values.GetEnumerator();
         }
     }
 }
