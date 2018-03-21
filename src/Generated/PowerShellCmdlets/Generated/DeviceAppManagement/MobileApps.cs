@@ -2,7 +2,6 @@
 
 namespace PowerShellGraphSDK.PowerShellCmdlets
 {
-    using System.Linq;
     using System.Management.Automation;
     
     [Cmdlet(
@@ -18,29 +17,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
 
         internal override string GetResourcePath()
         {
-            if (this.id != null)
-            {
-                return $"/deviceAppManagement/mobileApps/{this.id}";
-            }
-            else
-            {
-                return $"/deviceAppManagement/mobileApps";
-            }
-        }
-
-        internal override PSObject ReadResponse(string content)
-        {
-            object result = base.ReadResponse(content);
-            // If this result is for a SEARCH call and there is only 1 page in the result, return only the result objects
-            if (result is PSObject response &&
-                this.ParameterSetName == ParameterSetSearch &&
-                response.Members.Any(member => member.Name == "value") &&
-                !response.Members.Any(member => member.Name == "@odata.nextLink"))
-            {
-                result = response.Members["value"].Value;
-            }
-
-            return PSObject.AsPSObject(result);
+            return $"/deviceAppManagement/mobileApps/{id ?? string.Empty}";
         }
     }
 
@@ -77,7 +54,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     [Cmdlet(
         CmdletVerb, CmdletNoun,
         ConfirmImpact = ConfirmImpact.High)]
-    public class RemoveMobileApp : PowerShellGraphSDK.ODataGetPowerShellSDKCmdlet
+    public class RemoveMobileApp : ODataGetPowerShellSDKCmdlet
     {
         public const string CmdletVerb = VerbsCommon.Remove;
         public const string CmdletNoun = "IntuneMobileApp";

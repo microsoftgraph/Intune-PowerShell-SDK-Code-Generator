@@ -50,5 +50,20 @@ namespace PowerShellGraphSDK
 
             return queryOptions;
         }
+
+        internal override PSObject ReadResponse(string content)
+        {
+            object result = base.ReadResponse(content);
+            // If this result is for a SEARCH call and there is only 1 page in the result, return only the result objects
+            if (result is PSObject response &&
+                this.ParameterSetName == ParameterSetSearch &&
+                response.Members.Any(member => member.Name == "value") &&
+                !response.Members.Any(member => member.Name == "@odata.nextLink"))
+            {
+                result = response.Members["value"].Value;
+            }
+
+            return PSObject.AsPSObject(result);
+        }
     }
 }
