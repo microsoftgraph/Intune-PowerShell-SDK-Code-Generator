@@ -21,6 +21,15 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         /// <returns>True if successful, otherwise false.</returns>
         public static bool TryGetIdParameterName(this OdcmProperty property, out string idParameterName)
         {
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
+            if (property.Name == null)
+            {
+                throw new ArgumentException("Property name cannot be null", nameof(property));
+            }
+
             if (!property.IsEnumeration())
             {
                 idParameterName = null;
@@ -28,7 +37,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             }
             else
             {
-                string singularName = Inflector.Singularize(property.Name) ?? property.Name;
+                string singularName = property.Name.Singularize() ?? property.Name;
                 idParameterName = $"{singularName}Id";
                 return true;
             }

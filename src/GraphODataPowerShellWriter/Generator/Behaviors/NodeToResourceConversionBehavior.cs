@@ -33,7 +33,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             ODataRoute oDataRoute = new ODataRoute(node);
 
             // Create file system path
-            string fileSystemPath = oDataRoute.ToString(false);
+            string fileSystemPath = oDataRoute.ToRelativeFilePathString();
 
             // Create a resource
             Resource resource = new Resource(fileSystemPath);
@@ -71,53 +71,102 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             if (property.Projection.SupportsInsert())
             {
                 // TODO: Support POST
-                //yield return property.CreatePostCmdlet();
+                //yield return property.CreatePostCmdlet(oDataRoute);
             }
 
             // Patch
             if (property.Projection.SupportsUpdate())
             {
                 // TODO: Support PATCH
-                //yield return property.CreatePatchCmdlet();
+                //yield return property.CreatePatchCmdlet(oDataRoute);
             }
 
             // Patch navigation property
             if (property.Projection.SupportsUpdateLink())
             {
                 // TODO: Support PATCH on navigation properties
-                //yield return property.CreateNavigationPatchCmdlet();
+                //yield return property.CreateNavigationPatchCmdlet(oDataRoute);
             }
 
             // Delete
-            if (property.Projection.SupportsDelete())
+            if (property.Projection.SupportsDelete() && property.IsEnumeration())
             {
-                // TODO: Support DELETE
-                //yield return property.CreateDeleteCmdlet();
+                yield return property.CreateDeleteCmdlet(oDataRoute);
             }
 
             // Delete navigation property
             if (property.Projection.SupportsDeleteLink())
             {
                 // TODO: Support DELETE on navigation properties
-                //yield return property.CreateNavigationDeleteCmdlet();
+                //yield return property.CreateNavigationDeleteCmdlet(oDataRoute);
             }
         }
 
         private static Cmdlet CreateGetCmdlet(this OdcmProperty property, ODataRoute oDataRoute)
         {
-            Cmdlet result = new Cmdlet(new CmdletName("Get", Inflector.Pascalize(property.Name)))
+            Cmdlet result = new Cmdlet(new CmdletName("Get", property.GetCmdletName()), CmdletImpactLevel.Low)
             {
                 HttpMethod = "GET",
-                CallUrl = $"{oDataRoute}/{property.Name}",
             };
 
-            // Add ID parameter if required
-            string idParameterName = "id";
+            // Check whether this route represents a single resource or an enumeration
+            string oDataRouteString = oDataRoute.ToODataRouteString();
             if (property.IsEnumeration())
             {
-                result.ParameterSets.DefaultParameterSet.Add(new CmdletParameter(idParameterName, typeof(string)));
-                result.CallUrl += $"/{{{idParameterName} ?? string.Empty}}";
+                // Create parameter set
+                CmdletParameterSet parameterSet = new CmdletParameterSet("Get");
+
+                // Add ID parameter
+                string idParameterName = "id";
+                parameterSet.Add(new CmdletParameter(idParameterName, typeof(string)));
+
+                // Add parameter set to cmdlet
+                result.ParameterSets.Add(parameterSet);
+
+                // Set the call URL to use this parameter
+                result.CallUrl = $"{oDataRouteString}/{{{idParameterName} ?? string.Empty}}";
+
+                // Since the property is an enumeration, allow "search" as well as "get"
+                result.BaseType = CmdletBaseTypes.GetOrSearch;
             }
+            else
+            {
+                result.CallUrl = oDataRouteString;
+                result.BaseType = CmdletBaseTypes.Get;
+            }
+
+            return result;
+        }
+
+        private static Cmdlet CreateDeleteCmdlet(this OdcmProperty property, ODataRoute oDataRoute)
+        {
+            Cmdlet result = new Cmdlet(new CmdletName("Remove", property.GetCmdletName()), CmdletImpactLevel.High)
+            {
+                HttpMethod = "DELETE",
+                BaseType = CmdletBaseTypes.Delete,
+            };
+
+            // Check whether this route represents a single resource or an enumeration
+            string oDataRouteString = oDataRoute.ToODataRouteString();
+            if (property.IsEnumeration())
+            {
+                // Add ID parameter
+                string idParameterName = "id";
+                result.ParameterSets.DefaultParameterSet.Add(new CmdletParameter(idParameterName, typeof(string)));
+                result.CallUrl = $"{oDataRouteString}/{{{idParameterName}}}";
+            }
+            else
+            {
+                result.CallUrl = oDataRouteString;
+            }
+
+            return result;
+        }
+
+        private static string GetCmdletName(this OdcmProperty property)
+        {
+            string result = property.Name.Singularize() ?? property.Name;
+            result = result.Pascalize();
 
             return result;
         }

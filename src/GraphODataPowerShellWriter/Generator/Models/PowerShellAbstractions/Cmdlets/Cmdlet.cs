@@ -15,9 +15,20 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public CmdletName Name { get; }
 
         /// <summary>
+        /// The base type of this cmdlet in the generated output.
+        /// </summary>
+        public string BaseType { get; set; }
+
+        /// <summary>
+        /// The impact level of this cmdlet.
+        /// This corresponds to the "ConfirmImpact" enum in the System.Management.Automation assembly.
+        /// </summary>
+        public CmdletImpactLevel ImpactLevel { get; }
+
+        /// <summary>
         /// The HTTP method to be used when making the call.
         /// </summary>
-        public string HttpMethod { get; set; } = "GET";
+        public string HttpMethod { get; set; }
 
         /// <summary>
         /// The absolute or relative url to be used when making the call.  For relative URLs, the base
@@ -38,11 +49,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <summary>
         /// Creates a new representation of a Graph SDK cmdlet.
         /// </summary>
-        /// <param name="parentResource">The parent resource object that this cmdlet exists under</param>
         /// <param name="cmdletName">The name of the cmdlet</param>
-        public Cmdlet(CmdletName cmdletName)
+        public Cmdlet(CmdletName cmdletName, CmdletImpactLevel cmdletImpactLevel)
         {
             this.Name = cmdletName ?? throw new ArgumentNullException(nameof(cmdletName));
+            this.ImpactLevel = cmdletImpactLevel;
         }
     }
 }

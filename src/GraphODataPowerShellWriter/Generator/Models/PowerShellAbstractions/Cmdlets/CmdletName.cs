@@ -9,17 +9,17 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
     /// </summary>
     public class CmdletName
     {
-        public string VerbName { get; private set; }
-        public string NounName { get; private set; }
+        public string Verb { get; private set; }
+        public string Noun { get; private set; }
 
         private readonly string _compiledString;
 
-        public CmdletName(string verbName, string nounName)
+        public CmdletName(string verb, string noun)
         {
-            this.VerbName = verbName ?? throw new ArgumentNullException(nameof(verbName));
-            this.NounName = nounName ?? throw new ArgumentNullException(nameof(nounName));
+            this.Verb = verb ?? throw new ArgumentNullException(nameof(verb));
+            this.Noun = noun ?? throw new ArgumentNullException(nameof(noun));
 
-            this._compiledString = $"{this.VerbName}-{this.NounName}";
+            this._compiledString = $"{this.Verb}-{this.Noun}";
         }
 
         /// <summary>
@@ -35,12 +35,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
                 string[] splitString = stringCmdletName.Split('-');
                 if (splitString.Length == 2)
                 {
-                    string verbName = splitString[0];
-                    string nounName = splitString[1];
+                    string verb = splitString[0];
+                    string noun = splitString[1];
 
-                    if (!string.IsNullOrWhiteSpace(verbName) && !string.IsNullOrWhiteSpace(nounName))
+                    if (!string.IsNullOrWhiteSpace(verb) && !string.IsNullOrWhiteSpace(noun))
                     {
-                        parsedName = new CmdletName(verbName, nounName);
+                        parsedName = new CmdletName(verb, noun);
                         return true;
                     }
                 }

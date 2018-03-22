@@ -82,14 +82,26 @@
     <Compile Include="Generator\Behaviors\NodeToResourceConversionBehavior.cs" />
     <Compile Include="Generator\Models\ODataRoute.cs" />
     <Compile Include="Generator\Models\OdcmNode.cs" />
+    <Compile Include="Generator\Models\PowerShellAbstractions\Cmdlets\CmdletBaseTypes.cs" />
+    <Compile Include="Generator\Models\PowerShellAbstractions\Cmdlets\CmdletImpactLevel.cs" />
     <Compile Include="PowerShellSDKWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Generator\Models\PowerShell Abstractions\Cmdlets\CmdletName.cs" />
-    <Compile Include="Generator\Models\PowerShell Abstractions\Resource.cs" />
-    <Compile Include="Generator\Models\PowerShell Abstractions\Parameters\Parameter.cs" />
-    <Compile Include="Generator\Models\PowerShell Abstractions\Parameters\CmdletParameters.cs" />
-    <Compile Include="Generator\Models\PowerShell Abstractions\Parameters\ParameterSet.cs" />
-    <Compile Include="Generator\Models\PowerShell Abstractions\Cmdlets\Cmdlet.cs" />
+    <Compile Include="Generator\Models\PowerShellAbstractions\Cmdlets\CmdletName.cs" />
+    <Compile Include="Generator\Models\PowerShellAbstractions\Resource.cs" />
+    <Compile Include="Generator\Models\PowerShellAbstractions\Parameters\CmdletParameter.cs" />
+    <Compile Include="Generator\Models\PowerShellAbstractions\Parameters\CmdletParameters.cs" />
+    <Compile Include="Generator\Models\PowerShellAbstractions\Parameters\CmdletParameterSet.cs" />
+    <Compile Include="Generator\Models\PowerShellAbstractions\Cmdlets\Cmdlet.cs" />
+    <Content Include="Templates\ResourceTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ResourceTemplate.cs</LastGenOutput>
+    </Content>
+    <Compile Include="Templates\ResourceTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ResourceTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Templates\ResourceTemplateCode.cs" />
     <Compile Include="Utils\OdcmUtils.cs" />
     <Compile Include="Utils\StringUtils.cs" />
   </ItemGroup>
@@ -98,7 +110,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Templates\" />
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

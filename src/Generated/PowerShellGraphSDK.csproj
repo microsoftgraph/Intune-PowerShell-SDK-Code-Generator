@@ -53,23 +53,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\EnvironmentParameters.cs" />
-    <Compile Include="Common\PSAuthenticationError.cs" />
-    <Compile Include="Common\Exceptions\PSGraphSDKException.cs" />
-    <Compile Include="Common\Utils\AuthUtils.cs" />
-    <Compile Include="Common\Utils\JsonUtils.cs" />
-    <Compile Include="Common\ValidationAttributes\ValidateTypeAttribute.cs" />
-    <Compile Include="Common\ValidationAttributes\ValidateUrlAttribute.cs" />
-    <Compile Include="PowerShellCmdlets\ODataGetPowerShellSDKCmdlet.cs" />
-    <Compile Include="PowerShellCmdlets\Generated\DeviceAppManagement.cs" />
-    <Compile Include="PowerShellCmdlets\ODataPowerShellSDKCmdletBase.cs" />
-    <Compile Include="PowerShellCmdlets\Utility\UtilCmdlets.cs" />
-    <Compile Include="PowerShellCmdlets\Generated\DeviceAppManagement\MobileApps.cs" />
-    <Compile Include="PowerShellCmdlets\ODataPowerShellSDKCmdlet.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="**\*.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

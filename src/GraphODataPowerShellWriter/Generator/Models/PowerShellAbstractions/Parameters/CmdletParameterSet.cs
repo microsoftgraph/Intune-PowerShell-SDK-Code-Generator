@@ -43,34 +43,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         }
 
         /// <summary>
-        /// A safe accessor for parameters.
+        /// An accessor for parameters.
         /// </summary>
         /// <param name="parameterName">The parameter name</param>
-        /// <returns>The parameter if it exists, otherwise null.</returns>
+        /// <returns>The parameter.</returns>
         public CmdletParameter this[string parameterName]
         {
-            get
-            {
-                CmdletParameter result;
-                if (!string.IsNullOrWhiteSpace(parameterName) && this.Parameters.TryGetValue(parameterName, out result))
-                {
-                    return result;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-
-            private set
-            {
-                if (parameterName == null)
-                {
-                    throw new ArgumentNullException(nameof(parameterName));
-                }
-
-                this.Parameters[parameterName] = value;
-            }
+            get => this.Parameters[parameterName];
+            private set => this.Parameters[parameterName] = value;
         }
 
         /// <summary>

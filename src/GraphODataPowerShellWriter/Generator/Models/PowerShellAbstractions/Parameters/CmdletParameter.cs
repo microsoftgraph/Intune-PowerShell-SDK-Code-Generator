@@ -30,15 +30,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             {
                 throw new ArgumentNullException(nameof(parameterName), "Parameter name cannot be null or empty");
             }
-            if (parameterType == null)
-            {
-                throw new ArgumentNullException(nameof(parameterType));
-            }
 
             // TODO: Throw ArgumentException if the parameter name is a reserved/common name
 
             this.Name = parameterName;
-            this.Type = parameterType;
+            this.Type = parameterType ?? throw new ArgumentNullException(nameof(parameterType));
         }
     }
 }

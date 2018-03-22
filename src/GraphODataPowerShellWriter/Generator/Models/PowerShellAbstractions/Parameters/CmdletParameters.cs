@@ -110,7 +110,29 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             return this.ParameterSets.Remove(parameterSetName);
         }
 
-        // TODO: Add convenience methods to look up the list of parameter sets per parameter
+        /// <summary>
+        /// Maps each parameter to the list of parameter sets it belongs to.
+        /// </summary>
+        /// <returns>The mapping between parameters and parameter sets.</returns>
+        public IDictionary<CmdletParameter, ICollection<CmdletParameterSet>> GetParameters()
+        {
+            IDictionary<CmdletParameter, ICollection<CmdletParameterSet>> result = new Dictionary<CmdletParameter, ICollection<CmdletParameterSet>>();
+
+            foreach (CmdletParameterSet parameterSet in this)
+            {
+                foreach (CmdletParameter parameter in parameterSet)
+                {
+                    if (!result.ContainsKey(parameter))
+                    {
+                        result.Add(parameter, new List<CmdletParameterSet>());
+                    }
+
+                    result[parameter].Add(parameterSet);
+                }
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates over ParameterSets.

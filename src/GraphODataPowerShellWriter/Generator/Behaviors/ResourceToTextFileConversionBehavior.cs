@@ -2,8 +2,8 @@
 
 namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 {
-    using System;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
+    using Microsoft.Graph.GraphODataPowerShellSDKWriter.Templates;
     using Vipr.Core;
 
     /// <summary>
@@ -18,15 +18,16 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
         /// <returns>The generated TextFile.</returns>
         public static TextFile ToTextFile(this Resource resource)
         {
-            // For each cmdlet in the resource object, get the appropriate template
+            // Get the T4 template
+            ResourceTemplate resourceTemplate = new ResourceTemplate(resource);
 
-            // Populate each applicable cmdlet template using the cmdlet information
+            // Generate the output
+            string fileContents = resourceTemplate.TransformText();
 
-            // Get the generic template for a resource
+            // Create the TextFile object which will be sent back to Vipr
+            TextFile textFile = new TextFile(resource.OutputFilePath + ".cs", fileContents);
 
-            // Populate the generic template using the resource information and the populated cmdlet templates
-
-            throw new NotImplementedException();
+            return textFile;
         }
     }
 }

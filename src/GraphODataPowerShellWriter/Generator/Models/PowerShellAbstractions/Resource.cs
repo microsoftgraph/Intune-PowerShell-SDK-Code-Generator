@@ -13,6 +13,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
     {
         /// <summary>
         /// The relative path on the file system where cmdlet will be written.
+        /// This will not end with any file extension.
         /// </summary>
         public string OutputFilePath { get; }
 
@@ -41,65 +42,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         }
 
         /// <summary>
-        /// A safe accessor for cmdlets.  Returns null if a cmdlet with the given name does not exist.
+        /// An accessor for cmdlets.
         /// </summary>
         /// <param name="cmdletName">The cmdlet name</param>
-        /// <returns>The cmdlet if it exists, otherwise null.</returns>
+        /// <returns>The cmdlet.</returns>
         public Cmdlet this[string cmdletName]
         {
-            get
-            {
-                Cmdlet result;
-                if (!string.IsNullOrWhiteSpace(cmdletName) && this._cmdlets.TryGetValue(cmdletName, out result))
-                {
-                    return result;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-
-            private set
-            {
-                if (cmdletName == null)
-                {
-                    throw new ArgumentNullException(nameof(cmdletName));
-                }
-
-                this._cmdlets[cmdletName] = value;
-            }
-        }
-
-        /// <summary>
-        /// A safe accessor for cmdlets.
-        /// </summary>
-        /// <param name="cmdletName">The cmdlet name</param>
-        /// <returns>The cmdlet if it exists, otherwise null.</returns>
-        public Cmdlet this[CmdletName cmdletName]
-        {
-            get
-            {
-                Cmdlet result;
-                if (cmdletName != null && this._cmdlets.TryGetValue(cmdletName.ToString(), out result))
-                {
-                    return result;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-
-            private set
-            {
-                if (cmdletName == null)
-                {
-                    throw new ArgumentNullException(nameof(cmdletName));
-                }
-
-                this._cmdlets[cmdletName.ToString()] = value;
-            }
+            get => _cmdlets[cmdletName];
+            set => _cmdlets[cmdletName] = value;
         }
 
         /// <summary>
@@ -175,7 +125,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
                 throw new ArgumentException($"Cmdlet with the name {cmdlet.Name.ToString()} already exists", nameof(cmdlet));
             }
 
-            this[cmdlet.Name.ToString()] = cmdlet;
+            this[cmdlet.Name] = cmdlet;
         }
 
         /// <summary>

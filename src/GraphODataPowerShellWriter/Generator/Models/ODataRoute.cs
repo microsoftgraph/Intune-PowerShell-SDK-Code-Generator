@@ -4,7 +4,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
+    using Inflector;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils;
     using Vipr.Core.CodeModel;
 
@@ -61,22 +61,22 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         }
 
         /// <summary>
-        /// Generates the string OData route.  It will have neither a leading slash nor trailing slash.
+        /// Generates the OData route string with ID placeholders.
+        /// It will have neither a leading slash nor trailing slash.
         /// </summary>
-        /// <param name="includeIdPlaceholders">Whether or not to include the ID placeholders in the route</param>
         /// <returns>The OData route.</returns>
-        public string ToString(bool includeIdPlaceholders)
+        public string ToODataRouteString()
         {
             IList<string> segments = new List<string>();
             OdcmProperty lastSegment = this.Segments.Last();
             foreach (OdcmProperty property in this.Segments)
             {
                 // Add this node to the route
-                segments.Add($"{property.Name}");
+                segments.Add(property.Name);
 
                 // If this segment requires an ID, add it to the route
                 string idParameter;
-                if (includeIdPlaceholders && this._idParameters.TryGetValue(property, out idParameter))
+                if (this._idParameters.TryGetValue(property, out idParameter))
                 {
                     segments.Add($"{{{idParameter}}}");
                 }
@@ -86,12 +86,31 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         }
 
         /// <summary>
-        /// Generates the string OData route.
+        /// Generates the relative file path string for the file that should be generated.
+        /// It will have neither a leading slash nor trailing slash.
+        /// </summary>
+        /// <returns>The relative file path.</returns>
+        public string ToRelativeFilePathString()
+        {
+            IList<string> segments = new List<string>();
+            OdcmProperty lastSegment = this.Segments.Last();
+            foreach (OdcmProperty property in this.Segments)
+            {
+                // Add this node to the route
+                string singularName = property.Name.Singularize() ?? property.Name;
+                segments.Add(singularName.Pascalize());
+            }
+
+            return string.Join("/", segments);
+        }
+
+        /// <summary>
+        /// Generates the string OData route by calling <see cref="ToODataRouteString"/>.
         /// </summary>
         /// <returns>The OData route with ID placeholders.</returns>
         public override string ToString()
         {
-            return this.ToString(true);
+            return this.ToODataRouteString();
         }
     }
 }

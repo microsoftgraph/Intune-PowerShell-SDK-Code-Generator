@@ -10,7 +10,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     public class GetMobileApp : ODataGetOrSearchPowerShellSDKCmdlet
     {
         public const string CmdletVerb = VerbsCommon.Get;
-        public const string CmdletNoun = "IntuneMobileApp";
+        public const string CmdletNoun = "MobileApp";
 
         [Parameter(ParameterSetName = ParameterSetGet, Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
         public string id { get; set; }
@@ -29,7 +29,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     //public class UpdateGraphMobileApp : ODataPowerShellSDKCmdlet
     //{
     //    public const string CmdletVerb = VerbsData.Update;
-    //    public const string CmdletNoun = "IntuneMobileApp";
+    //    public const string CmdletNoun = "MobileApp";
     //    [Parameter(Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
     //    [ValidateNotNullOrEmpty]
     //    public string id { get; set; }
@@ -54,10 +54,10 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     [Cmdlet(
         CmdletVerb, CmdletNoun,
         ConfirmImpact = ConfirmImpact.High)]
-    public class RemoveMobileApp : ODataGetPowerShellSDKCmdlet
+    public class RemoveMobileApp : ODataDeletePowerShellSDKCmdlet
     {
         public const string CmdletVerb = VerbsCommon.Remove;
-        public const string CmdletNoun = "IntuneMobileApp";
+        public const string CmdletNoun = "MobileApp";
 
         [Parameter(Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
         [ValidateNotNullOrEmpty]

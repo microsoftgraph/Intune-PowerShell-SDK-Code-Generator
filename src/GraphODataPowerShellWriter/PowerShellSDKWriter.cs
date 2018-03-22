@@ -28,9 +28,9 @@ namespace GraphODataPowerShellTemplateWriter
         {
             //IEnumerable<TextFile> generated =  GenerateTestOutput_Simple(model);
             //IEnumerable<TextFile> generated = GenerateTestOutput_Routes(model);
-            IEnumerable<TextFile> generated = GenerateTestOutput_Resources(model);
+            //IEnumerable<TextFile> generated = GenerateTestOutput_Resources(model);
 
-            //IEnumerable<TextFile> generated =  GeneratePowerShellSDK(model);
+            IEnumerable<TextFile> generated =  GeneratePowerShellSDK(model);
 
             return generated;
         }
