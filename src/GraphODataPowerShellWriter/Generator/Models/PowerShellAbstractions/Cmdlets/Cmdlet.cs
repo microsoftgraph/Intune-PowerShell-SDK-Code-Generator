@@ -23,7 +23,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// The impact level of this cmdlet.
         /// This corresponds to the "ConfirmImpact" enum in the System.Management.Automation assembly.
         /// </summary>
-        public CmdletImpactLevel ImpactLevel { get; }
+        public CmdletImpactLevel? ImpactLevel { get; set; }
 
         /// <summary>
         /// The HTTP method to be used when making the call.
@@ -47,13 +47,17 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public CmdletParameterSets ParameterSets { get; } = new CmdletParameterSets();
 
         /// <summary>
+        /// Convenience method for getting the default parameter set.
+        /// </summary>
+        public CmdletParameterSet GetDefaultParameterSet() => ParameterSets.DefaultParameterSet;
+
+        /// <summary>
         /// Creates a new representation of a Graph SDK cmdlet.
         /// </summary>
         /// <param name="cmdletName">The name of the cmdlet</param>
-        public Cmdlet(CmdletName cmdletName, CmdletImpactLevel cmdletImpactLevel)
+        public Cmdlet(CmdletName cmdletName)
         {
             this.Name = cmdletName ?? throw new ArgumentNullException(nameof(cmdletName));
-            this.ImpactLevel = cmdletImpactLevel;
         }
     }
 }

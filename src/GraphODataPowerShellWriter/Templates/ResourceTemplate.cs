@@ -41,50 +41,70 @@ foreach (Cmdlet cmdlet in resource.Cmdlets)
             
             #line default
             #line hidden
-            this.Write("\r\n    [Cmdlet(\r\n        CmdletVerb, CmdletNoun,\r\n        ConfirmImpact = ");
+            this.Write("\r\n    [Cmdlet(\r\n        \"");
             
-            #line 19 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture((int)cmdlet.ImpactLevel));
-            
-            #line default
-            #line hidden
-            this.Write("\r\n    )]\r\n    public class ");
-            
-            #line 21 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
+            #line 18 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(cmdlet.Name.Verb));
             
             #line default
             #line hidden
+            this.Write("\", \"");
             
-            #line 21 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
+            #line 18 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(cmdlet.Name.Noun));
+            
+            #line default
+            #line hidden
+            this.Write("\",\r\n");
+            
+            #line 19 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
+
+    if (cmdlet.ImpactLevel != null)
+    {
+
+            
+            #line default
+            #line hidden
+            this.Write("        ConfirmImpact = (ConfirmImpact)");
+            
+            #line 23 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture((int)cmdlet.ImpactLevel));
+            
+            #line default
+            #line hidden
+            this.Write("\r\n");
+            
+            #line 24 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
+
+    }
+
+            
+            #line default
+            #line hidden
+            this.Write("    )]\r\n    public class ");
+            
+            #line 28 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(cmdlet.Name.Verb));
+            
+            #line default
+            #line hidden
+            this.Write("_");
+            
+            #line 28 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(cmdlet.Name.Noun));
             
             #line default
             #line hidden
             this.Write(" : ");
             
-            #line 21 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
+            #line 28 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(cmdlet.BaseType));
             
             #line default
             #line hidden
-            this.Write("\r\n    {\r\n        public const string CmdletVerb = \"");
+            this.Write("\r\n    {\r\n");
             
-            #line 23 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(cmdlet.Name.Verb));
-            
-            #line default
-            #line hidden
-            this.Write("\";\r\n        public const string CmdletNoun = \"");
-            
-            #line 24 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(cmdlet.Name.Noun));
-            
-            #line default
-            #line hidden
-            this.Write("\";\r\n\r\n");
-            
-            #line 26 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
+            #line 30 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
 
     IDictionary<CmdletParameter, ICollection<CmdletParameterSet>> parameters = cmdlet.ParameterSets.GetParameters();
     foreach (KeyValuePair<CmdletParameter, ICollection<CmdletParameterSet>> entry in parameters)
@@ -95,40 +115,59 @@ foreach (Cmdlet cmdlet in resource.Cmdlets)
             
             #line default
             #line hidden
-            this.Write("        [Parameter(\r\n\t\t\tParameterSetName = \"");
+            this.Write("        [Parameter(\r\n            Mandatory = ");
             
-            #line 34 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(parameterSets.First().Name));
-            
-            #line default
-            #line hidden
-            this.Write("\",\r\n\t\t\tMandatory = ");
-            
-            #line 35 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
+            #line 38 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(parameter.IsMandatory.ToString().ToLower()));
             
             #line default
             #line hidden
-            this.Write(",\r\n\t\t\tValueFromPipeline = true, ValueFromPipelineByPropertyName = true\r\n\t\t)]\r\n   " +
-                    "     public ");
+            this.Write(",\r\n");
             
-            #line 38 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
+            #line 39 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
+
+        if (parameterSets.First().Name != null)
+        {
+
+            
+            #line default
+            #line hidden
+            this.Write("            ParameterSetName = \"");
+            
+            #line 43 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(parameterSets.First().Name));
+            
+            #line default
+            #line hidden
+            this.Write("\",\r\n");
+            
+            #line 44 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
+
+        } // IF parameter name
+
+            
+            #line default
+            #line hidden
+            this.Write("            ValueFromPipeline = true, ValueFromPipelineByPropertyName = true\r\n   " +
+                    "     )]\r\n        public ");
+            
+            #line 49 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(parameter.Type.FullName));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 38 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
+            #line 49 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(parameter.Name));
             
             #line default
             #line hidden
             this.Write(" { get; set; }\r\n\r\n");
             
-            #line 40 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
+            #line 51 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
 
-    }
+    } // FOREACH parameter
 
             
             #line default
@@ -136,16 +175,16 @@ foreach (Cmdlet cmdlet in resource.Cmdlets)
             this.Write("        internal override string GetResourcePath()\r\n        {\r\n            return" +
                     " $\"");
             
-            #line 45 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
+            #line 56 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(cmdlet.CallUrl));
             
             #line default
             #line hidden
             this.Write("\";\r\n        }\r\n    }\r\n");
             
-            #line 48 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
+            #line 59 "H:\msgraph\Intune-PowerShell-cmdlets\src\GraphODataPowerShellWriter\Templates\ResourceTemplate.tt"
 
-} // Loop per cmdlet
+} // FOREACH cmdlet
 
             
             #line default

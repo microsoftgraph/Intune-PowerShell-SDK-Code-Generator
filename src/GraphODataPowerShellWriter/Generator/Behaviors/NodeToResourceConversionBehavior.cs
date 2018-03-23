@@ -104,9 +104,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
         private static Cmdlet CreateGetCmdlet(this OdcmProperty property, ODataRoute oDataRoute)
         {
-            Cmdlet result = new Cmdlet(new CmdletName("Get", property.GetCmdletName()), CmdletImpactLevel.Low)
+            Cmdlet result = new Cmdlet(new CmdletName("Get", oDataRoute.ToCmdletNameString()))
             {
                 HttpMethod = "GET",
+                ImpactLevel = CmdletImpactLevel.Low,
             };
 
             // Check whether this route represents a single resource or an enumeration
@@ -135,15 +136,22 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 result.BaseType = CmdletBaseTypes.Get;
             }
 
+            // Add properties to represent the ID placeholders in the URL
+            foreach (string idParameterName in oDataRoute.IdParameters)
+            {
+                result.GetDefaultParameterSet().Add(new CmdletParameter(idParameterName, typeof(string)));
+            }
+
             return result;
         }
 
         private static Cmdlet CreateDeleteCmdlet(this OdcmProperty property, ODataRoute oDataRoute)
         {
-            Cmdlet result = new Cmdlet(new CmdletName("Remove", property.GetCmdletName()), CmdletImpactLevel.High)
+            Cmdlet result = new Cmdlet(new CmdletName("Remove", oDataRoute.ToCmdletNameString()))
             {
                 HttpMethod = "DELETE",
                 BaseType = CmdletBaseTypes.Delete,
+                ImpactLevel = CmdletImpactLevel.High,
             };
 
             // Check whether this route represents a single resource or an enumeration
@@ -160,15 +168,25 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 result.CallUrl = oDataRouteString;
             }
 
+            // Add properties to represent the ID placeholders in the URL
+            foreach (string idParameterName in oDataRoute.IdParameters)
+            {
+                result.GetDefaultParameterSet().Add(new CmdletParameter(idParameterName, typeof(string)));
+            }
+
             return result;
         }
 
-        private static string GetCmdletName(this OdcmProperty property)
+        private static string GetCmdletName(this OdcmProperty property, ODataRoute oDataRoute)
         {
-            string result = property.Name.Singularize() ?? property.Name;
-            result = result.Pascalize();
+            IList<string> nameParts = new List<string>();
+            foreach (OdcmProperty segment in oDataRoute.Segments)
+            {
+                string result = property.Name.Singularize() ?? property.Name;
+                result = result.Pascalize();
+            }
 
-            return result;
+            return string.Join("_", nameParts);
         }
     }
 }

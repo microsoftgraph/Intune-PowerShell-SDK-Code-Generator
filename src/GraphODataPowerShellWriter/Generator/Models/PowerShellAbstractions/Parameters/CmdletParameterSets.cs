@@ -5,6 +5,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
+    using Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils;
 
     /// <summary>
     /// A collection of parameter sets for a PowerShell cmdlet.
@@ -13,7 +15,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
     {
         private IDictionary<string, CmdletParameterSet> ParameterSets { get; } = new Dictionary<string, CmdletParameterSet>();
 
-        public CmdletParameterSet DefaultParameterSet => this.Get(CmdletParameterSet.DefaultParameterSetName);
+        public CmdletParameterSet DefaultParameterSet { get; }
 
         /// <summary>
         /// Creates a new CmdletParameters instance.
@@ -21,14 +23,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public CmdletParameterSets()
         {
             // All Cmdlets must have the default parameter set
-            this.Add(new CmdletParameterSet());
+            this.DefaultParameterSet = new CmdletParameterSet();
         }
 
         /// <summary>
-        /// A safe accessor for parameter sets.
+        /// An accessor for parameter sets.
         /// </summary>
         /// <param name="parameterSetName">The parameter set name</param>
-        /// <returns>The parameter set if it exists, otherwise null.</returns>
+        /// <returns>The parameter set.</returns>
         public CmdletParameterSet this[string parameterSetName] => this.Get(parameterSetName);
 
         /// <summary>
@@ -95,16 +97,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <param name="parameterSetName">The name of the parameter set</param>
         /// <returns>True if the parameter set was successfully removed, otherwise false</returns>
         /// <exception cref="ArgumentNullException">If the <paramref name="parameterSetName"/> is null</exception>
-        /// <exception cref="ArgumentException">If the <paramref name="parameterSetName"/> is equal to <see cref="CmdletParameterSet.DefaultParameterSetName"/></exception>
         public bool Remove(string parameterSetName)
         {
             if (parameterSetName == null)
             {
                 throw new ArgumentNullException(nameof(parameterSetName));
-            }
-            if (parameterSetName == CmdletParameterSet.DefaultParameterSetName)
-            {
-                throw new ArgumentException($"Cannot remove the default parameter set '{CmdletParameterSet.DefaultParameterSetName}'");
             }
 
             return this.ParameterSets.Remove(parameterSetName);
@@ -135,12 +132,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates over ParameterSets.
+        /// Returns an enumerator that iterates over all ParameterSets, including the default parameter set.
         /// </summary>
         /// <returns>The enumerator</returns>
         public IEnumerator<CmdletParameterSet> GetEnumerator()
         {
-            return this.ParameterSets.Values.GetEnumerator();
+            return this.DefaultParameterSet.SingleObjectAsEnumerable()
+                .Concat(this.ParameterSets.Values)
+                .GetEnumerator();
         }
 
         /// <summary>
@@ -149,7 +148,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <returns>The enumerator</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.ParameterSets.Values.GetEnumerator();
+            return this.GetEnumerator();
         }
     }
 }

@@ -62,10 +62,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Microsoft.PowerShell.5.ReferenceAssemblies.1.1.0\lib\net4\System.Management.Automation.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -89,7 +85,7 @@
     <Compile Include="Generator\Models\PowerShellAbstractions\Cmdlets\CmdletName.cs" />
     <Compile Include="Generator\Models\PowerShellAbstractions\Resource.cs" />
     <Compile Include="Generator\Models\PowerShellAbstractions\Parameters\CmdletParameter.cs" />
-    <Compile Include="Generator\Models\PowerShellAbstractions\Parameters\CmdletParameters.cs" />
+    <Compile Include="Generator\Models\PowerShellAbstractions\Parameters\CmdletParameterSets.cs" />
     <Compile Include="Generator\Models\PowerShellAbstractions\Parameters\CmdletParameterSet.cs" />
     <Compile Include="Generator\Models\PowerShellAbstractions\Cmdlets\Cmdlet.cs" />
     <Content Include="Templates\ResourceTemplate.tt">
@@ -102,6 +98,7 @@
       <DependentUpon>ResourceTemplate.tt</DependentUpon>
     </Compile>
     <Compile Include="Templates\ResourceTemplateCode.cs" />
+    <Compile Include="Utils\EnumerableUtils.cs" />
     <Compile Include="Utils\OdcmUtils.cs" />
     <Compile Include="Utils\StringUtils.cs" />
   </ItemGroup>

@@ -68,7 +68,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public string ToODataRouteString()
         {
             IList<string> segments = new List<string>();
-            OdcmProperty lastSegment = this.Segments.Last();
             foreach (OdcmProperty property in this.Segments)
             {
                 // Add this node to the route
@@ -92,16 +91,26 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <returns>The relative file path.</returns>
         public string ToRelativeFilePathString()
         {
-            IList<string> segments = new List<string>();
-            OdcmProperty lastSegment = this.Segments.Last();
-            foreach (OdcmProperty property in this.Segments)
-            {
-                // Add this node to the route
-                string singularName = property.Name.Singularize() ?? property.Name;
-                segments.Add(singularName.Pascalize());
-            }
+            IEnumerable<string> segments = this.Segments
+                .Select(property => this.ConvertPropertyNameToSingularPascalCase(property.Name));
 
-            return string.Join("/", segments);
+            string result = string.Join("/", segments);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Generates a cmdlet name for the resource that can be found at the given ODataRoute.
+        /// </summary>
+        /// <returns>The cmdlet name.</returns>
+        public string ToCmdletNameString()
+        {
+            IEnumerable<string> segments = this.Segments
+                .Select(property => this.ConvertPropertyNameToSingularPascalCase(property.Name));
+
+            string result = string.Join("_", segments);
+
+            return result;
         }
 
         /// <summary>
@@ -111,6 +120,17 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public override string ToString()
         {
             return this.ToODataRouteString();
+        }
+
+        /// <summary>
+        /// Converts a property name to singular and then to pascal case.
+        /// </summary>
+        /// <param name="propertyName">The property name</param>
+        /// <returns>The singular pascal case property name.</returns>
+        private string ConvertPropertyNameToSingularPascalCase(string propertyName)
+        {
+            string singularName = propertyName.Singularize() ?? propertyName;
+            return singularName.Pascalize();
         }
     }
 }

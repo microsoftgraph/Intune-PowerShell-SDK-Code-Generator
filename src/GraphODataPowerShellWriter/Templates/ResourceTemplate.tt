@@ -15,14 +15,18 @@ foreach (Cmdlet cmdlet in resource.Cmdlets)
 #>
 
     [Cmdlet(
-        CmdletVerb, CmdletNoun,
-        ConfirmImpact = <#= (int)cmdlet.ImpactLevel #>
-    )]
-    public class <#= cmdlet.Name.Verb #><#= cmdlet.Name.Noun #> : <#= cmdlet.BaseType #>
+        "<#= cmdlet.Name.Verb #>", "<#= cmdlet.Name.Noun #>",
+<#
+    if (cmdlet.ImpactLevel != null)
     {
-        public const string CmdletVerb = "<#= cmdlet.Name.Verb #>";
-        public const string CmdletNoun = "<#= cmdlet.Name.Noun #>";
-
+#>
+        ConfirmImpact = (ConfirmImpact)<#= (int)cmdlet.ImpactLevel #>
+<#
+    }
+#>
+    )]
+    public class <#= cmdlet.Name.Verb #>_<#= cmdlet.Name.Noun #> : <#= cmdlet.BaseType #>
+    {
 <#
     IDictionary<CmdletParameter, ICollection<CmdletParameterSet>> parameters = cmdlet.ParameterSets.GetParameters();
     foreach (KeyValuePair<CmdletParameter, ICollection<CmdletParameterSet>> entry in parameters)
@@ -31,14 +35,21 @@ foreach (Cmdlet cmdlet in resource.Cmdlets)
         ICollection<CmdletParameterSet> parameterSets = entry.Value;
 #>
         [Parameter(
-			ParameterSetName = "<#= parameterSets.First().Name #>",
-			Mandatory = <#= parameter.IsMandatory.ToString().ToLower() #>,
-			ValueFromPipeline = true, ValueFromPipelineByPropertyName = true
-		)]
+            Mandatory = <#= parameter.IsMandatory.ToString().ToLower() #>,
+<#
+        if (parameterSets.First().Name != null)
+        {
+#>
+            ParameterSetName = "<#= parameterSets.First().Name #>",
+<#
+        } // IF parameter name
+#>
+            ValueFromPipeline = true, ValueFromPipelineByPropertyName = true
+        )]
         public <#= parameter.Type.FullName #> <#= parameter.Name #> { get; set; }
 
 <#
-    }
+    } // FOREACH parameter
 #>
         internal override string GetResourcePath()
         {
@@ -46,6 +57,6 @@ foreach (Cmdlet cmdlet in resource.Cmdlets)
         }
     }
 <#
-} // Loop per cmdlet
+} // FOREACH cmdlet
 #>
 }

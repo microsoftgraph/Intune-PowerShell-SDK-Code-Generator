@@ -35,7 +35,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         {
             if (string.IsNullOrWhiteSpace(outputFilePath))
             {
-                throw new ArgumentException("Output file path cannot be null or whitespace", nameof(outputFilePath));
+                throw new ArgumentException("The output file path cannot be null or whitespace", nameof(outputFilePath));
             }
 
             this.OutputFilePath = outputFilePath;

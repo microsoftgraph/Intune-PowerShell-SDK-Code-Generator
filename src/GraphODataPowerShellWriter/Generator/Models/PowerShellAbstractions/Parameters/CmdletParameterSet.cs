@@ -5,7 +5,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Management.Automation;
 
     /// <summary>
     /// Represents a parameter set for a PowerShell cmdlet.
@@ -13,24 +12,21 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
     public class CmdletParameterSet : IEnumerable<CmdletParameter>
     {
         /// <summary>
-        /// The name of the parameter set.
+        /// The name of the parameter set.  This can only be null for the default parameter set.
         /// </summary>
         public string Name { get; private set; }
-
-        /// <summary>
-        /// The default parameter set name.  Parameters in this parameter set will be available in all parameter sets.
-        /// </summary>
-        public const string DefaultParameterSetName = ParameterAttribute.AllParameterSets;
 
         private IDictionary<string, CmdletParameter> Parameters { get; } = new Dictionary<string, CmdletParameter>();
 
         /// <summary>
-        /// Creates a new parameter set for the default parameter set (i.e. with the name defined in <see cref="DefaultParameterSetName"/>).
+        /// Creates a new default parameter set (i.e. its name is set to null).
+        /// This should only ever be called by the <see cref="CmdletParameterSets"/> class.
         /// </summary>
         public CmdletParameterSet()
         {
-            this.Name = DefaultParameterSetName;
+            this.Name = null;
         }
+
 
         public CmdletParameterSet(string parameterSetName)
         {
