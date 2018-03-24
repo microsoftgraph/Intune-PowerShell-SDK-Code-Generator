@@ -3,6 +3,7 @@
 namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 {
     using System;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Represents a PowerShell cmdlet's parameter.
@@ -23,6 +24,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// Whether or not this is a required parameter.
         /// </summary>
         public bool IsMandatory { get; }
+
+        public ICollection<CmdletParameterAttribute> Attributes { get; } = new List<CmdletParameterAttribute>();
 
         /// <summary>
         /// Creates a new cmdlet parameter.

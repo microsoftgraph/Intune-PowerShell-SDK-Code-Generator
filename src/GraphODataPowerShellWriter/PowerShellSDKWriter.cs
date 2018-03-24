@@ -46,7 +46,7 @@ namespace GraphODataPowerShellTemplateWriter
             foreach (OdcmNode node in model.ConvertToOdcmNodes())
             {
                 // Convert the route into an abstract representation of the PowerShell cmdlets
-                Resource resource = node.ConvertToResource();
+                Resource resource = node.ConvertToResource(@"PowerShellCmdlets\Generated");
 
                 // Generate the text file by inserting data from the intermediate type into templates
                 TextFile outputFile = resource.ToTextFile();

@@ -19,7 +19,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
         /// </summary>
         /// <param name="node">The ODCM node which represents the OData route</param>
         /// <returns>The resource that was generated from the OData route.</returns>
-        public static Resource ConvertToResource(this OdcmNode node)
+        public static Resource ConvertToResource(this OdcmNode node, string pathPrefix = "")
         {
             if (node == null)
             {
@@ -33,7 +33,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             ODataRoute oDataRoute = new ODataRoute(node);
 
             // Create file system path
-            string fileSystemPath = oDataRoute.ToRelativeFilePathString();
+            string fileSystemPath = $"{pathPrefix.Trim('\\')}\\{oDataRoute.ToRelativeFilePathString()}";
 
             // Create a resource
             Resource resource = new Resource(fileSystemPath);
@@ -114,17 +114,19 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             string oDataRouteString = oDataRoute.ToODataRouteString();
             if (property.IsEnumeration())
             {
+                // Create ID parameter
+                string idParameterName = "id";
+                CmdletParameter parameter = new CmdletParameter(idParameterName, typeof(string));
+                parameter.Attributes.Add(CmdletParameterAttribute.ValidateNotNullOrEmpty);
+
                 // Create parameter set
                 CmdletParameterSet parameterSet = new CmdletParameterSet("Get");
-
-                // Add ID parameter
-                string idParameterName = "id";
-                parameterSet.Add(new CmdletParameter(idParameterName, typeof(string)));
+                parameterSet.Add(parameter);
 
                 // Add parameter set to cmdlet
                 result.ParameterSets.Add(parameterSet);
 
-                // Set the call URL to use this parameter
+                // Set the URL to use this parameter
                 result.CallUrl = $"{oDataRouteString}/{{{idParameterName} ?? string.Empty}}";
 
                 // Since the property is an enumeration, allow "search" as well as "get"
@@ -137,10 +139,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             }
 
             // Add properties to represent the ID placeholders in the URL
-            foreach (string idParameterName in oDataRoute.IdParameters)
-            {
-                result.GetDefaultParameterSet().Add(new CmdletParameter(idParameterName, typeof(string)));
-            }
+            result.AddIdParameters(oDataRoute);
 
             return result;
         }
@@ -160,7 +159,17 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             {
                 // Add ID parameter
                 string idParameterName = "id";
-                result.ParameterSets.DefaultParameterSet.Add(new CmdletParameter(idParameterName, typeof(string)));
+                CmdletParameter parameter = new CmdletParameter(idParameterName, typeof(string));
+                parameter.Attributes.Add(CmdletParameterAttribute.ValidateNotNullOrEmpty);
+
+                // Create parameter set
+                CmdletParameterSet parameterSet = new CmdletParameterSet("Get");
+                parameterSet.Add(parameter);
+
+                // Add parameter set to cmdlet
+                result.ParameterSets.Add(parameterSet);
+
+                // Set the URL to use this parameter
                 result.CallUrl = $"{oDataRouteString}/{{{idParameterName}}}";
             }
             else
@@ -169,12 +178,19 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             }
 
             // Add properties to represent the ID placeholders in the URL
-            foreach (string idParameterName in oDataRoute.IdParameters)
-            {
-                result.GetDefaultParameterSet().Add(new CmdletParameter(idParameterName, typeof(string)));
-            }
+            result.AddIdParameters(oDataRoute);
 
             return result;
+        }
+
+        private static void AddIdParameters(this Cmdlet cmdlet, ODataRoute oDataRoute)
+        {
+            foreach (string idParameterName in oDataRoute.IdParameters)
+            {
+                CmdletParameter idParameter = new CmdletParameter(idParameterName, typeof(string));
+                idParameter.Attributes.Add(CmdletParameterAttribute.ValidateNotNullOrEmpty);
+                cmdlet.GetDefaultParameterSet().Add(idParameter);
+            }
         }
 
         private static string GetCmdletName(this OdcmProperty property, ODataRoute oDataRoute)

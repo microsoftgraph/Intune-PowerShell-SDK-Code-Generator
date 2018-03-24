@@ -39,7 +39,7 @@
     <OutputPath>$(MSBuildProjectDirectory)\bin\Debug\</OutputPath>
     <StartAction>Program</StartAction>
     <StartProgram>$(OutputPath)Vipr.exe</StartProgram>
-    <StartArguments>"$(SolutionDir)Test Graph Schemas\v1.0-20180222.csdl" --writer="GraphODataPowerShellSDKWriter"</StartArguments>
+    <StartArguments>"$(SolutionDir)..\..\Test Graph Schemas\v1.0-20180222 - deviceManagement, deviceAppManagement.csdl" --writer="GraphODataPowerShellSDKWriter"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -51,7 +51,7 @@
     <OutputPath>$(MSBuildProjectDirectory)\bin\Release\</OutputPath>
     <StartAction>Program</StartAction>
     <StartProgram>$(OutputPath)Vipr.exe</StartProgram>
-    <StartArguments>"$(SolutionDir)Test Graph Schemas\v1.0-20180222.csdl" --writer="GraphODataPowerShellSDKWriter"</StartArguments>
+    <StartArguments>"$(SolutionDir)..\..\Test Graph Schemas\v1.0-20180222 - deviceManagement, deviceAppManagement.csdl" --writer="GraphODataPowerShellSDKWriter"</StartArguments>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -69,7 +69,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="Vipr.Core">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(SolutionDir)submodules\vipr\src\Core\Vipr.Core\bin\$(Configuration)\Vipr.Core.dll</HintPath>
+      <HintPath>$(SolutionDir)..\..\submodules\vipr\src\Core\Vipr.Core\bin\$(Configuration)\Vipr.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -80,6 +80,7 @@
     <Compile Include="Generator\Models\OdcmNode.cs" />
     <Compile Include="Generator\Models\PowerShellAbstractions\Cmdlets\CmdletBaseTypes.cs" />
     <Compile Include="Generator\Models\PowerShellAbstractions\Cmdlets\CmdletImpactLevel.cs" />
+    <Compile Include="Generator\Models\PowerShellAbstractions\Parameters\CmdletParameterAttribute.cs" />
     <Compile Include="PowerShellSDKWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Generator\Models\PowerShellAbstractions\Cmdlets\CmdletName.cs" />
@@ -114,19 +115,26 @@
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
   </Target>
   <PropertyGroup Condition=" '$(OS)' != 'Unix' ">
-    <PreBuildEvent>"$(MSBuildBinPath)\msbuild.exe" /m /t:Build /p:Configuration=$(Configuration) "$(SolutionDir)\submodules\vipr\Vipr.sln"</PreBuildEvent>
+    <PreBuildEvent>"$(MSBuildBinPath)\msbuild.exe" /m /t:Build /p:Configuration=$(Configuration) "$(SolutionDir)..\..\submodules\vipr\Vipr.sln"</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(OS)' == 'Unix' ">
-    <PreBuildEvent>xbuild /t:build /p:Configuration=$(Configuration) "$(SolutionDir)submodules\vipr\Vipr.sln"</PreBuildEvent>
+    <PreBuildEvent>xbuild /t:build /p:Configuration=$(Configuration) "$(SolutionDir)..\..\submodules\vipr\Vipr.sln"</PreBuildEvent>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
-       Other similar extension points exist, see Microsoft.Common.targets.
+
   <Target Name="BeforeBuild">
-  </Target>-->
+    <RemoveDir Directories="$(TargetDir)" Condition="Exists('$(TargetDir)')" />
+  </Target>
   <Target Name="AfterBuild">
     <ItemGroup>
-      <VIPR_OUTPUT Include="$(SolutionDir)submodules\vipr\src\Core\Vipr\bin\$(Configuration)\**\*" />
+      <VIPR_OUTPUT Include="$(SolutionDir)..\..\submodules\vipr\src\Core\Vipr\bin\$(Configuration)\**\*" />
     </ItemGroup>
+    <ItemGroup>
+      <GENERATED_STRUCTURE Include="$(SolutionDir)..\PowerShellGraphSDK\**\*" />
+    </ItemGroup>
+    <PropertyGroup>
+      <TARGET_FOLDER>$(TargetDir)output\</TARGET_FOLDER>
+    </PropertyGroup>
     <Copy SourceFiles="@(VIPR_OUTPUT)" DestinationFolder="$(TargetDir)%(RecursiveDir)" />
+    <Copy SourceFiles="@(GENERATED_STRUCTURE)" DestinationFolder="$(TARGET_FOLDER)%(RecursiveDir)" />
   </Target>
 </Project>

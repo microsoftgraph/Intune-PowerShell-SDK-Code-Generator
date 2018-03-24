@@ -11,7 +11,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     using System.Management.Automation;
 <#
 foreach (Cmdlet cmdlet in resource.Cmdlets)
-{ // Loop per cmdlet
+{ // FOREACH cmdlet
 #>
 
     [Cmdlet(
@@ -20,7 +20,7 @@ foreach (Cmdlet cmdlet in resource.Cmdlets)
     if (cmdlet.ImpactLevel != null)
     {
 #>
-        ConfirmImpact = (ConfirmImpact)<#= (int)cmdlet.ImpactLevel #>
+        ConfirmImpact = ConfirmImpact.<#= cmdlet.ImpactLevel.ToString() #>
 <#
     }
 #>
@@ -30,7 +30,7 @@ foreach (Cmdlet cmdlet in resource.Cmdlets)
 <#
     IDictionary<CmdletParameter, ICollection<CmdletParameterSet>> parameters = cmdlet.ParameterSets.GetParameters();
     foreach (KeyValuePair<CmdletParameter, ICollection<CmdletParameterSet>> entry in parameters)
-    {
+    { // FOREACH parameter
         CmdletParameter parameter = entry.Key;
         ICollection<CmdletParameterSet> parameterSets = entry.Value;
 #>
@@ -46,6 +46,22 @@ foreach (Cmdlet cmdlet in resource.Cmdlets)
 #>
             ValueFromPipeline = true, ValueFromPipelineByPropertyName = true
         )]
+<#
+        foreach (CmdletParameterSet parameterSet in parameterSets.Skip(1))
+        { // FOREACH parameter set
+#>
+        [Parameter(ParameterSetName = "<#= parameterSet.Name #>")]
+<#
+        } // FOREACH parameter set
+#>
+<#
+        foreach (CmdletParameterAttribute attribute in parameter.Attributes)
+        { // FOREACH parameter attribute
+#>
+        [<#= attribute.Name #>(<#= string.Join(", ", attribute.Arguments) #>)]
+<#
+        } // FOREACH parameter attribute
+#>
         public <#= parameter.Type.FullName #> <#= parameter.Name #> { get; set; }
 
 <#
