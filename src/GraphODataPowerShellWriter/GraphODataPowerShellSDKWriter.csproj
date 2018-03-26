@@ -124,17 +124,19 @@
   <Target Name="BeforeBuild">
     <RemoveDir Directories="$(TargetDir)" Condition="Exists('$(TargetDir)')" />
   </Target>
+
   <Target Name="AfterBuild">
-    <ItemGroup>
-      <VIPR_OUTPUT Include="$(SolutionDir)..\..\submodules\vipr\src\Core\Vipr\bin\$(Configuration)\**\*" />
-    </ItemGroup>
-    <ItemGroup>
-      <GENERATED_STRUCTURE Include="$(SolutionDir)..\PowerShellGraphSDK\**\*" />
-    </ItemGroup>
     <PropertyGroup>
       <TARGET_FOLDER>$(TargetDir)output\</TARGET_FOLDER>
+      <GENERATED_FOLDER>$(TargetDir)output\PowerShellCmdlets\Generated</GENERATED_FOLDER>
     </PropertyGroup>
+    <ItemGroup>
+      <VIPR_OUTPUT Include="$(SolutionDir)..\..\submodules\vipr\src\Core\Vipr\bin\$(Configuration)\**\*" />
+      <OUTPUT_STRUCTURE Include="$(SolutionDir)..\PowerShellGraphSDK\**\*" />
+      <GENERATED_DIR Include="$(GENERATED_FOLDER)" />
+    </ItemGroup>
     <Copy SourceFiles="@(VIPR_OUTPUT)" DestinationFolder="$(TargetDir)%(RecursiveDir)" />
-    <Copy SourceFiles="@(GENERATED_STRUCTURE)" DestinationFolder="$(TARGET_FOLDER)%(RecursiveDir)" />
+    <Copy SourceFiles="@(OUTPUT_STRUCTURE)" DestinationFolder="$(TARGET_FOLDER)%(RecursiveDir)" />
+    <RemoveDir Directories="@(GENERATED_DIR)" Condition="Exists('$(GENERATED_FOLDER)')" />
   </Target>
 </Project>
