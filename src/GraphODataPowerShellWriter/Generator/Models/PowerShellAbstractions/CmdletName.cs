@@ -9,8 +9,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
     /// </summary>
     public class CmdletName
     {
-        public string Verb { get; private set; }
-        public string Noun { get; private set; }
+        public string Verb { get; }
+        public string Noun { get; }
 
         private readonly string _compiledString;
 

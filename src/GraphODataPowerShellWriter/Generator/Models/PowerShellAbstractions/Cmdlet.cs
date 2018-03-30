@@ -17,13 +17,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <summary>
         /// The base type of this cmdlet in the generated output.
         /// </summary>
-        public string BaseType { get; set; }
+        public CmdletOperationType BaseType { get; set; }
 
         /// <summary>
         /// The impact level of this cmdlet.
         /// This corresponds to the "ConfirmImpact" enum in the System.Management.Automation assembly.
         /// </summary>
-        public CmdletImpactLevel? ImpactLevel { get; set; }
+        public CmdletImpactLevel ImpactLevel { get; set; }
 
         /// <summary>
         /// The HTTP method to be used when making the call.
@@ -42,14 +42,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public string CallUrl { get; set; }
 
         /// <summary>
-        /// This cmdlet's parameter sets.
+        /// This cmdlet's parameter sets (including the default parameter set).
         /// </summary>
         public CmdletParameterSets ParameterSets { get; } = new CmdletParameterSets();
 
         /// <summary>
-        /// Convenience method for getting the default parameter set.
+        /// Convenience property for getting the default parameter set.
         /// </summary>
-        public CmdletParameterSet GetDefaultParameterSet() => ParameterSets.DefaultParameterSet;
+        public CmdletParameterSet DefaultParameterSet => ParameterSets.DefaultParameterSet;
 
         /// <summary>
         /// Creates a new representation of a Graph SDK cmdlet.

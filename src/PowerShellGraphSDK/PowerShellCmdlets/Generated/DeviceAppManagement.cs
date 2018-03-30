@@ -5,13 +5,10 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     using System.Management.Automation;
 
     [Cmdlet(
-        CmdletVerb, CmdletNoun,
+        "Get", "IntuneDeviceAppManagement",
         ConfirmImpact = ConfirmImpact.Low)]
     public class GetDeviceAppManagement : ODataGetPowerShellSDKCmdlet
     {
-        public const string CmdletVerb = VerbsCommon.Get;
-        public const string CmdletNoun = "IntuneDeviceAppManagement";
-
         internal override string GetResourcePath()
         {
             return "deviceAppManagement";

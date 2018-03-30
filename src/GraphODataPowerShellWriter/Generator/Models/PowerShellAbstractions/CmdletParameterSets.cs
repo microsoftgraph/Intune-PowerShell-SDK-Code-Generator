@@ -111,23 +111,27 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// Maps each parameter to the list of parameter sets it belongs to.
         /// </summary>
         /// <returns>The mapping between parameters and parameter sets.</returns>
-        public IDictionary<CmdletParameter, ICollection<CmdletParameterSet>> GetParameters()
+        public IReadOnlyDictionary<CmdletParameter, IEnumerable<CmdletParameterSet>> GetParameters()
         {
-            IDictionary<CmdletParameter, ICollection<CmdletParameterSet>> result = new Dictionary<CmdletParameter, ICollection<CmdletParameterSet>>();
+            IDictionary<CmdletParameter, ICollection<CmdletParameterSet>> dictionary = new Dictionary<CmdletParameter, ICollection<CmdletParameterSet>>();
 
             foreach (CmdletParameterSet parameterSet in this)
             {
                 foreach (CmdletParameter parameter in parameterSet)
                 {
-                    if (!result.ContainsKey(parameter))
+                    if (!dictionary.ContainsKey(parameter))
                     {
-                        result.Add(parameter, new List<CmdletParameterSet>());
+                        dictionary.Add(parameter, new List<CmdletParameterSet>());
                     }
 
-                    result[parameter].Add(parameterSet);
+                    dictionary[parameter].Add(parameterSet);
                 }
             }
 
+            // Make the parameter set lists read-only by using IEnumerable instead of ICollection
+            IReadOnlyDictionary<CmdletParameter, IEnumerable<CmdletParameterSet>> result = dictionary.ToDictionary(
+                entry => entry.Key,
+                entry => entry.Value.AsEnumerable());
             return result;
         }
 

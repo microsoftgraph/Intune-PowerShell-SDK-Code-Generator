@@ -20,20 +20,22 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// </summary>
         public Type Type { get; }
 
-        /// <summary>
-        /// Whether or not this is a required parameter.
-        /// </summary>
-        public bool IsMandatory { get; }
+        public bool Mandatory { get; set; }
 
-        public ICollection<CmdletParameterAttribute> Attributes { get; } = new List<CmdletParameterAttribute>();
+        public bool ValueFromPipeline { get; set; }
+
+        public bool ValueFromPipelineByPropertyName { get; set; }
+
+        public bool ValidateNotNull { get; set; }
+
+        public bool ValidateNotNullOrEmpty { get; set; }
 
         /// <summary>
         /// Creates a new cmdlet parameter.
         /// </summary>
         /// <param name="parameterName">The parameter name</param>
         /// <param name="parameterType">The type of the parameter</param>
-        /// <param name="isMandatory">Whether or not this parameter is mandatory for the parameter set it is in</param>
-        public CmdletParameter(string parameterName, Type parameterType, bool isMandatory = true)
+        public CmdletParameter(string parameterName, Type parameterType)
         {
             if (string.IsNullOrWhiteSpace(parameterName))
             {
@@ -44,7 +46,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 
             this.Name = parameterName;
             this.Type = parameterType ?? throw new ArgumentNullException(nameof(parameterType));
-            this.IsMandatory = isMandatory;
         }
     }
 }

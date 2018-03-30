@@ -100,10 +100,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         }
 
         /// <summary>
-        /// Generates a cmdlet name for the resource that can be found at the given ODataRoute.
+        /// Generates a cmdlet name's noun for the resource that can be found at the given ODataRoute.
         /// </summary>
         /// <returns>The cmdlet name.</returns>
-        public string ToCmdletNameString()
+        public string ToCmdletNameNounString()
         {
             IEnumerable<string> segments = this.Segments
                 .Select(property => this.ConvertPropertyNameToSingularPascalCase(property.Name));

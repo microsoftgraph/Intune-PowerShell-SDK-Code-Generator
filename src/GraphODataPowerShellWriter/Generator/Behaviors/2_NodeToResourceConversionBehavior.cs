@@ -4,7 +4,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 {
     using System;
     using System.Collections.Generic;
-    using Inflector;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils;
     using Vipr.Core.CodeModel;
@@ -104,7 +103,16 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
         private static Cmdlet CreateGetCmdlet(this OdcmProperty property, ODataRoute oDataRoute)
         {
-            Cmdlet result = new Cmdlet(new CmdletName("Get", oDataRoute.ToCmdletNameString()))
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
+            if (oDataRoute == null)
+            {
+                throw new ArgumentNullException(nameof(oDataRoute));
+            }
+
+            Cmdlet result = new Cmdlet(new CmdletName("Get", oDataRoute.ToCmdletNameNounString()))
             {
                 HttpMethod = "GET",
                 ImpactLevel = CmdletImpactLevel.Low,
@@ -116,11 +124,16 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             {
                 // Create ID parameter
                 string idParameterName = "id";
-                CmdletParameter parameter = new CmdletParameter(idParameterName, typeof(string));
-                parameter.Attributes.Add(CmdletParameterAttribute.ValidateNotNullOrEmpty);
+                CmdletParameter parameter = new CmdletParameter(idParameterName, typeof(string))
+                {
+                    Mandatory = true,
+                    ValueFromPipeline = true,
+                    ValueFromPipelineByPropertyName = true,
+                    ValidateNotNullOrEmpty = true,
+                };
 
                 // Create parameter set
-                CmdletParameterSet parameterSet = new CmdletParameterSet("Get");
+                CmdletParameterSet parameterSet = new CmdletParameterSet("Get") { parameter };
                 parameterSet.Add(parameter);
 
                 // Add parameter set to cmdlet
@@ -129,13 +142,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 // Set the URL to use this parameter
                 result.CallUrl = $"{oDataRouteString}/{{{idParameterName} ?? string.Empty}}";
 
-                // Since the property is an enumeration, allow "search" as well as "get"
-                result.BaseType = CmdletBaseTypes.GetOrSearch;
+                // Since the property is an enumeration, use the "search" base type
+                result.BaseType = CmdletOperationType.GetOrSearch;
             }
             else
             {
+                // This resource is not an enumeration, so use the "get" base type
                 result.CallUrl = oDataRouteString;
-                result.BaseType = CmdletBaseTypes.Get;
+                result.BaseType = CmdletOperationType.Get;
             }
 
             // Add properties to represent the ID placeholders in the URL
@@ -146,10 +160,19 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
         private static Cmdlet CreateDeleteCmdlet(this OdcmProperty property, ODataRoute oDataRoute)
         {
-            Cmdlet result = new Cmdlet(new CmdletName("Remove", oDataRoute.ToCmdletNameString()))
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
+            if (oDataRoute == null)
+            {
+                throw new ArgumentNullException(nameof(oDataRoute));
+            }
+
+            Cmdlet result = new Cmdlet(new CmdletName("Remove", oDataRoute.ToCmdletNameNounString()))
             {
                 HttpMethod = "DELETE",
-                BaseType = CmdletBaseTypes.Delete,
+                BaseType = CmdletOperationType.Delete,
                 ImpactLevel = CmdletImpactLevel.High,
             };
 
@@ -159,15 +182,16 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             {
                 // Add ID parameter
                 string idParameterName = "id";
-                CmdletParameter parameter = new CmdletParameter(idParameterName, typeof(string));
-                parameter.Attributes.Add(CmdletParameterAttribute.ValidateNotNullOrEmpty);
+                CmdletParameter idParameter = new CmdletParameter(idParameterName, typeof(string))
+                {
+                    Mandatory = true,
+                    ValueFromPipeline = true,
+                    ValueFromPipelineByPropertyName = true,
+                    ValidateNotNullOrEmpty = true,
+                };
 
-                // Create parameter set
-                CmdletParameterSet parameterSet = new CmdletParameterSet("Get");
-                parameterSet.Add(parameter);
-
-                // Add parameter set to cmdlet
-                result.ParameterSets.Add(parameterSet);
+                // Add parameter to default parameter set
+                result.DefaultParameterSet.Add(idParameter);
 
                 // Set the URL to use this parameter
                 result.CallUrl = $"{oDataRouteString}/{{{idParameterName}}}";
@@ -185,24 +209,24 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
         private static void AddIdParameters(this Cmdlet cmdlet, ODataRoute oDataRoute)
         {
+            if (cmdlet == null)
+            {
+                throw new ArgumentNullException(nameof(cmdlet));
+            }
+            if (oDataRoute == null)
+            {
+                throw new ArgumentNullException(nameof(oDataRoute));
+            }
+
             foreach (string idParameterName in oDataRoute.IdParameters)
             {
-                CmdletParameter idParameter = new CmdletParameter(idParameterName, typeof(string));
-                idParameter.Attributes.Add(CmdletParameterAttribute.ValidateNotNullOrEmpty);
-                cmdlet.GetDefaultParameterSet().Add(idParameter);
+                CmdletParameter idParameter = new CmdletParameter(idParameterName, typeof(string))
+                {
+                    Mandatory = true,
+                    ValidateNotNullOrEmpty = true,
+                };
+                cmdlet.DefaultParameterSet.Add(idParameter);
             }
-        }
-
-        private static string GetCmdletName(this OdcmProperty property, ODataRoute oDataRoute)
-        {
-            IList<string> nameParts = new List<string>();
-            foreach (OdcmProperty segment in oDataRoute.Segments)
-            {
-                string result = property.Name.Singularize() ?? property.Name;
-                result = result.Pascalize();
-            }
-
-            return string.Join("_", nameParts);
         }
     }
 }

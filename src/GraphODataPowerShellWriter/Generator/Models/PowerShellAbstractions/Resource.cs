@@ -3,19 +3,29 @@
 namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
 
     /// <summary>
-    /// An abstract representation of a C# file which contains a set of Graph PowerShell SDK cmdlets.
+    /// An abstract representation of a resource file which contains a set of Graph PowerShell SDK cmdlets.
     /// </summary>
-    public class Resource
+    public class Resource : ICollection<Cmdlet>
     {
         /// <summary>
         /// The relative path on the file system where cmdlet will be written.
         /// This will not end with any file extension.
         /// </summary>
-        public string OutputFilePath { get; }
+        public string RelativeFilePath { get; }
+
+        /// <summary>
+        /// The cmdlets that expose operations for this resource.
+        /// </summary>
+        public IEnumerable<Cmdlet> Cmdlets => _cmdlets.Values;
+
+        public int Count => this._cmdlets.Count;
+
+        public bool IsReadOnly => false;
 
         /// <summary>
         /// The set of cmdlets in a Dictionary format for fast lookup.
@@ -23,22 +33,17 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         private IDictionary<string, Cmdlet> _cmdlets { get; set; } = new Dictionary<string, Cmdlet>();
 
         /// <summary>
-        /// The cmdlets that expose operations for this resource.
-        /// </summary>
-        public IEnumerable<Cmdlet> Cmdlets => _cmdlets.Values;
-
-        /// <summary>
         /// Creates a new Resource object.
         /// </summary>
-        /// <param name="outputFilePath">The relative file path to use when writing this Resource as a file to disk</param>
-        public Resource(string outputFilePath)
+        /// <param name="relativeFilePath">The relative file path to use when writing this Resource as a file to disk</param>
+        public Resource(string relativeFilePath)
         {
-            if (string.IsNullOrWhiteSpace(outputFilePath))
+            if (string.IsNullOrWhiteSpace(relativeFilePath))
             {
-                throw new ArgumentException("The output file path cannot be null or whitespace", nameof(outputFilePath));
+                throw new ArgumentException("The output file path cannot be null or whitespace", nameof(relativeFilePath));
             }
 
-            this.OutputFilePath = outputFilePath;
+            this.RelativeFilePath = relativeFilePath;
         }
 
         /// <summary>
@@ -171,6 +176,39 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             }
 
             return this._cmdlets.Remove(cmdletName);
+        }
+
+        public void Clear()
+        {
+            this._cmdlets.Clear();
+        }
+
+        public bool Contains(Cmdlet item)
+        {
+            return this._cmdlets.ContainsKey(item?.Name)
+                && this._cmdlets[item.Name].Equals(item);
+        }
+
+        public void CopyTo(Cmdlet[] array, int arrayIndex)
+        {
+            this._cmdlets.Values.CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(Cmdlet cmdlet)
+        {
+            return this._cmdlets.ContainsKey(cmdlet?.Name)
+                && this._cmdlets[cmdlet.Name].Equals(cmdlet)
+                && this._cmdlets.Remove(cmdlet.Name);
+        }
+
+        public IEnumerator<Cmdlet> GetEnumerator()
+        {
+            return this._cmdlets.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this._cmdlets.Values.GetEnumerator();
         }
     }
 }

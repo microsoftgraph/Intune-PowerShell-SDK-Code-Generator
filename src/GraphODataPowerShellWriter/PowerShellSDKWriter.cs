@@ -48,8 +48,11 @@ namespace GraphODataPowerShellTemplateWriter
                 // Convert the route into an abstract representation of the PowerShell cmdlets
                 Resource resource = node.ConvertToResource(@"PowerShellCmdlets\Generated");
 
+                // Convert the resource into an abstract representation of the C# file
+                CSharpFile cSharpFile = resource.ToCSharpFile();
+
                 // Generate the text file by inserting data from the intermediate type into templates
-                TextFile outputFile = resource.ToTextFile();
+                TextFile outputFile = cSharpFile.ToTextFile();
 
                 // Return the generated file
                 yield return outputFile;
@@ -99,7 +102,7 @@ namespace GraphODataPowerShellTemplateWriter
                     output.AppendLine("}");
                 }
 
-                yield return new TextFile(resource.OutputFilePath + ".txt", output.ToString());
+                yield return new TextFile(resource.RelativeFilePath + ".txt", output.ToString());
             }
         }
 

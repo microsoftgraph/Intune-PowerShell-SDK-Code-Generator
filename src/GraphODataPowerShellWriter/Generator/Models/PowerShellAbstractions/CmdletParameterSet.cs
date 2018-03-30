@@ -9,14 +9,27 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
     /// <summary>
     /// Represents a parameter set for a PowerShell cmdlet.
     /// </summary>
-    public class CmdletParameterSet : IEnumerable<CmdletParameter>
+    public class CmdletParameterSet : ICollection<CmdletParameter>
     {
         /// <summary>
         /// The name of the parameter set.  This can only be null for the default parameter set.
         /// </summary>
         public string Name { get; private set; }
 
-        private IDictionary<string, CmdletParameter> Parameters { get; } = new Dictionary<string, CmdletParameter>();
+        /// <summary>
+        /// The number of parameters in this parameter set.
+        /// </summary>
+        public int Count => this._parameters.Count;
+
+        /// <summary>
+        /// Whether or not this parameter set is read-only.
+        /// </summary>
+        public bool IsReadOnly => false;
+
+        /// <summary>
+        /// The cmdlet parameters in this parameter set as a dictionary for fast lookup.
+        /// </summary>
+        private IDictionary<string, CmdletParameter> _parameters { get; } = new Dictionary<string, CmdletParameter>();
 
         /// <summary>
         /// Creates a new default parameter set (i.e. its name is set to null).
@@ -27,7 +40,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             this.Name = null;
         }
 
-
+        /// <summary>
+        /// Creates a new parameter set with the given name.
+        /// </summary>
+        /// <param name="parameterSetName">The parameter set's name</param>
         public CmdletParameterSet(string parameterSetName)
         {
             if (string.IsNullOrWhiteSpace(parameterSetName))
@@ -45,8 +61,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <returns>The parameter.</returns>
         public CmdletParameter this[string parameterName]
         {
-            get => this.Parameters[parameterName];
-            private set => this.Parameters[parameterName] = value;
+            get => this._parameters[parameterName];
+            private set => this._parameters[parameterName] = value;
         }
 
         /// <summary>
@@ -56,7 +72,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <returns>True if this parameter set contains a parameter by the given name, otherwise false</returns>
         public bool Contains(string parameterName)
         {
-            return this.Parameters.ContainsKey(parameterName);
+            return this._parameters.ContainsKey(parameterName);
         }
 
         /// <summary>
@@ -95,12 +111,48 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <returns>True if the parameter was successfully removed, otherwise false</returns>
         public bool Remove(string parameterName)
         {
-            if (parameterName == null)
-            {
-                throw new ArgumentNullException(nameof(parameterName));
-            }
+            return this._parameters.Remove(parameterName);
+        }
 
-            return this.Parameters.Remove(parameterName);
+        /// <summary>
+        /// Clears all parameters from this parameter set.
+        /// </summary>
+        public void Clear()
+        {
+            this._parameters.Clear();
+        }
+
+        /// <summary>
+        /// Checks whether this pararmeter set contains the given parameter.
+        /// </summary>
+        /// <param name="parameter">The parameter</param>
+        /// <returns>True if this parameter set contains the given parameter, otherwise false.</returns>
+        public bool Contains(CmdletParameter parameter)
+        {
+            return this._parameters.ContainsKey(parameter?.Name)
+                && this._parameters[parameter.Name].Equals(parameter);
+        }
+
+        /// <summary>
+        /// Copies the parameters in this parameter set to the given array, starting at the given array index.
+        /// </summary>
+        /// <param name="array">The destination array</param>
+        /// <param name="arrayIndex">The array index</param>
+        public void CopyTo(CmdletParameter[] array, int arrayIndex)
+        {
+            this._parameters.Values.CopyTo(array, arrayIndex);
+        }
+
+        /// <summary>
+        /// Removes the given parameter if it exists in this parameter set.
+        /// </summary>
+        /// <param name="parameter">The parameter</param>
+        /// <returns>True if the parameter was removed, otherwise false.</returns>
+        public bool Remove(CmdletParameter parameter)
+        {
+            return this._parameters.ContainsKey(parameter?.Name)
+                && this._parameters[parameter.Name].Equals(parameter)
+                && this._parameters.Remove(parameter.Name);
         }
 
         /// <summary>
@@ -109,7 +161,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <returns>The enumerator</returns>
         public IEnumerator<CmdletParameter> GetEnumerator()
         {
-            return this.Parameters.Values.GetEnumerator();
+            return this._parameters.Values.GetEnumerator();
         }
 
         /// <summary>
@@ -118,7 +170,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <returns>The enumerator</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.Parameters.Values.GetEnumerator();
+            return this._parameters.Values.GetEnumerator();
         }
     }
 }

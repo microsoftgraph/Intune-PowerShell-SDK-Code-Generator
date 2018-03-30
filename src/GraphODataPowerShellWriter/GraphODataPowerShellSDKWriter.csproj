@@ -69,43 +69,14 @@
     <Reference Include="System.Xml" />
     <Reference Include="Vipr.Core">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(MSBuildProjectDirectory)\..\..\submodules\vipr\src\Core\Vipr.Core\bin\$(Configuration)\Vipr.Core.dll</HintPath>
+      <HintPath>$(MSBuildProjectDirectory)\..\..\submodules\vipr\src\Core\Vipr\bin\Debug\Vipr.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Generator\Behaviors\OdcmModelToNodesConversionBehavior.cs" />
-    <Compile Include="Generator\Behaviors\ResourceToTextFileConversionBehavior.cs" />
-    <Compile Include="Generator\Behaviors\NodeToResourceConversionBehavior.cs" />
-    <Compile Include="Generator\Models\ODataRoute.cs" />
-    <Compile Include="Generator\Models\OdcmNode.cs" />
-    <Compile Include="Generator\Models\PowerShellAbstractions\Cmdlets\CmdletBaseTypes.cs" />
-    <Compile Include="Generator\Models\PowerShellAbstractions\Cmdlets\CmdletImpactLevel.cs" />
-    <Compile Include="Generator\Models\PowerShellAbstractions\Parameters\CmdletParameterAttribute.cs" />
-    <Compile Include="PowerShellSDKWriter.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Generator\Models\PowerShellAbstractions\Cmdlets\CmdletName.cs" />
-    <Compile Include="Generator\Models\PowerShellAbstractions\Resource.cs" />
-    <Compile Include="Generator\Models\PowerShellAbstractions\Parameters\CmdletParameter.cs" />
-    <Compile Include="Generator\Models\PowerShellAbstractions\Parameters\CmdletParameterSets.cs" />
-    <Compile Include="Generator\Models\PowerShellAbstractions\Parameters\CmdletParameterSet.cs" />
-    <Compile Include="Generator\Models\PowerShellAbstractions\Cmdlets\Cmdlet.cs" />
-    <Content Include="Templates\ResourceTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>ResourceTemplate.cs</LastGenOutput>
-    </Content>
-    <Compile Include="Templates\ResourceTemplate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ResourceTemplate.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Templates\ResourceTemplateCode.cs" />
-    <Compile Include="Utils\EnumerableUtils.cs" />
-    <Compile Include="Utils\OdcmUtils.cs" />
-    <Compile Include="Utils\StringUtils.cs" />
+    <Compile Include="**\*.cs" Exclude="obj\**\*;bin\**\*" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
+    <None Include="**\*.config" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -120,27 +91,29 @@
   <PropertyGroup Condition=" '$(OS)' == 'Unix' ">
     <PreBuildEvent>xbuild /t:build /p:Configuration=$(Configuration) "$(MSBuildProjectDirectory)\..\..\submodules\vipr\Vipr.sln"</PreBuildEvent>
   </PropertyGroup>
-
   <Target Name="BeforeBuild">
-    <RemoveDir Directories="$(TargetDir)" Condition="Exists('$(TargetDir)')" />
+    <RemoveDir Directories="$(TargetDir)" />
   </Target>
-
   <Target Name="AfterBuild">
     <PropertyGroup>
-      <TARGET_FOLDER>$(TargetDir)output</TARGET_FOLDER>
-      <GENERATED_FOLDER>$(TargetDir)output\PowerShellCmdlets\Generated</GENERATED_FOLDER>
-      <GRAPH_SDK_SOURCE>$(MSBuildProjectDirectory)\..\PowerShellGraphSDK</GRAPH_SDK_SOURCE>
-      <GRAPH_SDK_TARGET_IGNORE>$(TARGET_FOLDER)\.vs; $(TARGET_FOLDER)\bin; $(TARGET_FOLDER)\obj; $(TARGET_FOLDER)\packages</GRAPH_SDK_TARGET_IGNORE>
+      <VIPR_OUTPUT>$(MSBuildProjectDirectory)\..\..\submodules\vipr\src\Core\Vipr\bin\Debug</VIPR_OUTPUT>
+      <OUTPUT_FOLDER>$(TargetDir)output</OUTPUT_FOLDER>
+      <GENERATED_FOLDER>$(OUTPUT_FOLDER)\PowerShellCmdlets\Generated</GENERATED_FOLDER>
+      <GRAPH_SDK_SOURCE_FOLDER>$(MSBuildProjectDirectory)\..\PowerShellGraphSDK</GRAPH_SDK_SOURCE_FOLDER>
+      <GRAPH_SDK_TARGET_IGNORE>$(OUTPUT_FOLDER)\.vs; $(OUTPUT_FOLDER)\bin; $(OUTPUT_FOLDER)\obj</GRAPH_SDK_TARGET_IGNORE>
     </PropertyGroup>
     <ItemGroup>
-      <VIPR_OUTPUT Include="$(MSBuildProjectDirectory)\..\..\submodules\vipr\src\Core\Vipr\bin\$(Configuration)\**\" />
-      <_GRAPH_SDK_SOURCE Include="$(GRAPH_SDK_SOURCE)\**\*" />
+      <_VIPR_OUTPUT Include="$(VIPR_OUTPUT)\**\*" />
+      <_GRAPH_SDK_SOURCE_FOLDER Include="$(GRAPH_SDK_SOURCE_FOLDER)\**\*" />
       <_GENERATED_FOLDER Include="$(GENERATED_FOLDER)" />
       <_GRAPH_SDK_TARGET_IGNORE Include="$(GRAPH_SDK_TARGET_IGNORE)" />
     </ItemGroup>
-    <Copy SourceFiles="@(VIPR_OUTPUT)" DestinationFolder="$(TargetDir)%(RecursiveDir)" />
-    <Copy SourceFiles="@(_GRAPH_SDK_SOURCE)" DestinationFolder="$(TARGET_FOLDER)\%(RecursiveDir)" />
+    <Copy SourceFiles="@(_VIPR_OUTPUT)" DestinationFolder="$(TargetDir)%(RecursiveDir)" />
+    <Copy SourceFiles="@(_GRAPH_SDK_SOURCE_FOLDER)" DestinationFolder="$(OUTPUT_FOLDER)\%(RecursiveDir)" />
     <RemoveDir Directories="@(_GENERATED_FOLDER)" />
     <RemoveDir Directories="@(_GRAPH_SDK_TARGET_IGNORE)" />
+    <Message Importance="high" Text="Project Directory: $(MSBuildProjectDirectory)" />
+    <Message Importance="high" Text="Vipr Directory:    $(VIPR_OUTPUT)" />
+    <Message Importance="high" Text="Output Directory:  $(OUTPUT_FOLDER)" />
   </Target>
 </Project>

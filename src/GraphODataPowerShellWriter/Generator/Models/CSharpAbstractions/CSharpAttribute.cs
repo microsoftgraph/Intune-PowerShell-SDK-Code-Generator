@@ -4,32 +4,30 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
-    public class CmdletParameterAttribute
+    public class CSharpAttribute
     {
-        public static readonly CmdletParameterAttribute ValidateNotNull = new CmdletParameterAttribute("ValidateNotNull");
-        public static readonly CmdletParameterAttribute ValidateNotNullOrEmpty = new CmdletParameterAttribute("ValidateNotNullOrEmpty");
-
         public string Name { get; }
 
-        public ICollection<string> Arguments { get; }
+        public IEnumerable<string> Arguments { get; }
 
-        public CmdletParameterAttribute(string name)
+        public CSharpAttribute(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException("Parameter name cannot be null or whitespace", nameof(name));
+                throw new ArgumentException("C# Property name cannot be null or whitespace", nameof(name));
             }
 
             this.Name = name;
             this.Arguments = new List<string>();
         }
 
-        public CmdletParameterAttribute(string name, ICollection<string> arguments)
+        public CSharpAttribute(string name, IEnumerable<string> arguments)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException("Parameter name cannot be null or whitespace", nameof(name));
+                throw new ArgumentException("C# Property name cannot be null or whitespace", nameof(name));
             }
 
             this.Name = name;
@@ -38,7 +36,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 
         public override string ToString()
         {
-            return $"[{this.Name}({string.Join(", ", this.Arguments)})]";
+            string argumentString = this.Arguments.Any() ? $"({string.Join(", ", this.Arguments)})" : string.Empty;
+            return $"[{this.Name}{argumentString}]";
         }
     }
 }

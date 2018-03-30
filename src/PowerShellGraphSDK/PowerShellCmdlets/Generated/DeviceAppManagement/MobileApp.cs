@@ -5,13 +5,10 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     using System.Management.Automation;
 
     [Cmdlet(
-        CmdletVerb, CmdletNoun,
+        "Get", "MobileApp",
         ConfirmImpact = ConfirmImpact.Low)]
     public class GetMobileApp : ODataGetOrSearchPowerShellSDKCmdlet
     {
-        public const string CmdletVerb = VerbsCommon.Get;
-        public const string CmdletNoun = "MobileApp";
-
         [Parameter(ParameterSetName = ParameterSetGet, Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
         public string id { get; set; }
 
@@ -52,13 +49,10 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     //}
 
     [Cmdlet(
-        CmdletVerb, CmdletNoun,
+        "Get", "MobileApp",
         ConfirmImpact = ConfirmImpact.High)]
     public class RemoveMobileApp : ODataDeletePowerShellSDKCmdlet
     {
-        public const string CmdletVerb = VerbsCommon.Remove;
-        public const string CmdletNoun = "MobileApp";
-
         [Parameter(Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
         [ValidateNotNullOrEmpty]
         public string id { get; set; }

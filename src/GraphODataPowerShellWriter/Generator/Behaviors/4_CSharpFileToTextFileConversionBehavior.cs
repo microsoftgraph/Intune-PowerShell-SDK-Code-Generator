@@ -2,30 +2,32 @@
 
 namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 {
+    using System;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
-    using Microsoft.Graph.GraphODataPowerShellSDKWriter.Templates;
     using Vipr.Core;
 
     /// <summary>
-    /// The behavior to convert a Resource into a TextFile.
+    /// The behavior to convert a C# file into a TextFile.
     /// </summary>
-    public static class ResourceToTextFileConversionBehavior
+    public static class CSharpFileToTextFileConversionBehavior
     {
         /// <summary>
-        /// Converts a Resource into a TextFile.
+        /// Converts a CSharpFile into a TextFile.
         /// </summary>
-        /// <param name="resource">The resource</param>
+        /// <param name="cSharpFile">The CSharpFile</param>
         /// <returns>The generated TextFile.</returns>
-        public static TextFile ToTextFile(this Resource resource)
+        public static TextFile ToTextFile(this CSharpFile cSharpFile)
         {
-            // Get the T4 template
-            ResourceTemplate resourceTemplate = new ResourceTemplate(resource);
+            if (cSharpFile == null)
+            {
+                throw new ArgumentNullException(nameof(cSharpFile));
+            }
 
             // Generate the output
-            string fileContents = resourceTemplate.TransformText();
+            string fileContents = cSharpFile.ToString();
 
             // Create the TextFile object which will be sent back to Vipr
-            TextFile textFile = new TextFile(resource.OutputFilePath + ".cs", fileContents);
+            TextFile textFile = new TextFile(cSharpFile.RelativeFilePath, fileContents);
 
             return textFile;
         }

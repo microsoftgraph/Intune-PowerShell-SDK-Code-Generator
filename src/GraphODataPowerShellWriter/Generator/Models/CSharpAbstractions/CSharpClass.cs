@@ -1,0 +1,113 @@
+﻿// Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
+
+namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils;
+
+    public class CSharpClass
+    {
+        public string Name { get; }
+
+        public CSharpAccessModifier AccessModifier { get; set; } = CSharpAccessModifier.Public;
+
+        private string _baseType = null;
+        public string BaseType
+        {
+            get => this._baseType;
+            set
+            {
+                if (value != null && value.Trim() == string.Empty)
+                {
+                    throw new ArgumentException("Base type name cannot be empty.  Set it to null to remove the base type.", nameof(value));
+                }
+
+                this._baseType = value;
+            }
+        }
+
+        private IEnumerable<string> _interfaces = new List<string>();
+        public IEnumerable<string> Interfaces
+        {
+            get => this._interfaces;
+            set => this._interfaces = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        private IEnumerable<CSharpAttribute> _attributes = new List<CSharpAttribute>();
+        public IEnumerable<CSharpAttribute> Attributes
+        {
+            get => this._attributes;
+            set => this._attributes = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        private IEnumerable<CSharpProperty> _properties = new List<CSharpProperty>();
+        public IEnumerable<CSharpProperty> Properties
+        {
+            get => this._properties;
+            set => this._properties = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        private IEnumerable<CSharpMethod> _methods = new List<CSharpMethod>();
+        public IEnumerable<CSharpMethod> Methods
+        {
+            get => this._methods;
+            set => this._methods = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        public CSharpClass(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("C# Class name cannot be null or whitespace", nameof(name));
+            }
+
+            this.Name = name;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder resultBuilder = new StringBuilder();
+
+            // Attributes
+            foreach (CSharpAttribute attribute in this.Attributes)
+            {
+                resultBuilder.AppendLine(attribute.ToString());
+            }
+
+            // Add the first line of the class definition (access modifiers, class name, inheritance)
+            IEnumerable<string> parents = this.BaseType == null
+                ? this.Interfaces
+                : this.BaseType.SingleObjectAsEnumerable().Concat(this.Interfaces);
+            string inheritance = parents.Any() ? $" : {string.Join(", ", parents)}" : string.Empty;
+            string nameLine = $"{AccessModifier.ToCSharpString()} class {this.Name}{inheritance}";
+            resultBuilder.AppendLine(nameLine);
+
+            // Start body
+            resultBuilder.AppendLine("{");
+
+            // Properties
+            foreach (CSharpProperty property in this.Properties)
+            {
+                resultBuilder.AppendLine(StringUtils.Indent(1, property.ToString()));
+                resultBuilder.AppendLine();
+            }
+
+            // Methods
+            foreach (CSharpMethod method in this.Methods)
+            {
+                resultBuilder.AppendLine(StringUtils.Indent(1, method.ToString()));
+                resultBuilder.AppendLine();
+            }
+
+            // End body
+            resultBuilder.AppendLine("}");
+
+            // Compile and return result
+            string result = resultBuilder.ToString().Trim();
+            return result;
+        }
+    }
+}
