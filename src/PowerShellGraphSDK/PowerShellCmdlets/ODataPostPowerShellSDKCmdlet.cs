@@ -7,6 +7,9 @@ namespace PowerShellGraphSDK
     /// </summary>
     public abstract class ODataPostPowerShellSDKCmdlet : ODataPowerShellSDKCmdletBase
     {
-        
+        internal override string GetHttpMethod()
+        {
+            return "POST";
+        }
     }
 }

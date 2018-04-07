@@ -59,12 +59,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         }
 
         /// <summary>
-        /// Gets all properties for a type, including those inherited from base types.
+        /// Gets all properties for a type.
         /// The values are the properties and the keys are the types they came from.
         /// </summary>
         /// <param name="type">The type to evaluate</param>
+        /// <param name="includeInherited">Whether or not to include inherited properties</param>
         /// <returns>The type's immediate and inherited properties.  If the type is not a class, it will return an empty result.</returns>
-        public static IEnumerable<OdcmProperty> EvaluateProperties(this OdcmType type)
+        public static IEnumerable<OdcmProperty> EvaluateProperties(this OdcmType type, bool includeInherited = true)
         {
             if (type == null)
             {
@@ -78,9 +79,17 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             // If the type is not a class, there are no properties to return
             if (type is OdcmClass @class)
             {
-                List<OdcmClass> classes = new List<OdcmClass>();
-                classes.Add(@class);
-                classes.AddRange(@class.GetBaseTypes());
+                // Get the list of classes that we want to get properties from (including the class which is this property's type)
+                List<OdcmClass> classes = new List<OdcmClass>()
+                {
+                    @class,
+                };
+
+                // Only add base types if we want to include inherited properties
+                if (includeInherited)
+                {
+                    classes.AddRange(@class.GetBaseTypes());
+                }
 
                 // Iterate over the type and its base types
                 foreach (OdcmClass currentClass in classes)

@@ -29,13 +29,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             }
         }
 
-        private IEnumerable<string> _interfaces = new List<string>();
+        private IEnumerable<string> _interfaces = new HashSet<string>();
         public IEnumerable<string> Interfaces
         {
             get => this._interfaces;
-            set => this._interfaces = value ?? throw new ArgumentNullException(nameof(value));
+            set => this._interfaces = new HashSet<string>(value ?? throw new ArgumentNullException(nameof(value)));
         }
 
+        //TODO: Create a special type for IEnumerable<CSharpAttribute> so validation can be enforced
         private IEnumerable<CSharpAttribute> _attributes = new List<CSharpAttribute>();
         public IEnumerable<CSharpAttribute> Attributes
         {
@@ -43,6 +44,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             set => this._attributes = value ?? throw new ArgumentNullException(nameof(value));
         }
 
+        //TODO: Create a special type for IEnumerable<CSharpProperty> so validation can be enforced
         private IEnumerable<CSharpProperty> _properties = new List<CSharpProperty>();
         public IEnumerable<CSharpProperty> Properties
         {
@@ -50,6 +52,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             set => this._properties = value ?? throw new ArgumentNullException(nameof(value));
         }
 
+        //TODO: Create a special type for IEnumerable<CSharpMethod> so validation can be enforced
         private IEnumerable<CSharpMethod> _methods = new List<CSharpMethod>();
         public IEnumerable<CSharpMethod> Methods
         {

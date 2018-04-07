@@ -10,7 +10,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
     {
         public string Name { get; }
 
-        public IEnumerable<string> Arguments { get; }
+        private IEnumerable<string> _arguments = new HashSet<string>();
+        public IEnumerable<string> Arguments
+        {
+            get => this._arguments;
+            set => this._arguments = new HashSet<string>(value ?? throw new ArgumentNullException(nameof(value)));
+        }
 
         public CSharpAttribute(string name)
         {

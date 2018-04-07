@@ -2,6 +2,7 @@
 
 namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Inflector;
@@ -19,6 +20,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public IEnumerable<OdcmProperty> Segments { get; }
 
         /// <summary>
+        /// The ODCM Property that represents this route's resource.
+        /// </summary>
+        public OdcmProperty ResourceOdcmProperty { get; }
+
+        /// <summary>
         /// The parameters for the IDs of entities in the route.
         /// </summary>
         public IEnumerable<string> IdParameters => this._idParameters.Values;
@@ -30,6 +36,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <param name="node">The ODCM node</param>
         public ODataRoute(OdcmNode node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
+            // Store the node's ODCM property
+            this.ResourceOdcmProperty = node.OdcmProperty;
+
             // Use a stack to add segments so we don't have to reverse them later
             Stack<OdcmProperty> segments = new Stack<OdcmProperty>();
 

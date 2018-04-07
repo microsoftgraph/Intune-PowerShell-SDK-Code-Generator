@@ -4,6 +4,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 {
     using System;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
+    using PowerShellGraphSDK;
 
     public static class CmdletOperationTypeUtils
     {
@@ -11,11 +12,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         {
             switch (operationType)
             {
-                case CmdletOperationType.Get: return "ODataGetPowerShellSDKCmdlet";
-                case CmdletOperationType.GetOrSearch: return "ODataGetOrSearchPowerShellSDKCmdlet";
-                case CmdletOperationType.Post: return "ODataPostPowerShellSDKCmdlet";
-                case CmdletOperationType.Patch: return "ODataPatchPowerShellSDKCmdlet";
-                case CmdletOperationType.Delete: return "ODataDeletePowerShellSDKCmdlet";
+                case CmdletOperationType.Get: return nameof(ODataGetPowerShellSDKCmdlet);
+                case CmdletOperationType.GetOrSearch: return nameof(ODataGetOrSearchPowerShellSDKCmdlet);
+                case CmdletOperationType.Post: return nameof(ODataPostPowerShellSDKCmdlet);
+                case CmdletOperationType.Patch: return nameof(ODataPatchPowerShellSDKCmdlet);
+                case CmdletOperationType.Delete: return nameof(ODataDeletePowerShellSDKCmdlet);
                 default: throw new ArgumentException("Unknown operation type", nameof(operationType));
             }
         }

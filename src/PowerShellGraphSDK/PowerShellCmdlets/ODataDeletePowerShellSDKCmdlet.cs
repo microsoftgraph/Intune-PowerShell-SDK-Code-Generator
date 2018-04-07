@@ -7,6 +7,9 @@ namespace PowerShellGraphSDK
     /// </summary>
     public abstract class ODataDeletePowerShellSDKCmdlet : ODataPowerShellSDKCmdletBase
     {
-        
+        internal override string GetHttpMethod()
+        {
+            return "DELETE";
+        }
     }
 }

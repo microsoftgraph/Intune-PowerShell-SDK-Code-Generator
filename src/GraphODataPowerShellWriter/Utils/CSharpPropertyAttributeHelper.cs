@@ -7,13 +7,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 
     public static class CSharpPropertyAttributeHelper
     {
-        private static readonly CSharpAttribute _validateNotNullPropertyAttribute = new CSharpAttribute("ValidateNotNull");
-        public static CSharpAttribute ValidateNotNullPropertyAttribute() => _validateNotNullPropertyAttribute;
+        private static readonly CSharpAttribute _validateNotNullAttribute = new CSharpAttribute("ValidateNotNull");
+        public static CSharpAttribute CreateValidateNotNullCSharpPropertyAttribute() => _validateNotNullAttribute;
 
-        private static readonly CSharpAttribute _validateNotNullOrEmptyPropertyAttribute = new CSharpAttribute("ValidateNotNullOrEmpty");
-        public static CSharpAttribute ValidateNotNullOrEmptyPropertyAttribute() => _validateNotNullOrEmptyPropertyAttribute;
+        private static readonly CSharpAttribute _validateNotNullOrEmptyAttribute = new CSharpAttribute("ValidateNotNullOrEmpty");
+        public static CSharpAttribute CreateValidateNotNullOrEmptyCSharpPropertyAttribute() => _validateNotNullOrEmptyAttribute;
 
-        public static CSharpAttribute ParameterPropertyAttribute(string parameterSetName = null, bool mandatory = false, bool valueFromPipeline = false, bool valueFromPipelineByPropertyName = false)
+        public static CSharpAttribute CreateCSharpPropertyAttribute(string parameterSetName = null, bool mandatory = false, bool valueFromPipeline = false, bool valueFromPipelineByPropertyName = false)
         {
             ICollection<string> arguments = new List<string>();
             if (parameterSetName != null)

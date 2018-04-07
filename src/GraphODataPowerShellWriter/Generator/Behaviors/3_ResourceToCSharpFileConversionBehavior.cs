@@ -28,19 +28,20 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             CSharpFile cSharpFile = new CSharpFile(resource.RelativeFilePath + ".cs")
             {
                 Usings = CSharpFileHelper.GetDefaultUsings(),
-                Classes = resource.GetClasses(),
+                Classes = resource.CreateClasses(),
             };
 
             return cSharpFile;
         }
 
-        private static IEnumerable<CSharpClass> GetClasses(this Resource resource)
+        private static IEnumerable<CSharpClass> CreateClasses(this Resource resource)
         {
             if (resource == null)
             {
                 throw new ArgumentNullException(nameof(resource));
             }
 
+            // Convert each cmdlet to a C# class
             foreach (Cmdlet cmdlet in resource.Cmdlets)
             {
                 yield return cmdlet.ToCSharpClass();
@@ -59,37 +60,37 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             {
                 AccessModifier = CSharpAccessModifier.Public,
                 BaseType = cmdlet.BaseType.ToCSharpString(),
-                Attributes = cmdlet.GetAttributes(),
-                Properties = cmdlet.GetProperties(),
-                Methods = cmdlet.GetMethods(),
+                Attributes = cmdlet.CreateAttributes(),
+                Properties = cmdlet.CreateProperties(),
+                Methods = cmdlet.CreateMethods(),
             };
 
             return result;
         }
 
-        private static IEnumerable<CSharpAttribute> GetAttributes(this Cmdlet cmdlet)
+        private static IEnumerable<CSharpAttribute> CreateAttributes(this Cmdlet cmdlet)
         {
             if (cmdlet == null)
             {
                 throw new ArgumentNullException(nameof(cmdlet));
             }
 
-            // "Cmdlet" attribute
-            yield return CSharpClassAttributeHelper.CmdletClassAttribute(cmdlet.Name, cmdlet.ImpactLevel);
+            // "[Cmdlet]" attribute
+            yield return CSharpClassAttributeHelper.CreateCSharpClassAttribute(cmdlet.Name, cmdlet.ImpactLevel);
         }
 
-        private static IEnumerable<CSharpMethod> GetMethods(this Cmdlet cmdlet)
+        private static IEnumerable<CSharpMethod> CreateMethods(this Cmdlet cmdlet)
         {
             if (cmdlet == null)
             {
                 throw new ArgumentNullException(nameof(cmdlet));
             }
 
-            // "GetResourcePath" method override
+            // "GetResourcePath()" method override
             yield return CSharpMethodHelper.GetResourcePath(cmdlet.CallUrl);
         }
 
-        private static IEnumerable<CSharpProperty> GetProperties(this Cmdlet cmdlet)
+        private static IEnumerable<CSharpProperty> CreateProperties(this Cmdlet cmdlet)
         {
             if (cmdlet == null)
             {
@@ -109,31 +110,20 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 yield return new CSharpProperty(parameter.Name, parameter.Type)
                 {
                     AccessModifier = CSharpAccessModifier.Public,
-                    Attributes = parameter.GetAttributes(parameterSets),
+                    Attributes = parameter.CreateAttributes(parameterSets),
                 };
             }
         }
 
-        private static IEnumerable<CSharpAttribute> GetAttributes(this CmdletParameter parameter, IEnumerable<CmdletParameterSet> parameterSets)
+        private static IEnumerable<CSharpAttribute> CreateAttributes(this CmdletParameter parameter, IEnumerable<CmdletParameterSet> parameterSets)
         {
-            bool firstIteration = true;
             foreach (CmdletParameterSet parameterSet in parameterSets)
             {
-                // Only set parameter options (other than parameter set name) on one parameter attribute
-                if (firstIteration)
-                {
-                    yield return CSharpPropertyAttributeHelper.ParameterPropertyAttribute(
-                        parameterSet.Name,
-                        parameter.Mandatory,
-                        parameter.ValueFromPipeline,
-                        parameter.ValueFromPipelineByPropertyName);
-                }
-                else
-                {
-                    yield return CSharpPropertyAttributeHelper.ParameterPropertyAttribute(parameterSet.Name);
-                }
-
-                firstIteration = false;
+                yield return CSharpPropertyAttributeHelper.CreateCSharpPropertyAttribute(
+                    parameterSet.Name,
+                    parameter.Mandatory,
+                    parameter.ValueFromPipeline,
+                    parameter.ValueFromPipelineByPropertyName);
             }
         }
     }

@@ -75,7 +75,7 @@ namespace PowerShellGraphSDK
         /// <remarks>
         /// This method returns "GET" if it is not overridden.
         /// </remarks>
-        /// <returns>The HTTP method</returns>
+        /// <returns>The HTTP method.</returns>
         internal virtual string GetHttpMethod()
         {
             return "GET";
@@ -84,7 +84,7 @@ namespace PowerShellGraphSDK
         /// <summary>
         /// Returns the path to the resource.  This may be either a relative or absolute URL.  This method should never return null.
         /// </summary>
-        /// <returns>The path to the resource</returns>
+        /// <returns>The path to the resource.</returns>
         internal abstract string GetResourcePath();
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace PowerShellGraphSDK
         /// <remarks>
         /// The keys should be the full query option name (i.e. WITH the "$" prefix for "$select", "$expand", etc.).
         /// </remarks>
-        /// <returns>The mapping of query options to their values</returns>
+        /// <returns>The mapping of query options to their values.</returns>
         internal virtual IDictionary<string, string> GetUrlQueryOptions()
         {
             return new Dictionary<string, string>();
@@ -107,10 +107,22 @@ namespace PowerShellGraphSDK
         /// <remarks>
         /// This method returns null if it is not overridden.
         /// </remarks>
-        /// <returns>The request content</returns>
+        /// <returns>The request content.</returns>
         internal virtual object GetContent()
         {
             return null;
+        }
+
+        /// <summary>
+        /// Returns the content (MIME) type for the HTTP request.
+        /// </summary>
+        /// <remarks>
+        /// This method returns "application/json" if it is not overridden.
+        /// </remarks>
+        /// <returns>The request's content type.</returns>
+        internal virtual string GetContentType()
+        {
+            return "application/json";
         }
 
         /// <summary>
@@ -120,7 +132,7 @@ namespace PowerShellGraphSDK
         /// This method defaults to converting the object to a JSON string and then wrapping it in a <see cref="StringContent"/> object.
         /// </remarks>
         /// <param name="content">The content to be converted</param>
-        /// <returns>The converted HttpContent object</returns>
+        /// <returns>The converted HttpContent object.</returns>
         internal virtual HttpContent WriteContent(object content)
         {
             string contentString = JsonUtils.WriteJson(content);
@@ -135,7 +147,7 @@ namespace PowerShellGraphSDK
         /// This method defaults to assuming a JSON response body, and then converting it to a <see cref="PSObject"/> instance.
         /// </remarks>
         /// <param name="content">The HTTP response body</param>
-        /// <returns>The converted object</returns>
+        /// <returns>The converted object.</returns>
         internal virtual PSObject ReadResponse(string content)
         {
             JToken jsonToken = JsonUtils.ReadJson(content);
@@ -270,6 +282,8 @@ namespace PowerShellGraphSDK
             if (contentObject != null)
             {
                 content = this.WriteContent(contentObject);
+                // Set the content type
+                content.Headers.ContentType = new MediaTypeHeaderValue(this.GetContentType());
             }
 
             // Make the HTTP request
@@ -278,6 +292,7 @@ namespace PowerShellGraphSDK
             string requestContent = null; // need to evaluate this before making the call otherwise the content object will get disposed
             if (content != null)
             {
+                // Get the content before making the call
                 requestMessage.Content = content;
                 requestContent = requestMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             }

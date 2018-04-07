@@ -56,7 +56,7 @@
     <Compile Include="**\*.cs" Exclude="obj\**\*;bin\**\*" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="**\*.config" Exclude="obj\**\*;bin\**\*" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

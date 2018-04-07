@@ -22,7 +22,12 @@ namespace PowerShellGraphSDK
         /// </summary>
         [Parameter]
         public string[] Expand { get; set; }
-        
+
+        internal override string GetHttpMethod()
+        {
+            return "GET";
+        }
+
         internal override IDictionary<string, string> GetUrlQueryOptions()
         {
             IDictionary<string, string> queryOptions = base.GetUrlQueryOptions();

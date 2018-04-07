@@ -93,7 +93,6 @@ namespace PowerShellGraphSDK
                 {
                     throw new ArgumentException("The provided JToken cannot contain a JConstructor object", nameof(json));
                 }
-
                 if (container is JProperty)
                 {
                     throw new ArgumentException("The provided JToken cannot contain a JProperty object which is not nested inside a JObject", nameof(json));

@@ -15,19 +15,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
     {
         private IDictionary<string, CmdletParameterSet> ParameterSets { get; } = new Dictionary<string, CmdletParameterSet>();
 
-        public CmdletParameterSet DefaultParameterSet { get; }
-
         /// <summary>
-        /// Creates a new CmdletParameters instance.
+        /// The default parameter set.  All cmdlets must have this parameter set (even if it is empty).
         /// </summary>
-        public CmdletParameterSets()
-        {
-            // All Cmdlets must have the default parameter set
-            this.DefaultParameterSet = new CmdletParameterSet();
-        }
+        public CmdletParameterSet DefaultParameterSet { get; } = new CmdletParameterSet();
 
         /// <summary>
-        /// An accessor for parameter sets.
+        /// An accessor for parameter sets.  Equivalent of calling <see cref="Get(parameterSetName)"/>.
         /// </summary>
         /// <param name="parameterSetName">The parameter set name</param>
         /// <returns>The parameter set.</returns>
@@ -55,8 +49,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             {
                 throw new ArgumentNullException(nameof(parameterSetName));
             }
-            CmdletParameterSet result;
-            if (!string.IsNullOrWhiteSpace(parameterSetName) && this.ParameterSets.TryGetValue(parameterSetName, out result))
+
+            if (!string.IsNullOrWhiteSpace(parameterSetName) && this.ParameterSets.TryGetValue(parameterSetName, out CmdletParameterSet result))
             {
                 return result;
             }

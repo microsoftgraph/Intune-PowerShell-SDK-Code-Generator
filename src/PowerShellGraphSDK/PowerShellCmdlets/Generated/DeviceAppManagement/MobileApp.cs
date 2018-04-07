@@ -20,33 +20,22 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
 
     // TODO: Implement POST and PATCH for a few app types
 
-    //[Cmdlet(
-    //    CmdletVerb, CmdletNoun,
-    //    ConfirmImpact = ConfirmImpact.Medium)]
-    //public class UpdateGraphMobileApp : ODataPowerShellSDKCmdlet
-    //{
-    //    public const string CmdletVerb = VerbsData.Update;
-    //    public const string CmdletNoun = "MobileApp";
-    //    [Parameter(Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
-    //    [ValidateNotNullOrEmpty]
-    //    public string id { get; set; }
+    [Cmdlet(
+        CmdletVerb, CmdletNoun,
+        ConfirmImpact = ConfirmImpact.Medium)]
+    public class UpdateGraphMobileApp : ODataPatchPowerShellSDKCmdlet
+    {
+        public const string CmdletVerb = VerbsData.Update;
+        public const string CmdletNoun = "MobileApp";
+        [Parameter(Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
+        [ValidateNotNullOrEmpty]
+        public string id { get; set; }
 
-    //    internal override HttpMethod GetHttpMethod()
-    //    {
-    //        return new HttpMethod("PATCH");
-    //    }
-
-    //    internal override string GetResourcePath()
-    //    {
-    //        return $"/deviceAppManagement/mobileApps/{this.id}";
-    //    }
-
-    //    internal override object GetContent()
-    //    {
-    //        // TODO: Convert parameters to a patch set
-    //        throw new NotImplementedException();
-    //    }
-    //}
+        internal override string GetResourcePath()
+        {
+            return $"/deviceAppManagement/mobileApps/{this.id}";
+        }
+    }
 
     [Cmdlet(
         "Get", "MobileApp",
@@ -56,11 +45,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         [Parameter(Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
         [ValidateNotNullOrEmpty]
         public string id { get; set; }
-
-        internal override string GetHttpMethod()
-        {
-            return "DELETE";
-        }
 
         internal override string GetResourcePath()
         {

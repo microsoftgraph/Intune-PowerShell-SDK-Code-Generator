@@ -18,6 +18,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 
         public Type ReturnType { get; }
 
+        //TODO: Create a special type for IEnumerable<CSharpArgument> so validation can be enforced
         private IEnumerable<CSharpArgument> _arguments = new List<CSharpArgument>();
         public IEnumerable<CSharpArgument> Arguments
         {

@@ -26,13 +26,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             }
         }
 
-        private IEnumerable<string> _usings = new List<string>();
+        private IEnumerable<string> _usings = new HashSet<string>();
         public IEnumerable<string> Usings
         {
             get => this._usings;
-            set => this._usings = value ?? throw new ArgumentNullException(nameof(value));
+            set => this._usings = new HashSet<string>(value ?? throw new ArgumentNullException(nameof(value)));
         }
 
+        //TODO: Create a special type for IEnumerable<CSharpClass> so validation can be enforced
         private IEnumerable<CSharpClass> _classes = new List<CSharpClass>();
         public IEnumerable<CSharpClass> Classes
         {
