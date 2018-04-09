@@ -12,9 +12,8 @@ namespace PowerShellGraphSDK
     /// </summary>
     public abstract class ODataPatchPowerShellSDKCmdlet : ODataPowerShellSDKCmdletBase
     {
-        [Parameter(Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
+        [Parameter(Mandatory = false, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
         [Alias("@odata.type")]
-        [ValidateNotNullOrEmpty]
         public string ODataType { get; set; }
 
         internal override string GetHttpMethod()
@@ -38,9 +37,22 @@ namespace PowerShellGraphSDK
             // Create the patch set
             IDictionary<string, object> patchSet = new Dictionary<string, object>();
 
-            // Add the type name
-            string typeName = this.ParameterSetName;
-            patchSet.Add("@odata.type", this.ODataType);
+            // Add the type name if it was provided
+            if (string.IsNullOrWhiteSpace(this.ODataType))
+            {
+                this.WriteDebug("Ignoring ODataType parameter value as it is null or white space");
+            }
+            else
+            {
+                // If the type is missing the leading "#", add it
+                if (!this.ODataType.StartsWith("#"))
+                {
+                    this.WriteWarning("The ODataType should start with a '#' character.  Prepending ODataType with '#'...");
+                    this.ODataType = "#" + this.ODataType;
+                }
+
+                patchSet.Add("@odata.type", this.ODataType);
+            }
 
             // Add the parameters to the patch set
             foreach (PropertyInfo property in patchProperties)
