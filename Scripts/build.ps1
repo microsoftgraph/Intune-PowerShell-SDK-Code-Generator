@@ -3,7 +3,8 @@ param (
     [string]$WorkingDirectory = "$(Get-Location)",
     [string]$OutputPath = "$WorkingDirectory\bin\Release",
     [string]$MSBuildExe32 = '%ProgramFiles(x86)%\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\MSBuild.exe',
-    [string]$MSBuildExe64 = '%ProgramFiles%\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\MSBuild.exe'
+    [string]$MSBuildExe64 = '%ProgramFiles%\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\MSBuild.exe',
+    [string]$GraphSchema
 )
 
 # Expand environment variables
@@ -18,12 +19,12 @@ $ErrorActionPreference = "Stop"
 
 # Get the MSBuild.exe path
 $msBuildExe = $MSBuildExe32
-if (-Not (Test-Path "$msBuildExe")) {
+if (-Not (Test-Path $msBuildExe)) {
     $msBuildExe = $MSBuildExe64
 }
 
 # Install MSBuild.exe if it doesn't exist
-if (-Not (Test-Path "$msBuildExe")) {
+if (-Not (Test-Path $msBuildExe)) {
     Write-Host "VS Build Tools could not be found.  If the following installation fails, you can install it from 'https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=BuildTools&rel=15'" -ForegroundColor Yellow
     $msBuildInstaller = ([System.Environment]::ExpandEnvironmentVariables("%TEMP%\vs_BuildTools.exe"))
     Invoke-WebRequest -OutFile "$msBuildInstaller" "https://download.visualstudio.microsoft.com/download/pr/11923325/e64d79b40219aea618ce2fe10ebd5f0d/vs_BuildTools.exe"
@@ -33,17 +34,15 @@ if (-Not (Test-Path "$msBuildExe")) {
 
         # Double check that MSBuild.exe now exists
         $msBuildExe = $MSBuildExe32
-        if (-Not (Test-Path "$msBuildExe")) {
+        if (-Not (Test-Path $msBuildExe)) {
             $msBuildExe = $MSBuildExe64
         }
-        if (-Not (Test-Path "$msBuildExe")) {
+        if (-Not (Test-Path $msBuildExe)) {
             Write-Host "MSBuild was not found at '$msBuildExe'" -ForegroundColor Red
-            Exit
         }
     } else {
         # Failed to install - print an error on the command line
-        Write-Host "Failed to install VS Build Tools. Exit code: $($process.ExitCode)" -ForegroundColor Red
-        Exit
+        throw "Failed to install VS Build Tools. Exit code: $($process.ExitCode)"
     }
 }
 
@@ -58,10 +57,28 @@ $MSBuildArguments = @(
     "/ignore:.sln"
 )
 
+if ($GraphSchema)
+{
+    if (Test-Path $GraphSchema)
+    {
+        $MSBuildArguments += "/p:GraphSchemaPath=`"$GraphSchema`""
+        Write-Host "MSBuild arguments: " -f Magenta
+        $MSBuildArguments | ForEach-Object {
+            Write-Host $_ -f Magenta
+        }
+    } else {
+        throw "Unable to find Graph schema at '$GraphSchema' - provide a valid path to a schema file"
+    }
+}
+
 # Run MSBuild in the given working directory
 Push-Location $WorkingDirectory
 try {
     & $msBuildExe $MSBuildArguments
+    if (-Not $?)
+    {
+        throw "MSBuild exited with error code '$LastExitCode'"
+    }
 } finally {
     Pop-Location
 }
