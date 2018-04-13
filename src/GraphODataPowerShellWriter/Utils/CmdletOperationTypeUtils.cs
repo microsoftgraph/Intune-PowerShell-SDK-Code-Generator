@@ -4,7 +4,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 {
     using System;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
-    using PowerShellGraphSDK;
+    using PowerShellGraphSDK.PowerShellCmdlets;
 
     public static class CmdletOperationTypeUtils
     {

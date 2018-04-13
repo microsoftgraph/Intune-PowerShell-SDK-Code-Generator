@@ -3,7 +3,6 @@
 namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 {
     using System;
-    using System.Collections.Generic;
 
     /// <summary>
     /// Represents a PowerShell cmdlet's parameter.
@@ -20,15 +19,35 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// </summary>
         public Type Type { get; }
 
-        public bool Mandatory { get; set; }
+        /// <summary>
+        /// Whether or not the parameter is mandatory.
+        /// </summary>
+        public bool Mandatory { get; set; } = false;
 
-        public bool ValueFromPipeline { get; set; }
+        /// <summary>
+        /// Whether or not to get the value from piped objects.
+        /// </summary>
+        public bool ValueFromPipeline { get; set; } = false;
 
-        public bool ValueFromPipelineByPropertyName { get; set; }
+        /// <summary>
+        /// Whether or not to get the value from piped objects based on property name.
+        /// </summary>
+        public bool ValueFromPipelineByPropertyName { get; set; } = true;
 
-        public bool ValidateNotNull { get; set; }
+        /// <summary>
+        /// Whether or not to add the [<see cref="System.Management.Automation.ValidateNotNullAttribute"/>] to the parameter.
+        /// </summary>
+        public bool ValidateNotNull { get; set; } = false;
 
-        public bool ValidateNotNullOrEmpty { get; set; }
+        /// <summary>
+        /// Whether or not to add the [<see cref="System.Management.Automation.ValidateNotNullOrEmptyAttribute"/>] to the parameter.
+        /// </summary>
+        public bool ValidateNotNullOrEmpty { get; set; } = false;
+
+        /// <summary>
+        /// If not null, adds the [<see cref="PowerShellGraphSDK.ParameterSetSelectorAttribute"/>] to the parameter with the given name.
+        /// </summary>
+        public string ParameterSetSelectorName { get; set; } = null;
 
         /// <summary>
         /// Creates a new cmdlet parameter.

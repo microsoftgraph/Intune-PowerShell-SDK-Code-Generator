@@ -11,7 +11,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         public static string[] GetDefaultUsings() => defaultUsings;
         private static string[] defaultUsings =
         {
-            "System.Management.Automation"
+            "System.Management.Automation",
         };
     }
 }

@@ -76,7 +76,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             }
 
             // "[Cmdlet]" attribute
-            yield return CSharpClassAttributeHelper.CreateCSharpClassAttribute(cmdlet.Name, cmdlet.ImpactLevel);
+            yield return CSharpClassAttributeHelper.CreateCSharpClassCmdletAttribute(cmdlet.Name, cmdlet.ImpactLevel);
         }
 
         private static IEnumerable<CSharpMethod> CreateMethods(this Cmdlet cmdlet)
@@ -117,9 +117,25 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
         private static IEnumerable<CSharpAttribute> CreateAttributes(this CmdletParameter parameter, IEnumerable<CmdletParameterSet> parameterSets)
         {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+            if (parameterSets == null)
+            {
+                throw new ArgumentNullException(nameof(parameterSets));
+            }
+
+            // ParameterSetSwitch attribute
+            if (parameter.ParameterSetSelectorName != null)
+            {
+                yield return CSharpPropertyAttributeHelper.CreateCSharpPropertyParameterSetSwitchAttribute(parameter.ParameterSetSelectorName);
+            }
+
             foreach (CmdletParameterSet parameterSet in parameterSets)
             {
-                yield return CSharpPropertyAttributeHelper.CreateCSharpPropertyAttribute(
+                // Parameter attribute
+                yield return CSharpPropertyAttributeHelper.CreateCSharpPropertyParameterAttribute(
                     parameterSet.Name,
                     parameter.Mandatory,
                     parameter.ValueFromPipeline,

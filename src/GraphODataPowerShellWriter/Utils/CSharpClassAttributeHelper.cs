@@ -5,10 +5,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
     using System;
     using System.Collections.Generic;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
+    using PS = System.Management.Automation;
 
     public static class CSharpClassAttributeHelper
     {
-        public static CSharpAttribute CreateCSharpClassAttribute(CmdletName name, CmdletImpactLevel impactLevel)
+        public static CSharpAttribute CreateCSharpClassCmdletAttribute(CmdletName name, PS.ConfirmImpact impactLevel)
         {
             if (name == null)
             {
@@ -20,12 +21,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 $"\"{name.Verb}\"",
                 $"\"{name.Noun}\"",
             };
-            if (impactLevel != CmdletImpactLevel.None)
+            if (impactLevel != PS.ConfirmImpact.None)
             {
-                arguments.Add($"ConfirmImpact = ConfirmImpact.{impactLevel.ToString()}");
+                arguments.Add($"{nameof(PS.ConfirmImpact)} = {nameof(PS.ConfirmImpact)}.{impactLevel.ToString()}");
             }
 
-            return new CSharpAttribute("Cmdlet", arguments);
+            return new CSharpAttribute(nameof(PS.CmdletAttribute), arguments);
         }
     }
 }

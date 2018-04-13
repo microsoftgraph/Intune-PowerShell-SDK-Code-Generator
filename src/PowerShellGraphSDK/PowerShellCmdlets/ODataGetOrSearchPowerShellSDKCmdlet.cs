@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 
-namespace PowerShellGraphSDK
+namespace PowerShellGraphSDK.PowerShellCmdlets
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -12,19 +12,18 @@ namespace PowerShellGraphSDK
     /// </summary>
     public abstract class ODataGetOrSearchPowerShellSDKCmdlet : ODataGetPowerShellSDKCmdlet
     {
-        public const string ParameterSetGet = "Get";
-        public const string ParameterSetSearch = "Search";
+        public new const string OperationName = "Search";
 
-        [Parameter(ParameterSetName = ParameterSetSearch)]
+        [Parameter(ParameterSetName = ODataGetOrSearchPowerShellSDKCmdlet.OperationName)]
         public string Filter { get; set; }
 
-        [Parameter(ParameterSetName = ParameterSetSearch)]
+        [Parameter(ParameterSetName = ODataGetOrSearchPowerShellSDKCmdlet.OperationName)]
         public string[] OrderBy { get; set; }
 
-        [Parameter(ParameterSetName = ParameterSetSearch)]
+        [Parameter(ParameterSetName = ODataGetOrSearchPowerShellSDKCmdlet.OperationName)]
         public int? Skip { get; set; }
 
-        [Parameter(ParameterSetName = ParameterSetSearch)]
+        [Parameter(ParameterSetName = ODataGetOrSearchPowerShellSDKCmdlet.OperationName)]
         [Alias("First")] // Required to be compatible with the PowerShell paging parameters
         public int? Top { get; set; }
 
@@ -56,7 +55,7 @@ namespace PowerShellGraphSDK
             object result = base.ReadResponse(content);
             // If this result is for a SEARCH call and there is only 1 page in the result, return only the result objects
             if (result is PSObject response &&
-                this.ParameterSetName == ParameterSetSearch &&
+                this.ParameterSetName == OperationName &&
                 response.Members.Any(member => member.Name == "value") &&
                 !response.Members.Any(member => member.Name == "@odata.nextLink"))
             {

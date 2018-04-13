@@ -92,17 +92,40 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             resultBuilder.AppendLine("{");
 
             // Properties
+            bool isFirst = true;
             foreach (CSharpProperty property in this.Properties)
             {
+                // Add a new line except for the first property
+                if (isFirst)
+                {
+                    isFirst = false;
+                }
+                else
+                {
+                    resultBuilder.AppendLine();
+                }
+
                 resultBuilder.AppendLine(StringUtils.Indent(1, property.ToString()));
+            }
+
+            if (this.Properties.Any() && this.Methods.Any())
+            {
                 resultBuilder.AppendLine();
             }
 
             // Methods
+            isFirst = true;
             foreach (CSharpMethod method in this.Methods)
             {
+                if (isFirst)
+                {
+                    isFirst = false;
+                }
+                else
+                {
+                    resultBuilder.AppendLine();
+                }
                 resultBuilder.AppendLine(StringUtils.Indent(1, method.ToString()));
-                resultBuilder.AppendLine();
             }
 
             // End body

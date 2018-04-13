@@ -5,6 +5,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Represents a parameter set for a PowerShell cmdlet.
@@ -102,6 +103,38 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             }
 
             this[parameter.Name] = parameter;
+        }
+
+        /// <summary>
+        /// Adds all given parameters to the parameter set.
+        /// </summary>
+        /// <param name="parameters">The parameters</param>
+        /// <exception cref="ArgumentNullException">If <paramref name="parameters"/> is null</exception>
+        /// <exception cref="ArgumentException">If adding the given CmdletParameter objects would result in duplicate parameter names</exception>
+        public void AddAll(IEnumerable<CmdletParameter> parameters)
+        {
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
+            // Check for cmdlets that would result in duplicates
+            IEnumerable<string> duplicates = parameters.Concat(this._parameters.Values)
+                .GroupBy(param => param.Name)
+                .Where(group => group.Count() > 1)
+                .Select(group => $"'{group.Key}' ({group.Count()})");
+
+            // Throw if there are duplicates
+            if (duplicates.Any())
+            {
+                throw new ArgumentException($"Adding the given parameters would result in duplicates with the name(s): {string.Join(", ", duplicates)}", nameof(parameters));
+            }
+
+            // Add all the cmdlets
+            foreach (CmdletParameter parameter in parameters)
+            {
+                this.Add(parameter);
+            }
         }
 
         /// <summary>

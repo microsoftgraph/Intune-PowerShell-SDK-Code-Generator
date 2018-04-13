@@ -150,6 +150,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
                 .GroupBy(cmdlet => cmdlet.Name)
                 .Where(group => group.Count() > 1)
                 .Select(group => $"'{group.Key}' ({group.Count()})");
+
             // Throw if there are duplicates
             if (duplicates.Any())
             {

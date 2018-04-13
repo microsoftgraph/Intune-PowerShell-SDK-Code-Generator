@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 
-namespace PowerShellGraphSDK
+namespace PowerShellGraphSDK.PowerShellCmdlets
 {
     using System;
     using System.Collections.Generic;
@@ -8,7 +8,6 @@ namespace PowerShellGraphSDK
     using System.Management.Automation;
     using System.Net.Http;
     using System.Net.Http.Headers;
-    using PowerShellGraphSDK.Common;
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
     using Newtonsoft.Json.Linq;
 

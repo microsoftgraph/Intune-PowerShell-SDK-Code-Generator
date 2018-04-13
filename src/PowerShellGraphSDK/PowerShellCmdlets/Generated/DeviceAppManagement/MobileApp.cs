@@ -9,7 +9,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         ConfirmImpact = ConfirmImpact.Low)]
     public class GetMobileApp : ODataGetOrSearchPowerShellSDKCmdlet
     {
-        [Parameter(ParameterSetName = ParameterSetGet, Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
+        [Parameter(ParameterSetName = ODataGetPowerShellSDKCmdlet.OperationName, Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
         public string id { get; set; }
 
         internal override string GetResourcePath()

@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 
-namespace PowerShellGraphSDK
+namespace PowerShellGraphSDK.PowerShellCmdlets
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -11,16 +11,20 @@ namespace PowerShellGraphSDK
     /// </summary>
     public abstract class ODataGetPowerShellSDKCmdlet : ODataPowerShellSDKCmdletBase
     {
+        public const string OperationName = "Get";
+
         /// <summary>
         /// The list of $select query option values (i.e. property names).
         /// </summary>
-        [Parameter]
+        [Parameter(ParameterSetName = ODataGetPowerShellSDKCmdlet.OperationName)]
+        [Parameter(ParameterSetName = ODataGetOrSearchPowerShellSDKCmdlet.OperationName)]
         public string[] Select { get; set; }
 
         /// <summary>
         /// The list of $expand query option values (i.e. property names).
         /// </summary>
-        [Parameter]
+        [Parameter(ParameterSetName = ODataGetPowerShellSDKCmdlet.OperationName)]
+        [Parameter(ParameterSetName = ODataGetOrSearchPowerShellSDKCmdlet.OperationName)]
         public string[] Expand { get; set; }
 
         internal override string GetHttpMethod()

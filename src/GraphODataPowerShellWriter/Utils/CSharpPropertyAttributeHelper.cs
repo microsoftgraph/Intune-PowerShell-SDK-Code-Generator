@@ -2,38 +2,55 @@
 
 namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 {
+    using System;
     using System.Collections.Generic;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
+    using PowerShellGraphSDK;
+    using PS = System.Management.Automation;
 
     public static class CSharpPropertyAttributeHelper
     {
-        private static readonly CSharpAttribute _validateNotNullAttribute = new CSharpAttribute("ValidateNotNull");
-        public static CSharpAttribute CreateValidateNotNullCSharpPropertyAttribute() => _validateNotNullAttribute;
+        private static readonly CSharpAttribute _validateNotNullAttribute = new CSharpAttribute(nameof(PS.ValidateNotNullAttribute));
+        public static CSharpAttribute CreateValidateNotNullCSharpPropertyParameterAttribute() => _validateNotNullAttribute;
 
-        private static readonly CSharpAttribute _validateNotNullOrEmptyAttribute = new CSharpAttribute("ValidateNotNullOrEmpty");
-        public static CSharpAttribute CreateValidateNotNullOrEmptyCSharpPropertyAttribute() => _validateNotNullOrEmptyAttribute;
+        private static readonly CSharpAttribute _validateNotNullOrEmptyAttribute = new CSharpAttribute(nameof(PS.ValidateNotNullOrEmptyAttribute));
+        public static CSharpAttribute CreateValidateNotNullOrEmptyCSharpPropertyParameterAttribute() => _validateNotNullOrEmptyAttribute;
 
-        public static CSharpAttribute CreateCSharpPropertyAttribute(string parameterSetName = null, bool mandatory = false, bool valueFromPipeline = false, bool valueFromPipelineByPropertyName = false)
+        public static CSharpAttribute CreateCSharpPropertyParameterAttribute(
+            string parameterSetName = null,
+            bool mandatory = false,
+            bool valueFromPipeline = false,
+            bool valueFromPipelineByPropertyName = false)
         {
             ICollection<string> arguments = new List<string>();
             if (parameterSetName != null)
             {
-                arguments.Add($"ParameterSetName = \"{parameterSetName}\"");
+                arguments.Add($"{nameof(PS.ParameterAttribute.ParameterSetName)} = \"{parameterSetName}\"");
             }
             if (mandatory)
             {
-                arguments.Add("Mandatory = true");
+                arguments.Add($"{nameof(PS.ParameterAttribute.Mandatory)} = true");
             }
             if (valueFromPipeline)
             {
-                arguments.Add("ValueFromPipeline = true");
+                arguments.Add($"{nameof(PS.ParameterAttribute.ValueFromPipeline)} = true");
             }
             if (valueFromPipelineByPropertyName)
             {
-                arguments.Add("ValueFromPipelineByPropertyName = true");
+                arguments.Add($"{nameof(PS.ParameterAttribute.ValueFromPipelineByPropertyName)} = true");
             }
 
-            return new CSharpAttribute("Parameter", arguments);
+            return new CSharpAttribute(nameof(PS.ParameterAttribute), arguments);
+        }
+
+        public static CSharpAttribute CreateCSharpPropertyParameterSetSwitchAttribute(string parameterSetName)
+        {
+            if (parameterSetName == null)
+            {
+                throw new ArgumentNullException(nameof(parameterSetName));
+            }
+
+            return new CSharpAttribute(nameof(ParameterSetSelectorAttribute), new string[] { $"\"{parameterSetName}\"" });
         }
     }
 }

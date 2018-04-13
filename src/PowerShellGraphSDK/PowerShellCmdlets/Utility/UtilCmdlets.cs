@@ -5,7 +5,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     using System.Collections;
     using System.Management.Automation;
     using System.Net.Http;
-    using PowerShellGraphSDK.Common;
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
     [Cmdlet(

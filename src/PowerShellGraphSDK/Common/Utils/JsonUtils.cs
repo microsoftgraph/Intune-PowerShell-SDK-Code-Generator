@@ -13,14 +13,14 @@ namespace PowerShellGraphSDK
 
     internal static class JsonUtils
     {
-        private static readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
+        private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings()
         {
             TypeNameHandling = TypeNameHandling.None,
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             DateFormatHandling = DateFormatHandling.IsoDateFormat,
             DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-            Formatting = Formatting.None,
-            NullValueHandling = NullValueHandling.Ignore,
+            Formatting = Formatting.Indented,
+            NullValueHandling = NullValueHandling.Include,
             Converters = new List<JsonConverter> { new StringEnumConverter() }
         };
 
@@ -31,17 +31,13 @@ namespace PowerShellGraphSDK
         /// <returns>The JSON string</returns>
         public static string WriteJson(object obj)
         {
-            PSObject psObject = obj as PSObject;
-            if (psObject != null)
+            if (obj is PSObject psObject)
             {
-                IDictionary<string, object> dictionary = psObject.Properties.ToDictionary(
-                    (prop) => prop.Name,
-                    (prop) => prop.Value);
-                return JsonConvert.SerializeObject(dictionary, jsonSettings);
+                return JsonConvert.SerializeObject(psObject.BaseObject, _jsonSettings);
             }
             else
             {
-                return JsonConvert.SerializeObject(obj, jsonSettings);
+                return JsonConvert.SerializeObject(obj, _jsonSettings);
             }
         }
 
@@ -52,7 +48,7 @@ namespace PowerShellGraphSDK
         /// <returns>The deserialized JToken object</returns>
         public static JToken ReadJson(string json)
         {
-            return JsonConvert.DeserializeObject<JToken>(json, jsonSettings);
+            return JsonConvert.DeserializeObject<JToken>(json, _jsonSettings);
         }
 
         /// <summary>
@@ -62,7 +58,7 @@ namespace PowerShellGraphSDK
         /// <returns>The deserialized object</returns>
         public static T ReadJson<T>(string json)
         {
-            return JsonConvert.DeserializeObject<T>(json, jsonSettings);
+            return JsonConvert.DeserializeObject<T>(json, _jsonSettings);
         }
 
         /// <summary>
@@ -78,16 +74,11 @@ namespace PowerShellGraphSDK
             }
 
             // The token may represent a value or a container (there are no other subtypes in Newtonsoft's Json.NET)
-            // Handle values
-            JValue value = json as JValue;
-            if (value != null)
+            if (json is JValue jValue) // Handle values
             {
-                return value.Value == null ? null : PSObject.AsPSObject(value.Value);
+                return jValue.Value == null ? null : PSObject.AsPSObject(jValue.Value);
             }
-
-            // Handle containers
-            JContainer container = json as JContainer;
-            if (container != null)
+            else if (json is JContainer container) // Handle containers
             {
                 if (container is JConstructor)
                 {
@@ -98,8 +89,7 @@ namespace PowerShellGraphSDK
                     throw new ArgumentException("The provided JToken cannot contain a JProperty object which is not nested inside a JObject", nameof(json));
                 }
 
-                JObject obj = container as JObject;
-                if (obj != null)
+                if (container is JObject obj)
                 {
                     PSObject hashtable = new PSObject();
                     foreach (JProperty property in obj.Properties())
@@ -110,9 +100,7 @@ namespace PowerShellGraphSDK
 
                     return PSObject.AsPSObject(hashtable);
                 }
-
-                JArray array = container as JArray;
-                if (array != null)
+                else if (container is JArray array)
                 {
                     List<PSObject> objs = new List<PSObject>();
                     foreach (JToken arrayItem in array)
@@ -123,10 +111,17 @@ namespace PowerShellGraphSDK
 
                     return PSObject.AsPSObject(objs.ToArray());
                 }
+                else
+                {
+                    // This should not be possible - we should have returned earlier unless there is a new JContainer subtype
+                    throw new ArgumentException("The JToken is not a JObject or JArray type", nameof(json));
+                }
             }
-
-            // This should not be possible - we should have returned earlier unless there is a new JToken subtype
-            throw new ArgumentException("The JToken is not a value or container type", nameof(json));
+            else
+            {
+                // This should not be possible - we should have returned earlier unless there is a new JToken subtype
+                throw new ArgumentException("The JToken is not a value or container type", nameof(json));
+            }
         }
     }
 }

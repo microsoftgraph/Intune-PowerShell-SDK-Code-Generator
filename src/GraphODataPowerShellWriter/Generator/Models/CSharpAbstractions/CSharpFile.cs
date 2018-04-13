@@ -4,6 +4,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils;
 
@@ -70,13 +71,26 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             {
                 resultBuilder.AppendLine(StringUtils.Indent(1, $"using {@using};"));
             }
-            resultBuilder.AppendLine();
+
+            if (this.Usings.Any() && this.Classes.Any())
+            {
+                resultBuilder.AppendLine();
+            }
 
             // Classes
+            bool isFirst = true;
             foreach (CSharpClass @class in this.Classes)
             {
+                if (isFirst)
+                {
+                    isFirst = false;
+                }
+                else
+                {
+                    resultBuilder.AppendLine();
+                }
+
                 resultBuilder.AppendLine(StringUtils.Indent(1, @class.ToString()));
-                resultBuilder.AppendLine();
             }
 
             // End body

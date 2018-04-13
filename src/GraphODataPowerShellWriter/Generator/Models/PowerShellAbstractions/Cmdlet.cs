@@ -3,6 +3,7 @@
 namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 {
     using System;
+    using PS = System.Management.Automation;
 
     /// <summary>
     /// An abstract representation of a PowerShell cmdlet.
@@ -23,7 +24,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// The impact level of this cmdlet.
         /// This corresponds to the "ConfirmImpact" enum in the System.Management.Automation assembly.
         /// </summary>
-        public CmdletImpactLevel ImpactLevel { get; set; }
+        public PS.ConfirmImpact ImpactLevel { get; set; }
 
         /// <summary>
         /// The HTTP method to be used when making the call.
