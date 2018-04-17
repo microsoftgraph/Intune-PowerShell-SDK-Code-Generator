@@ -55,9 +55,12 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             object result = base.ReadResponse(content);
             // If this result is for a SEARCH call and there is only 1 page in the result, return only the result objects
             if (result is PSObject response &&
-                this.ParameterSetName == OperationName &&
-                response.Members.Any(member => member.Name == "value") &&
-                !response.Members.Any(member => member.Name == "@odata.nextLink"))
+                // Make sure that this is a standard collection response
+                response.Members.Any(member => member.Name == "@odata.context")
+                && response.Members.Any(member => member.Name == "@odata.count")
+                && response.Members.Any(member => member.Name == "value")
+                // Make sure that there is no nextLink (i.e. there is only 1 page of results)
+                && !response.Members.Any(member => member.Name == "@odata.nextLink"))
             {
                 result = response.Members["value"].Value;
             }
