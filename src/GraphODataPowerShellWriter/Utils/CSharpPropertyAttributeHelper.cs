@@ -11,12 +11,15 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
     public static class CSharpPropertyAttributeHelper
     {
         private static readonly CSharpAttribute _validateNotNullAttribute = new CSharpAttribute(nameof(PS.ValidateNotNullAttribute));
-        public static CSharpAttribute CreateValidateNotNullCSharpPropertyParameterAttribute() => _validateNotNullAttribute;
+        public static CSharpAttribute CreateValidateNotNullAttribute() => _validateNotNullAttribute;
 
         private static readonly CSharpAttribute _validateNotNullOrEmptyAttribute = new CSharpAttribute(nameof(PS.ValidateNotNullOrEmptyAttribute));
-        public static CSharpAttribute CreateValidateNotNullOrEmptyCSharpPropertyParameterAttribute() => _validateNotNullOrEmptyAttribute;
+        public static CSharpAttribute CreateValidateNotNullOrEmptyAttribute() => _validateNotNullOrEmptyAttribute;
 
-        public static CSharpAttribute CreateCSharpPropertyParameterAttribute(
+        private static readonly CSharpAttribute _allowEmptyCollectionAttribute = new CSharpAttribute(nameof(PS.AllowEmptyCollectionAttribute));
+        public static CSharpAttribute CreateAllowEmptyCollectionAttribute() => _allowEmptyCollectionAttribute;
+
+        public static CSharpAttribute CreateParameterAttribute(
             string parameterSetName = null,
             bool mandatory = false,
             bool valueFromPipeline = false,
@@ -43,7 +46,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             return new CSharpAttribute(nameof(PS.ParameterAttribute), arguments);
         }
 
-        public static CSharpAttribute CreateCSharpPropertyParameterSetSwitchAttribute(string parameterSetName)
+        public static CSharpAttribute CreateParameterSetSwitchAttribute(string parameterSetName)
         {
             if (parameterSetName == null)
             {

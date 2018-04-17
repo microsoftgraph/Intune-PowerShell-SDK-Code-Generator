@@ -11,20 +11,16 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     /// </summary>
     public abstract class ODataGetPowerShellSDKCmdlet : ODataPowerShellSDKCmdletBase
     {
-        public const string OperationName = "Get";
-
         /// <summary>
         /// The list of $select query option values (i.e. property names).
         /// </summary>
-        [Parameter(ParameterSetName = ODataGetPowerShellSDKCmdlet.OperationName)]
-        [Parameter(ParameterSetName = ODataGetOrSearchPowerShellSDKCmdlet.OperationName)]
+        [Parameter]
         public string[] Select { get; set; }
 
         /// <summary>
         /// The list of $expand query option values (i.e. property names).
         /// </summary>
-        [Parameter(ParameterSetName = ODataGetPowerShellSDKCmdlet.OperationName)]
-        [Parameter(ParameterSetName = ODataGetOrSearchPowerShellSDKCmdlet.OperationName)]
+        [Parameter]
         public string[] Expand { get; set; }
 
         internal override string GetHttpMethod()

@@ -73,7 +73,7 @@ namespace GraphODataPowerShellTemplateWriter
                     indent++;
 
                     // Cmdlet info
-                    output.AppendLine(StringUtils.Indent(indent, $"\"httpMethod\" : \"{cmdlet.HttpMethod}\","));
+                    output.AppendLine(StringUtils.Indent(indent, $"\"baseType\" : \"{cmdlet.BaseType.ToCSharpString()}\","));
                     output.AppendLine(StringUtils.Indent(indent, $"\"url\" : \"{cmdlet.CallUrl}\","));
 
                     // Print parameter sets

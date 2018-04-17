@@ -9,7 +9,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 
     public static class CSharpClassAttributeHelper
     {
-        public static CSharpAttribute CreateCSharpClassCmdletAttribute(CmdletName name, PS.ConfirmImpact impactLevel)
+        public static CSharpAttribute CreateCmdletAttribute(CmdletName name, PS.ConfirmImpact impactLevel)
         {
             if (name == null)
             {

@@ -38,7 +38,7 @@ function global:Run-SDK {
     )
 
     Write-Host
-    Write-Host 'Starting new PowerShell context with the following commands:' -f Cyan
+    Write-Host 'Starting a new PowerShell context with the following commands:' -f Cyan
     $commands | ForEach-Object { Write-Host "    $_" -f Cyan }
     Write-Host
     Write-Host 'WARNING: Type ''exit'' to return to this initialized PowerShell context.' -f Yellow

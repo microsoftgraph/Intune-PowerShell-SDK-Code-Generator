@@ -9,5 +9,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         Post,
         Patch,
         Delete,
+        Function,
+        Action,
     }
 }

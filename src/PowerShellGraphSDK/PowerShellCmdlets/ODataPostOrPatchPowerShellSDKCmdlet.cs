@@ -7,6 +7,9 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     using System.Management.Automation;
     using System.Reflection;
 
+    /// <summary>
+    /// The common behavior between cmdlets that create or update OData resources.
+    /// </summary>
     public abstract class ODataPostOrPatchPowerShellSDKCmdlet : ODataPowerShellSDKCmdletBase
     {
         [Parameter(
@@ -19,8 +22,8 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
 
         internal override object GetContent()
         {
-            // Get the PropertyInfo objects for the properties that are set by the user in this invocation of the PowerShell cmdlet
-            IEnumerable<PropertyInfo> boundProperties = this.GetBoundProperties();
+            // Get the properties that were set by the user in this invocation of the PowerShell cmdlet
+            IEnumerable<PropertyInfo> boundProperties = this.GetBoundProperties(includeInherited: false);
 
             // Get the OData type based on which parameters were bound
             string selectedODataType = this.GetODataType();
@@ -46,8 +49,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
 
             // Get the rest of the properties that will be serialized into the request body
             IEnumerable<PropertyInfo> typeProperties = boundProperties.Where(prop =>
-                prop.DeclaringType == this.GetType() // don't include inherited properties
-                && prop.Name != nameof(this.ODataType) // don't include the ODataType parameter since we already got it
+                prop.Name != nameof(this.ODataType) // don't include the ODataType parameter since we already got it
                 && !this.GetParameterSetSelectorProperties().Contains(prop)); // don't include the switch parameters
 
             // Add the parameters to the content
@@ -123,26 +125,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             }
 
             return result;
-        }
-
-        private IEnumerable<PropertyInfo> _boundProperties = null;
-        private IEnumerable<PropertyInfo> GetBoundProperties()
-        {
-            if (this._boundProperties == null)
-            {
-                // Get this cmdlet's properties
-                IEnumerable<PropertyInfo> cmdletProperties = this.GetType().GetProperties(
-                    BindingFlags.Instance | // ignore static/const properties
-                    BindingFlags.Public); // only include public properties
-
-                // Get the properties that were set from PowerShell
-                IEnumerable<string> boundParameterNames = this.MyInvocation.BoundParameters.Keys;
-                IEnumerable<PropertyInfo> boundProperties = cmdletProperties.Where(prop => boundParameterNames.Contains(prop.Name));
-
-                this._boundProperties = boundProperties;
-            }
-
-            return this._boundProperties;
         }
 
         private IEnumerable<PropertyInfo> _parameterSetSelectorProperties = null;

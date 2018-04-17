@@ -12,7 +12,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     /// </summary>
     public abstract class ODataGetOrSearchPowerShellSDKCmdlet : ODataGetPowerShellSDKCmdlet
     {
-        public new const string OperationName = "Search";
+        public const string OperationName = "Search";
 
         [Parameter(ParameterSetName = ODataGetOrSearchPowerShellSDKCmdlet.OperationName)]
         public string Filter { get; set; }

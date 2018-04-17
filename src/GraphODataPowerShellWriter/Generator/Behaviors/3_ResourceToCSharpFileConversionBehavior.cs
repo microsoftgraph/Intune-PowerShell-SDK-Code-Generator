@@ -76,7 +76,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             }
 
             // "[Cmdlet]" attribute
-            yield return CSharpClassAttributeHelper.CreateCSharpClassCmdletAttribute(cmdlet.Name, cmdlet.ImpactLevel);
+            yield return CSharpClassAttributeHelper.CreateCmdletAttribute(cmdlet.Name, cmdlet.ImpactLevel);
         }
 
         private static IEnumerable<CSharpMethod> CreateMethods(this Cmdlet cmdlet)
@@ -86,8 +86,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 throw new ArgumentNullException(nameof(cmdlet));
             }
 
+            // "GetHttpMethod()" method override
+            if (cmdlet.HttpMethod != null)
+            {
+                yield return CSharpMethodHelper.CreateGetHttpMethodMethod(cmdlet.HttpMethod);
+            }
+
             // "GetResourcePath()" method override
-            yield return CSharpMethodHelper.GetResourcePath(cmdlet.CallUrl);
+            yield return CSharpMethodHelper.CreateGetResourcePathMethod(cmdlet.CallUrl);
         }
 
         private static IEnumerable<CSharpProperty> CreateProperties(this Cmdlet cmdlet)
@@ -126,16 +132,34 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 throw new ArgumentNullException(nameof(parameterSets));
             }
 
+            // Validate not null
+            if (parameter.ValidateNotNull)
+            {
+                yield return CSharpPropertyAttributeHelper.CreateValidateNotNullAttribute();
+            }
+
+            // Validate not null or empty
+            if (parameter.ValidateNotNull)
+            {
+                yield return CSharpPropertyAttributeHelper.CreateValidateNotNullOrEmptyAttribute();
+            }
+
             // ParameterSetSwitch attribute
             if (parameter.ParameterSetSelectorName != null)
             {
-                yield return CSharpPropertyAttributeHelper.CreateCSharpPropertyParameterSetSwitchAttribute(parameter.ParameterSetSelectorName);
+                yield return CSharpPropertyAttributeHelper.CreateParameterSetSwitchAttribute(parameter.ParameterSetSelectorName);
+            }
+
+            // AllowEmptyCollection attribute
+            if (parameter.Type.IsArray)
+            {
+                yield return CSharpPropertyAttributeHelper.CreateAllowEmptyCollectionAttribute();
             }
 
             foreach (CmdletParameterSet parameterSet in parameterSets)
             {
                 // Parameter attribute
-                yield return CSharpPropertyAttributeHelper.CreateCSharpPropertyParameterAttribute(
+                yield return CSharpPropertyAttributeHelper.CreateParameterAttribute(
                     parameterSet.Name,
                     parameter.Mandatory,
                     parameter.ValueFromPipeline,

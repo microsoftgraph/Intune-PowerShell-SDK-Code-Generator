@@ -17,7 +17,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <summary>
         /// The type of the parameter.
         /// </summary>
-        public Type Type { get; }
+        public Type Type
+        {
+            get => this._type;
+            set => this._type = value ?? throw new ArgumentNullException(nameof(value));
+        }
+        private Type _type;
 
         /// <summary>
         /// Whether or not the parameter is mandatory.
@@ -58,7 +63,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         {
             if (string.IsNullOrWhiteSpace(parameterName))
             {
-                throw new ArgumentNullException(nameof(parameterName), "Parameter name cannot be null or empty");
+                throw new ArgumentException("Parameter name cannot be null or empty", nameof(parameterName));
             }
 
             // TODO: Throw ArgumentException if the parameter name is a reserved/common name

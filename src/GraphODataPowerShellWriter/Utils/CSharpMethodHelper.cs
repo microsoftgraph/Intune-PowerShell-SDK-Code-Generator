@@ -2,13 +2,48 @@
 
 namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 {
+    using System;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
+    using PowerShellGraphSDK.PowerShellCmdlets;
 
     public static class CSharpMethodHelper
     {
-        public static CSharpMethod GetResourcePath(string url)
+        public static CSharpMethod CreateGetResourcePathMethod(string url)
         {
-            CSharpMethod result = new CSharpMethod("GetResourcePath", typeof(string), $"return $\"{url}\";")
+            if (url == null)
+            {
+                throw new ArgumentNullException(nameof(url));
+            }
+
+            // Create the method definition
+            string methodName = nameof(ODataPowerShellSDKCmdletBase.GetResourcePath);
+            Type returnType = typeof(string);
+            string methodBody = $"return $\"{url}\";";
+
+            // Create the method object
+            CSharpMethod result = new CSharpMethod(methodName, returnType, methodBody)
+            {
+                Override = true,
+                AccessModifier = CSharpAccessModifier.Internal,
+            };
+
+            return result;
+        }
+
+        public static CSharpMethod CreateGetHttpMethodMethod(string httpMethod)
+        {
+            if (httpMethod == null)
+            {
+                throw new ArgumentNullException(nameof(httpMethod));
+            }
+
+            // Create the method definition
+            string methodName = nameof(ODataPowerShellSDKCmdletBase.GetHttpMethod);
+            Type returnType = typeof(string);
+            string methodBody = httpMethod;
+
+            // Create the method object
+            CSharpMethod result = new CSharpMethod(methodName, returnType, methodBody)
             {
                 Override = true,
                 AccessModifier = CSharpAccessModifier.Internal,

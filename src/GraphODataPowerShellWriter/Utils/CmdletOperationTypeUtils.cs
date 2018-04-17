@@ -17,6 +17,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 case CmdletOperationType.Post: return nameof(ODataPostPowerShellSDKCmdlet);
                 case CmdletOperationType.Patch: return nameof(ODataPatchPowerShellSDKCmdlet);
                 case CmdletOperationType.Delete: return nameof(ODataDeletePowerShellSDKCmdlet);
+                case CmdletOperationType.Function: return nameof(ODataFunctionPowerShellSDKCmdlet);
+                case CmdletOperationType.Action: return nameof(ODataActionPowerShellSDKCmdlet);
                 default: throw new ArgumentException("Unknown operation type", nameof(operationType));
             }
         }

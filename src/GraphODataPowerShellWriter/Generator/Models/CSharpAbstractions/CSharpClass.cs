@@ -117,6 +117,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             isFirst = true;
             foreach (CSharpMethod method in this.Methods)
             {
+                // Add a new line except for the first property
                 if (isFirst)
                 {
                     isFirst = false;
@@ -125,6 +126,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
                 {
                     resultBuilder.AppendLine();
                 }
+
                 resultBuilder.AppendLine(StringUtils.Indent(1, method.ToString()));
             }
 
