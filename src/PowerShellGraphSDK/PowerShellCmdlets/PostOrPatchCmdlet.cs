@@ -10,10 +10,10 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     /// <summary>
     /// The common behavior between cmdlets that create or update OData resources.
     /// </summary>
-    public abstract class ODataPostOrPatchPowerShellSDKCmdlet : ODataPowerShellSDKCmdletBase
+    public abstract class PostOrPatchCmdlet : ODataPowerShellSDKCmdletBase
     {
         [Parameter(
-            ParameterSetName = ODataPatchPowerShellSDKCmdlet.OperationName,
+            ParameterSetName = PatchCmdlet.OperationName,
             Mandatory = true,
             ValueFromPipelineByPropertyName = true)]
         [ValidateNotNullOrEmpty]

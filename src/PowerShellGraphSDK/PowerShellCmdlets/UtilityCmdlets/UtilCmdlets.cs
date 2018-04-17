@@ -56,7 +56,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     [Cmdlet(
         CmdletVerb, CmdletNoun,
         ConfirmImpact = ConfirmImpact.Low)]
-    public class GetMetadata : ODataGetPowerShellSDKCmdlet
+    public class GetMetadata : GetCmdlet
     {
         public const string CmdletVerb = VerbsCommon.Get;
         public const string CmdletNoun = "MSGraphMetadata";
@@ -94,7 +94,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     [Cmdlet(
         CmdletVerb, CmdletNoun,
         ConfirmImpact = ConfirmImpact.Low)]
-    public class InvokeRequest : ODataGetPowerShellSDKCmdlet
+    public class InvokeRequest : GetCmdlet
     {
         public const string CmdletVerb = VerbsLifecycle.Invoke;
         public const string CmdletNoun = "MSGraphRequest";

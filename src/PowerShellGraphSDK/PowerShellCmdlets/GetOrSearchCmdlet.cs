@@ -10,20 +10,20 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     /// The common behavior between all OData PowerShell SDK cmdlets that support
     /// $select, $expand, $filter, $orderBy, $skip and $top query parameters.
     /// </summary>
-    public abstract class ODataGetOrSearchPowerShellSDKCmdlet : ODataGetPowerShellSDKCmdlet
+    public abstract class GetOrSearchCmdlet : GetCmdlet
     {
         public const string OperationName = "Search";
 
-        [Parameter(ParameterSetName = ODataGetOrSearchPowerShellSDKCmdlet.OperationName)]
+        [Parameter(ParameterSetName = GetOrSearchCmdlet.OperationName)]
         public string Filter { get; set; }
 
-        [Parameter(ParameterSetName = ODataGetOrSearchPowerShellSDKCmdlet.OperationName)]
+        [Parameter(ParameterSetName = GetOrSearchCmdlet.OperationName)]
         public string[] OrderBy { get; set; }
 
-        [Parameter(ParameterSetName = ODataGetOrSearchPowerShellSDKCmdlet.OperationName)]
+        [Parameter(ParameterSetName = GetOrSearchCmdlet.OperationName)]
         public int? Skip { get; set; }
 
-        [Parameter(ParameterSetName = ODataGetOrSearchPowerShellSDKCmdlet.OperationName)]
+        [Parameter(ParameterSetName = GetOrSearchCmdlet.OperationName)]
         [Alias("First")] // Required to be compatible with the PowerShell paging parameters
         public int? Top { get; set; }
 

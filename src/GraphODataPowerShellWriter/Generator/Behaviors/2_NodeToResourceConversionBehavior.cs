@@ -196,7 +196,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             cmdlet.SetupIdParametersAndCallUrl(oDataRoute, addEntityId: false, idValueFromPipeline: false);
 
             // Add properties of derived types as parameters to this cmdlet by traversing the tree of derived types
-            cmdlet.AddParametersForEntityProperties(resource.Type, ODataPostPowerShellSDKCmdlet.OperationName);
+            cmdlet.AddParametersForEntityProperties(resource.Type, PostCmdlet.OperationName);
 
             return cmdlet;
         }
@@ -222,7 +222,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             cmdlet.SetupIdParametersAndCallUrl(oDataRoute, idValueFromPipeline: false);
 
             // Add properties of derived types as parameters to this cmdlet by traversing the tree of derived types
-            cmdlet.AddParametersForEntityProperties(resource.Type, ODataPatchPowerShellSDKCmdlet.OperationName);
+            cmdlet.AddParametersForEntityProperties(resource.Type, PatchCmdlet.OperationName);
 
             return cmdlet;
         }

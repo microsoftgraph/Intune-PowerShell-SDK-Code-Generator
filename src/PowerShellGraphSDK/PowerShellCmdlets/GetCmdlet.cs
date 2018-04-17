@@ -9,7 +9,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     /// <summary>
     /// The common behavior between all OData PowerShell SDK cmdlets that support $select and $expand query parameters.
     /// </summary>
-    public abstract class ODataGetPowerShellSDKCmdlet : ODataPowerShellSDKCmdletBase
+    public abstract class GetCmdlet : ODataPowerShellSDKCmdletBase
     {
         /// <summary>
         /// The list of $select query option values (i.e. property names).

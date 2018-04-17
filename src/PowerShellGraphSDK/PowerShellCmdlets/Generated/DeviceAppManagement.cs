@@ -7,7 +7,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     [Cmdlet(
         "Get", "IntuneDeviceAppManagement",
         ConfirmImpact = ConfirmImpact.Low)]
-    public class GetDeviceAppManagement : ODataGetPowerShellSDKCmdlet
+    public class GetDeviceAppManagement : GetCmdlet
     {
         internal override string GetResourcePath()
         {

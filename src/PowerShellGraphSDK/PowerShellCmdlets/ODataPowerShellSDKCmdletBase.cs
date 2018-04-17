@@ -8,6 +8,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     using System.Management.Automation;
     using System.Net.Http;
     using System.Net.Http.Headers;
+    using System.Reflection;
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
     using Newtonsoft.Json.Linq;
 
@@ -34,8 +35,16 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     ///         <description>Gets the HTTP method to use when making the call</description>
     ///     </item>
     ///     <item>
+    ///         <term><see cref="GetContentType"/></term>
+    ///         <description>Gets the MIME type for the content in the request body</description>
+    ///     </item>
+    ///     <item>
     ///         <term><see cref="GetContent"/></term>
     ///         <description>Gets the request body for the HTTP call</description>
+    ///     </item>
+    ///     <item>
+    ///         <term><see cref="WriteContent(object)"/></term>
+    ///         <description>Creates an <see cref="HttpContent"/> object from the result of <see cref="GetContent"/></description>
     ///     </item>
     ///     <item>
     ///         <term><see cref="ReadResponse(string)"/></term>
@@ -49,7 +58,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// The Graph schema version to use when making a Graph call.
         /// </summary>
         [Parameter]
-        public string GraphVersion { get; set; } = "v1.0";
+        public string SchemaVersion { get; set; } = "v1.0";
 
         /// <summary>
         /// The method that the PowerShell runtime will call.  This is the entry point for the cmdlet.
@@ -67,6 +76,8 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 this.WriteError(ex);
             }
         }
+
+        #region Overridable
 
         /// <summary>
         /// Returns the HTTP method to be used for the network call.  This method should never return null.
@@ -154,6 +165,67 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             return result;
         }
 
+        #endregion Overridable
+
+        #region Helpers
+
+        /// <summary>
+        /// Creates mappings from property names to property values for all bound properties for the current invocation of this cmdlet.
+        /// </summary>
+        /// <param name="filter">The filter for properties to be included in the result (if it evaluates to true, the property is included)</param>
+        /// <returns>The mappings from property names to property values.</returns>
+        internal IDictionary<string, object> CreateDictionaryFromBoundProperties(Func<PropertyInfo, bool> filter = null)
+        {
+            // Get the properties that were set by the user in this invocation of the PowerShell cmdlet
+            IEnumerable<PropertyInfo> boundProperties = this.GetBoundProperties(false, filter);
+
+            // Create a dictionary of the values for these properties
+            IDictionary<string, object> result = new Dictionary<string, object>();
+            foreach (PropertyInfo propInfo in boundProperties)
+            {
+                result.Add(propInfo.Name, propInfo.GetValue(this));
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the properties that are bound (set by the user) in the current invocation of this cmdlet.
+        /// </summary>
+        /// <param name="includeInherited">Whether or not to include inherited properties</param>
+        /// <param name="filter">The filter for the properties to include in the result (if it evaluates to true, the property is included)</param>
+        /// <returns>The properties that are bound in the current invocation of this cmdlet.</returns>
+        internal IEnumerable<PropertyInfo> GetBoundProperties(bool includeInherited = true, Func<PropertyInfo, bool> filter = null)
+        {
+            // Create the binding flags
+            BindingFlags bindingFlags =
+                BindingFlags.Instance | // ignore static/const properties
+                BindingFlags.Public; // only include public properties
+            if (!includeInherited)
+            {
+                bindingFlags |= BindingFlags.DeclaredOnly; // ignore inherited properties
+            }
+
+            // Get the cmdlet's properties
+            IEnumerable<PropertyInfo> cmdletProperties = this.GetType().GetProperties(bindingFlags);
+
+            // Apply filter if necessary
+            if (filter != null)
+            {
+                cmdletProperties = cmdletProperties.Where(filter);
+            }
+
+            // Get the properties that were set from PowerShell
+            IEnumerable<string> boundParameterNames = this.MyInvocation.BoundParameters.Keys;
+            IEnumerable<PropertyInfo> boundProperties = cmdletProperties.Where(prop => boundParameterNames.Contains(prop.Name));
+
+            return boundProperties;
+        }
+
+        #endregion Helpers
+
+        #region Private
+
         /// <summary>
         /// Writes an exception to the PowerShell console.  If the exception does not represent a PowerShell error,
         /// it will be wrapped in a PowerShell error object before being written to the console.
@@ -162,8 +234,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         private void WriteError(Exception ex)
         {
             ErrorRecord errorRecord;
-            IContainsErrorRecord powerShellError = ex as IContainsErrorRecord;
-            if (powerShellError != null)
+            if (ex is IContainsErrorRecord powerShellError)
             {
                 errorRecord = powerShellError.ErrorRecord;
             }
@@ -228,7 +299,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             }
             else if (Uri.IsWellFormedUriString(tempPath, UriKind.Relative))
             {
-                string sanitizedBaseUrl = $"{baseAddress.TrimEnd('/')}/{GraphVersion}";
+                string sanitizedBaseUrl = $"{baseAddress.TrimEnd('/')}/{SchemaVersion}";
                 requestUrl = $"{sanitizedBaseUrl}/{tempPath}";
             }
             else
@@ -364,5 +435,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                     powerShellErrorObject);
             }
         }
+
+        #endregion Private
     }
 }
