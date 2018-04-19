@@ -69,7 +69,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             // Usings
             foreach (string @using in this.Usings)
             {
-                resultBuilder.AppendLine(StringUtils.Indent(1, $"using {@using};"));
+                resultBuilder.AppendLine($"using {@using};".Indent());
             }
 
             if (this.Usings.Any() && this.Classes.Any())
@@ -90,7 +90,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
                     resultBuilder.AppendLine();
                 }
 
-                resultBuilder.AppendLine(StringUtils.Indent(1, @class.ToString()));
+                resultBuilder.AppendLine(@class.ToString().Indent());
             }
 
             // End body

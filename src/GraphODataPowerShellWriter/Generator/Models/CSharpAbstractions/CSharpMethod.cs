@@ -56,7 +56,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             // Method signature (access modifiers, 
             resultBuilder.AppendLine(this.GetMethodSignature());
             resultBuilder.AppendLine("{");
-            resultBuilder.AppendLine(StringUtils.Indent(1, this.Body));
+            resultBuilder.AppendLine(this.Body.Indent());
             resultBuilder.AppendLine("}");
 
             string result = resultBuilder.ToString().Trim();

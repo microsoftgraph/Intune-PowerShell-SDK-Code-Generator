@@ -22,15 +22,10 @@ namespace PowerShellGraphSDK
 
         protected override void ValidateElement(object param)
         {
-            if (param == null)
-            {
-                throw new ValidationMetadataException("The provided Type cannot be null");
-            }
-
             Type type = param.GetType();
             if (!Types.Contains(type))
             {
-                string typesString = string.Join(", ", Types.Select((t) => $"'{t.ToString()}'"));
+                string typesString = string.Join(", ", this.Types.Select((t) => $"'{t.ToString()}'"));
                 throw new ValidationMetadataException($"The provided parameter of type '{type}' is not a valid type.  Accepted types are: [{typesString}].");
             }
         }

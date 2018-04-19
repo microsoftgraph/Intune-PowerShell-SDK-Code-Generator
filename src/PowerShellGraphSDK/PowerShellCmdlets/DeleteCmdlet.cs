@@ -7,8 +7,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     /// </summary>
     public abstract class DeleteCmdlet : ODataPowerShellSDKCmdletBase
     {
-        public const string OperationName = "Delete";
-
         internal override string GetHttpMethod()
         {
             return "DELETE";

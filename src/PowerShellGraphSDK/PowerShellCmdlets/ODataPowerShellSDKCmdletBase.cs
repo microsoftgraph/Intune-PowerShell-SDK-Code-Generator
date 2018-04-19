@@ -43,6 +43,10 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     ///         <description>Gets the request body for the HTTP call</description>
     ///     </item>
     ///     <item>
+    ///         <term><see cref="ProceedWithCall(string, string, IDictionary{string, string}, object, string)"/></term>
+    ///         <description>Determines whether or not to proceed with the call</description>
+    ///     </item>
+    ///     <item>
     ///         <term><see cref="WriteContent(object)"/></term>
     ///         <description>Creates an <see cref="HttpContent"/> object from the result of <see cref="GetContent"/></description>
     ///     </item>
@@ -57,8 +61,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// <summary>
         /// The Graph schema version to use when making a Graph call.
         /// </summary>
-        [Parameter]
-        public string SchemaVersion { get; set; } = "v1.0";
+        public static string SchemaVersion { get; set; } = "v1.0";
 
         /// <summary>
         /// The method that the PowerShell runtime will call.  This is the entry point for the cmdlet.
@@ -133,6 +136,26 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         internal virtual string GetContentType()
         {
             return "application/json";
+        }
+
+        /// <summary>
+        /// A confirmation step that the call should proceed to be made.  This method allows for derived types to have an opportunity to
+        /// stop execution without throwing an exception.
+        /// </summary>
+        /// <param name="httpMethod">The evaluated HTTP method</param>
+        /// <param name="resourcePath">The evaluated OData resource path</param>
+        /// <param name="queryOptions">The evaluated query options</param>
+        /// <param name="content">The evaluated content</param>
+        /// <param name="contentType">The evaluated MIME type</param>
+        /// <returns>True if the cmdlet should proceed with making the HTTP call, otherwise false.</returns>
+        internal virtual bool ProceedWithCall(
+            string httpMethod,
+            string resourcePath,
+            IDictionary<string, string> queryOptions,
+            object content,
+            string contentType)
+        {
+            return true;
         }
 
         /// <summary>
@@ -215,7 +238,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 cmdletProperties = cmdletProperties.Where(filter);
             }
 
-            // Get the properties that were set from PowerShell
+            // Get only the properties that were set from PowerShell
             IEnumerable<string> boundParameterNames = this.MyInvocation.BoundParameters.Keys;
             IEnumerable<PropertyInfo> boundProperties = cmdletProperties.Where(prop => boundParameterNames.Contains(prop.Name));
 
@@ -250,15 +273,8 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             this.WriteError(errorRecord);
         }
 
-        /// <summary>
-        /// Runs a cmdlet.
-        /// </summary>
-        private void Run()
+        private AuthenticationResult Auth(EnvironmentParameters environmentParameters)
         {
-            // Get the environment parameters
-            EnvironmentParameters environmentParameters = GraphAuthentication.EnvironmentParameters;
-
-            // Auth
             AuthenticationResult authResult = environmentParameters?.AuthResult;
             string cmdletName = $"{PowerShellCmdlets.Connect.CmdletVerb}-{PowerShellCmdlets.Connect.CmdletNoun}";
             if (authResult == null)
@@ -280,9 +296,40 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                     authResult);
             }
 
+            return authResult;
+        }
+
+        /// <summary>
+        /// Runs a cmdlet.
+        /// </summary>
+        internal void Run()
+        {
+            // Get the environment parameters
+            EnvironmentParameters environmentParameters = GraphAuthentication.EnvironmentParameters;
+
+            // Auth
+            AuthenticationResult authResult = this.Auth(environmentParameters);
+
+            // Get all the evaluated values
+            string httpMethodString = this.GetHttpMethod();
+            string resourcePath = this.GetResourcePath();
+            IDictionary<string, string> queryOptions = this.GetUrlQueryOptions();
+            object contentObject = this.GetContent();
+            string contentType = this.GetContentType();
+
+            // Determine whether or not the call should proceed
+            if (!this.ProceedWithCall(
+                httpMethodString,
+                resourcePath,
+                queryOptions,
+                contentObject,
+                contentType))
+            {
+                return;
+            }
+
             // Build the URL
             string requestUrl;
-            string resourcePath = this.GetResourcePath();
             if (resourcePath == null)
             {
                 throw new PSGraphSDKException(
@@ -312,7 +359,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             }
 
             // Add the query options to the URL
-            IDictionary<string, string> queryOptions = this.GetUrlQueryOptions();
             if (queryOptions != null && queryOptions.Any())
             {
                 string queryOptionsString;
@@ -335,7 +381,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             }
 
             // Get HTTP method
-            string httpMethodString = this.GetHttpMethod();
             if (string.IsNullOrWhiteSpace(httpMethodString))
             {
                 throw new PSGraphSDKException(
@@ -348,15 +393,16 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
 
             // Get content
             HttpContent content = null;
-            object contentObject = this.GetContent();
             if (contentObject != null)
             {
+                // Create the HttpContent object if there is any content
                 content = this.WriteContent(contentObject);
+
                 // Set the content type
-                content.Headers.ContentType = new MediaTypeHeaderValue(this.GetContentType());
+                content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
             }
 
-            // Make the HTTP request
+            // Prepare the HTTP request
             HttpClient httpClient = new HttpClient();
             HttpRequestMessage requestMessage = new HttpRequestMessage(httpMethod, requestUrl);
             string requestContent = null; // need to evaluate this before making the call otherwise the content object will get disposed
@@ -368,10 +414,30 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             }
             requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authResult.AccessToken);
 
+            // Debug request message
+            this.WriteDebug(
+$@"
+-----------
+| Request |
+-----------
+{requestMessage.Method.Method} {requestMessage.RequestUri.ToString()}
+{requestContent ?? "<No request content>"}
+");
+
+            // Make the HTTP request
             HttpResponseMessage responseMessage = httpClient.SendAsync(requestMessage).GetAwaiter().GetResult();
+            string responseContent = responseMessage.Content?.ReadAsStringAsync().GetAwaiter().GetResult();
+
+            // Debug response message
+            this.WriteDebug(
+$@"
+------------
+| Response |
+------------
+{responseContent ?? "<No response content>"}
+");
 
             // Handle the result
-            string responseContent = responseMessage.Content?.ReadAsStringAsync().GetAwaiter().GetResult();
             if (responseMessage.IsSuccessStatusCode)
             {
                 // Get the result

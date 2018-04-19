@@ -16,6 +16,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public CmdletName Name { get; }
 
         /// <summary>
+        /// The name of the default parameter set.  If this is null, PowerShell's default will be used.
+        /// </summary>
+        public string DefaultParameterSetName { get; set; }
+
+        /// <summary>
         /// The base type of this cmdlet in the generated output.
         /// </summary>
         public CmdletOperationType BaseType { get; set; }

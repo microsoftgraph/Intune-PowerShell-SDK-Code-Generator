@@ -11,16 +11,20 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     /// </summary>
     public abstract class GetCmdlet : ODataPowerShellSDKCmdletBase
     {
+        public const string OperationName = "Get";
+
         /// <summary>
         /// The list of $select query option values (i.e. property names).
         /// </summary>
-        [Parameter]
+        [Parameter(ParameterSetName = GetCmdlet.OperationName)]
+        [Parameter(ParameterSetName = GetOrSearchCmdlet.OperationName)]
         public string[] Select { get; set; }
 
         /// <summary>
         /// The list of $expand query option values (i.e. property names).
         /// </summary>
-        [Parameter]
+        [Parameter(ParameterSetName = GetCmdlet.OperationName)]
+        [Parameter(ParameterSetName = GetOrSearchCmdlet.OperationName)]
         public string[] Expand { get; set; }
 
         internal override string GetHttpMethod()
@@ -33,11 +37,11 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             IDictionary<string, string> queryOptions = base.GetUrlQueryOptions();
             if (Select != null && Select.Any())
             {
-                queryOptions.Add("$select", string.Join(",", Select));
+                queryOptions.Add(ODataConstants.QueryParameters.Select, string.Join(",", Select));
             }
             if (Expand != null && Expand.Any())
             {
-                queryOptions.Add("$expand", string.Join(",", Expand));
+                queryOptions.Add(ODataConstants.QueryParameters.Expand, string.Join(",", Expand));
             }
 
             return queryOptions;

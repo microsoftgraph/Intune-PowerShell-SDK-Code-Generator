@@ -22,9 +22,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         /// </summary>
         /// <param name="stringToIndent">The string to indent</param>
         /// <param name="indentLevel">The desired indentation level</param>
-        /// <param name="singleIndent">The string which represents a single indent (defaults to <see cref="DefaultIndentToken"/>)</param>
+        /// <param name="indentToken">The string which represents a single indent (defaults to <see cref="DefaultIndentToken"/>)</param>
         /// <returns>The indented string.</returns>
-        public static string Indent(int indentLevel, string stringToIndent, string singleIndent = DefaultIndentToken)
+        public static string Indent(this string stringToIndent, int indentLevel = 1, string indentToken = DefaultIndentToken)
         {
             if (stringToIndent == null)
             {
@@ -32,7 +32,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             }
 
             // Precalculate the indent string since this won't change
-            string indentString = IndentPrefix(indentLevel, singleIndent);
+            string indentString = GetIndentPrefix(indentLevel, indentToken);
 
             // Indent the string using a StringReader and not String.Replace() because
             // we don't know what kind of newline char is used in this string
@@ -63,7 +63,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         /// <param name="indentLevel">The desired level of indentation</param>
         /// <param name="indentToken">The string which represents an indent level of 1</param>
         /// <returns>The string to which a line of text should be appended to produce the desired level of indentation.</returns>
-        public static string IndentPrefix(int indentLevel, string indentToken = DefaultIndentToken)
+        public static string GetIndentPrefix(int indentLevel, string indentToken = DefaultIndentToken)
         {
             if (indentLevel > 0)
             {

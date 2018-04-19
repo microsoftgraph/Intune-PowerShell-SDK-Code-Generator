@@ -76,7 +76,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             Resource resource = new Resource(fileSystemPath);
 
             // Convert each ODCM property into a set of cmdlets
-            IEnumerable<Cmdlet> cmdlets = oDataRoute.GetCmdlets();
+            IEnumerable<Cmdlet> cmdlets = oDataRoute.CreateCmdlets();
 
             // Add the cmdlets to the resource
             resource.AddAll(cmdlets);
@@ -89,7 +89,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
         /// </summary>
         /// <param name="oDataRoute">The route to the resource (with ID placeholders)</param>
         /// <returns>The cmdlets.</returns>
-        private static IEnumerable<Cmdlet> GetCmdlets(this ODataRoute oDataRoute)
+        private static IEnumerable<Cmdlet> CreateCmdlets(this ODataRoute oDataRoute)
         {
             if (oDataRoute == null)
             {
@@ -160,11 +160,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             };
 
             // Setup the parameters for the cmdlet
-            CmdletParameter idParameter = cmdlet.SetupIdParametersAndCallUrl(oDataRoute, entityIdIsMandatory: false);
+            CmdletParameter idParameter = cmdlet.SetupIdParametersAndCallUrl(oDataRoute, idParameterSetName: GetCmdlet.OperationName);
             if (idParameter != null)
             {
                 // Since the resource has an optional ID parameter, use the "search" base type to handle cases where the ID isn't provided
                 cmdlet.BaseType = CmdletOperationType.GetOrSearch;
+                cmdlet.DefaultParameterSetName = GetOrSearchCmdlet.OperationName;
             }
             else
             {
@@ -348,14 +349,17 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
         /// <param name="cmdlet">The cmdlet</param>
         /// <param name="oDataRoute">The OData route to the resource</param>
         /// <param name="addEntityId">Whether or not to add the entity ID (i.e. the final ID in the route)</param>
-        /// <param name="entityIdIsMandatory">Whether or not the entity ID can be empty if it is not provided</param>
+        /// <param name="idParameterSetName">
+        /// The name of the parameter set to add the entity ID parameter to - if this is null, it will be added to the default parameter set
+        /// and will be mandatory.
+        /// </param>
         /// <param name="postfixUrlSegments">The URL segments to postfix if required</param>
         /// <returns>The ID parameter if it was required and added to the cmdlet, otherwise null</returns>
         private static CmdletParameter SetupIdParametersAndCallUrl(
             this Cmdlet cmdlet,
             ODataRoute oDataRoute,
             bool addEntityId = true,
-            bool entityIdIsMandatory = true,
+            string idParameterSetName = null,
             bool idValueFromPipeline = true,
             params string[] postfixUrlSegments)
         {
@@ -373,21 +377,21 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
             // Check whether this route needs to have an ID parameter added to the end
             CmdletParameter idParameter = null;
-            if (addEntityId && oDataRoute.TryCreateEntityIdParameter(out idParameter, entityIdIsMandatory, idValueFromPipeline))
+            bool idParameterIsMandatory = idParameterSetName == null;
+            if (addEntityId && oDataRoute.TryCreateEntityIdParameter(out idParameter, idParameterIsMandatory, idValueFromPipeline))
             {
-                // Set the URL to use this parameter
+                // Set the URL to use this parameter and add it to the appropriate parameter set
                 cmdlet.CallUrl = oDataRouteString;
-                if (entityIdIsMandatory)
+                if (idParameterIsMandatory)
                 {
+                    cmdlet.DefaultParameterSet.Add(idParameter);
                     cmdlet.CallUrl += $"/{{{idParameter.Name}}}";
                 }
                 else
                 {
+                    cmdlet.GetOrCreateParameterSet(idParameterSetName).Add(idParameter);
                     cmdlet.CallUrl += $"/{{{idParameter.Name} ?? string.Empty}}";
                 }
-
-                // Add the entity ID parameter to the default parameter set
-                cmdlet.DefaultParameterSet.Add(idParameter);
             }
             else
             {

@@ -65,41 +65,41 @@ namespace GraphODataPowerShellTemplateWriter
             foreach (Resource resource in resources)
             {
                 StringBuilder output = new StringBuilder();
-                int indent = 0;
+                int indentLevel = 0;
                 foreach (Cmdlet cmdlet in resource.Cmdlets)
                 {
                     // Cmdlet name
-                    output.AppendLine(StringUtils.Indent(indent, $"\"{cmdlet.Name}\" : {{"));
-                    indent++;
+                    output.AppendLine($"\"{cmdlet.Name}\" : {{".Indent(indentLevel));
+                    indentLevel++;
 
                     // Cmdlet info
-                    output.AppendLine(StringUtils.Indent(indent, $"\"baseType\" : \"{cmdlet.BaseType.ToCSharpString()}\","));
-                    output.AppendLine(StringUtils.Indent(indent, $"\"url\" : \"{cmdlet.CallUrl}\","));
+                    output.AppendLine($"\"baseType\" : \"{cmdlet.BaseType.ToCSharpString()}\",".Indent(indentLevel));
+                    output.AppendLine($"\"url\" : \"{cmdlet.CallUrl}\",".Indent(indentLevel));
 
                     // Print parameter sets
-                    output.AppendLine(StringUtils.Indent(indent, "\"parameterSets\" : {"));
-                    indent++;
+                    output.AppendLine("\"parameterSets\" : {".Indent(indentLevel));
+                    indentLevel++;
                     foreach (CmdletParameterSet parameterSet in cmdlet.ParameterSets)
                     {
                         // Parameter set name
-                        output.AppendLine(StringUtils.Indent(indent, $"\"{parameterSet.Name}\" : {{"));
+                        output.AppendLine($"\"{parameterSet.Name}\" : {{".Indent(indentLevel));
 
                         // Print parameters
-                        indent++;
+                        indentLevel++;
                         CmdletParameter lastParameter = parameterSet.LastOrDefault();
                         foreach (CmdletParameter parameter in parameterSet)
                         {
                             string endOfLine = parameter == lastParameter ? string.Empty : ",";
-                            output.AppendLine(StringUtils.Indent(indent, $"\"{parameter.Name}\" : \"{parameter.Type.ToString()}\"{endOfLine}"));
+                            output.AppendLine($"\"{parameter.Name}\" : \"{parameter.Type.ToString()}\"{endOfLine}".Indent(indentLevel));
                         }
-                        indent--;
-                        output.AppendLine(StringUtils.Indent(indent, "}"));
+                        indentLevel--;
+                        output.AppendLine("}".Indent(indentLevel));
                     }
-                    indent--;
-                    output.AppendLine(StringUtils.Indent(indent, "}"));
+                    indentLevel--;
+                    output.AppendLine("}".Indent(indentLevel));
 
-                    indent--;
-                    output.AppendLine("}");
+                    indentLevel--;
+                    output.AppendLine("}".Indent(indentLevel));
                 }
 
                 yield return new TextFile(resource.RelativeFilePath + ".txt", output.ToString());
@@ -139,9 +139,9 @@ namespace GraphODataPowerShellTemplateWriter
                 foreach (OdcmProperty prop in properties.OrderBy(p => p.CanonicalName()))
                 {
                     string inheritedClassName = prop.Class == currentClass ? string.Empty : $" (inherited from '{prop.Class.CanonicalName()}')";
-                    output.AppendLine(StringUtils.Indent(1, $"\"{prop.CanonicalName()}\" : \"{prop.Type.CanonicalName()}{inheritedClassName}\","));
+                    output.AppendLine($"\"{prop.CanonicalName()}\" : \"{prop.Type.CanonicalName()}{inheritedClassName}\",".Indent());
                 }
-                output.AppendLine(StringUtils.Indent(1, $"\"@odata.type\" : \"{node.OdcmProperty.Type.CanonicalName()}\""));
+                output.AppendLine($"\"@odata.type\" : \"{node.OdcmProperty.Type.CanonicalName()}\"".Indent());
                 output.AppendLine("}");
 
                 // Increment total count of found routes
@@ -166,7 +166,7 @@ namespace GraphODataPowerShellTemplateWriter
             indentLevel++;
             foreach (OdcmProperty property in model.EntityContainer.Properties)
             {
-                output += "\n" + StringUtils.Indent(indentLevel, property.Name);
+                output += "\n" + property.Name.Indent(indentLevel);
             }
             indentLevel--;
 
@@ -175,16 +175,16 @@ namespace GraphODataPowerShellTemplateWriter
             // Namespaces
             foreach (OdcmNamespace @namespace in model.Namespaces)
             {
-                output += "\n" + StringUtils.IndentPrefix(indentLevel) + "== " + @namespace.Name + " ==";
+                output += "\n" + StringUtils.GetIndentPrefix(indentLevel) + "== " + @namespace.Name + " ==";
 
                 // Types
                 if (@namespace.Types.Any())
                 {
-                    output += "\n" + StringUtils.IndentPrefix(indentLevel) + "Types:";
+                    output += "\n" + StringUtils.GetIndentPrefix(indentLevel) + "Types:";
                     indentLevel++;
                     foreach (OdcmType type in @namespace.Types)
                     {
-                        output += "\n" + StringUtils.IndentPrefix(indentLevel) + " - " + type.FullName;
+                        output += "\n" + StringUtils.GetIndentPrefix(indentLevel) + " - " + type.FullName;
                     }
                     indentLevel--;
                 }
@@ -192,11 +192,11 @@ namespace GraphODataPowerShellTemplateWriter
                 // Type definitions
                 if (@namespace.TypeDefinitions.Any())
                 {
-                    output += "\n" + StringUtils.IndentPrefix(indentLevel) + "Type Definitions:";
+                    output += "\n" + StringUtils.GetIndentPrefix(indentLevel) + "Type Definitions:";
                     indentLevel++;
                     foreach (OdcmTypeDefinition typeDefinition in @namespace.TypeDefinitions)
                     {
-                        output += "\n" + StringUtils.IndentPrefix(indentLevel) + " - " + typeDefinition.FullName + " : " + typeDefinition.BaseType.FullName;
+                        output += "\n" + StringUtils.GetIndentPrefix(indentLevel) + " - " + typeDefinition.FullName + " : " + typeDefinition.BaseType.FullName;
                     }
                     indentLevel--;
                 }
@@ -204,15 +204,15 @@ namespace GraphODataPowerShellTemplateWriter
                 // Enums
                 if (@namespace.Enums.Any())
                 {
-                    output += "\n" + StringUtils.IndentPrefix(indentLevel) + "Enums:";
+                    output += "\n" + StringUtils.GetIndentPrefix(indentLevel) + "Enums:";
                     indentLevel++;
                     foreach (OdcmEnum @enum in @namespace.Enums)
                     {
-                        output += "\n" + StringUtils.IndentPrefix(indentLevel) + "= " + @enum.FullName + " =";
+                        output += "\n" + StringUtils.GetIndentPrefix(indentLevel) + "= " + @enum.FullName + " =";
                         indentLevel++;
                         foreach (OdcmEnumMember enumMember in @enum.Members)
                         {
-                            output += "\n" + StringUtils.IndentPrefix(indentLevel) + " - " + enumMember.Name;
+                            output += "\n" + StringUtils.GetIndentPrefix(indentLevel) + " - " + enumMember.Name;
                         }
                         indentLevel--;
                     }
@@ -222,23 +222,23 @@ namespace GraphODataPowerShellTemplateWriter
                 // Classes
                 if (@namespace.Classes.Any())
                 {
-                    output += "\n" + StringUtils.IndentPrefix(indentLevel) + "Classes:";
+                    output += "\n" + StringUtils.GetIndentPrefix(indentLevel) + "Classes:";
                     indentLevel++;
                     foreach (OdcmClass @class in @namespace.Classes)
                     {
-                        output += "\n" + StringUtils.IndentPrefix(indentLevel) + "= " + @class.Name + " =";
+                        output += "\n" + StringUtils.GetIndentPrefix(indentLevel) + "= " + @class.Name + " =";
 
                         // Structural Properties
                         IEnumerable<OdcmProperty> structuralProperties = @class.StructuralProperties();
                         if (@class.StructuralProperties().Any())
                         {
-                            output += "\n" + StringUtils.IndentPrefix(indentLevel) + "Properties:";
+                            output += "\n" + StringUtils.GetIndentPrefix(indentLevel) + "Properties:";
                             indentLevel++;
                             foreach (OdcmProperty property in structuralProperties.OrderBy(val => val.Name))
                             {
                                 string propertyName = property.Name;
                                 string propertyType = property.Type.FullName;
-                                output += "\n" + StringUtils.IndentPrefix(indentLevel) + $"{propertyName}\t{propertyType}";
+                                output += "\n" + StringUtils.GetIndentPrefix(indentLevel) + $"{propertyName}\t{propertyType}";
                             }
                             indentLevel--;
                         }
@@ -247,13 +247,13 @@ namespace GraphODataPowerShellTemplateWriter
                         IEnumerable<OdcmProperty> navigationProperties = @class.NavigationProperties();
                         if (navigationProperties.Any())
                         {
-                            output += "\n" + StringUtils.IndentPrefix(indentLevel) + "Navigation Properties:";
+                            output += "\n" + StringUtils.GetIndentPrefix(indentLevel) + "Navigation Properties:";
                             indentLevel++;
                             foreach (OdcmProperty property in navigationProperties)
                             {
                                 string propertyName = property.Name;
                                 string propertyType = property.Type.FullName;
-                                output += "\n" + StringUtils.IndentPrefix(indentLevel) + $"{propertyName}\t{propertyType}";
+                                output += "\n" + StringUtils.GetIndentPrefix(indentLevel) + $"{propertyName}\t{propertyType}";
                             }
                             indentLevel--;
                         }
@@ -261,7 +261,7 @@ namespace GraphODataPowerShellTemplateWriter
                         // Methods
                         if (@class.Methods.Any())
                         {
-                            output += "\n" + StringUtils.IndentPrefix(indentLevel) + "Methods:";
+                            output += "\n" + StringUtils.GetIndentPrefix(indentLevel) + "Methods:";
                             indentLevel++;
                             foreach (OdcmMethod method in @class.Methods)
                             {
@@ -273,10 +273,10 @@ namespace GraphODataPowerShellTemplateWriter
                                 string methodName = method.Name;
                                 string parameters = string.Join(", ", method.Parameters.Select(param => param.Type.FullName));
                                 string methodDescription = method.LongDescription;
-                                output += "\n" + StringUtils.IndentPrefix(indentLevel) + $"{returnType} {methodName}({parameters})";
+                                output += "\n" + StringUtils.GetIndentPrefix(indentLevel) + $"{returnType} {methodName}({parameters})";
                                 if (!string.IsNullOrWhiteSpace(methodDescription))
                                 {
-                                    output += "\n" + StringUtils.IndentPrefix(indentLevel + 1) + methodDescription;
+                                    output += "\n" + StringUtils.GetIndentPrefix(indentLevel + 1) + methodDescription;
                                 }
                             }
                             indentLevel--;

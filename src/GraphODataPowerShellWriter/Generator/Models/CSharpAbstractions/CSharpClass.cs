@@ -105,7 +105,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
                     resultBuilder.AppendLine();
                 }
 
-                resultBuilder.AppendLine(StringUtils.Indent(1, property.ToString()));
+                resultBuilder.AppendLine(property.ToString().Indent());
             }
 
             if (this.Properties.Any() && this.Methods.Any())
@@ -127,7 +127,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
                     resultBuilder.AppendLine();
                 }
 
-                resultBuilder.AppendLine(StringUtils.Indent(1, method.ToString()));
+                resultBuilder.AppendLine(method.ToString().Indent());
             }
 
             // End body

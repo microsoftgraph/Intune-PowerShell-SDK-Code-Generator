@@ -10,6 +10,9 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     /// </summary>
     public abstract class FunctionCmdlet : GetCmdlet
     {
-        public const string OperationName = "Function";
+        internal override object GetContent()
+        {
+            return this.CreateDictionaryFromBoundProperties();
+        }
     }
 }

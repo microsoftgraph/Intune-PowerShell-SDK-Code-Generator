@@ -10,8 +10,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     /// </summary>
     public abstract class ActionCmdlet : ODataPowerShellSDKCmdletBase
     {
-        public const string OperationName = "Action";
-
         internal override string GetHttpMethod()
         {
             return "POST";
@@ -19,9 +17,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
 
         internal override object GetContent()
         {
-            IDictionary<string, object> content = this.CreateDictionaryFromBoundProperties();
-
-            return content;
+            return this.CreateDictionaryFromBoundProperties();
         }
     }
 }
