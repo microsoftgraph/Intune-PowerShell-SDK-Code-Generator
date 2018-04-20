@@ -71,8 +71,10 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             // If this is the final page of a SEARCH result, unwrap and return just the values
             if (// Make sure that this result is for a SEARCH call
                 this.ParameterSetName == GetOrSearchCmdlet.OperationName
-                // Make sure that this is a standard OData collection response
+                // Make sure that this is a JSON response
                 && result is PSObject response
+                // Make sure that the "@odata.context" property exists (to make sure that this is an OData response)
+                && response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.Context)
                 // Make sure that there is no nextLink (i.e. there is only 1 page of results)
                 && !response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.NextLink))
             {
