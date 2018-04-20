@@ -71,15 +71,15 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             if (this.ParameterSetName == GetOrSearchCmdlet.OperationName)
             {
                 // If there is only 1 page of results, unwrap and return just the result objects
-                if (    // Make sure that this is a standard OData collection response
-                        result is PSObject response
-                        // Make sure that there is no nextLink (i.e. there is only 1 page of results)
-                        && !response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.NextLink))
+                if (// Make sure that this is a standard OData collection response
+                    result is PSObject response
+                    // Make sure that there is no nextLink (i.e. there is only 1 page of results)
+                    && !response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.NextLink))
                 {
                     // Check if there were any values in the page of results
                     if (response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.Value))
                     {
-                        // There were values in the page
+                        // There were values in the page, so unwrap and return them
                         result = response.Members[ODataConstants.SearchResultProperties.Value].Value;
                         return PSObject.AsPSObject(result);
                     }

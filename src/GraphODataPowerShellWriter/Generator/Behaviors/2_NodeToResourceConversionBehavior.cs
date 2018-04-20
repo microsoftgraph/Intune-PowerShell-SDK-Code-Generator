@@ -7,6 +7,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
     using System.Linq;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils;
+    using PowerShellGraphSDK;
     using PowerShellGraphSDK.PowerShellCmdlets;
     using Vipr.Core.CodeModel;
     using PS = System.Management.Automation;
@@ -164,13 +165,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             if (idParameter != null)
             {
                 // Since the resource has an optional ID parameter, use the "search" base type to handle cases where the ID isn't provided
-                cmdlet.BaseType = CmdletOperationType.GetOrSearch;
+                cmdlet.OperationType = CmdletOperationType.GetOrSearch;
                 cmdlet.DefaultParameterSetName = GetOrSearchCmdlet.OperationName;
             }
             else
             {
                 // This resource doesn't have an ID parameter, so use the basic "get" base type
-                cmdlet.BaseType = CmdletOperationType.Get;
+                cmdlet.OperationType = CmdletOperationType.Get;
             }
 
             return cmdlet;
@@ -189,7 +190,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // Create the cmdlet
             Cmdlet cmdlet = new Cmdlet(new CmdletName(PS.VerbsCommon.New, oDataRoute.ToCmdletNameNounString()))
             {
-                BaseType = CmdletOperationType.Post,
+                OperationType = CmdletOperationType.Post,
                 ImpactLevel = PS.ConfirmImpact.Low,
             };
 
@@ -215,7 +216,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // Create the cmdlet
             Cmdlet cmdlet = new Cmdlet(new CmdletName(PS.VerbsData.Update, oDataRoute.ToCmdletNameNounString()))
             {
-                BaseType = CmdletOperationType.Patch,
+                OperationType = CmdletOperationType.Patch,
                 ImpactLevel = PS.ConfirmImpact.Medium,
             };
 
@@ -238,7 +239,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // Create the cmdlet
             Cmdlet cmdlet = new Cmdlet(new CmdletName(PS.VerbsCommon.Remove, oDataRoute.ToCmdletNameNounString()))
             {
-                BaseType = CmdletOperationType.Delete,
+                OperationType = CmdletOperationType.Delete,
                 ImpactLevel = PS.ConfirmImpact.High,
             };
 
@@ -247,7 +248,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
             return cmdlet;
         }
-
+        
         private static IEnumerable<Cmdlet> CreateActionAndFunctionCmdlets(this ODataRoute oDataRoute)
         {
             if (oDataRoute == null)
@@ -263,53 +264,82 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             {
                 foreach (OdcmMethod method in resourceType.Methods)
                 {
+                    // Create the cmdlet
+                    Cmdlet cmdlet = new Cmdlet(new CmdletName(PS.VerbsLifecycle.Invoke, oDataRoute.ToCmdletNameNounString(method.Name)));
+
                     // Figure out if this method is a function or an action
+                    string urlPostfixSegment = method.Name;
                     if (method.IsFunction)
                     {
-                        // This is a function
-                        string functionName = method.Name;
+                        // Since this is a function, it should not have any observable side-effects (according to the OData v4 spec)
+                        cmdlet.ImpactLevel = PS.ConfirmImpact.None;
 
-                        // Create the cmdlet
-                        Cmdlet cmdlet = new Cmdlet(new CmdletName(PS.VerbsLifecycle.Invoke, oDataRoute.ToCmdletNameNounString(functionName)))
+                        // The behavior of the function should be different based on whether it returns a collection or not
+                        if (method.IsCollection)
                         {
-                            BaseType = CmdletOperationType.Function,
-                            ImpactLevel = PS.ConfirmImpact.None,
-                        };
-
-                        // Setup the ID parameters and call URL
-                        CmdletParameter idParameter = cmdlet.SetupIdParametersAndCallUrl(
-                            oDataRoute,
-                            addEntityId: !method.IsBoundToCollection, // if the function is bound to a collection, we don't need an ID parameter
-                            postfixUrlSegments: functionName);
+                            cmdlet.DefaultParameterSetName = GetOrSearchCmdlet.OperationName;
+                            cmdlet.OperationType = CmdletOperationType.FunctionReturningCollection;
+                        }
+                        else
+                        {
+                            cmdlet.DefaultParameterSetName = GetCmdlet.OperationName;
+                            cmdlet.OperationType = CmdletOperationType.FunctionReturningEntity;
+                        }
 
                         // Setup the function parameters
                         cmdlet.AddFunctionParameters(method);
 
-                        yield return cmdlet;
+                        // Add the placeholders for the function arguments in the URL
+                        string paramNamesArgumentsString = string.Join(
+                            ",",
+                            method.Parameters.Select(param =>
+                            {
+                                // Set the default placeholder for the parameter's value
+                                string valuePlaceholder = $"{{{param.Name}}}";
+
+                                // Check if we need special handling of the value based on the parameter type
+                                Type paramType = param.Type.ToPowerShellType(param.IsCollection);
+                                if (paramType == typeof(DateTime)
+                                    || paramType == typeof(DateTimeOffset)
+                                    || paramType == typeof(TimeSpan))
+                                {
+                                    // If the type should be converted to a string, call "ToString()" on it
+                                    valuePlaceholder = $"{{{param.Name}.{nameof(Object.ToString)}()}}";
+                                }
+                                else if (paramType == typeof(string))
+                                {
+                                    // If the type is a basic string, surround it in single quotes
+                                    valuePlaceholder = $"'{{{param.Name}}}'";
+                                }
+                                else if (!paramType.IsPrimitive)
+                                {
+                                    // If the type is complex, serialize it as JSON
+                                    valuePlaceholder = $"{{{nameof(JsonUtils)}.{nameof(JsonUtils.WriteJson)}({param.Name})}}";
+                                }
+
+                                // Create the parameter mapping
+                                return $"{param.Name}={valuePlaceholder}";
+                            }));
+                        urlPostfixSegment += $"({paramNamesArgumentsString})";
                     }
                     else
                     {
-                        // This is an action
-                        string actionName = method.Name;
-
-                        // Create the cmdlet
-                        Cmdlet cmdlet = new Cmdlet(new CmdletName(PS.VerbsLifecycle.Invoke, oDataRoute.ToCmdletNameNounString(actionName)))
-                        {
-                            BaseType = CmdletOperationType.Action,
-                            ImpactLevel = PS.ConfirmImpact.High,
-                        };
-
-                        // Setup the ID parameters and call URL
-                        CmdletParameter idParameter = cmdlet.SetupIdParametersAndCallUrl(
-                            oDataRoute,
-                            addEntityId: !method.IsBoundToCollection, // if the action is bound to a collection, we don't need an ID parameter
-                            postfixUrlSegments: actionName);
+                        // Set the cmdlet up as a method
+                        cmdlet.OperationType = CmdletOperationType.Action;
+                        cmdlet.ImpactLevel = PS.ConfirmImpact.High;
 
                         // Setup the action parameters
                         cmdlet.AddActionParameters(method);
-
-                        yield return cmdlet;
                     }
+
+                    // Setup the ID parameters and call URL
+                    CmdletParameter idParameter = cmdlet.SetupIdParametersAndCallUrl(
+                        oDataRoute,
+                        addEntityId: !method.IsBoundToCollection, // if the function is bound to a collection, we don't need an ID parameter
+                        postfixUrlSegments: urlPostfixSegment);
+
+                    // Return the cmdlet representing the action or function
+                    yield return cmdlet;
                 }
             }
         }
@@ -662,7 +692,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             }
         }
 
-        private static void AddFunctionParameters(this Cmdlet cmdlet, OdcmMethod function)
+        private static void AddFunctionParameters(this Cmdlet cmdlet, OdcmMethod function, string defaultParameterSetName = null)
         {
             if (cmdlet == null)
             {
@@ -677,7 +707,26 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 throw new ArgumentException($"The given ODCM method '{function.Name}' does not represent a function - it represents an action", nameof(function));
             }
 
-            // TODO: Implement function parameters
+            // Iterate over each parameter
+            foreach (OdcmParameter parameter in function.Parameters)
+            {
+                // Create the equivalent CmdletParameter object
+                CmdletParameter cmdletParameter = new CmdletParameter(parameter.Name, parameter.Type.ToPowerShellType(parameter.IsCollection))
+                {
+                    Mandatory = true,
+                    ValidateNotNull = !parameter.IsNullable,
+                };
+
+                // Add the CmdletParameter to the specified parameter set
+                if (defaultParameterSetName == null)
+                {
+                    cmdlet.DefaultParameterSet.Add(cmdletParameter);
+                }
+                else
+                {
+                    cmdlet.GetOrCreateParameterSet(defaultParameterSetName).Add(cmdletParameter);
+                }
+            }
         }
 
         private static Type ToPowerShellType(this OdcmType odcmType, bool isCollection = false)

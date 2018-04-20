@@ -6,6 +6,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     using System.Collections.Generic;
     using System.Linq;
     using System.Management.Automation;
+    using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Reflection;
@@ -338,21 +339,23 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                     ErrorCategory.InvalidArgument,
                     resourcePath);
             }
-            string baseAddress = environmentParameters.ResourceBaseAddress;
-            string tempPath = resourcePath.TrimStart('/'); // remove leading slash if it exists so relative URLs don't get treated as absolute URLs
-            if (Uri.IsWellFormedUriString(tempPath, UriKind.Absolute))
+            // Sanitize the URL
+            resourcePath = WebUtility.UrlEncode(resourcePath);
+            // Remove the leading slash if it exists so relative URLs don't get treated as absolute URLs
+            string baseAddress = environmentParameters.ResourceBaseAddress?.TrimStart('/');
+            if (Uri.IsWellFormedUriString(resourcePath, UriKind.Absolute))
             {
-                requestUrl = tempPath;
+                requestUrl = baseAddress;
             }
-            else if (Uri.IsWellFormedUriString(tempPath, UriKind.Relative))
+            else if (Uri.IsWellFormedUriString(resourcePath, UriKind.Relative))
             {
-                string sanitizedBaseUrl = $"{baseAddress.TrimEnd('/')}/{SchemaVersion}";
-                requestUrl = $"{sanitizedBaseUrl}/{tempPath}";
+                string baseUrlWithSchema = $"{baseAddress.TrimEnd('/')}/{SchemaVersion}";
+                requestUrl = $"{baseUrlWithSchema}/{resourcePath}";
             }
             else
             {
                 throw new PSGraphSDKException(
-                    new ArgumentException("A valid URL could not be constructed - ensure that the provided resource path a valid relative or absolute URL", nameof(this.GetResourcePath)),
+                    new ArgumentException("A valid URL could not be constructed - ensure that the provided resource path is a valid relative or absolute URL", nameof(this.GetResourcePath)),
                     "InvalidResourceUrl",
                     ErrorCategory.InvalidArgument,
                     resourcePath);

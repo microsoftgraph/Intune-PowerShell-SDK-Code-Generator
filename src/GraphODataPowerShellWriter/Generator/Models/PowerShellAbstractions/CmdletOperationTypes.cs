@@ -9,7 +9,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         Post,
         Patch,
         Delete,
-        Function,
+        FunctionReturningEntity,
+        FunctionReturningCollection,
         Action,
     }
 }

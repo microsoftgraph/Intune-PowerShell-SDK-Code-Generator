@@ -59,7 +59,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             CSharpClass result = new CSharpClass($"{cmdlet.Name.Verb}_{cmdlet.Name.Noun}")
             {
                 AccessModifier = CSharpAccessModifier.Public,
-                BaseType = cmdlet.BaseType.ToCSharpString(),
+                BaseType = cmdlet.OperationType.ToCSharpString(),
                 Attributes = cmdlet.CreateAttributes(),
                 Properties = cmdlet.CreateProperties(),
                 Methods = cmdlet.CreateMethods(),

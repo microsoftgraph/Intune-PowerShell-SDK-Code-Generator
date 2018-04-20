@@ -23,7 +23,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <summary>
         /// The base type of this cmdlet in the generated output.
         /// </summary>
-        public CmdletOperationType BaseType { get; set; }
+        public CmdletOperationType OperationType { get; set; }
 
         /// <summary>
         /// The impact level of this cmdlet.

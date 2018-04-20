@@ -2,9 +2,6 @@
 
 namespace PowerShellGraphSDK.PowerShellCmdlets
 {
-    using System.Collections.Generic;
-    using System.Reflection;
-
     /// <summary>
     /// The common behavior between all OData PowerShell SDK cmdlets that call actions on OData resources.
     /// </summary>
