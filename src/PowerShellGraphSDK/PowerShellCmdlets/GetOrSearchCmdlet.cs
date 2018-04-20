@@ -2,6 +2,7 @@
 
 namespace PowerShellGraphSDK.PowerShellCmdlets
 {
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Management.Automation;
@@ -62,43 +63,36 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             return queryOptions;
         }
 
-        internal override PSObject ReadResponse(string content)
+        internal override object ReadResponse(string content)
         {
             // Convert the string content into a C# object
             object result = base.ReadResponse(content);
 
-            // Check whether this result is for a SEARCH call
-            if (this.ParameterSetName == GetOrSearchCmdlet.OperationName)
+            // If this is the final page of a SEARCH result, unwrap and return just the values
+            if (// Make sure that this result is for a SEARCH call
+                this.ParameterSetName == GetOrSearchCmdlet.OperationName
+                // Make sure that this is a standard OData collection response
+                && result is PSObject response
+                // Make sure that there is no nextLink (i.e. there is only 1 page of results)
+                && !response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.NextLink))
             {
-                // If there is only 1 page of results, unwrap and return just the result objects
-                if (// Make sure that this is a standard OData collection response
-                    result is PSObject response
-                    // Make sure that there is no nextLink (i.e. there is only 1 page of results)
-                    && !response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.NextLink))
+                // Check if there were any values in the page of results
+                if (response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.Value))
                 {
-                    // Check if there were any values in the page of results
-                    if (response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.Value))
-                    {
-                        // There were values in the page, so unwrap and return them
-                        result = response.Members[ODataConstants.SearchResultProperties.Value].Value;
-                        return PSObject.AsPSObject(result);
-                    }
-                    else
-                    {
-                        // There were no values in the page
-                        return null;
-                    }
+                    // There were values in the page, so unwrap and return them
+                    result = response.Members[ODataConstants.SearchResultProperties.Value].Value;
+                    return result;
                 }
                 else
                 {
-                    // There were multiple pages of results, so return the object as-is
-                    return PSObject.AsPSObject(result);
+                    // There were no values in the page
+                    return null;
                 }
             }
             else
             {
-                // If this result is a GET call, return the result as-is
-                return PSObject.AsPSObject(result);
+                // If this is a GET result or a SEARCH result with multiple pages, return the result as-is
+                return result;
             }
         }
     }

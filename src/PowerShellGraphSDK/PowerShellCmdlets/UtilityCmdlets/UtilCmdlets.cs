@@ -69,7 +69,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             return "$metadata";
         }
 
-        internal override PSObject ReadResponse(string content)
+        internal override object ReadResponse(string content)
         {
             // Return the raw response body
             return PSObject.AsPSObject(content);
@@ -344,10 +344,18 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             throw new PSArgumentException($"Unknown content type: '{this.Content.GetType()}'", nameof(this.Content));
         }
 
-        internal override PSObject ReadResponse(string content)
+        internal override object ReadResponse(string content)
         {
-            // Return the raw response body
-            return PSObject.AsPSObject(content);
+            // Try to deserialize the body
+            try
+            {
+                return base.ReadResponse(content);
+            }
+            catch
+            {
+                // Return the raw response body
+                return PSObject.AsPSObject(content);
+            }
         }
     }
 }

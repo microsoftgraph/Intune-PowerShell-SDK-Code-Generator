@@ -3,8 +3,8 @@
 namespace PowerShellGraphSDK
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Management.Automation;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
@@ -66,7 +66,7 @@ namespace PowerShellGraphSDK
         /// </summary>
         /// <param name="json">The JToken representing the json</param>
         /// <returns>The native PowerShell object</returns>
-        public static PSObject ToPowerShellObject(this JToken json)
+        public static object ToPowerShellObject(this JToken json)
         {
             if (json == null)
             {
@@ -76,51 +76,51 @@ namespace PowerShellGraphSDK
             // The token may represent a value or a container (there are no other subtypes in Newtonsoft's Json.NET)
             if (json is JValue jValue) // Handle values
             {
-                return jValue.Value == null ? null : PSObject.AsPSObject(jValue.Value);
+                return jValue.Value;
             }
             else if (json is JContainer container) // Handle containers
             {
                 if (container is JConstructor)
                 {
-                    throw new ArgumentException("The provided JToken cannot contain a JConstructor object", nameof(json));
+                    throw new ArgumentException("The provided JToken should not contain a JConstructor object", nameof(json));
                 }
                 if (container is JProperty)
                 {
-                    throw new ArgumentException("The provided JToken cannot contain a JProperty object which is not nested inside a JObject", nameof(json));
+                    throw new ArgumentException("The provided JToken should not contain a JProperty object which is not nested inside a JObject", nameof(json));
                 }
 
-                if (container is JObject obj)
+                if (container is JObject jObj)
                 {
-                    PSObject hashtable = new PSObject();
-                    foreach (JProperty property in obj.Properties())
+                    PSObject psObj = new PSObject();
+                    foreach (JProperty property in jObj.Properties())
                     {
                         // Recursively convert this JObject into a PSObject
-                        hashtable.Members.Add(new PSNoteProperty(property.Name, property.Value.ToPowerShellObject()));
+                        psObj.Members.Add(new PSNoteProperty(property.Name, property.Value.ToPowerShellObject()));
                     }
 
-                    return PSObject.AsPSObject(hashtable);
+                    return PSObject.AsPSObject(psObj);
                 }
-                else if (container is JArray array)
+                else if (container is JArray jArray)
                 {
-                    List<PSObject> objs = new List<PSObject>();
-                    foreach (JToken arrayItem in array)
+                    object[] powerShellArray = new object[jArray.Count];
+                    for (int i = 0; i < jArray.Count; i++)
                     {
                         // Recursively convert this JArray into a PSObject array
-                        objs.Add(PSObject.AsPSObject(arrayItem.ToPowerShellObject()));
+                        powerShellArray.SetValue(jArray[i].ToPowerShellObject(), i);
                     }
 
-                    return PSObject.AsPSObject(objs.ToArray());
+                    return powerShellArray;
                 }
                 else
                 {
                     // This should not be possible - we should have returned earlier unless there is a new JContainer subtype
-                    throw new ArgumentException("The JToken is not a JObject or JArray type", nameof(json));
+                    throw new ArgumentException($"The JToken is not a JObject or JArray type - it is a '{json.GetType()}'", nameof(json));
                 }
             }
             else
             {
                 // This should not be possible - we should have returned earlier unless there is a new JToken subtype
-                throw new ArgumentException("The JToken is not a value or container type", nameof(json));
+                throw new ArgumentException($"The JToken is not a value or container type - it is a '{json.GetType()}'", nameof(json));
             }
         }
     }

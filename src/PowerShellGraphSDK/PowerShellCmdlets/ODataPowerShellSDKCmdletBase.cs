@@ -182,11 +182,10 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// </remarks>
         /// <param name="content">The HTTP response body</param>
         /// <returns>The converted object.</returns>
-        internal virtual PSObject ReadResponse(string content)
+        internal virtual object ReadResponse(string content)
         {
             JToken jsonToken = JsonUtils.ReadJson(content);
-            PSObject result = JsonUtils.ToPowerShellObject(jsonToken);
-            return result;
+            return JsonUtils.ToPowerShellObject(jsonToken);
         }
 
         #endregion Overridable
@@ -444,7 +443,7 @@ $@"
             if (responseMessage.IsSuccessStatusCode)
             {
                 // Get the result
-                PSObject cmdletResult = null;
+                object cmdletResult = null;
                 if (!string.IsNullOrWhiteSpace(responseContent))
                 {
                     cmdletResult = this.ReadResponse(responseContent);
