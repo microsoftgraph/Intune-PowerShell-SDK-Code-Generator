@@ -84,6 +84,9 @@ function global:GenerateAndRunSDK {
     global:Run-SDK
 }
 
+# Run "dotnet restore" just in case this is the first time the repo is being initialized (or if there are new dependencies)
+dotnet restore --verbosity quiet
+
 Write-Host 'Initialized repository.' -f Green
 Write-Host
 Write-Host 'Available commands:' -f Yellow
