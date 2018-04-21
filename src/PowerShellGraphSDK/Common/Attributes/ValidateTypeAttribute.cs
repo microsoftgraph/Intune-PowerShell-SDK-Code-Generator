@@ -6,6 +6,7 @@ namespace PowerShellGraphSDK
     using System.Linq;
     using System.Management.Automation;
 
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public class ValidateTypeAttribute : ValidateEnumeratedArgumentsAttribute
     {
         private Type[] Types { get; set; }

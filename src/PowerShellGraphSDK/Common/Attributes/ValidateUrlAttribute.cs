@@ -5,6 +5,7 @@ namespace PowerShellGraphSDK
     using System;
     using System.Management.Automation;
 
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public class ValidateUrlAttribute : ValidateEnumeratedArgumentsAttribute
     {
         private UriKind UriKind { get; set; }

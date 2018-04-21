@@ -2,7 +2,6 @@
 
 namespace PowerShellGraphSDK.PowerShellCmdlets
 {
-    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
@@ -72,7 +71,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         internal override object ReadResponse(string content)
         {
             // Return the raw response body
-            return PSObject.AsPSObject(content);
+            return content;
         }
     }
 
@@ -94,15 +93,13 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         #region Hidden Parameters
         
         public new string SchemaVersion { get; }
-        public new string Expand { get; }
         public new string Filter { get; }
-        public new string OrderBy { get; }
         public new string Skip { get; }
         public new string Top { get; }
 
         public override object GetDynamicParameters()
         {
-            // Override this method so that the "Select" dynamic parameter is not exposed.
+            // Override this method so that the dynamic parameters are not exposed.
             return null;
         }
 

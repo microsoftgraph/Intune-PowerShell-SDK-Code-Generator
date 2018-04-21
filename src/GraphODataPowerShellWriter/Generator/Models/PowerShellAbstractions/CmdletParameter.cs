@@ -30,6 +30,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public bool Mandatory { get; set; } = false;
 
         /// <summary>
+        /// This property allows a property to be created in the C# class without actually exposing it through PowerShell.
+        /// </summary>
+        public bool IsPowerShellParameter { get; set; } = true;
+
+        /// <summary>
         /// Whether or not to get the value from piped objects.
         /// </summary>
         public bool ValueFromPipeline { get; set; } = false;
@@ -53,6 +58,16 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// If not null, adds the [<see cref="PowerShellGraphSDK.ParameterSetSelectorAttribute"/>] to the parameter with the given name.
         /// </summary>
         public string ParameterSetSelectorName { get; set; } = null;
+
+        /// <summary>
+        /// Whether or not to add the [<see cref="PowerShellGraphSDK.ExpandableAttribute"/>] to the parameter.
+        /// </summary>
+        public bool IsExpandable { get; set; } = false;
+
+        /// <summary>
+        /// Whether or not to add the [<see cref="PowerShellGraphSDK.SortableAttribute"/>] to the parameter.
+        /// </summary>
+        public bool IsSortable { get; set; } = false;
 
         /// <summary>
         /// Creates a new cmdlet parameter.

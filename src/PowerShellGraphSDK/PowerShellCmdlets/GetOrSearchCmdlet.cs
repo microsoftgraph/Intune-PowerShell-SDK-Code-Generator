@@ -2,10 +2,13 @@
 
 namespace PowerShellGraphSDK.PowerShellCmdlets
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Linq;
     using System.Management.Automation;
+    using System.Reflection;
 
     /// <summary>
     /// The common behavior between all OData PowerShell SDK cmdlets that support
@@ -14,7 +17,9 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     public abstract class GetOrSearchCmdlet : GetCmdlet
     {
         public new const string OperationName = "Search";
-        
+
+        private const string OrderByParameterName = "OrderBy";
+
         /// <summary>
         /// The $filter query option value.
         /// </summary>
@@ -23,9 +28,10 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
 
         /// <summary>
         /// The list of $orderBy query option values (i.e. property names).
+        /// 
+        /// This value is declared as a dynamic parameter so that values can be validated per cmdlet.
         /// </summary>
-        [Parameter(ParameterSetName = GetOrSearchCmdlet.OperationName)]
-        public string[] OrderBy { get; set; }
+        public string[] OrderBy = null;
 
         /// <summary>
         /// The $skip query option value.
@@ -39,6 +45,57 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         [Parameter(ParameterSetName = GetOrSearchCmdlet.OperationName)]
         [Alias("First")] // Required to be compatible with the PowerShell paging parameters
         public int? Top { get; set; }
+
+        /// <summary>
+        /// Set up the dynamic parameters.
+        /// </summary>
+        protected override void BeginProcessing()
+        {
+            base.BeginProcessing();
+
+            if (this.DynamicParameters != null)
+            {
+                // OrderBy
+                if (this.DynamicParameters.TryGetValue(OrderByParameterName, out RuntimeDefinedParameter selectParam)
+                    && selectParam.IsSet)
+                {
+                    this.OrderBy = selectParam.Value as string[];
+                }
+            }
+        }
+
+        /// <summary>
+        /// The parameters that are added at runtime.
+        /// </summary>
+        /// <returns>A <see cref="RuntimeDefinedParameterDictionary"/>.</returns>
+        public override object GetDynamicParameters()
+        {
+            // Get the dynamic parameters from the base class
+            RuntimeDefinedParameterDictionary parameterDictionary = base.GetDynamicParameters() as RuntimeDefinedParameterDictionary;
+
+            // Get the properties
+            IEnumerable<PropertyInfo> properties = this.GetProperties(false);
+
+            // Create the "OrderBy" parameter
+            var validateSetAttributeOrderBy = new ValidateSetAttribute(properties
+                .Where(param => Attribute.IsDefined(param, typeof(SortableAttribute)))
+                .Select(param => param.Name)
+                .Distinct()
+                .ToArray());
+            var orderByParameter = new RuntimeDefinedParameter(
+                OrderByParameterName,
+                typeof(string[]),
+                new Collection<Attribute>()
+                {
+                    new ParameterAttribute() { ParameterSetName = GetOrSearchCmdlet.OperationName },
+                    validateSetAttributeOrderBy,
+                });
+
+            // Add to the dictionary of dynamic parameters
+            parameterDictionary.Add(OrderByParameterName, orderByParameter);
+
+            return parameterDictionary;
+        }
 
         internal override IDictionary<string, string> GetUrlQueryOptions()
         {

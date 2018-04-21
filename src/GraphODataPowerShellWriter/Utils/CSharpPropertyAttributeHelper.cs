@@ -10,15 +10,27 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 
     public static class CSharpPropertyAttributeHelper
     {
+        // ValidateNotNull
         private static readonly CSharpAttribute _validateNotNullAttribute = new CSharpAttribute(nameof(PS.ValidateNotNullAttribute));
         public static CSharpAttribute CreateValidateNotNullAttribute() => _validateNotNullAttribute;
 
+        // ValidateNotNullOrEmpty
         private static readonly CSharpAttribute _validateNotNullOrEmptyAttribute = new CSharpAttribute(nameof(PS.ValidateNotNullOrEmptyAttribute));
         public static CSharpAttribute CreateValidateNotNullOrEmptyAttribute() => _validateNotNullOrEmptyAttribute;
 
+        // AllowEmptyCollection
         private static readonly CSharpAttribute _allowEmptyCollectionAttribute = new CSharpAttribute(nameof(PS.AllowEmptyCollectionAttribute));
         public static CSharpAttribute CreateAllowEmptyCollectionAttribute() => _allowEmptyCollectionAttribute;
 
+        // Expandable
+        private static readonly CSharpAttribute _expandableAttribute = new CSharpAttribute(nameof(ExpandableAttribute));
+        public static CSharpAttribute CreateExpandableAttribute() => _expandableAttribute;
+
+        // Sortable
+        private static readonly CSharpAttribute _sortableAttribute = new CSharpAttribute(nameof(SortableAttribute));
+        public static CSharpAttribute CreateSortableAttribute() => _sortableAttribute;
+
+        // Parameter
         public static CSharpAttribute CreateParameterAttribute(
             string parameterSetName = null,
             bool mandatory = false,
@@ -46,6 +58,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             return new CSharpAttribute(nameof(PS.ParameterAttribute), arguments);
         }
 
+        // ParameterSetSwitch
         public static CSharpAttribute CreateParameterSetSwitchAttribute(string parameterSetName)
         {
             if (parameterSetName == null)

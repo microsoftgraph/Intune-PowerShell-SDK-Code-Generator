@@ -132,38 +132,54 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 throw new ArgumentNullException(nameof(parameterSets));
             }
 
-            // Validate not null
-            if (parameter.ValidateNotNull)
+            // Expandable attribute
+            if (parameter.IsExpandable)
             {
-                yield return CSharpPropertyAttributeHelper.CreateValidateNotNullAttribute();
+                yield return CSharpPropertyAttributeHelper.CreateExpandableAttribute();
             }
 
-            // Validate not null or empty
-            if (parameter.ValidateNotNull)
+            // Sortable attribute
+            if (parameter.IsSortable)
             {
-                yield return CSharpPropertyAttributeHelper.CreateValidateNotNullOrEmptyAttribute();
+                yield return CSharpPropertyAttributeHelper.CreateSortableAttribute();
             }
 
-            // ParameterSetSwitch attribute
-            if (parameter.ParameterSetSelectorName != null)
+            // Parameter attribute
+            if (parameter.IsPowerShellParameter)
             {
-                yield return CSharpPropertyAttributeHelper.CreateParameterSetSwitchAttribute(parameter.ParameterSetSelectorName);
-            }
+                // Validate not null
+                if (parameter.ValidateNotNull)
+                {
+                    yield return CSharpPropertyAttributeHelper.CreateValidateNotNullAttribute();
+                }
 
-            // AllowEmptyCollection attribute
-            if (parameter.Type.IsArray)
-            {
-                yield return CSharpPropertyAttributeHelper.CreateAllowEmptyCollectionAttribute();
-            }
+                // Validate not null or empty
+                if (parameter.ValidateNotNull)
+                {
+                    yield return CSharpPropertyAttributeHelper.CreateValidateNotNullOrEmptyAttribute();
+                }
 
-            foreach (CmdletParameterSet parameterSet in parameterSets)
-            {
-                // Parameter attribute
-                yield return CSharpPropertyAttributeHelper.CreateParameterAttribute(
-                    parameterSet.Name,
-                    parameter.Mandatory,
-                    parameter.ValueFromPipeline,
-                    parameter.ValueFromPipelineByPropertyName);
+                // ParameterSetSwitch attribute
+                if (parameter.ParameterSetSelectorName != null)
+                {
+                    yield return CSharpPropertyAttributeHelper.CreateParameterSetSwitchAttribute(parameter.ParameterSetSelectorName);
+                }
+
+                // AllowEmptyCollection attribute
+                if (parameter.Type.IsArray)
+                {
+                    yield return CSharpPropertyAttributeHelper.CreateAllowEmptyCollectionAttribute();
+                }
+
+                foreach (CmdletParameterSet parameterSet in parameterSets)
+                {
+                    // Parameter attribute
+                    yield return CSharpPropertyAttributeHelper.CreateParameterAttribute(
+                        parameterSet.Name,
+                        parameter.Mandatory,
+                        parameter.ValueFromPipeline,
+                        parameter.ValueFromPipelineByPropertyName);
+                }
             }
         }
     }

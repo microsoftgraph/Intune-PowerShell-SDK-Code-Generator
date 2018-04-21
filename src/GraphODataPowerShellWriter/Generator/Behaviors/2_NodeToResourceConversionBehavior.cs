@@ -171,6 +171,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 cmdlet.OperationType = CmdletOperationType.Get;
             }
 
+            // Add the properties without marking them as PowerShell parameters to allow for auto-complete when picking columns for $select and $expand
+            cmdlet.AddParametersForEntityProperties(property.Type, null, false, false);
+
             return cmdlet;
         }
 
@@ -558,7 +561,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
         private static void AddParametersForEntityProperties(
             this Cmdlet cmdlet,
             OdcmType baseType,
-            string sharedParameterSetName)
+            string sharedParameterSetName = null,
+            bool addSwitchParameters = true,
+            bool markAsPowerShellParameter = true)
         {
             if (cmdlet == null)
             {
@@ -583,8 +588,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 CmdletParameterSet parameterSet = cmdlet.GetOrCreateParameterSet(parameterSetName);
 
                 // Add a switch parameter for this type if required
-                bool isAbstractType = type is OdcmClass @class && @class.IsAbstract;
-                if (!isAbstractType)
+                if (addSwitchParameters && !(type is OdcmClass @class && @class.IsAbstract))
                 {
                     // Add the switch parameter
                     parameterSet.Add(new CmdletParameter(parameterName, typeof(PS.SwitchParameter))
@@ -634,6 +638,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                         {
                             Mandatory = property.IsRequired,
                             ValueFromPipelineByPropertyName = false,
+                            IsPowerShellParameter = markAsPowerShellParameter,
+                            IsExpandable = true,
+                            IsSortable = true,
                         };
                         parameterLookup.Add(property.Name, parameter);
                     }
