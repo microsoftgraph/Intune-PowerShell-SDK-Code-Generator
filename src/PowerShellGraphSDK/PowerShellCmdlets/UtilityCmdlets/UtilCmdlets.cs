@@ -85,7 +85,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         public const string CmdletVerb = VerbsCommon.Get;
         public const string CmdletNoun = "MSGraphNextPage";
 
-        [Parameter(Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true)]
         [Alias(ODataConstants.SearchResultProperties.NextLink)]
         public string NextLink { get; set; }
 
@@ -94,12 +94,17 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         #region Hidden Parameters
         
         public new string SchemaVersion { get; }
-        public new string Select { get; }
         public new string Expand { get; }
         public new string Filter { get; }
         public new string OrderBy { get; }
         public new string Skip { get; }
         public new string Top { get; }
+
+        public override object GetDynamicParameters()
+        {
+            // Override this method so that the "Select" dynamic parameter is not exposed.
+            return null;
+        }
 
         #endregion Hidden Parameters
 
@@ -143,7 +148,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                     {
                         // Extract values and nextLink from search result
                         nextLink = GetNextLinkFromSearchResult(this.SearchResult);
-                        PSObject[] values = GetValuesFromSearchResult(this.SearchResult);
+                        object[] values = GetValuesFromSearchResult(this.SearchResult);
 
                         // If the object does not have values or a nextLink, send it to the pipeline and exit the cmdlet
                         if (nextLink == null && values == null)
@@ -165,6 +170,11 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 default: throw new PSArgumentException("Unable to determine parameter set");
             }
 
+            // Get the parameters
+            IDictionary parameterDictionary = this.MyInvocation.BoundParameters
+                .Where(entry => !(entry.Key == nameof(this.NextLink) || entry.Key == nameof(this.SearchResult)))
+                .ToDictionary(entry => entry.Key, entry => entry.Value);
+
             // Iterate over each page and write the results to the pipeline
             string currentNextLink = nextLink;
             while (!string.IsNullOrEmpty(currentNextLink))
@@ -179,19 +189,15 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 PowerShell ps = PowerShell.Create(RunspaceMode.CurrentRunspace);
                 ps.AddCommand($"{GetNextPage.CmdletVerb}-{GetNextPage.CmdletNoun}");
                 ps.AddParameter(nameof(GetNextPage.NextLink), currentNextLink);
-                ps.AddParameters(this.MyInvocation.BoundParameters
-                    .Where(entry => !(entry.Key == nameof(this.NextLink) || entry.Key == nameof(this.SearchResult)))
-                    .ToDictionary(entry => entry.Key, entry => entry.Value));
+                ps.AddParameters(parameterDictionary);
                 obj = ps.Invoke();
 
-                this.WriteDebug("Results: " + string.Join("\n", obj.Select(o => o.ToString())));
-
                 // Check if we got any results back
-                PSObject psObj = obj.Cast<PSObject>().SingleOrDefault();
+                PSObject psObj = obj.SingleOrDefault();
                 if (psObj != null)
                 {
                     // Write the values to the pipeline
-                    PSObject[] nextPage = GetValuesFromSearchResult(psObj);
+                    object[] nextPage = GetValuesFromSearchResult(psObj);
                     if (nextPage != null)
                     {
                         // Output all the results in this page
@@ -222,16 +228,14 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             return nextLink;
         }
 
-        private static PSObject[] GetValuesFromSearchResult(PSObject searchResult)
+        private static object[] GetValuesFromSearchResult(PSObject searchResult)
         {
             if (searchResult == null)
             {
                 throw new PSArgumentNullException(nameof(searchResult), "PowerShell validation failed while getting values");
             }
 
-            PSObject wrappedArray = searchResult.Members[ODataConstants.SearchResultProperties.Value]?.Value as PSObject;
-            PSObject[] values = wrappedArray?.BaseObject as PSObject[];
-
+            object[] values = searchResult.Members[ODataConstants.SearchResultProperties.Value]?.Value as object[];
             return values;
         }
     }

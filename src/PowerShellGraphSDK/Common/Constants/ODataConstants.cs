@@ -26,6 +26,7 @@ namespace PowerShellGraphSDK
         public static class ObjectProperties
         {
             public const string Type = "@odata.type";
+            public const string Id = "id";
         }
     }
 }

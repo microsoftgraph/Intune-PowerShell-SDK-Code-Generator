@@ -17,7 +17,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             Mandatory = true,
             ValueFromPipelineByPropertyName = true)]
         [ValidateNotNullOrEmpty]
-        [Alias("@odata.type")]
+        [Alias(ODataConstants.ObjectProperties.Type)]
         public string ODataType { get; set; }
 
         internal override object GetContent()
@@ -45,12 +45,14 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             }
 
             // Add the OData type to the request body
-            content.Add("@odata.type", selectedODataType);
+            content.Add(ODataConstants.ObjectProperties.Type, selectedODataType);
 
             // Get the rest of the properties that will be serialized into the request body
-            IEnumerable<PropertyInfo> typeProperties = boundProperties.Where(prop =>
-                prop.Name != nameof(this.ODataType) // don't include the ODataType parameter since we already got it
-                && !this.GetParameterSetSelectorProperties().Contains(prop)); // don't include the switch parameters
+            IEnumerable<PropertyInfo> typeProperties = boundProperties.Where(property =>
+                property.Name != nameof(this.ODataType) // don't include the ODataType parameter since we already got it
+                && property.Name != ODataConstants.ObjectProperties.Id // don't include the ID property
+                && !this.GetParameterSetSelectorProperties().Contains(property) // don't include the switch parameters
+            );
 
             // Add the parameters to the content
             foreach (PropertyInfo property in typeProperties)

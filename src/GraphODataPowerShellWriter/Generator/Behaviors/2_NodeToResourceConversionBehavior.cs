@@ -18,11 +18,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
     public static class NodeToResourceConversionBehavior
     {
         /// <summary>
-        /// The name of the "ID" property's parameter.
-        /// </summary>
-        private const string IdParameterName = "id";
-
-        /// <summary>
         /// The contract for an ODCM type processor.
         /// </summary>
         /// <param name="currentType">The type that is currently being visited</param>
@@ -50,8 +45,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
             { "Edm.Guid", typeof(Guid) },
 
-            { "Edm.DateTimeOffset", typeof(DateTime) },
+            { "Edm.DateTime", typeof(DateTime) },
+            { "Edm.DateTimeOffset", typeof(DateTimeOffset) },
             { "Edm.TimeOfDay", typeof(TimeSpan) },
+            { "Edm.Time", typeof(TimeSpan) },
             { "Edm.Duration", typeof(TimeSpan) },
         };
 
@@ -465,7 +462,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             if (property.IsEnumeration())
             {
                 // Create the ID parameter
-                idParameter = new CmdletParameter(IdParameterName, typeof(string))
+                idParameter = new CmdletParameter(ODataConstants.ObjectProperties.Id, typeof(string))
                 {
                     Mandatory = entityIdIsMandatory,
                     ValueFromPipeline = valueFromPipeline,
@@ -600,7 +597,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
                 // Evaluate the properties on this type
                 IEnumerable<OdcmProperty> properties = type.EvaluateProperties(type == baseType)
-                    .Where(prop => prop.Name != IdParameterName)
+                    .Where(prop => prop.Name != ODataConstants.ObjectProperties.Id)
                     .Where(prop => !prop.ReadOnly && !prop.IsEnumeration() && !prop.IsLink);
 
                 // Add this type into the parmeter name lookup table

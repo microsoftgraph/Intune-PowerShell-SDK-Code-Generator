@@ -220,6 +220,24 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// <returns>The properties that are bound in the current invocation of this cmdlet.</returns>
         internal IEnumerable<PropertyInfo> GetBoundProperties(bool includeInherited = true, Func<PropertyInfo, bool> filter = null)
         {
+            // Get the cmdlet's properties
+            IEnumerable<PropertyInfo> cmdletProperties = this.GetProperties(includeInherited, filter);
+
+            // Get only the properties that were set from PowerShell
+            IEnumerable<string> boundParameterNames = this.MyInvocation.BoundParameters.Keys;
+            IEnumerable<PropertyInfo> boundProperties = cmdletProperties.Where(prop => boundParameterNames.Contains(prop.Name));
+
+            return boundProperties;
+        }
+
+        /// <summary>
+        /// Gets all the properties declared on this class.
+        /// </summary>
+        /// <param name="includeInherited">Whether or not to include inherited properties (defaults to true)</param>
+        /// <param name="filter">The filter for the properties to include in the result (if it evaluates to true, the property is included)</param>
+        /// <returns>The properties that are defined on this cmdlet.</returns>
+        internal IEnumerable<PropertyInfo> GetProperties(bool includeInherited = true, Func<PropertyInfo, bool> filter = null)
+        {
             // Create the binding flags
             BindingFlags bindingFlags =
                 BindingFlags.Instance | // ignore static/const properties
@@ -229,20 +247,16 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 bindingFlags |= BindingFlags.DeclaredOnly; // ignore inherited properties
             }
 
-            // Get the cmdlet's properties
-            IEnumerable<PropertyInfo> cmdletProperties = this.GetType().GetProperties(bindingFlags);
+            // Get the properties on this cmdlet
+            IEnumerable<PropertyInfo> result = this.GetType().GetProperties(bindingFlags);
 
             // Apply filter if necessary
             if (filter != null)
             {
-                cmdletProperties = cmdletProperties.Where(filter);
+                result = result.Where(filter);
             }
 
-            // Get only the properties that were set from PowerShell
-            IEnumerable<string> boundParameterNames = this.MyInvocation.BoundParameters.Keys;
-            IEnumerable<PropertyInfo> boundProperties = cmdletProperties.Where(prop => boundParameterNames.Contains(prop.Name));
-
-            return boundProperties;
+            return result;
         }
 
         #endregion Helpers
@@ -338,17 +352,22 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                     ErrorCategory.InvalidArgument,
                     resourcePath);
             }
-            // Sanitize the URL
-            resourcePath = WebUtility.UrlEncode(resourcePath);
             // Remove the leading slash if it exists so relative URLs don't get treated as absolute URLs
-            string baseAddress = environmentParameters.ResourceBaseAddress?.TrimStart('/');
+            string baseAddress = environmentParameters.ResourceBaseAddress?.Trim('/');
             if (Uri.IsWellFormedUriString(resourcePath, UriKind.Absolute))
             {
-                requestUrl = baseAddress;
+                // Since this is an absolute URL, it must be the full request URL
+                requestUrl = resourcePath;
             }
             else if (Uri.IsWellFormedUriString(resourcePath, UriKind.Relative))
             {
-                string baseUrlWithSchema = $"{baseAddress.TrimEnd('/')}/{SchemaVersion}";
+                // Sanitize the URL
+                //resourcePath = WebUtility.UrlEncode(resourcePath);
+
+                // Get the full base URL
+                string baseUrlWithSchema = $"{baseAddress}/{SchemaVersion}";
+
+                // Append the relative URL to the base URL
                 requestUrl = $"{baseUrlWithSchema}/{resourcePath}";
             }
             else
