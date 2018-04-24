@@ -17,6 +17,11 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         public const string OperationName = "Get";
 
         /// <summary>
+        /// Mapping between parameter names and their type cast.
+        /// </summary>
+        protected IDictionary<string, string> TypeCastMappings = new Dictionary<string, string>();
+
+        /// <summary>
         /// The list of $select query option values (i.e. property names).
         /// 
         /// This value is declared as a dynamic parameter so that values can be validated per cmdlet.
@@ -50,7 +55,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 if (this.DynamicParameters.TryGetValue(nameof(Expand), out RuntimeDefinedParameter expandParam)
                     && expandParam.IsSet)
                 {
-                    this.Select = expandParam.Value as string[];
+                    this.Expand = expandParam.Value as string[];
                 }
             }
         }
@@ -66,10 +71,24 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             // Get the properties
             IEnumerable<PropertyInfo> properties = this.GetProperties(false);
 
+            // Set up type casts
+            foreach (PropertyInfo prop in properties)
+            {
+                // Store the mapping between the parameter name and its type cast if necessary
+                this.TypeCastMappings.Add(prop.Name, prop.Name);
+                if (Attribute.IsDefined(prop, typeof(DerivedTypeAttribute)))
+                {
+                    DerivedTypeAttribute selectableAttr = prop.GetCustomAttribute<DerivedTypeAttribute>(false);
+                    if (!string.IsNullOrWhiteSpace(selectableAttr.FullName))
+                    {
+                        this.TypeCastMappings[prop.Name] = $"{selectableAttr.FullName}/{prop.Name}";
+                    }
+                }
+            }
+
             // Create the "Select" parameter
             var validateSetAttributeSelect = new ValidateSetAttribute(properties
                 .Select(param => param.Name)
-                .Distinct()
                 .ToArray());
             var selectParameter = new RuntimeDefinedParameter(
                 nameof(this.Select),
@@ -85,7 +104,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             var validateSetAttributeExpand = new ValidateSetAttribute(properties
                 .Where(param => Attribute.IsDefined(param, typeof(ExpandableAttribute)))
                 .Select(param => param.Name)
-                .Distinct()
                 .ToArray());
             var expandParameter = new RuntimeDefinedParameter(
                 nameof(this.Expand),
@@ -113,13 +131,19 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         internal override IDictionary<string, string> GetUrlQueryOptions()
         {
             IDictionary<string, string> queryOptions = base.GetUrlQueryOptions();
-            if (Select != null && Select.Any())
+
+            // Select
+            if (this.Select != null && this.Select.Any())
             {
-                queryOptions.Add(ODataConstants.QueryParameters.Select, string.Join(",", Select));
+                IEnumerable<string> selectable = this.Select.Select(param => this.TypeCastMappings[param]);
+                queryOptions.Add(ODataConstants.QueryParameters.Select, string.Join(",", selectable));
             }
+
+            // Expand
             if (Expand != null && Expand.Any())
             {
-                queryOptions.Add(ODataConstants.QueryParameters.Expand, string.Join(",", Expand));
+                IEnumerable<string> selectable = this.Expand.Select(param => this.TypeCastMappings[param]);
+                queryOptions.Add(ODataConstants.QueryParameters.Expand, string.Join(",", this.Expand));
             }
 
             return queryOptions;

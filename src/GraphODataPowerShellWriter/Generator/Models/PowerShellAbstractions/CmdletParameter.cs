@@ -70,6 +70,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public bool IsSortable { get; set; } = false;
 
         /// <summary>
+        /// If this is not null, the [<see cref="PowerShellGraphSDK.DerivedTypeAttributeAttribute"/>] will be added to the parameter.
+        /// 
+        /// This property is not allowed to be empty or whitespace - it must either be null or a valid type name (including the namespace).
+        /// </summary>
+        public string DerivedTypeName { get; set; } = null;
+
+        /// <summary>
         /// Creates a new cmdlet parameter.
         /// </summary>
         /// <param name="parameterName">The parameter name</param>

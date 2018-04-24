@@ -53,7 +53,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             if (this.DynamicParameters != null)
             {
                 // OrderBy
-                if (this.DynamicParameters.TryGetValue(nameof(OrderBy), out RuntimeDefinedParameter selectParam)
+                if (this.DynamicParameters.TryGetValue(nameof(this.OrderBy), out RuntimeDefinedParameter selectParam)
                     && selectParam.IsSet)
                 {
                     this.OrderBy = selectParam.Value as string[];
@@ -73,10 +73,9 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             var validateSetAttributeOrderBy = new ValidateSetAttribute(properties
                 .Where(param => Attribute.IsDefined(param, typeof(SortableAttribute)))
                 .Select(param => param.Name)
-                .Distinct()
                 .ToArray());
             var orderByParameter = new RuntimeDefinedParameter(
-                nameof(OrderBy),
+                nameof(this.OrderBy),
                 typeof(string[]),
                 new Collection<Attribute>()
                 {
@@ -85,7 +84,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 });
 
             // Add to the dictionary of dynamic parameters
-            parameterDictionary.Add(nameof(OrderBy), orderByParameter);
+            parameterDictionary.Add(nameof(this.OrderBy), orderByParameter);
 
             return parameterDictionary;
         }
@@ -93,21 +92,30 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         internal override IDictionary<string, string> GetUrlQueryOptions()
         {
             IDictionary<string, string> queryOptions = base.GetUrlQueryOptions();
-            if (!string.IsNullOrEmpty(Filter))
+
+            // OrderBy
+            if (this.OrderBy != null && this.OrderBy.Any())
+            {
+                IEnumerable<string> sortable = this.OrderBy.Select(param => this.TypeCastMappings[param]);
+                queryOptions.Add(ODataConstants.QueryParameters.OrderBy, string.Join(",", sortable));
+            }
+
+            // Filter
+            if (!string.IsNullOrEmpty(this.Filter))
             {
                 queryOptions.Add(ODataConstants.QueryParameters.Filter, this.Filter);
             }
-            if (OrderBy != null && OrderBy.Any())
+
+            // Skip
+            if (this.Skip != null)
             {
-                queryOptions.Add(ODataConstants.QueryParameters.OrderBy, string.Join(",", OrderBy));
+                queryOptions.Add(ODataConstants.QueryParameters.Skip, this.Skip.ToString());
             }
-            if (Skip != null)
+
+            // Top
+            if (this.Top != null)
             {
-                queryOptions.Add(ODataConstants.QueryParameters.Skip, Skip.ToString());
-            }
-            if (Top != null)
-            {
-                queryOptions.Add(ODataConstants.QueryParameters.Top, Top.ToString());
+                queryOptions.Add(ODataConstants.QueryParameters.Top, this.Top.ToString());
             }
 
             return queryOptions;

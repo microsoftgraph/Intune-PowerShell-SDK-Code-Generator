@@ -30,6 +30,22 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         private static readonly CSharpAttribute _sortableAttribute = new CSharpAttribute(nameof(SortableAttribute));
         public static CSharpAttribute CreateSortableAttribute() => _sortableAttribute;
 
+        // Derived type attribute
+        public static CSharpAttribute CreateDerivedTypeAttribute(string derivedTypeFullName)
+        {
+            if (derivedTypeFullName == null)
+            {
+                throw new ArgumentNullException(nameof(derivedTypeFullName));
+            }
+
+            CSharpAttribute result = new CSharpAttribute(nameof(DerivedTypeAttribute))
+            {
+                Arguments = $"\"{derivedTypeFullName}\"".SingleObjectAsEnumerable(),
+            };
+
+            return result;
+        }
+
         // Parameter
         public static CSharpAttribute CreateParameterAttribute(
             string parameterSetName = null,

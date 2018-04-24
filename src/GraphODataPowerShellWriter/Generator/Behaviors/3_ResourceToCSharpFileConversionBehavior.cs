@@ -144,6 +144,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 yield return CSharpPropertyAttributeHelper.CreateSortableAttribute();
             }
 
+            // DerivedType attribute
+            if (parameter.DerivedTypeName != null)
+            {
+                yield return CSharpPropertyAttributeHelper.CreateDerivedTypeAttribute(parameter.DerivedTypeName);
+            }
+
             // Parameter attribute
             if (parameter.IsPowerShellParameter)
             {

@@ -36,6 +36,6 @@ $updatedApps | Remove-DeviceAppManagement_MobileApp
 # Run some paging commands
 Write-Host "Testing paging..."
 $firstPage = Get-DeviceAppManagement_MobileApp -Top 10
-$secondPage = $firstPage | Get-MSGraphNextPage
+$firstPage | Get-MSGraphNextPage | Out-Null
 $allApps = $firstPage | Get-MSGraphAllPages
 Write-Host "Found $($allApps.Count) apps"

@@ -593,14 +593,18 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 string parameterName = type.Name;
                 string parameterSetName = "#" + type.FullName;
 
+                // Determine if this is the only entity type for this cmdlet
+                bool isTheOnlyType = !(type != baseType || !type.GetDerivedTypes().Any());
+
                 // Create the parameter set for this type if it doesn't already exist
                 CmdletParameterSet parameterSet = cmdlet.GetOrCreateParameterSet(parameterSetName);
 
                 // Add a switch parameter for this type if required
-                if (addSwitchParameters && !(type is OdcmClass @class && @class.IsAbstract))
+                if (addSwitchParameters
+                    && !(type is OdcmClass @class && @class.IsAbstract) // don't add a switch for abstract types
+                    && !isTheOnlyType) // if there is only 1 type, don't add a switch parameter for it
                 {
                     // Add the switch parameter
-                    // TODO: Don't add the switch parameter if there are no derived types (i.e. there is only 1 parameter set)
                     parameterSet.Add(new CmdletParameter(parameterName, typeof(PS.SwitchParameter))
                     {
                         Mandatory = true,
@@ -612,11 +616,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 // Evaluate the properties on this type
                 // TODO: Include collections and navigation properties as expandable, selectable and sortable
                 IEnumerable<OdcmProperty> properties = type.EvaluateProperties(type == baseType)
-                    .Where(prop => prop.Name != ODataConstants.ObjectProperties.Id)
-                    .Where(prop => !prop.ReadOnly && !prop.IsEnumeration() && !prop.IsLink);
+                    .Where(prop => prop.Name != ODataConstants.ObjectProperties.Id);
 
                 // Add this type into the parmeter name lookup table
-                parameterNameLookup.Add(type, properties.Select(prop => prop.Name).Distinct());
+                parameterNameLookup.Add(type, properties
+                    .Where(prop => !prop.ReadOnly && !prop.IsEnumeration() && !prop.IsLink)
+                    .Select(prop => prop.Name)
+                    .Distinct());
 
                 // Add the base types' properties as parameters to this parameter set
                 // NOTE: Safe lookups are not necessary since all base types are guaranteed to have already been processed
@@ -650,9 +656,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                         {
                             Mandatory = property.IsRequired,
                             ValueFromPipelineByPropertyName = false,
-                            IsPowerShellParameter = markAsPowerShellParameter,
-                            IsExpandable = true,
-                            IsSortable = true,
+                            IsPowerShellParameter = markAsPowerShellParameter && !property.ReadOnly,
+
+                            DerivedTypeName = markAsPowerShellParameter || type == baseType
+                                ? null
+                                : type.FullName,
+                            IsExpandable = !markAsPowerShellParameter && property.IsLink,
+                            IsSortable = !markAsPowerShellParameter && !property.IsCollection,
                         };
                         parameterLookup.Add(property.Name, parameter);
                     }
