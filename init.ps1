@@ -6,12 +6,19 @@ $env:writerDir = "$($env:PowerShellSDKRepoRoot)\src\GraphODataPowerShellWriter"
 $env:writerBuildDir = "$($env:writerDir)\bin\Release"
 $env:generatedDir = "$($env:writerBuildDir)\output"
 $env:sdkDir = "$($env:generatedDir)\bin\Release"
+$env:testDir = "$($env:PowerShellSDKRepoRoot)\Tests"
 $env:moduleName = "PowerShellGraphSDK"
+# Remember the settings that will change when launching a child PowerShell context
+$env:standardWindowTitle = (Get-Host).UI.RawUI.WindowTitle
+$env:standardForegroundColor = (Get-Host).UI.RawUI.ForegroundColor
+$env:standardBackgroundColor = (Get-Host).UI.RawUI.BackgroundColor
 
 # Scripts
 $env:buildScript = "$($env:PowerShellSDKRepoRoot)\Scripts\build.ps1"
+$env:runScript = "$($env:PowerShellSDKRepoRoot)\Scripts\run.ps1"
+$env:testScript = "$($env:PowerShellSDKRepoRoot)\Scripts\test.ps1"
 
-function global:Build-Writer {
+function global:WriterBuild {
     param (
         [string]$GraphSchema
     )
@@ -19,60 +26,37 @@ function global:Build-Writer {
     Invoke-Expression "$env:buildScript -WorkingDirectory '$env:writerDir' -OutputPath '$env:writerBuildDir' -BuildTargets 'Clean;Rebuild' -GraphSchema '$GraphSchema'"
 }
 
-function global:Run-Writer {
+function global:WriterRun {
     Invoke-Expression "$env:buildScript -WorkingDirectory '$env:writerDir' -OutputPath '$env:writerBuildDir' -BuildTargets 'Run'"
 }
 
-function global:Build-SDK {
+function global:SDKBuild {
     Invoke-Expression "$env:buildScript -WorkingDirectory '$env:generatedDir' -OutputPath '$env:sdkDir'"
 }
 
-function global:Run-SDK {
-    $commands = @(
-        '(Get-Host).UI.RawUI.WindowTitle = "$env:moduleName"',
-        '(Get-Host).UI.RawUI.ForegroundColor = ''Cyan''',
-        '(Get-Host).UI.RawUI.BackgroundColor = ''Black''',
-        '$ErrorActionPreference = ''Stop''',
-        'Import-Module "$env:sdkDir\$env:moduleName.dll"',
-        'Connect-MSGraph'
-    )
+function global:SDKRun {
+[alias("run")]
+    param()
 
-    Write-Host
-    Write-Host 'Starting a new PowerShell context with the following commands:' -f Cyan
-    $commands | ForEach-Object { Write-Host "    $_" -f Cyan }
-    Write-Host
-    Write-Host 'WARNING: Type ''exit'' to return to this initialized PowerShell context.' -f Yellow
-    Write-Host
+    Invoke-Expression "$env:runScript"
+}
 
-    # Remember the settings that will change in the new PowerShell context
-    $standardWindowTitle = (Get-Host).UI.RawUI.WindowTitle
-    $standardForegroundColor = (Get-Host).UI.RawUI.ForegroundColor
-    $standardBackgroundColor = (Get-Host).UI.RawUI.BackgroundColor
+function global:SDKTest {
+[alias("test")]
+    param()
 
-    # Start the new PowerShell context
-    & powershell -NoExit -Command "& {$($commands -Join '; ')}"
-
-    # Restore the old settings
-    (Get-Host).UI.RawUI.WindowTitle = $standardWindowTitle
-    (Get-Host).UI.RawUI.ForegroundColor = $standardForegroundColor
-    (Get-Host).UI.RawUI.BackgroundColor = $standardBackgroundColor
-
-    # Check that the special PowerShell context exited successfully
-    if (-Not $?)
-    {
-        Write-Host "MSBuild exited with error code '$LastExitCode'" -f Red
-        Write-Host
-    }
+    Invoke-Expression "$env:testScript"
 }
 
 function global:GenerateSDK {
+[alias("build")]
     param (
         [string]$GraphSchema
     )
 
-    global:Build-Writer -GraphSchema $GraphSchema
-    global:Run-Writer
-    global:Build-SDK
+    global:WriterBuild -GraphSchema $GraphSchema
+    global:WriterRun
+    global:SDKBuild
 }
 
 function global:GenerateAndRunSDK {
@@ -81,19 +65,20 @@ function global:GenerateAndRunSDK {
     )
 
     global:GenerateSDK -GraphSchema $GraphSchema
-    global:Run-SDK
+    global:SDKRun
 }
 
 # Run "dotnet restore" just in case this is the first time the repo is being initialized (or if there are new dependencies)
 dotnet restore --verbosity quiet
 
-Write-Host 'Initialized repository.' -f Green
+Write-Host "Initialized repository." -f Green
 Write-Host
-Write-Host 'Available commands:' -f Yellow
-Write-Host '    GenerateAndRunSDK' -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Executes the commands 'GenerateSDK' and 'Run-SDK' (in that order)" -f DarkCyan
-Write-Host '    GenerateSDK      ' -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Executes the commands 'Build-Writer', 'Run-Writer' and 'Build-SDK' (in that order)" -f DarkCyan
-Write-Host '    Build-Writer     ' -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Builds the GraphODataPowerShellSDKWriter project" -f DarkCyan
-Write-Host '    Run-Writer       ' -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Runs the GraphODataPowerShellSDKWriter project" -f DarkCyan
-Write-Host '    Build-SDK        ' -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Builds the generated PowerShellSDK project" -f DarkCyan
-Write-Host '    Run-SDK          ' -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Runs the generated PowerShellSDK project" -f DarkCyan
+Write-Host "Available commands:" -f Yellow
+Write-Host "    GenerateAndRunSDK       " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Executes the commands 'GenerateSDK' and 'SDKRun' (in that order)" -f DarkCyan
+Write-Host "    GenerateSDK (or 'build')" -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Executes the commands 'WriterBuild', 'WriterRun' and 'SDKBuild' (in that order)" -f DarkCyan
+Write-Host "    WriterBuild             " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Builds the GraphODataPowerShellSDKWriter project" -f DarkCyan
+Write-Host "    WriterRun               " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Runs the GraphODataPowerShellSDKWriter project" -f DarkCyan
+Write-Host "    SDKBuild                " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Builds the generated PowerShellSDK project" -f DarkCyan
+Write-Host "    SDKRun (or 'run')       " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Runs the generated PowerShellSDK project" -f DarkCyan
+Write-Host "    SDKTest (or 'test')     " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Runs tests against the generated PowerShellSDK project" -f DarkCyan
 Write-Host

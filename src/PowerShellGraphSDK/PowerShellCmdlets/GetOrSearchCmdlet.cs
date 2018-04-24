@@ -3,7 +3,6 @@
 namespace PowerShellGraphSDK.PowerShellCmdlets
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
@@ -17,8 +16,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     public abstract class GetOrSearchCmdlet : GetCmdlet
     {
         public new const string OperationName = "Search";
-
-        private const string OrderByParameterName = "OrderBy";
 
         /// <summary>
         /// The $filter query option value.
@@ -56,22 +53,18 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             if (this.DynamicParameters != null)
             {
                 // OrderBy
-                if (this.DynamicParameters.TryGetValue(OrderByParameterName, out RuntimeDefinedParameter selectParam)
+                if (this.DynamicParameters.TryGetValue(nameof(OrderBy), out RuntimeDefinedParameter selectParam)
                     && selectParam.IsSet)
                 {
                     this.OrderBy = selectParam.Value as string[];
                 }
             }
         }
-
-        /// <summary>
-        /// The parameters that are added at runtime.
-        /// </summary>
-        /// <returns>A <see cref="RuntimeDefinedParameterDictionary"/>.</returns>
+        
         public override object GetDynamicParameters()
         {
             // Get the dynamic parameters from the base class
-            RuntimeDefinedParameterDictionary parameterDictionary = base.GetDynamicParameters() as RuntimeDefinedParameterDictionary;
+            RuntimeDefinedParameterDictionary parameterDictionary = (RuntimeDefinedParameterDictionary)base.GetDynamicParameters();
 
             // Get the properties
             IEnumerable<PropertyInfo> properties = this.GetProperties(false);
@@ -83,7 +76,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 .Distinct()
                 .ToArray());
             var orderByParameter = new RuntimeDefinedParameter(
-                OrderByParameterName,
+                nameof(OrderBy),
                 typeof(string[]),
                 new Collection<Attribute>()
                 {
@@ -92,7 +85,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 });
 
             // Add to the dictionary of dynamic parameters
-            parameterDictionary.Add(OrderByParameterName, orderByParameter);
+            parameterDictionary.Add(nameof(OrderBy), orderByParameter);
 
             return parameterDictionary;
         }

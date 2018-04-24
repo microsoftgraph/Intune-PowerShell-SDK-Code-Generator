@@ -16,8 +16,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     {
         public const string OperationName = "Get";
 
-        protected RuntimeDefinedParameterDictionary DynamicParameters = null;
-
         /// <summary>
         /// The list of $select query option values (i.e. property names).
         /// 
@@ -61,8 +59,10 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// The parameters that are added at runtime.
         /// </summary>
         /// <returns>A <see cref="RuntimeDefinedParameterDictionary"/>.</returns>
-        public virtual object GetDynamicParameters()
+        public override object GetDynamicParameters()
         {
+            RuntimeDefinedParameterDictionary parameterDictionary = (RuntimeDefinedParameterDictionary)base.GetDynamicParameters();
+
             // Get the properties
             IEnumerable<PropertyInfo> properties = this.GetProperties(false);
 
@@ -99,13 +99,9 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             );
 
             // Create the dictionary of dynamic parameters
-            var parameterDictionary = new RuntimeDefinedParameterDictionary()
-            {
-                { nameof(this.Select), selectParameter },
-                { nameof(this.Expand), expandParameter },
-            };
+            parameterDictionary.Add(nameof(this.Select), selectParameter);
+            parameterDictionary.Add(nameof(this.Expand), expandParameter);
 
-            this.DynamicParameters = parameterDictionary;
             return parameterDictionary;
         }
 

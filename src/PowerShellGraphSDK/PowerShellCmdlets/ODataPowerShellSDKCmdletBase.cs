@@ -57,12 +57,17 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     ///     </item>
     /// </list>
     /// </remarks>
-    public abstract class ODataPowerShellSDKCmdletBase : PSCmdlet
+    public abstract class ODataPowerShellSDKCmdletBase : PSCmdlet, IDynamicParameters
     {
         /// <summary>
         /// The Graph schema version to use when making a Graph call.
         /// </summary>
         public static string SchemaVersion { get; set; } = "v1.0";
+
+        /// <summary>
+        /// The defined dynamic parameters.
+        /// </summary>
+        protected RuntimeDefinedParameterDictionary DynamicParameters = null;
 
         /// <summary>
         /// The method that the PowerShell runtime will call.  This is the entry point for the cmdlet.
@@ -186,6 +191,16 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         {
             JToken jsonToken = JsonUtils.ReadJson(content);
             return JsonUtils.ToPowerShellObject(jsonToken);
+        }
+
+        /// <summary>
+        /// The parameters that are added at runtime.
+        /// </summary>
+        /// <returns>A <see cref="RuntimeDefinedParameterDictionary"/>.</returns>
+        public virtual object GetDynamicParameters()
+        {
+            this.DynamicParameters = new RuntimeDefinedParameterDictionary();
+            return this.DynamicParameters;
         }
 
         #endregion Overridable

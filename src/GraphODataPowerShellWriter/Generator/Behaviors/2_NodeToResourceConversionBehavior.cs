@@ -338,6 +338,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                         addEntityId: !method.IsBoundToCollection, // if the function is bound to a collection, we don't need an ID parameter
                         postfixUrlSegments: urlPostfixSegment);
 
+                    // TODO: Add fake parameters for the properties in the result entities
+                    //cmdlet.AddParametersForEntityProperties(method.ReturnType, null, false, false);
+
                     // Return the cmdlet representing the action or function
                     yield return cmdlet;
                 }
@@ -574,6 +577,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 throw new ArgumentNullException(nameof(baseType));
             }
 
+            // Don't try to add parameters for basic Edm types
+            if (baseType.Namespace.Name.StartsWith("Edm"))
+            {
+                return;
+            }
+
             // Track parameters as we visit each type
             IDictionary<OdcmType, IEnumerable<string>> parameterNameLookup = new Dictionary<OdcmType, IEnumerable<string>>();
             IDictionary<string, CmdletParameter> parameterLookup = new Dictionary<string, CmdletParameter>();
@@ -591,6 +600,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 if (addSwitchParameters && !(type is OdcmClass @class && @class.IsAbstract))
                 {
                     // Add the switch parameter
+                    // TODO: Don't add the switch parameter if there are no derived types (i.e. there is only 1 parameter set)
                     parameterSet.Add(new CmdletParameter(parameterName, typeof(PS.SwitchParameter))
                     {
                         Mandatory = true,
@@ -600,6 +610,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 }
 
                 // Evaluate the properties on this type
+                // TODO: Include collections and navigation properties as expandable, selectable and sortable
                 IEnumerable<OdcmProperty> properties = type.EvaluateProperties(type == baseType)
                     .Where(prop => prop.Name != ODataConstants.ObjectProperties.Id)
                     .Where(prop => !prop.ReadOnly && !prop.IsEnumeration() && !prop.IsLink);
@@ -608,7 +619,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 parameterNameLookup.Add(type, properties.Select(prop => prop.Name).Distinct());
 
                 // Add the base types' properties as parameters to this parameter set
-                // NOTE: Safe lookups are not necessary since all base types are guaranteed to have already been processed by the VisitDerivedTypes() method
+                // NOTE: Safe lookups are not necessary since all base types are guaranteed to have already been processed
+                // by the VisitDerivedTypes() method
                 OdcmType currentType = type;
                 while (currentType != baseType)
                 {

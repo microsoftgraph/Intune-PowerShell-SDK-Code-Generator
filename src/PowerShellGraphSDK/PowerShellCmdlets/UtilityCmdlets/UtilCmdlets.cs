@@ -89,10 +89,9 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         public string NextLink { get; set; }
 
         /// The properties in this section hide base classes' PowerShell parameters by
-        /// redefining the properties without the [Parameter()] attribute
+        /// redefining the properties without adding the [Parameter] attribute
         #region Hidden Parameters
         
-        public new string SchemaVersion { get; }
         public new string Filter { get; }
         public new string Skip { get; }
         public new string Top { get; }

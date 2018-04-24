@@ -41,8 +41,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 
         public override string ToString()
         {
+            string attributeName = this.Name.EndsWith("Attribute")
+                ? this.Name.Substring(0, this.Name.LastIndexOf("Attribute"))
+                : this.Name;
             string argumentString = this.Arguments.Any() ? $"({string.Join(", ", this.Arguments)})" : string.Empty;
-            return $"[{this.Name}{argumentString}]";
+            return $"[{attributeName}{argumentString}]";
         }
     }
 }
