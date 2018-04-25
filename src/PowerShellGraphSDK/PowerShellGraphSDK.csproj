@@ -60,4 +60,18 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="BeforeBuild">
+    <RemoveDir Directories="$(OutputPath)" />
+  </Target>
+  <Target Name="AfterBuild">
+    <PropertyGroup>
+      <POWERSHELL_EXTRAS>$(MSBuildProjectDirectory)\PowerShellModuleAdditions</POWERSHELL_EXTRAS>
+    </PropertyGroup>
+    <ItemGroup>
+      <_POWERSHELL_EXTRAS Include="$(POWERSHELL_EXTRAS)\**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_POWERSHELL_EXTRAS)" DestinationFolder="$(OutputPath)\%(RecursiveDir)" />
+    <Message Importance="high" Text="PowerShell Module Additions Directory:  $(POWERSHELL_EXTRAS)" />
+    <Message Importance="high" Text="Output Directory:  $(OutputPath)" />
+  </Target>
 </Project>

@@ -3,7 +3,7 @@ $commands = @(
     '(Get-Host).UI.RawUI.ForegroundColor = ''Cyan''',
     '(Get-Host).UI.RawUI.BackgroundColor = ''Black''',
     '$ErrorActionPreference = ''Stop''',
-    'Import-Module "$env:sdkDir\$env:moduleName.dll"',
+    'Import-Module "$env:sdkDir\$env:moduleName.$env:moduleExtension"',
     'Connect-MSGraph'
 )
 

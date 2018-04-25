@@ -12,7 +12,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     /// <summary>
     /// The common behavior between all OData PowerShell SDK cmdlets that support $select and $expand query parameters.
     /// </summary>
-    public abstract class GetCmdlet : ODataPowerShellSDKCmdletBase, IDynamicParameters
+    public abstract class GetCmdlet : ODataPowerShellSDKCmdletBase
     {
         public const string OperationName = "Get";
 
@@ -34,40 +34,9 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// This value is declared as a dynamic parameter so that values can be validated per cmdlet.
         /// </summary>
         public string[] Expand = null;
-
-        /// <summary>
-        /// Set up the dynamic parameters.
-        /// </summary>
-        protected override void BeginProcessing()
+        
+        public GetCmdlet()
         {
-            base.BeginProcessing();
-
-            if (this.DynamicParameters != null)
-            {
-                // Select
-                if (this.DynamicParameters.TryGetValue(nameof(Select), out RuntimeDefinedParameter selectParam)
-                    && selectParam.IsSet)
-                {
-                    this.Select = selectParam.Value as string[];
-                }
-
-                // Expand
-                if (this.DynamicParameters.TryGetValue(nameof(Expand), out RuntimeDefinedParameter expandParam)
-                    && expandParam.IsSet)
-                {
-                    this.Expand = expandParam.Value as string[];
-                }
-            }
-        }
-
-        /// <summary>
-        /// The parameters that are added at runtime.
-        /// </summary>
-        /// <returns>A <see cref="RuntimeDefinedParameterDictionary"/>.</returns>
-        public override object GetDynamicParameters()
-        {
-            RuntimeDefinedParameterDictionary parameterDictionary = (RuntimeDefinedParameterDictionary)base.GetDynamicParameters();
-
             // Get the properties
             IEnumerable<PropertyInfo> properties = this.GetProperties(false);
 
@@ -116,11 +85,34 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 }
             );
 
-            // Create the dictionary of dynamic parameters
-            parameterDictionary.Add(nameof(this.Select), selectParameter);
-            parameterDictionary.Add(nameof(this.Expand), expandParameter);
+            // Add to the dictionary of dynamic parameters
+            this.DynamicParameters.Add(nameof(this.Select), selectParameter);
+            this.DynamicParameters.Add(nameof(this.Expand), expandParameter);
+        }
 
-            return parameterDictionary;
+        /// <summary>
+        /// Set up the dynamic parameters.
+        /// </summary>
+        protected override void BeginProcessing()
+        {
+            base.BeginProcessing();
+
+            if (this.DynamicParameters != null)
+            {
+                // Select
+                if (this.DynamicParameters.TryGetValue(nameof(Select), out RuntimeDefinedParameter selectParam)
+                    && selectParam.IsSet)
+                {
+                    this.Select = selectParam.Value as string[];
+                }
+
+                // Expand
+                if (this.DynamicParameters.TryGetValue(nameof(Expand), out RuntimeDefinedParameter expandParam)
+                    && expandParam.IsSet)
+                {
+                    this.Expand = expandParam.Value as string[];
+                }
+            }
         }
 
         internal override string GetHttpMethod()

@@ -8,9 +8,9 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     public abstract class FunctionReturningCollectionCmdlet : GetOrSearchCmdlet
     {
         // TODO: Allow dynamic parameters once the generator supports them
-        public override object GetDynamicParameters()
+        public FunctionReturningCollectionCmdlet()
         {
-            return null;
+            this.DynamicParameters = null;
         }
     }
 }

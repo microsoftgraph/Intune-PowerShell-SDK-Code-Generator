@@ -1,5 +1,5 @@
 # Get init script directory
-$env:PowerShellSDKRepoRoot = Split-Path $script:MyInvocation.MyCommand.Path -Parent
+$env:PowerShellSDKRepoRoot = Split-Path (Split-Path $script:MyInvocation.MyCommand.Path -Parent) -Parent
 
 # Environment variables
 $env:writerDir = "$($env:PowerShellSDKRepoRoot)\src\GraphODataPowerShellWriter"
@@ -7,7 +7,8 @@ $env:writerBuildDir = "$($env:writerDir)\bin\Release"
 $env:generatedDir = "$($env:writerBuildDir)\output"
 $env:sdkDir = "$($env:generatedDir)\bin\Release"
 $env:testDir = "$($env:PowerShellSDKRepoRoot)\Tests"
-$env:moduleName = "PowerShellGraphSDK"
+$env:moduleName = 'PowerShellGraphSDK'
+$env:moduleExtension = 'psd1'
 # Remember the settings that will change when launching a child PowerShell context
 $env:standardWindowTitle = (Get-Host).UI.RawUI.WindowTitle
 $env:standardForegroundColor = (Get-Host).UI.RawUI.ForegroundColor

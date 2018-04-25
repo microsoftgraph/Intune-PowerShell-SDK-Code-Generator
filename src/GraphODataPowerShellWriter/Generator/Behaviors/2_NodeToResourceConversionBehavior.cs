@@ -24,35 +24,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
         private delegate void TypeProcessor(OdcmType currentType);
 
         /// <summary>
-        /// The mapping of Edm types to PowerShell types.  
-        /// </summary>
-        private static IDictionary<string, Type> EdmToPowerShellTypeMappings = new Dictionary<string, Type>()
-        {
-            { "Edm.Boolean", typeof(bool) },
-
-            { "Edm.String", typeof(string) },
-
-            { "Edm.Byte", typeof(byte) },
-            { "Edm.Stream", typeof(byte[]) },
-
-            { "Edm.Int16", typeof(short) },
-            { "Edm.Int32", typeof(int) },
-            { "Edm.Int64", typeof(long) },
-
-            { "Edm.Single", typeof(float) },
-            { "Edm.Double", typeof(double) },
-            { "Edm.Decimal", typeof(decimal) },
-
-            { "Edm.Guid", typeof(Guid) },
-
-            { "Edm.DateTime", typeof(DateTime) },
-            { "Edm.DateTimeOffset", typeof(DateTimeOffset) },
-            { "Edm.TimeOfDay", typeof(TimeSpan) },
-            { "Edm.Time", typeof(TimeSpan) },
-            { "Edm.Duration", typeof(TimeSpan) },
-        };
-
-        /// <summary>
         /// Converts an OData route to a resource.
         /// </summary>
         /// <param name="node">The ODCM node which represents the OData route</param>
@@ -765,10 +736,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // TODO: Handle enums
 
             // Convert the type (default to System.Object if we can't convert the type)
-            if (!EdmToPowerShellTypeMappings.TryGetValue(odcmType.FullName, out Type result))
-            {
-                result = typeof(object);
-            }
+            Type result = odcmType.ToDotNetType();
 
             // Make it an array type if necessary
             if (isCollection)

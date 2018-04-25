@@ -3,8 +3,6 @@
 namespace PowerShellGraphSDK.PowerShellCmdlets
 {
     using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Management.Automation;
     using System.Net.Http;
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
@@ -96,13 +94,13 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         public new string Skip { get; }
         public new string Top { get; }
 
-        public override object GetDynamicParameters()
-        {
-            // Override this method so that the dynamic parameters are not exposed.
-            return null;
-        }
-
         #endregion Hidden Parameters
+
+        public GetNextPage()
+        {
+            // Set this to null so dynamic parameters will also be hidden
+            this.DynamicParameters = null;
+        }
 
         internal override string GetResourcePath()
         {
@@ -110,131 +108,128 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         }
     }
 
-    [Cmdlet(
-        CmdletVerb, CmdletNoun,
-        ConfirmImpact = ConfirmImpact.Medium,
-        DefaultParameterSetName = ParameterSetSearchResult)]
-    public class GetAllPages : PSCmdlet
-    {
-        public const string CmdletVerb = VerbsCommon.Get;
-        public const string CmdletNoun = "MSGraphAllPages";
+    //[Cmdlet(
+    //    CmdletVerb, CmdletNoun,
+    //    ConfirmImpact = ConfirmImpact.Medium,
+    //    DefaultParameterSetName = ParameterSetSearchResult)]
+    //public class GetAllPages : PSCmdlet
+    //{
+    //    public const string CmdletVerb = VerbsCommon.Get;
+    //    public const string CmdletNoun = "MSGraphAllPages";
 
-        private const string ParameterSetNextLink = "NextLink";
-        private const string ParameterSetSearchResult = "SearchResult";
+    //    private const string ParameterSetNextLink = "NextLink";
+    //    private const string ParameterSetSearchResult = "SearchResult";
 
-        [Parameter(Mandatory = true, ParameterSetName = ParameterSetNextLink, ValueFromPipelineByPropertyName = true)]
-        [ValidateNotNullOrEmpty]
-        [Alias(ODataConstants.SearchResultProperties.NextLink)]
-        public string NextLink { get; set; }
+    //    [Parameter(Mandatory = true, ParameterSetName = ParameterSetNextLink, ValueFromPipelineByPropertyName = true)]
+    //    [ValidateNotNullOrEmpty]
+    //    [Alias(ODataConstants.SearchResultProperties.NextLink)]
+    //    public string NextLink { get; set; }
 
-        [Parameter(Mandatory = true, ParameterSetName = ParameterSetSearchResult, ValueFromPipeline = true)]
-        [ValidateNotNull]
-        public PSObject SearchResult { get; set; }
+    //    [Parameter(Mandatory = true, ParameterSetName = ParameterSetSearchResult, ValueFromPipeline = true)]
+    //    [ValidateNotNull]
+    //    public PSObject SearchResult { get; set; }
 
-        protected override sealed void ProcessRecord()
-        {
-            this.WriteDebug("Selected parameter set: " + this.ParameterSetName);
+    //    protected override sealed void ProcessRecord()
+    //    {
+    //        this.WriteDebug("Selected parameter set: " + this.ParameterSetName);
 
-            // Get nextLink and values
-            string nextLink = null;
-            switch (this.ParameterSetName)
-            {
-                case ParameterSetNextLink: nextLink = this.NextLink; break;
-                case ParameterSetSearchResult:
-                    {
-                        // Extract values and nextLink from search result
-                        nextLink = GetNextLinkFromSearchResult(this.SearchResult);
-                        object[] values = GetValuesFromSearchResult(this.SearchResult);
+    //        // Get nextLink and values
+    //        string nextLink = null;
+    //        switch (this.ParameterSetName)
+    //        {
+    //            case ParameterSetNextLink: nextLink = this.NextLink; break;
+    //            case ParameterSetSearchResult:
+    //                {
+    //                    // Extract values and nextLink from search result
+    //                    nextLink = GetNextLinkFromSearchResult(this.SearchResult);
+    //                    object[] values = GetValuesFromSearchResult(this.SearchResult);
 
-                        // If the object does not have values or a nextLink, send it to the pipeline and exit the cmdlet
-                        if (nextLink == null && values == null)
-                        {
-                            this.WriteObject(SearchResult);
-                            return;
-                        }
-                        else if (values != null)
-                        {
-                            // We found values, so send them to the pipeline
-                            this.WriteDebug($"Writing first page to pipeline");
-                            foreach (var value in values)
-                            {
-                                this.WriteObject(value);
-                            }
-                        }
-                    }
-                    break;
-                default: throw new PSArgumentException("Unable to determine parameter set");
-            }
+    //                    // If the object does not have values or a nextLink, send it to the pipeline and exit the cmdlet
+    //                    if (nextLink == null && values == null)
+    //                    {
+    //                        this.WriteObject(SearchResult);
+    //                        return;
+    //                    }
+    //                    else if (values != null)
+    //                    {
+    //                        // We found values, so send them to the pipeline
+    //                        this.WriteDebug($"Writing first page to pipeline");
+    //                        foreach (var value in values)
+    //                        {
+    //                            this.WriteObject(value);
+    //                        }
+    //                    }
+    //                }
+    //                break;
+    //            default: throw new PSArgumentException("Unable to determine parameter set");
+    //        }
 
-            // Get the parameters
-            IDictionary parameterDictionary = this.MyInvocation.BoundParameters
-                .Where(entry => !(entry.Key == nameof(this.NextLink) || entry.Key == nameof(this.SearchResult)))
-                .ToDictionary(entry => entry.Key, entry => entry.Value);
+    //        // Get the parameters
+    //        IDictionary parameterDictionary = this.MyInvocation.BoundParameters
+    //            .Where(entry => !(entry.Key == nameof(this.NextLink) || entry.Key == nameof(this.SearchResult)))
+    //            .ToDictionary(entry => entry.Key, entry => entry.Value);
 
-            // Iterate over each page and write the results to the pipeline
-            string currentNextLink = nextLink;
-            while (!string.IsNullOrEmpty(currentNextLink))
-            {
-                this.WriteDebug($"Starting page '{currentNextLink}'");
-                // Create an invocation of the Get-MSGraphNextPage cmdlet
-                // NOTE: we cannot just create an instance of "GetNextPage" and call "Invoke" on it, because it fails when run on PSCmdlet objects
-                //ScriptBlock script = ScriptBlock.Create($"{GetNextPage.CmdletVerb}-{GetNextPage.CmdletNoun} -{nameof(GetNextPage.NextLink)} '{currentNextLink}'");
+    //        // Iterate over each page and write the results to the pipeline
+    //        string currentNextLink = nextLink;
+    //        while (!string.IsNullOrEmpty(currentNextLink))
+    //        {
+    //            this.WriteDebug($"Starting page '{currentNextLink}'");
+    //            // Create an invocation of the Get-MSGraphNextPage cmdlet
+    //            // NOTE: we cannot just create an instance of "GetNextPage" and call "Invoke" on it, because it fails when run on PSCmdlet objects
+    //            IEnumerable<PSObject> obj = null;
+    //            PowerShell ps = PowerShell.Create(RunspaceMode.CurrentRunspace);
+    //            ps.AddCommand($"{GetNextPage.CmdletVerb}-{GetNextPage.CmdletNoun}");
+    //            ps.AddParameter(nameof(GetNextPage.NextLink), currentNextLink);
+    //            ps.AddParameters(parameterDictionary);
+    //            obj = ps.Invoke();
 
-                // Call the Get-MSGraphNextPage cmdlet
-                IEnumerable<PSObject> obj = null;
-                PowerShell ps = PowerShell.Create(RunspaceMode.CurrentRunspace);
-                ps.AddCommand($"{GetNextPage.CmdletVerb}-{GetNextPage.CmdletNoun}");
-                ps.AddParameter(nameof(GetNextPage.NextLink), currentNextLink);
-                ps.AddParameters(parameterDictionary);
-                obj = ps.Invoke();
+    //            // Check if we got any results back
+    //            PSObject psObj = obj.SingleOrDefault();
+    //            if (psObj != null)
+    //            {
+    //                // Write the values to the pipeline
+    //                object[] nextPage = GetValuesFromSearchResult(psObj);
+    //                if (nextPage != null)
+    //                {
+    //                    // Output all the results in this page
+    //                    foreach (PSObject result in nextPage)
+    //                    {
+    //                        this.WriteObject(result);
+    //                    }
+    //                }
 
-                // Check if we got any results back
-                PSObject psObj = obj.SingleOrDefault();
-                if (psObj != null)
-                {
-                    // Write the values to the pipeline
-                    object[] nextPage = GetValuesFromSearchResult(psObj);
-                    if (nextPage != null)
-                    {
-                        // Output all the results in this page
-                        foreach (PSObject result in nextPage)
-                        {
-                            this.WriteObject(result);
-                        }
-                    }
+    //                // Set the next link
+    //                currentNextLink = GetNextLinkFromSearchResult(psObj);
+    //            }
+    //            else
+    //            {
+    //                currentNextLink = null;
+    //            }
+    //        }
+    //    }
 
-                    // Set the next link
-                    currentNextLink = GetNextLinkFromSearchResult(psObj);
-                }
-                else
-                {
-                    currentNextLink = null;
-                }
-            }
-        }
+    //    private static string GetNextLinkFromSearchResult(PSObject searchResult)
+    //    {
+    //        if (searchResult == null)
+    //        {
+    //            throw new PSArgumentNullException(nameof(searchResult), "PowerShell validation failed while getting nextLink");
+    //        }
 
-        private static string GetNextLinkFromSearchResult(PSObject searchResult)
-        {
-            if (searchResult == null)
-            {
-                throw new PSArgumentNullException(nameof(searchResult), "PowerShell validation failed while getting nextLink");
-            }
+    //        string nextLink = searchResult.Members[ODataConstants.SearchResultProperties.NextLink]?.Value?.ToString();
+    //        return nextLink;
+    //    }
 
-            string nextLink = searchResult.Members[ODataConstants.SearchResultProperties.NextLink]?.Value?.ToString();
-            return nextLink;
-        }
+    //    private static object[] GetValuesFromSearchResult(PSObject searchResult)
+    //    {
+    //        if (searchResult == null)
+    //        {
+    //            throw new PSArgumentNullException(nameof(searchResult), "PowerShell validation failed while getting values");
+    //        }
 
-        private static object[] GetValuesFromSearchResult(PSObject searchResult)
-        {
-            if (searchResult == null)
-            {
-                throw new PSArgumentNullException(nameof(searchResult), "PowerShell validation failed while getting values");
-            }
-
-            object[] values = searchResult.Members[ODataConstants.SearchResultProperties.Value]?.Value as object[];
-            return values;
-        }
-    }
+    //        object[] values = searchResult.Members[ODataConstants.SearchResultProperties.Value]?.Value as object[];
+    //        return values;
+    //    }
+    //}
 
     [Cmdlet(
         CmdletVerb, CmdletNoun,
@@ -253,9 +248,9 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     [Cmdlet(
         CmdletVerb, CmdletNoun,
         ConfirmImpact = ConfirmImpact.High)]
-    public class SetSchemaVersion : PSCmdlet
+    public class UpdateSchemaVersion : PSCmdlet
     {
-        public const string CmdletVerb = VerbsCommon.Set;
+        public const string CmdletVerb = VerbsData.Update;
         public const string CmdletNoun = "MSGraphSchemaVersion";
 
         [Parameter(

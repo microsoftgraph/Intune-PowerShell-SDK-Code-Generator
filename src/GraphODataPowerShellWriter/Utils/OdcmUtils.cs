@@ -14,6 +14,52 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
     public static class OdcmUtils
     {
         /// <summary>
+        /// The mapping of Edm types to PowerShell types.  
+        /// </summary>
+        private static IDictionary<string, Type> EdmTypeMappings = new Dictionary<string, Type>()
+        {
+            { "Edm.Boolean", typeof(bool) },
+
+            { "Edm.String", typeof(string) },
+
+            { "Edm.Byte", typeof(byte) },
+            { "Edm.Stream", typeof(byte[]) },
+
+            { "Edm.Int16", typeof(short) },
+            { "Edm.Int32", typeof(int) },
+            { "Edm.Int64", typeof(long) },
+
+            { "Edm.Single", typeof(float) },
+            { "Edm.Double", typeof(double) },
+            { "Edm.Decimal", typeof(decimal) },
+
+            { "Edm.Guid", typeof(Guid) },
+
+            { "Edm.DateTime", typeof(DateTime) },
+            { "Edm.DateTimeOffset", typeof(DateTimeOffset) },
+            { "Edm.TimeOfDay", typeof(TimeSpan) },
+            { "Edm.Time", typeof(TimeSpan) },
+            { "Edm.Duration", typeof(TimeSpan) },
+        };
+
+        public static Type ToDotNetType(this OdcmType type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            if (EdmTypeMappings.TryGetValue(type.FullName, out Type foundType))
+            {
+                return foundType;
+            }
+            else
+            {
+                return typeof(object);
+            }
+        }
+
+        /// <summary>
         /// Tries to get the name of the parameter that represents the ID of this property.
         /// </summary>
         /// <param name="property">The property</param>

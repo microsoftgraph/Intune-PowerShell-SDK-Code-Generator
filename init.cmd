@@ -1,0 +1,1 @@
+powershell -NoExit ./Scripts/init.ps1

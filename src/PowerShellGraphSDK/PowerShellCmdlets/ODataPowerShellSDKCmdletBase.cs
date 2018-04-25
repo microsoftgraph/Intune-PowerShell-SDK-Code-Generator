@@ -67,7 +67,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// <summary>
         /// The defined dynamic parameters.
         /// </summary>
-        protected RuntimeDefinedParameterDictionary DynamicParameters = null;
+        protected RuntimeDefinedParameterDictionary DynamicParameters = new RuntimeDefinedParameterDictionary();
 
         /// <summary>
         /// The method that the PowerShell runtime will call.  This is the entry point for the cmdlet.
@@ -197,9 +197,8 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// The parameters that are added at runtime.
         /// </summary>
         /// <returns>A <see cref="RuntimeDefinedParameterDictionary"/>.</returns>
-        public virtual object GetDynamicParameters()
+        public object GetDynamicParameters()
         {
-            this.DynamicParameters = new RuntimeDefinedParameterDictionary();
             return this.DynamicParameters;
         }
 
@@ -251,28 +250,44 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// <param name="includeInherited">Whether or not to include inherited properties (defaults to true)</param>
         /// <param name="filter">The filter for the properties to include in the result (if it evaluates to true, the property is included)</param>
         /// <returns>The properties that are defined on this cmdlet.</returns>
-        internal IEnumerable<PropertyInfo> GetProperties(bool includeInherited = true, Func<PropertyInfo, bool> filter = null)
+        internal IEnumerable<PropertyInfo> GetProperties(bool includeInherited, Func<PropertyInfo, bool> filter = null)
         {
-            // Create the binding flags
-            BindingFlags bindingFlags =
-                BindingFlags.Instance | // ignore static/const properties
-                BindingFlags.Public; // only include public properties
-            if (!includeInherited)
+            bool useLazyPath = includeInherited == false && filter == null;
+            if (useLazyPath && this._properties != null)
             {
-                bindingFlags |= BindingFlags.DeclaredOnly; // ignore inherited properties
+                // Shortcut path to avoid re-evaluating properties for the most set of parameters
+                return this._properties;
             }
-
-            // Get the properties on this cmdlet
-            IEnumerable<PropertyInfo> result = this.GetType().GetProperties(bindingFlags);
-
-            // Apply filter if necessary
-            if (filter != null)
+            else
             {
-                result = result.Where(filter);
-            }
+                // Create the binding flags
+                BindingFlags bindingFlags =
+                    BindingFlags.Instance | // ignore static/const properties
+                    BindingFlags.Public; // only include public properties
+                if (!includeInherited)
+                {
+                    bindingFlags |= BindingFlags.DeclaredOnly; // ignore inherited properties
+                }
 
-            return result;
+                // Get the properties on this cmdlet
+                IEnumerable<PropertyInfo> result = this.GetType().GetProperties(bindingFlags);
+
+                // Apply filter if necessary
+                if (filter != null)
+                {
+                    result = result.Where(filter);
+                }
+
+                // Store evaluated properties in case this method gets called again with the same parameters
+                if (useLazyPath)
+                {
+                    this._properties = result;
+                }
+
+                return result;
+            }
         }
+        private IEnumerable<PropertyInfo> _properties = null;
 
         #endregion Helpers
 

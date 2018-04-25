@@ -43,29 +43,8 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         [Alias("First")] // Required to be compatible with the PowerShell paging parameters
         public int? Top { get; set; }
 
-        /// <summary>
-        /// Set up the dynamic parameters.
-        /// </summary>
-        protected override void BeginProcessing()
+        public GetOrSearchCmdlet()
         {
-            base.BeginProcessing();
-
-            if (this.DynamicParameters != null)
-            {
-                // OrderBy
-                if (this.DynamicParameters.TryGetValue(nameof(this.OrderBy), out RuntimeDefinedParameter selectParam)
-                    && selectParam.IsSet)
-                {
-                    this.OrderBy = selectParam.Value as string[];
-                }
-            }
-        }
-        
-        public override object GetDynamicParameters()
-        {
-            // Get the dynamic parameters from the base class
-            RuntimeDefinedParameterDictionary parameterDictionary = (RuntimeDefinedParameterDictionary)base.GetDynamicParameters();
-
             // Get the properties
             IEnumerable<PropertyInfo> properties = this.GetProperties(false);
 
@@ -84,9 +63,25 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 });
 
             // Add to the dictionary of dynamic parameters
-            parameterDictionary.Add(nameof(this.OrderBy), orderByParameter);
+            this.DynamicParameters.Add(nameof(this.OrderBy), orderByParameter);
+        }
 
-            return parameterDictionary;
+        /// <summary>
+        /// Set up the dynamic parameters.
+        /// </summary>
+        protected override void BeginProcessing()
+        {
+            base.BeginProcessing();
+
+            if (this.DynamicParameters != null)
+            {
+                // OrderBy
+                if (this.DynamicParameters.TryGetValue(nameof(this.OrderBy), out RuntimeDefinedParameter selectParam)
+                    && selectParam.IsSet)
+                {
+                    this.OrderBy = selectParam.Value as string[];
+                }
+            }
         }
 
         internal override IDictionary<string, string> GetUrlQueryOptions()
