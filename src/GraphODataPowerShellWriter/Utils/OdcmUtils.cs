@@ -4,8 +4,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using Inflector;
+    using Microsoft.OData.Edm.Library;
+    using Microsoft.Spatial;
     using Vipr.Core.CodeModel;
 
     /// <summary>
@@ -14,41 +17,79 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
     public static class OdcmUtils
     {
         /// <summary>
-        /// The mapping of Edm types to PowerShell types.  
+        /// The mapping of Edm types to CLR types.  
         /// </summary>
-        private static IDictionary<string, Type> EdmTypeMappings = new Dictionary<string, Type>()
+        private static IReadOnlyDictionary<string, Type> EdmTypeMappings = new Dictionary<string, Type>(
+            EnumerableUtils.CreateEqualityComparer<string>((s1, s2) => s1.Equals(s2, StringComparison.InvariantCultureIgnoreCase)))
         {
+            // Boolean
             { "Edm.Boolean", typeof(bool) },
 
+            // String
             { "Edm.String", typeof(string) },
 
+            // Byte
             { "Edm.Byte", typeof(byte) },
-            { "Edm.Stream", typeof(byte[]) },
+            { "Edm.SByte", typeof(sbyte) },
+            { "Edm.Stream", typeof(Stream) },
 
+            // Integer
             { "Edm.Int16", typeof(short) },
+            { "Edm.UInt16", typeof(UInt16) },
             { "Edm.Int32", typeof(int) },
+            { "Edm.UInt32", typeof(UInt32) },
             { "Edm.Int64", typeof(long) },
+            { "Edm.UInt64", typeof(UInt64) },
 
-            { "Edm.Single", typeof(float) },
+            // Decimal
+            { "Edm.Single", typeof(Single) },
             { "Edm.Double", typeof(double) },
             { "Edm.Decimal", typeof(decimal) },
 
+            // Guid
             { "Edm.Guid", typeof(Guid) },
 
+            // Date/Time
+            { "Edm.Date", typeof(Date) },
             { "Edm.DateTime", typeof(DateTime) },
             { "Edm.DateTimeOffset", typeof(DateTimeOffset) },
-            { "Edm.TimeOfDay", typeof(TimeSpan) },
+            { "Edm.TimeOfDay", typeof(TimeOfDay) },
             { "Edm.Time", typeof(TimeSpan) },
             { "Edm.Duration", typeof(TimeSpan) },
+
+            // Geography
+            { "Edm.Geography", typeof(Geography) },
+            { "Edm.GeographyCollection", typeof(GeographyCollection) },
+            { "Edm.GeographyLineString", typeof(GeographyLineString) },
+            { "Edm.GeographyMultiLineString", typeof(GeographyMultiLineString) },
+            { "Edm.GeographyMultiPoint", typeof(GeographyMultiPoint) },
+            { "Edm.GeographyMultiPolygon", typeof(GeographyMultiPolygon) },
+            { "Edm.GeographyPoint", typeof(GeographyPoint) },
+            { "Edm.GeographyPolygon", typeof(GeographyPolygon) },
+
+            // Geometry
+            { "Edm.Geometry", typeof(Geometry) },
+            { "Edm.GeometryCollection", typeof(GeometryCollection) },
+            { "Edm.GeometryLineString", typeof(GeometryLineString) },
+            { "Edm.GeometryMultiLineString", typeof(GeometryMultiLineString) },
+            { "Edm.GeometryMultiPoint", typeof(GeometryMultiPoint) },
+            { "Edm.GeometryMultiPolygon", typeof(GeometryMultiPolygon) },
+            { "Edm.GeometryPoint", typeof(GeometryPoint) },
+            { "Edm.GeometryPolygon", typeof(GeometryPolygon) },
         };
 
+        /// <summary>
+        /// Converts an ODCM type to a CLR type.
+        /// </summary>
+        /// <param name="type">The ODCM type</param>
+        /// <returns>The CLR type if a conversion exists, otherwise the <see cref="Object"/> type.</returns>
         public static Type ToDotNetType(this OdcmType type)
         {
             if (type == null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
-
+            
             if (EdmTypeMappings.TryGetValue(type.FullName, out Type foundType))
             {
                 return foundType;

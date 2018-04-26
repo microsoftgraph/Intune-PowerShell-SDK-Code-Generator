@@ -30,7 +30,7 @@
     <GraphSchemaPath>$(MSBuildProjectDirectory)\..\..\Test Graph Schemas\v1.0-20180222 - deviceManagement, deviceAppManagement.csdl</GraphSchemaPath>
     <StartAction>Program</StartAction>
     <StartProgram>$(OutputPath)\Vipr.exe</StartProgram>
-    <StartArguments>"$(GraphSchemaPath)" --writer="GraphODataPowerShellSDKWriter"</StartArguments>
+    <StartArguments>"$(GraphSchemaPath)" --writer="$(AssemblyName)"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -56,7 +56,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Inflector, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(MSBuildProjectDirectory)\packages\Inflector.1.0.0.0\lib\net45\Inflector.dll</HintPath>
+      <HintPath>$(MSBuildProjectDirectory)\..\..\packages\Inflector.1.0.0.0\lib\net45\Inflector.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.OData.Edm, Version=6.11.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(MSBuildProjectDirectory)\..\..\packages\Microsoft.OData.Edm.6.11.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.OData.Edm.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Spatial, Version=6.11.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(MSBuildProjectDirectory)\..\..\packages\Microsoft.Spatial.6.11.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.Spatial.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

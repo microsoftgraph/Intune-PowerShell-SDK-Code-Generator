@@ -2,6 +2,7 @@
 
 namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 {
+    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -18,6 +19,40 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         public static IEnumerable<T> SingleObjectAsEnumerable<T>(this T obj)
         {
             yield return obj;
+        }
+
+        /// <summary>
+        /// Creates a comparer for a type from a lambda expression.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="equalsFunction"></param>
+        /// <returns></returns>
+        public static IEqualityComparer<T> CreateEqualityComparer<T>(Func<T, T, bool> equalsFunction)
+        {
+            Func<T, T, bool> func = equalsFunction ?? throw new ArgumentNullException(nameof(equalsFunction));
+            return new GenericEqualityComparer<T>(func);
+        }
+
+        private class GenericEqualityComparer<T> : IEqualityComparer<T>
+        {
+            Func<T, T, bool> _equals;
+            Func<T, int> _getHashCode;
+
+            public GenericEqualityComparer(Func<T, T, bool> equalsFunction, Func<T, int> getHashCodeFunction = null)
+            {
+                this._equals = equalsFunction ?? throw new ArgumentNullException(nameof(equalsFunction));
+                this._getHashCode = getHashCodeFunction ?? (obj => obj.GetHashCode());
+            }
+
+            public bool Equals(T x, T y)
+            {
+                return this._equals(x, y);
+            }
+
+            public int GetHashCode(T obj)
+            {
+                return this._getHashCode(obj);
+            }
         }
     }
 }

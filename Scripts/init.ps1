@@ -69,8 +69,10 @@ function global:GenerateAndRunSDK {
     global:SDKRun
 }
 
-# Run "dotnet restore" just in case this is the first time the repo is being initialized (or if there are new dependencies)
-dotnet restore --verbosity quiet
+# Restore NuGet packages
+nuget restore -Verbosity quiet
+# Restore packages in the PowerShellGraphSDK separately so it is available when the project folder is copied elsewhere
+nuget restore "src\PowerShellGraphSDK" -Verbosity quiet
 
 Write-Host "Initialized repository." -f Green
 Write-Host
