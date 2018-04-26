@@ -132,6 +132,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 throw new ArgumentNullException(nameof(parameterSets));
             }
 
+            // Selectable attribute
+            if (parameter.IsSelectable)
+            {
+                yield return CSharpPropertyAttributeHelper.CreateSelectableAttribute();
+            }
+
             // Expandable attribute
             if (parameter.IsExpandable)
             {

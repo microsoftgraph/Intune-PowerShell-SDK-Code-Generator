@@ -49,21 +49,24 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             IEnumerable<PropertyInfo> properties = this.GetProperties(false);
 
             // Create the "OrderBy" parameter
-            var validateSetAttributeOrderBy = new ValidateSetAttribute(properties
+            IEnumerable<string> orderByValidValues = properties
                 .Where(param => Attribute.IsDefined(param, typeof(SortableAttribute)))
-                .Select(param => param.Name)
-                .ToArray());
-            var orderByParameter = new RuntimeDefinedParameter(
-                nameof(this.OrderBy),
-                typeof(string[]),
-                new Collection<Attribute>()
-                {
-                    new ParameterAttribute() { ParameterSetName = GetOrSearchCmdlet.OperationName },
-                    validateSetAttributeOrderBy,
-                });
+                .Select(param => param.Name);
+            if (orderByValidValues.Any())
+            {
+                // Create the collection of attributes
+                var orderByParameter = new RuntimeDefinedParameter(
+                    nameof(this.OrderBy),
+                    typeof(string[]),
+                    new Collection<Attribute>()
+                    {
+                        new ParameterAttribute() { ParameterSetName = GetOrSearchCmdlet.OperationName },
+                        new ValidateSetAttribute(orderByValidValues.ToArray()),
+                    });
 
-            // Add to the dictionary of dynamic parameters
-            this.DynamicParameters.Add(nameof(this.OrderBy), orderByParameter);
+                // Add to the dictionary of dynamic parameters
+                this.DynamicParameters?.Add(nameof(this.OrderBy), orderByParameter);
+            }
         }
 
         /// <summary>

@@ -55,39 +55,45 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 }
             }
 
-            // Create the "Select" parameter
-            var validateSetAttributeSelect = new ValidateSetAttribute(properties
-                .Select(param => param.Name)
-                .ToArray());
-            var selectParameter = new RuntimeDefinedParameter(
-                nameof(this.Select),
-                typeof(string[]),
-                new Collection<Attribute>()
-                {
-                    new ParameterAttribute() { ParameterSetName = GetCmdlet.OperationName },
-                    new ParameterAttribute() { ParameterSetName = GetOrSearchCmdlet.OperationName },
-                    validateSetAttributeSelect,
-                });
+            // Create the "Select" parameter if required
+            IEnumerable<string> selectValidValues = properties
+                .Where(param => Attribute.IsDefined(param, typeof(SelectableAttribute)))
+                .Select(param => param.Name);
+            if (selectValidValues.Any())
+            {
+                var selectParameter = new RuntimeDefinedParameter(
+                    nameof(this.Select),
+                    typeof(string[]),
+                    new Collection<Attribute>()
+                    {
+                        new ParameterAttribute() { ParameterSetName = GetCmdlet.OperationName },
+                        new ParameterAttribute() { ParameterSetName = GetOrSearchCmdlet.OperationName },
+                        new ValidateSetAttribute(selectValidValues.ToArray()),
+                    });
 
-            // Create the "Expand" parameter
-            var validateSetAttributeExpand = new ValidateSetAttribute(properties
+                // Add to the dictionary of dynamic parameters
+                this.DynamicParameters?.Add(nameof(this.Select), selectParameter);
+            }
+
+            // Create the "Expand" parameter if required
+            IEnumerable<string> expandValidValues = properties
                 .Where(param => Attribute.IsDefined(param, typeof(ExpandableAttribute)))
-                .Select(param => param.Name)
-                .ToArray());
-            var expandParameter = new RuntimeDefinedParameter(
-                nameof(this.Expand),
-                typeof(string[]),
-                new Collection<Attribute>()
-                {
-                    new ParameterAttribute() { ParameterSetName = GetCmdlet.OperationName },
-                    new ParameterAttribute() { ParameterSetName = GetOrSearchCmdlet.OperationName },
-                    validateSetAttributeExpand,
-                }
-            );
+                .Select(param => param.Name);
+            if (expandValidValues.Any())
+            {
+                var expandParameter = new RuntimeDefinedParameter(
+                    nameof(this.Expand),
+                    typeof(string[]),
+                    new Collection<Attribute>()
+                    {
+                        new ParameterAttribute() { ParameterSetName = GetCmdlet.OperationName },
+                        new ParameterAttribute() { ParameterSetName = GetOrSearchCmdlet.OperationName },
+                        new ValidateSetAttribute(expandValidValues.ToArray()),
+                    });
 
-            // Add to the dictionary of dynamic parameters
-            this.DynamicParameters.Add(nameof(this.Select), selectParameter);
-            this.DynamicParameters.Add(nameof(this.Expand), expandParameter);
+                // Add to the dictionary of dynamic parameters
+                this.DynamicParameters?.Add(nameof(this.Expand), expandParameter);
+            }
         }
 
         /// <summary>

@@ -5,12 +5,12 @@ function Get-MSGraphAllPages {
     )]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'NextLink', ValueFromPipelineByPropertyName = $true)]
-        [ValidateNotNullOrEmpty]
+        [ValidateNotNullOrEmpty()]
         [Alias('@odata.nextLink')]
         [string]$NextLink,
 
         [Parameter(Mandatory = $true, ParameterSetName = 'SearchResult', ValueFromPipeline = $true)]
-        [ValidateNotNull]
+        [ValidateNotNull()]
         [PSObject]$SearchResult
     )
 
@@ -28,10 +28,14 @@ function Get-MSGraphAllPages {
         }
     }
 
-    while ($currentNextLink)
+    while (-Not ([string]::IsNullOrWhiteSpace($currentNextLink)))
     {
         # Make the call to get the next page
-        $page = Get-MSGraphNextPage $currentNextLink
+        try {
+            $page = Get-MSGraphNextPage -NextLink $currentNextLink
+        } catch {
+            throw
+        }
 
         # Extract the NextLink
         $currentNextLink = $page.'@odata.nextLink'

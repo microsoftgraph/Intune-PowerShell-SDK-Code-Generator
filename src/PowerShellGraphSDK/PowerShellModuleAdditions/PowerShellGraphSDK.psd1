@@ -61,11 +61,6 @@
     # Format files (.ps1xml) to be loaded when importing this module
     # FormatsToProcess = @()
     
-    # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-    NestedModules = @(
-        'CustomModules/UtilCmdlets.psm1'
-    )
-    
     # Functions to export from this module
     FunctionsToExport = '*'
     
@@ -92,4 +87,9 @@
     
     # Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
     # DefaultCommandPrefix = 'MSGraph'
+
+    # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
+    NestedModules = @(
+        'CustomModules/UtilCmdlets.psm1'
+    )
 }

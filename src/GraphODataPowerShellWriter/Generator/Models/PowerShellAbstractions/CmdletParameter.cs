@@ -60,6 +60,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public string ParameterSetSelectorName { get; set; } = null;
 
         /// <summary>
+        /// Whether or not to add the [<see cref="PowerShellGraphSDK.SelectableAttribute"/>] to the parameter.
+        /// </summary>
+        public bool IsSelectable { get; set; } = true;
+
+        /// <summary>
         /// Whether or not to add the [<see cref="PowerShellGraphSDK.ExpandableAttribute"/>] to the parameter.
         /// </summary>
         public bool IsExpandable { get; set; } = false;

@@ -6,7 +6,7 @@ if (-Not (Test-Path "$env:sdkDir"))
 
 # Build the command to get and run test scripts
 $getTestScriptsCommand = "`$testScripts = Get-ChildItem -Path '$env:testDir' -Recurse -Filter '*.ps1'"
-$runTestScriptsCommand = "`$testScripts | ForEach-Object { Write-Host -f Magenta `"RUNNING: `"`$_.BaseName; & `$_.FullName; Write-Host -f Green `"SUCCESS: `"`$_.BaseName; Write-Host; }"
+$runTestScriptsCommand = "`$testScripts | ForEach-Object { Write-Host -f Yellow `"RUNNING: `"`$_.BaseName; try { & `$_.FullName } catch { Write-Error $_ } ; Write-Host -f Magenta `"COMPLETED: `"`$_.BaseName; Write-Host; }"
 
 # Get the commands
 $commands = @(
@@ -29,8 +29,13 @@ Write-Host
 # Run the tests in a new PowerShell context
 try {
     & powershell -NoExit -Command "& {$($commands -Join '; ')}"
+
+    if (!$?)
+    {
+        throw "Tests failed"
+    }
 } catch {
-    Write-Error 'Tests failed'
+    Write-Error $_
 } finally {
     # Restore the old settings
     (Get-Host).UI.RawUI.WindowTitle = $env:standardWindowTitle

@@ -90,17 +90,11 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// redefining the properties without adding the [Parameter] attribute
         #region Hidden Parameters
         
-        public new string Filter { get; }
-        public new string Skip { get; }
-        public new string Top { get; }
+        public new string Filter { get; set; }
+        public new int? Skip { get; set; }
+        public new int? Top { get; set; }
 
         #endregion Hidden Parameters
-
-        public GetNextPage()
-        {
-            // Set this to null so dynamic parameters will also be hidden
-            this.DynamicParameters = null;
-        }
 
         internal override string GetResourcePath()
         {

@@ -23,6 +23,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         public static CSharpAttribute CreateAllowEmptyCollectionAttribute() => _allowEmptyCollectionAttribute;
 
         // Expandable
+        private static readonly CSharpAttribute _selectableAttribute = new CSharpAttribute(nameof(SelectableAttribute));
+        public static CSharpAttribute CreateSelectableAttribute() => _selectableAttribute;
+
+        // Expandable
         private static readonly CSharpAttribute _expandableAttribute = new CSharpAttribute(nameof(ExpandableAttribute));
         public static CSharpAttribute CreateExpandableAttribute() => _expandableAttribute;
 
