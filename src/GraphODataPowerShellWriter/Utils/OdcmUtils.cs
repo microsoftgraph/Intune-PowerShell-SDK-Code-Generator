@@ -7,8 +7,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
     using System.IO;
     using System.Linq;
     using Inflector;
-    using Microsoft.OData.Edm.Library;
-    using Microsoft.Spatial;
     using Vipr.Core.CodeModel;
 
     /// <summary>
@@ -50,32 +48,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "Edm.Guid", typeof(Guid) },
 
             // Date/Time
-            { "Edm.Date", typeof(Date) },
+            { "Edm.Date", typeof(DateTime) },
             { "Edm.DateTime", typeof(DateTime) },
-            { "Edm.DateTimeOffset", typeof(DateTimeOffset) },
-            { "Edm.TimeOfDay", typeof(TimeOfDay) },
+            { "Edm.DateTimeOffset", typeof(DateTime) },
+            { "Edm.TimeOfDay", typeof(TimeSpan) },
             { "Edm.Time", typeof(TimeSpan) },
             { "Edm.Duration", typeof(TimeSpan) },
-
-            // Geography
-            { "Edm.Geography", typeof(Geography) },
-            { "Edm.GeographyCollection", typeof(GeographyCollection) },
-            { "Edm.GeographyLineString", typeof(GeographyLineString) },
-            { "Edm.GeographyMultiLineString", typeof(GeographyMultiLineString) },
-            { "Edm.GeographyMultiPoint", typeof(GeographyMultiPoint) },
-            { "Edm.GeographyMultiPolygon", typeof(GeographyMultiPolygon) },
-            { "Edm.GeographyPoint", typeof(GeographyPoint) },
-            { "Edm.GeographyPolygon", typeof(GeographyPolygon) },
-
-            // Geometry
-            { "Edm.Geometry", typeof(Geometry) },
-            { "Edm.GeometryCollection", typeof(GeometryCollection) },
-            { "Edm.GeometryLineString", typeof(GeometryLineString) },
-            { "Edm.GeometryMultiLineString", typeof(GeometryMultiLineString) },
-            { "Edm.GeometryMultiPoint", typeof(GeometryMultiPoint) },
-            { "Edm.GeometryMultiPolygon", typeof(GeometryMultiPolygon) },
-            { "Edm.GeometryPoint", typeof(GeometryPoint) },
-            { "Edm.GeometryPolygon", typeof(GeometryPolygon) },
         };
 
         /// <summary>
