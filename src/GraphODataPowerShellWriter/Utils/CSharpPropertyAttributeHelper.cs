@@ -4,6 +4,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
     using PowerShellGraphSDK;
     using PS = System.Management.Automation;
@@ -50,6 +51,22 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             return result;
         }
 
+        // ValidateSet attribute
+        public static CSharpAttribute CreateValidateSetAttribute(IEnumerable<string> validValues)
+        {
+            if (validValues == null)
+            {
+                throw new ArgumentNullException(nameof(validValues));
+            }
+
+            CSharpAttribute result = new CSharpAttribute(nameof(PS.ValidateSetAttribute))
+            {
+                Arguments = validValues.Select(value => $"\"{value}\""),
+            };
+
+            return result;
+        }
+
         // Parameter
         public static CSharpAttribute CreateParameterAttribute(
             string parameterSetName = null,
@@ -60,7 +77,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             ICollection<string> arguments = new List<string>();
             if (parameterSetName != null)
             {
-                arguments.Add($"{nameof(PS.ParameterAttribute.ParameterSetName)} = \"{parameterSetName}\"");
+                arguments.Add($"{nameof(PS.ParameterAttribute.ParameterSetName)} = @\"{parameterSetName}\"");
             }
             if (mandatory)
             {
@@ -86,7 +103,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 throw new ArgumentNullException(nameof(parameterSetName));
             }
 
-            return new CSharpAttribute(nameof(ParameterSetSelectorAttribute), new string[] { $"\"{parameterSetName}\"" });
+            return new CSharpAttribute(nameof(ParameterSetSelectorAttribute), new string[] { $"@\"{parameterSetName}\"" });
         }
     }
 }

@@ -3,6 +3,7 @@
 namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 {
     using System;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Represents a PowerShell cmdlet's parameter.
@@ -17,12 +18,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <summary>
         /// The type of the parameter.
         /// </summary>
-        public Type Type
-        {
-            get => this._type;
-            set => this._type = value ?? throw new ArgumentNullException(nameof(value));
-        }
-        private Type _type;
+        public Type Type { get; }
 
         /// <summary>
         /// Whether or not the parameter is mandatory.
@@ -51,8 +47,15 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 
         /// <summary>
         /// Whether or not to add the [<see cref="System.Management.Automation.ValidateNotNullOrEmptyAttribute"/>] to the parameter.
+        /// This should only be applied to string or array parameters.
         /// </summary>
         public bool ValidateNotNullOrEmpty { get; set; } = false;
+
+        /// <summary>
+        /// Defines the valid values by applying the [<see cref="System.Management.Automation.ValidateSetAttribute"/>] to the parameter.
+        /// This should only be applied to string parameters.
+        /// </summary>
+        public IEnumerable<string> ValidValues { get; set; } = null;
 
         /// <summary>
         /// If not null, adds the [<see cref="PowerShellGraphSDK.ParameterSetSelectorAttribute"/>] to the parameter with the given name.

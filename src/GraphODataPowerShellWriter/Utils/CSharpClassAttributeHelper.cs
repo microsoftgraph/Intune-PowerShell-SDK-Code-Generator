@@ -32,7 +32,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             // Default parameter set
             if (defaultParameterSetName != null)
             {
-                arguments.Add($"DefaultParameterSetName = \"{defaultParameterSetName}\"");
+                arguments.Add($"DefaultParameterSetName = @\"{defaultParameterSetName}\"");
             }
 
             return new CSharpAttribute(nameof(PS.CmdletAttribute), arguments);

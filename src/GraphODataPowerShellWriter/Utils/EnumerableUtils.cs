@@ -27,10 +27,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         /// <typeparam name="T"></typeparam>
         /// <param name="equalsFunction"></param>
         /// <returns></returns>
-        public static IEqualityComparer<T> CreateEqualityComparer<T>(Func<T, T, bool> equalsFunction)
+        public static IEqualityComparer<T> CreateEqualityComparer<T>(Func<T, T, bool> equalsFunction, Func<T, int> getHashCodeFunction = null)
         {
-            Func<T, T, bool> func = equalsFunction ?? throw new ArgumentNullException(nameof(equalsFunction));
-            return new GenericEqualityComparer<T>(func);
+            return new GenericEqualityComparer<T>(equalsFunction, getHashCodeFunction);
         }
 
         private class GenericEqualityComparer<T> : IEqualityComparer<T>

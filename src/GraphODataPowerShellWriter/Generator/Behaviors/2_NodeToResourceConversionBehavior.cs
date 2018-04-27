@@ -258,6 +258,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                         }
 
                         // Setup the function parameters
+                        // TODO: create a parameter set per overload
                         cmdlet.AddFunctionParameters(method);
 
                         // Add the placeholders for the function arguments in the URL
@@ -268,8 +269,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                                 // Set the default placeholder for the parameter's value
                                 string valuePlaceholder = $"{{{param.Name}}}";
 
-                                // Check if we need special handling of the value based on the parameter type
+                                // Get the parameter's type
                                 Type paramType = param.Type.ToPowerShellType(param.IsCollection);
+
+                                // Check if we need special handling of the value based on the parameter type
                                 if (paramType == typeof(DateTime)
                                     || paramType == typeof(DateTimeOffset)
                                     || paramType == typeof(TimeSpan))
@@ -623,24 +626,32 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     // Create the parameter for this property if it doesn't already exist
                     if (!parameterLookup.TryGetValue(property.Name, out CmdletParameter parameter))
                     {
-                        parameter = new CmdletParameter(property.Name, propertyType)
+                        // Get the valid values if it is an enum
+                        IEnumerable<string> enumMembers = null;
+                        if (markAsPowerShellParameter && property.Type is OdcmEnum @enum)
                         {
-                            Mandatory = property.IsRequired,
-                            ValueFromPipelineByPropertyName = false,
-                            IsPowerShellParameter = markAsPowerShellParameter && !property.ReadOnly,
+                            enumMembers = @enum.Members.Select(enumMember => enumMember.Name);
+                        }
 
-                            DerivedTypeName = markAsPowerShellParameter || type == baseType
-                                ? null
-                                : type.FullName,
-                            IsExpandable = !markAsPowerShellParameter && property.IsLink,
-                            IsSortable = !markAsPowerShellParameter && !property.IsCollection,
-                        };
+                        parameter = CreateEntityParameter(
+                            property,
+                            propertyType,
+                            markAsPowerShellParameter,
+                            type == baseType,
+                            type.FullName,
+                            enumMembers);
                         parameterLookup.Add(property.Name, parameter);
                     }
                     else if (propertyType != parameter.Type)
                     {
                         // If all uses of this parameter don't use the same type, default to System.Object
-                        parameter.Type = typeof(object);
+                        parameter = CreateEntityParameter(
+                            property,
+                            typeof(object),
+                            markAsPowerShellParameter,
+                            type == baseType,
+                            type.FullName);
+                        parameterLookup.Add(property.Name, parameter);
                     }
 
                     // Add this type's properties as parameters to this parameter set
@@ -657,6 +668,31 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 // All properties should be part of the shared parameter set
                 sharedParameterSet.AddAll(parameterLookup.Values);
             }
+        }
+
+        private static CmdletParameter CreateEntityParameter(
+            OdcmProperty property,
+            Type powerShellType,
+            bool markAsPowerShellParameter,
+            bool isBaseType,
+            string entityTypeFullName,
+            IEnumerable<string> enumValues = null)
+        {
+            var result = new CmdletParameter(property.Name, powerShellType)
+            {
+                Mandatory = property.IsRequired,
+                ValueFromPipelineByPropertyName = false,
+                IsPowerShellParameter = markAsPowerShellParameter && !property.ReadOnly,
+
+                DerivedTypeName = markAsPowerShellParameter || isBaseType
+                                ? null
+                                : entityTypeFullName,
+                IsExpandable = !markAsPowerShellParameter && property.IsLink,
+                IsSortable = !markAsPowerShellParameter && !property.IsCollection,
+                ValidValues = enumValues,
+            };
+
+            return result;
         }
 
         private static void AddActionParameters(this Cmdlet cmdlet, OdcmMethod action)
@@ -684,6 +720,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     ValidateNotNull = !parameter.IsNullable,
                 };
 
+                // Setup valid values if the parameter type is an enum
+                if (parameter.Type is OdcmEnum @enum)
+                {
+                    cmdletParameter.ValidValues = @enum.Members.Select(enumMember => enumMember.Name);
+                }
+
                 // Add the CmdletParameter to the default parameter set
                 cmdlet.DefaultParameterSet.Add(cmdletParameter);
             }
@@ -708,11 +750,18 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             foreach (OdcmParameter parameter in function.Parameters)
             {
                 // Create the equivalent CmdletParameter object
-                CmdletParameter cmdletParameter = new CmdletParameter(parameter.Name, parameter.Type.ToPowerShellType(parameter.IsCollection))
+                Type powerShellType = parameter.Type.ToPowerShellType(parameter.IsCollection);
+                CmdletParameter cmdletParameter = new CmdletParameter(parameter.Name, powerShellType)
                 {
                     Mandatory = true,
                     ValidateNotNull = !parameter.IsNullable,
                 };
+
+                // Setup valid values if the parameter type is an enum
+                if (parameter.Type is OdcmEnum @enum)
+                {
+                    cmdletParameter.ValidValues = @enum.Members.Select(enumMember => enumMember.Name);
+                }
 
                 // Add the CmdletParameter to the specified parameter set
                 if (defaultParameterSetName == null)
@@ -732,8 +781,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             {
                 throw new ArgumentNullException(nameof(odcmType));
             }
-
-            // TODO: Handle enums
 
             // Convert the type (default to System.Object if we can't convert the type)
             Type result = odcmType.ToDotNetType();

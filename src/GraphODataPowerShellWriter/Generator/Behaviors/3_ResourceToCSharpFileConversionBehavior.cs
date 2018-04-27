@@ -156,6 +156,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 yield return CSharpPropertyAttributeHelper.CreateDerivedTypeAttribute(parameter.DerivedTypeName);
             }
 
+            // ValidateSet attribute
+            if (parameter.ValidValues != null)
+            {
+                yield return CSharpPropertyAttributeHelper.CreateValidateSetAttribute(parameter.ValidValues);
+            }
+
             // Parameter attribute
             if (parameter.IsPowerShellParameter)
             {
@@ -166,7 +172,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 }
 
                 // Validate not null or empty
-                if (parameter.ValidateNotNull)
+                if (parameter.ValidateNotNullOrEmpty)
                 {
                     yield return CSharpPropertyAttributeHelper.CreateValidateNotNullOrEmptyAttribute();
                 }

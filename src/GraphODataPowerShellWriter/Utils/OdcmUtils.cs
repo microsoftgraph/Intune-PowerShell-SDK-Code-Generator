@@ -18,7 +18,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         /// The mapping of Edm types to CLR types.  
         /// </summary>
         private static IReadOnlyDictionary<string, Type> EdmTypeMappings = new Dictionary<string, Type>(
-            EnumerableUtils.CreateEqualityComparer<string>((s1, s2) => s1.Equals(s2, StringComparison.InvariantCultureIgnoreCase)))
+            EnumerableUtils.CreateEqualityComparer<string>(
+                equalsFunction: (s1, s2) => s1.Equals(s2, StringComparison.InvariantCultureIgnoreCase),
+                getHashCodeFunction: str => str.ToLowerInvariant().GetHashCode()))
         {
             // Boolean
             { "Edm.Boolean", typeof(bool) },
@@ -68,7 +70,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 throw new ArgumentNullException(nameof(type));
             }
             
-            if (EdmTypeMappings.TryGetValue(type.FullName, out Type foundType))
+            if (type is OdcmEnum)
+            {
+                // If it's an enum, accept the enum member name as a string
+                return typeof(string);
+            }
+            else if (EdmTypeMappings.TryGetValue(type.FullName, out Type foundType))
             {
                 return foundType;
             }
