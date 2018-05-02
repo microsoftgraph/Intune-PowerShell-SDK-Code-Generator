@@ -26,13 +26,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             // Impact level
             if (impactLevel != PS.ConfirmImpact.None)
             {
-                arguments.Add($"{nameof(PS.ConfirmImpact)} = {nameof(PS.ConfirmImpact)}.{impactLevel.ToString()}");
+                arguments.Add($"{nameof(PS.CmdletAttribute.ConfirmImpact)} = {nameof(PS.ConfirmImpact)}.{impactLevel.ToString()}");
             }
 
             // Default parameter set
             if (defaultParameterSetName != null)
             {
-                arguments.Add($"DefaultParameterSetName = @\"{defaultParameterSetName}\"");
+                arguments.Add($"{nameof(PS.CmdletAttribute.DefaultParameterSetName)} = @\"{defaultParameterSetName}\"");
             }
 
             return new CSharpAttribute(nameof(PS.CmdletAttribute), arguments);

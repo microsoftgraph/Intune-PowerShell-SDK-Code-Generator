@@ -4,6 +4,7 @@ param (
     [string]$OutputPath = "$WorkingDirectory\bin\Release",
     [string]$MSBuildExe32 = '%ProgramFiles(x86)%\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\MSBuild.exe',
     [string]$MSBuildExe64 = '%ProgramFiles%\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\MSBuild.exe',
+    [string]$Verbosity = 'minimal',
     [string]$GraphSchema
 )
 
@@ -13,9 +14,6 @@ $WorkingDirectory = ([System.Environment]::ExpandEnvironmentVariables($WorkingDi
 $OutputPath = ([System.Environment]::ExpandEnvironmentVariables($OutputPath))
 $MSBuildExe32 = ([System.Environment]::ExpandEnvironmentVariables($MSBuildExe32))
 $MSBuildExe64 = ([System.Environment]::ExpandEnvironmentVariables($MSBuildExe64))
-
-# Make sure to kill the script if there is an error
-$ErrorActionPreference = "Stop"
 
 # Get the MSBuild.exe path
 $msBuildExe = $MSBuildExe32
@@ -53,22 +51,27 @@ $MSBuildArguments = @(
     "/t:$BuildTargets",
     "/p:UseSharedCompilation=false",
     "/nr:false",
-    "/v:minimal",
+    "/v:$Verbosity",
     "/ignore:.sln"
 )
 
-if ($GraphSchema)
+# Select the default graph schema if one was not provided
+$schemaPath = $GraphSchema
+if (-Not ($schemaPath))
 {
-    if (Test-Path $GraphSchema)
-    {
-        $MSBuildArguments += "/p:GraphSchemaPath=`"$GraphSchema`""
-        Write-Host "MSBuild arguments: " -f Magenta
-        $MSBuildArguments | ForEach-Object {
-            Write-Host $_ -f Magenta
-        }
-    } else {
-        throw "Unable to find Graph schema at '$GraphSchema' - provide a valid path to a schema file"
+    $schemaPath = $env:defaultGraphSchema
+}
+
+# Add the schema path to the MSBuild arguments if it is a valid path
+if (Test-Path $schemaPath)
+{
+    $MSBuildArguments += "/p:GraphSchemaPath=`"$schemaPath`""
+    Write-Host "MSBuild arguments: " -f Magenta
+    $MSBuildArguments | ForEach-Object {
+        Write-Host $_ -f Magenta
     }
+} else {
+    throw "Unable to find Graph schema at '$schemaPath' - provide a valid path to a schema file"
 }
 
 # Run MSBuild in the given working directory

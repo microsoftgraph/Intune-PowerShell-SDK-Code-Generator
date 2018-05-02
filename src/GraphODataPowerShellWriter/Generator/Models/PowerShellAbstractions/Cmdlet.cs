@@ -48,6 +48,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public string CallUrl { get; set; }
 
         /// <summary>
+        /// The information that will appear when retrieving the documentation for this cmdlet.
+        /// </summary>
+        public CmdletDocumentation Documentation { get; set; }
+
+        /// <summary>
         /// This cmdlet's parameter sets (including the default parameter set).
         /// </summary>
         public CmdletParameterSets ParameterSets { get; } = new CmdletParameterSets();

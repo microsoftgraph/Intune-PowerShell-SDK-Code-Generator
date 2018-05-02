@@ -52,12 +52,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public bool ValidateNotNullOrEmpty { get; set; } = false;
 
         /// <summary>
-        /// Defines the valid values by applying the [<see cref="System.Management.Automation.ValidateSetAttribute"/>] to the parameter.
-        /// This should only be applied to string parameters.
-        /// </summary>
-        public IEnumerable<string> ValidValues { get; set; } = null;
-
-        /// <summary>
         /// If not null, adds the [<see cref="PowerShellGraphSDK.ParameterSetSelectorAttribute"/>] to the parameter with the given name.
         /// </summary>
         public string ParameterSetSelectorName { get; set; } = null;
@@ -83,6 +77,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// This property is not allowed to be empty or whitespace - it must either be null or a valid type name (including the namespace).
         /// </summary>
         public string DerivedTypeName { get; set; } = null;
+
+        /// <summary>
+        /// If this is not null, the provided documentation will be added to the parameter.
+        /// </summary>
+        public CmdletParameterDocumentation Documentation { get; set; } = null;
 
         /// <summary>
         /// Creates a new cmdlet parameter.

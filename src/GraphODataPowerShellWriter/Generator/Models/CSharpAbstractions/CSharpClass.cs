@@ -36,7 +36,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             set => this._interfaces = new HashSet<string>(value ?? throw new ArgumentNullException(nameof(value)));
         }
 
-        //TODO: Create a special type for IEnumerable<CSharpAttribute> so validation can be enforced
+        //TODO: Create a special type which derives from IEnumerable<CSharpAttribute> so validation can be enforced
         private IEnumerable<CSharpAttribute> _attributes = new List<CSharpAttribute>();
         public IEnumerable<CSharpAttribute> Attributes
         {
@@ -44,7 +44,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             set => this._attributes = value ?? throw new ArgumentNullException(nameof(value));
         }
 
-        //TODO: Create a special type for IEnumerable<CSharpProperty> so validation can be enforced
+        //TODO: Create a special type which derives from IEnumerable<CSharpProperty> so validation can be enforced
         private IEnumerable<CSharpProperty> _properties = new List<CSharpProperty>();
         public IEnumerable<CSharpProperty> Properties
         {
@@ -52,13 +52,15 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             set => this._properties = value ?? throw new ArgumentNullException(nameof(value));
         }
 
-        //TODO: Create a special type for IEnumerable<CSharpMethod> so validation can be enforced
+        //TODO: Create a special type which derives from IEnumerable<CSharpMethod> so validation can be enforced
         private IEnumerable<CSharpMethod> _methods = new List<CSharpMethod>();
         public IEnumerable<CSharpMethod> Methods
         {
             get => this._methods;
             set => this._methods = value ?? throw new ArgumentNullException(nameof(value));
         }
+
+        public CSharpDocumentationComment DocumentationComment { get; set; }
 
         public CSharpClass(string name)
         {
@@ -73,6 +75,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public override string ToString()
         {
             StringBuilder resultBuilder = new StringBuilder();
+
+            // Documentation comment
+            if (this.DocumentationComment != null)
+            {
+                resultBuilder.AppendLine(this.DocumentationComment.ToString());
+            }
 
             // Attributes
             foreach (CSharpAttribute attribute in this.Attributes)

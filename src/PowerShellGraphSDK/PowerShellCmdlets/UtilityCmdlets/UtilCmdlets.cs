@@ -18,6 +18,10 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         private const string ParameterSetPSCredential = "PSCredential";
         private const string ParameterSetCertificate = "Certificate";
 
+        /// <summary>
+        /// <para type="description">Description 1</para>
+        /// <para type="description">Description 2</para>
+        /// </summary>
         [Parameter]
         public bool UsePPE { get; set; }
 

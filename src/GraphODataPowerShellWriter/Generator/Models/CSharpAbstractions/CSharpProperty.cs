@@ -22,6 +22,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             set => this._attributes = value ?? throw new ArgumentNullException(nameof(value));
         }
 
+        public CSharpDocumentationComment DocumentationComment { get; set; }
+
         public CSharpProperty(string name, Type type)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -37,6 +39,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         {
             // Create a string builder
             StringBuilder resultBuilder = new StringBuilder();
+
+            // Add the documentation comment
+            if (this.DocumentationComment != null)
+            {
+                resultBuilder.AppendLine(this.DocumentationComment.ToString());
+            }
 
             // Loop through attributes
             foreach (CSharpAttribute attribute in this.Attributes)

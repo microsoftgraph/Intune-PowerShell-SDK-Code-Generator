@@ -120,12 +120,27 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             }
 
             // Get the ODCM property for this resource
-            OdcmProperty property = oDataRoute.ResourceOdcmProperty;
+            OdcmProperty resource = oDataRoute.ResourceOdcmProperty;
 
             // Create the cmdlet
             Cmdlet cmdlet = new Cmdlet(new CmdletName(PS.VerbsCommon.Get, oDataRoute.ToCmdletNameNounString()))
             {
                 ImpactLevel = PS.ConfirmImpact.None,
+                Documentation = new CmdletDocumentation()
+                {
+                    Synopsis = resource.IsCollection
+                        ? $"Gets '{resource.Type.FullName}' objects."
+                        : $"Gets the '{resource.Name}'.",
+                    Descriptions = new string[]
+                    {
+                        $"GET {oDataRoute.ToODataRouteString()}",
+                        resource.IsCollection
+                            ? $"Gets '{resource.Type.FullName}' objects in the '{resource.Name}' collection."
+                            : $"Gets the '{resource.Name}' (which is of type '{resource.Type.FullName}').",
+                        resource.Description,
+                        resource.LongDescription,
+                    },
+                },
             };
 
             // Setup the parameters for the cmdlet
@@ -143,7 +158,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             }
 
             // Add the properties without marking them as PowerShell parameters to allow for auto-complete when picking columns for $select and $expand
-            cmdlet.AddParametersForEntityProperties(property.Type, null, false, false);
+            cmdlet.AddParametersForEntityProperties(resource.Type, null, false, false);
 
             return cmdlet;
         }
@@ -163,6 +178,19 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             {
                 OperationType = CmdletOperationType.Post,
                 ImpactLevel = PS.ConfirmImpact.Low,
+                Documentation = new CmdletDocumentation()
+                {
+                    Synopsis = $"Creates a '{resource.Type.FullName}'.",
+                    Descriptions = new string[]
+                    {
+                        $"POST {oDataRoute.ToODataRouteString()}",
+                        resource.IsCollection
+                            ? $"Creates a '{resource.Type.FullName}' in the '{resource.Name}' collection."
+                            : $"Creates the '{resource.Name}' (which is of type '{resource.Type.FullName}').",
+                        resource.Description,
+                        resource.LongDescription,
+                    },
+                },
             };
 
             // Setup the parameters for the cmdlet
@@ -189,6 +217,19 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             {
                 OperationType = CmdletOperationType.Patch,
                 ImpactLevel = PS.ConfirmImpact.Medium,
+                Documentation = new CmdletDocumentation()
+                {
+                    Synopsis = $"Updates a '{resource.Type.FullName}'.",
+                    Descriptions = new string[]
+                    {
+                        $"PATCH {oDataRoute.ToODataRouteString()}",
+                        resource.IsCollection
+                            ? $"Updates a '{resource.Type.FullName}' in the '{resource.Name}' collection."
+                            : $"Updates the '{resource.Name}' (which is of type '{resource.Type.FullName}').",
+                        resource.Description,
+                        resource.LongDescription,
+                    },
+                },
             };
 
             // Setup the parameters for the cmdlet
@@ -207,11 +248,27 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 throw new ArgumentNullException(nameof(oDataRoute));
             }
 
+            // Get the ODCM property for this resource
+            OdcmProperty resource = oDataRoute.ResourceOdcmProperty;
+
             // Create the cmdlet
             Cmdlet cmdlet = new Cmdlet(new CmdletName(PS.VerbsCommon.Remove, oDataRoute.ToCmdletNameNounString()))
             {
                 OperationType = CmdletOperationType.Delete,
                 ImpactLevel = PS.ConfirmImpact.High,
+                Documentation = new CmdletDocumentation()
+                {
+                    Synopsis = $"Deletes a '{resource.Type.FullName}'.",
+                    Descriptions = new string[]
+                    {
+                        $"DELETE {oDataRoute.ToODataRouteString()}",
+                        resource.IsCollection
+                            ? $"Deletes a '{resource.Type.FullName}' from the '{resource.Name}' collection."
+                            : $"Deletes the '{resource.Name}' (which is of type '{resource.Type.FullName}').",
+                        resource.Description,
+                        resource.LongDescription,
+                    },
+                },
             };
 
             // Setup the parameters for the cmdlet
@@ -230,7 +287,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // Get the ODCM property for this resource
             OdcmProperty resource = oDataRoute.ResourceOdcmProperty;
 
-            // We can only create action cmdlets if the resource type is a class with methods
+            // We can only create action/function cmdlets if the resource type is a class with methods
             if (resource.Type is OdcmClass resourceType)
             {
                 foreach (OdcmMethod method in resourceType.Methods)
@@ -240,8 +297,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
                     // Figure out if this method is a function or an action
                     string urlPostfixSegment = method.Name;
+                    string methodType;
                     if (method.IsFunction)
                     {
+                        methodType = "function";
+
                         // Since this is a function, it should not have any observable side-effects (according to the OData v4 spec)
                         cmdlet.ImpactLevel = PS.ConfirmImpact.None;
 
@@ -298,6 +358,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     }
                     else
                     {
+                        methodType = "action";
+
                         // Set the cmdlet up as a method
                         cmdlet.OperationType = CmdletOperationType.Action;
                         cmdlet.ImpactLevel = PS.ConfirmImpact.High;
@@ -305,6 +367,24 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                         // Setup the action parameters
                         cmdlet.AddActionParameters(method);
                     }
+
+                    // Documentation
+                    cmdlet.Documentation = new CmdletDocumentation()
+                    {
+                        Descriptions = new string[]
+                        {
+                            methodType == "action"
+                                ? $"POST {oDataRoute.ToODataRouteString()}" // action
+                                : $"GET {oDataRoute.ToODataRouteString()}", // function
+                            $"The {methodType} '{method.FullName}', which exists on type '{resourceType.FullName}'",
+                            method.ReturnType != null
+                                ? method.IsCollection
+                                    ? $"This {methodType} returns a collection of '{method.ReturnType?.FullName}'."
+                                    : $"This {methodType} returns a '{method.ReturnType?.FullName}'."
+                                : $"This {methodType} does not return any objects",
+                            method.Description,
+                        },
+                    };
 
                     // Setup the ID parameters and call URL
                     CmdletParameter idParameter = cmdlet.SetupIdParametersAndCallUrl(
@@ -436,10 +516,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             }
 
             // Get the ODCM property for this resource
-            OdcmProperty property = oDataRoute.ResourceOdcmProperty;
+            OdcmProperty resource = oDataRoute.ResourceOdcmProperty;
 
             // We need the ID parameter only if the property is an enumeration
-            if (property.IsEnumeration())
+            if (resource.IsEnumeration())
             {
                 // Create the ID parameter
                 idParameter = new CmdletParameter(ODataConstants.ObjectProperties.Id, typeof(string))
@@ -448,6 +528,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     ValueFromPipeline = valueFromPipeline,
                     ValueFromPipelineByPropertyName = true,
                     ValidateNotNullOrEmpty = true,
+                    Documentation = new CmdletParameterDocumentation()
+                    {
+                        Descriptions = new string[]
+                        {
+                            $"The ID for a '{resource.Type.FullName}' in the '{resource.Name}' collection",
+                        },
+                    },
                 };
 
                 return true;
@@ -476,6 +563,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 throw new ArgumentNullException(nameof(oDataRoute));
             }
 
+            // Get the ODCM property for this resource
+            OdcmProperty resource = oDataRoute.ResourceOdcmProperty;
+
             // For each ID in the URL, add a parameter
             foreach (string idParameterName in oDataRoute.IdParameters)
             {
@@ -483,6 +573,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 {
                     Mandatory = true,
                     ValidateNotNullOrEmpty = true,
+                    Documentation = new CmdletParameterDocumentation()
+                    {
+                        Descriptions = new string[]
+                        {
+                            $"A required ID for referencing a '{resource.Type.FullName}' in the '{resource.Name}' collection",
+                        },
+                    },
                 };
                 cmdlet.DefaultParameterSet.Add(idParameter);
             }
@@ -584,6 +681,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                         Mandatory = true,
                         ParameterSetSelectorName = parameterSetName,
                         ValueFromPipelineByPropertyName = false,
+                        Documentation = new CmdletParameterDocumentation()
+                        {
+                            Descriptions = new string[]
+                            {
+                                $"A switch parameter for selecting the parameter set which corresponds to the '{type.FullName}' type.",
+                            },
+                        },
                     });
                 }
 
@@ -689,7 +793,15 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                                 : entityTypeFullName,
                 IsExpandable = !markAsPowerShellParameter && property.IsLink,
                 IsSortable = !markAsPowerShellParameter && !property.IsCollection,
-                ValidValues = enumValues,
+                Documentation = new CmdletParameterDocumentation()
+                {
+                    Descriptions = new string[] {
+                        $"The '{property.Name}' property, of type '{property.Type.FullName}'.",
+                        $"This property is on the '{entityTypeFullName}' type.",
+                        property.Description,
+                    },
+                    ValidValues = enumValues,
+                }
             };
 
             return result;
@@ -718,12 +830,20 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 {
                     Mandatory = true,
                     ValidateNotNull = !parameter.IsNullable,
+                    Documentation = new CmdletParameterDocumentation()
+                    {
+                        Descriptions = new string[]
+                        {
+                            $"The '{parameter.Name}' parameter, which is accepted by the '{action.FullName}' action.",
+                            parameter.Description,
+                        },
+                    }
                 };
 
                 // Setup valid values if the parameter type is an enum
                 if (parameter.Type is OdcmEnum @enum)
                 {
-                    cmdletParameter.ValidValues = @enum.Members.Select(enumMember => enumMember.Name);
+                    cmdletParameter.Documentation.ValidValues = @enum.Members.Select(enumMember => enumMember.Name);
                 }
 
                 // Add the CmdletParameter to the default parameter set
@@ -755,12 +875,20 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 {
                     Mandatory = true,
                     ValidateNotNull = !parameter.IsNullable,
+                    Documentation = new CmdletParameterDocumentation()
+                    {
+                        Descriptions = new string[]
+                        {
+                            $"The '{parameter.Name}' parameter, which is accepted by the '{function.FullName}' function.",
+                            parameter.Description,
+                        },
+                    }
                 };
 
                 // Setup valid values if the parameter type is an enum
                 if (parameter.Type is OdcmEnum @enum)
                 {
-                    cmdletParameter.ValidValues = @enum.Members.Select(enumMember => enumMember.Name);
+                    cmdletParameter.Documentation.ValidValues = @enum.Members.Select(enumMember => enumMember.Name);
                 }
 
                 // Add the CmdletParameter to the specified parameter set

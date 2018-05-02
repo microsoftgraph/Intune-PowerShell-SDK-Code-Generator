@@ -61,7 +61,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 
             CSharpAttribute result = new CSharpAttribute(nameof(PS.ValidateSetAttribute))
             {
-                Arguments = validValues.Select(value => $"\"{value}\""),
+                Arguments = validValues.Select(value => $"@\"{value}\""),
             };
 
             return result;
@@ -72,7 +72,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             string parameterSetName = null,
             bool mandatory = false,
             bool valueFromPipeline = false,
-            bool valueFromPipelineByPropertyName = false)
+            bool valueFromPipelineByPropertyName = false,
+            string helpMessage = null)
         {
             ICollection<string> arguments = new List<string>();
             if (parameterSetName != null)
@@ -90,6 +91,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             if (valueFromPipelineByPropertyName)
             {
                 arguments.Add($"{nameof(PS.ParameterAttribute.ValueFromPipelineByPropertyName)} = true");
+            }
+            if (helpMessage != null)
+            {
+                arguments.Add($"{nameof(PS.ParameterAttribute.HelpMessage)} = @\"{helpMessage}\"");
             }
 
             return new CSharpAttribute(nameof(PS.ParameterAttribute), arguments);

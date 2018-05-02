@@ -4,6 +4,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils;
 
@@ -58,6 +59,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // Create the result object
             CSharpClass result = new CSharpClass($"{cmdlet.Name.Verb}_{cmdlet.Name.Noun}")
             {
+                DocumentationComment = cmdlet.Documentation.ToCSharpDocumentationComment(),
                 AccessModifier = CSharpAccessModifier.Public,
                 BaseType = cmdlet.OperationType.ToCSharpString(),
                 Attributes = cmdlet.CreateAttributes(),
@@ -117,6 +119,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 {
                     AccessModifier = CSharpAccessModifier.Public,
                     Attributes = parameter.CreateAttributes(parameterSets),
+                    DocumentationComment = parameter.Documentation.ToCSharpDocumentationComment(),
                 };
             }
         }
@@ -157,9 +160,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             }
 
             // ValidateSet attribute
-            if (parameter.ValidValues != null)
+            if (parameter.Documentation?.ValidValues != null && parameter.Documentation.ValidValues.Any())
             {
-                yield return CSharpPropertyAttributeHelper.CreateValidateSetAttribute(parameter.ValidValues);
+                yield return CSharpPropertyAttributeHelper.CreateValidateSetAttribute(parameter.Documentation.ValidValues);
             }
 
             // Parameter attribute
@@ -196,7 +199,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                         parameterSet.Name,
                         parameter.Mandatory,
                         parameter.ValueFromPipeline,
-                        parameter.ValueFromPipelineByPropertyName);
+                        parameter.ValueFromPipelineByPropertyName,
+                        parameter.Documentation?.Descriptions?.FirstOrDefault());
                 }
             }
         }

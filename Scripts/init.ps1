@@ -9,6 +9,7 @@ $env:sdkDir = "$($env:generatedDir)\bin\Release"
 $env:testDir = "$($env:PowerShellSDKRepoRoot)\Tests"
 $env:moduleName = 'PowerShellGraphSDK'
 $env:moduleExtension = 'psd1'
+$env:defaultGraphSchema = "$($env:PowerShellSDKRepoRoot)\Test Graph Schemas\v1.0-20180222 - Intune.csdl"
 # Remember the settings that will change when launching a child PowerShell context
 $env:standardWindowTitle = (Get-Host).UI.RawUI.WindowTitle
 $env:standardForegroundColor = (Get-Host).UI.RawUI.ForegroundColor
@@ -24,21 +25,31 @@ function global:WriterBuild {
         [string]$GraphSchema
     )
 
-    Invoke-Expression "$env:buildScript -WorkingDirectory '$env:writerDir' -OutputPath '$env:writerBuildDir' -BuildTargets 'Clean;Rebuild' -GraphSchema '$GraphSchema'"
+    Write-Host "Building the writer..." -f Cyan
+    Invoke-Expression "$env:buildScript -WorkingDirectory '$env:writerDir' -OutputPath '$env:writerBuildDir' -BuildTargets 'Clean;Rebuild' -GraphSchema '$GraphSchema' -Verbosity 'quiet'"
+    Write-Host "Finished building the writer" -f Cyan
+    Write-Host
 }
 
 function global:WriterRun {
+    Write-Host "Running the writer (i.e. generating the cmdlets)..." -f Cyan
     Invoke-Expression "$env:buildScript -WorkingDirectory '$env:writerDir' -OutputPath '$env:writerBuildDir' -BuildTargets 'Run'"
+    Write-Host "Finished running the writer" -f Cyan
+    Write-Host
 }
 
 function global:SDKBuild {
-    Invoke-Expression "$env:buildScript -WorkingDirectory '$env:generatedDir' -OutputPath '$env:sdkDir'"
+    Write-Host "Building the SDK (i.e. building the generated cmdlets)..." -f Cyan
+    Invoke-Expression "$env:buildScript -WorkingDirectory '$env:generatedDir' -OutputPath '$env:sdkDir' -Verbosity 'quiet'"
+    Write-Host "Finished building the SDK" -f Cyan
+    Write-Host
 }
 
 function global:SDKRun {
 [alias("run")]
     param()
 
+    Write-Host "Running the SDK (importing '$env:moduleName' and running 'Connect-MSGraph')..." -f Cyan
     Invoke-Expression "$env:runScript"
 }
 
@@ -75,7 +86,6 @@ nuget restore -Verbosity quiet
 nuget restore "src\PowerShellGraphSDK" -Verbosity quiet
 
 Write-Host "Initialized repository." -f Green
-Write-Host
 Write-Host "Available commands:" -f Yellow
 Write-Host "    GenerateAndRunSDK       " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Executes the commands 'GenerateSDK' and 'SDKRun' (in that order)" -f DarkCyan
 Write-Host "    GenerateSDK (or 'build')" -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Executes the commands 'WriterBuild', 'WriterRun' and 'SDKBuild' (in that order)" -f DarkCyan

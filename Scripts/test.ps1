@@ -13,7 +13,6 @@ $commands = @(
     '(Get-Host).UI.RawUI.WindowTitle = "$env:moduleName"',
     '(Get-Host).UI.RawUI.ForegroundColor = ''Cyan''',
     '(Get-Host).UI.RawUI.BackgroundColor = ''Black''',
-    # '$ErrorActionPreference = ''Stop''',
     'Import-Module "$env:sdkDir\$env:moduleName.$env:moduleExtension"',
     $getTestScriptsCommand,
     'Connect-MSGraph',
