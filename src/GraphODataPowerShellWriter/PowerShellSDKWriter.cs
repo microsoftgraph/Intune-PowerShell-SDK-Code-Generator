@@ -142,7 +142,7 @@ namespace GraphODataPowerShellTemplateWriter
                     string inheritedClassName = prop.Class == currentClass ? string.Empty : $" (inherited from '{prop.Class.CanonicalName()}')";
                     output.AppendLine($"\"{prop.CanonicalName()}\" : \"{prop.Type.CanonicalName()}{inheritedClassName}\",".Indent());
                 }
-                output.AppendLine($"\"{ODataConstants.ObjectProperties.Type}\" : \"{node.OdcmProperty.Type.CanonicalName()}\"".Indent());
+                output.AppendLine($"\"{ODataConstants.RequestProperties.Type}\" : \"{node.OdcmProperty.Type.CanonicalName()}\"".Indent());
                 output.AppendLine("}");
 
                 // Increment total count of found routes

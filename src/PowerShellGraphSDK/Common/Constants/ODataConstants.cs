@@ -2,30 +2,86 @@
 
 namespace PowerShellGraphSDK
 {
+    /// <summary>
+    /// Constants that relate to the OData spec.
+    /// </summary>
     public static class ODataConstants
     {
+        /// <summary>
+        /// The valid OData query parameter names.
+        /// </summary>
         public static class QueryParameters
         {
+            /// <summary>
+            /// $select
+            /// </summary>
             public const string Select = "$select";
+
+            /// <summary>
+            /// $expand
+            /// </summary>
             public const string Expand = "$expand";
 
+            /// <summary>
+            /// $filter
+            /// </summary>
             public const string Filter = "$filter";
+
+            /// <summary>
+            /// $orderBy
+            /// </summary>
             public const string OrderBy = "$orderBy";
+
+            /// <summary>
+            /// $skip
+            /// </summary>
             public const string Skip = "$skip";
+
+            /// <summary>
+            /// $top
+            /// </summary>
             public const string Top = "$top";
         }
 
+        /// <summary>
+        /// The properties that can be returned in a search result (i.e. GET on a collection).
+        /// </summary>
         public static class SearchResultProperties
         {
+            /// <summary>
+            /// @odata.context
+            /// </summary>
             public const string Context = "@odata.context";
+
+            /// <summary>
+            /// @odata.count
+            /// </summary>
             public const string Count = "@odata.count";
+
+            /// <summary>
+            /// @odata.nextLink
+            /// </summary>
             public const string NextLink = "@odata.nextLink";
+
+            /// <summary>
+            /// value
+            /// </summary>
             public const string Value = "value";
         }
 
-        public static class ObjectProperties
+        /// <summary>
+        /// The properties that can be sent as part of a request body.
+        /// </summary>
+        public static class RequestProperties
         {
+            /// <summary>
+            /// @odata.type
+            /// </summary>
             public const string Type = "@odata.type";
+
+            /// <summary>
+            /// id
+            /// </summary>
             public const string Id = "id";
         }
     }

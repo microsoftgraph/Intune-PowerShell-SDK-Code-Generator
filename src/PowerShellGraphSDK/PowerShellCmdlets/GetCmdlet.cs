@@ -14,6 +14,9 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     /// </summary>
     public abstract class GetCmdlet : ODataPowerShellSDKCmdletBase
     {
+        /// <summary>
+        /// The operation name.
+        /// </summary>
         public const string OperationName = "Get";
 
         /// <summary>
@@ -35,6 +38,9 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// </summary>
         public string[] Expand = null;
         
+        /// <summary>
+        /// Creates a new instance of <see cref="GetCmdlet"/>.
+        /// </summary>
         public GetCmdlet()
         {
             // Get the properties

@@ -12,12 +12,15 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     /// </summary>
     public abstract class PostOrPatchCmdlet : ODataPowerShellSDKCmdletBase
     {
+        /// <summary>
+        /// <para type="description">The value provided in a search result (i.e. GET on a collection) in the "@odata.type" property.</para>
+        /// </summary>
         [Parameter(
             ParameterSetName = PatchCmdlet.OperationName,
             Mandatory = true,
             ValueFromPipelineByPropertyName = true)]
         [ValidateNotNullOrEmpty]
-        [Alias(ODataConstants.ObjectProperties.Type)]
+        [Alias(ODataConstants.RequestProperties.Type)]
         public string ODataType { get; set; }
 
         internal override object GetContent()
@@ -45,12 +48,12 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             }
 
             // Add the OData type to the request body
-            content.Add(ODataConstants.ObjectProperties.Type, selectedODataType);
+            content.Add(ODataConstants.RequestProperties.Type, selectedODataType);
 
             // Get the rest of the properties that will be serialized into the request body
             IEnumerable<PropertyInfo> typeProperties = boundProperties.Where(property =>
                 property.Name != nameof(this.ODataType) // don't include the ODataType parameter since we already got it
-                && property.Name != ODataConstants.ObjectProperties.Id // don't include the ID property
+                && property.Name != ODataConstants.RequestProperties.Id // don't include the ID property
                 && !this.GetParameterSetSelectorProperties().Contains(property) // don't include the switch parameters
             );
 

@@ -522,7 +522,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             if (resource.IsEnumeration())
             {
                 // Create the ID parameter
-                idParameter = new CmdletParameter(ODataConstants.ObjectProperties.Id, typeof(string))
+                idParameter = new CmdletParameter(ODataConstants.RequestProperties.Id, typeof(string))
                 {
                     Mandatory = entityIdIsMandatory,
                     ValueFromPipeline = valueFromPipeline,
@@ -648,7 +648,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 throw new ArgumentNullException(nameof(baseType));
             }
 
-            // Don't try to add parameters for basic Edm types
+            // Don't try to add parameters for Edm types
             if (baseType.Namespace.Name.StartsWith("Edm"))
             {
                 return;
@@ -694,7 +694,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 // Evaluate the properties on this type
                 // TODO: Include collections and navigation properties as expandable, selectable and sortable
                 IEnumerable<OdcmProperty> properties = type.EvaluateProperties(type == baseType)
-                    .Where(prop => prop.Name != ODataConstants.ObjectProperties.Id);
+                    .Where(prop => prop.Name != ODataConstants.RequestProperties.Id);
 
                 // Add this type into the parmeter name lookup table
                 parameterNameLookup.Add(type, properties

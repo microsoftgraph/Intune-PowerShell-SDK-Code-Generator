@@ -7,6 +7,9 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     /// </summary>
     public abstract class PatchCmdlet : PostOrPatchCmdlet
     {
+        /// <summary>
+        /// The operation name.
+        /// </summary>
         public const string OperationName = "Patch";
 
         internal override string GetHttpMethod()

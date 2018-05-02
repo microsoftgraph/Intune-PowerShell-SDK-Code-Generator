@@ -6,11 +6,21 @@ namespace PowerShellGraphSDK
     using System.Linq;
     using System.Management.Automation;
 
+    /// <summary>
+    /// Validates that the parameter is set to a value which is one of the specified types.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public class ValidateTypeAttribute : ValidateEnumeratedArgumentsAttribute
     {
+        /// <summary>
+        /// The list of valid types.
+        /// </summary>
         private Type[] Types { get; set; }
 
+        /// <summary>
+        /// Creates a new <see cref="ValidateTypeAttribute"/>.
+        /// </summary>
+        /// <param name="types">The list of valid types</param>
         public ValidateTypeAttribute(params Type[] types)
         {
             if (types == null || !types.Any())
@@ -21,6 +31,10 @@ namespace PowerShellGraphSDK
             this.Types = types;
         }
 
+        /// <summary>
+        /// Ensures that the value provided is a valid type.
+        /// </summary>
+        /// <param name="param"></param>
         protected override void ValidateElement(object param)
         {
             Type type = param.GetType();

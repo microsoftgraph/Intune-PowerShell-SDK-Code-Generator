@@ -31,7 +31,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <DocumentationFile>$(OutputPath)\PowerShellGraphSDK.xml</DocumentationFile>
-    <NoWarn>1591</NoWarn> <!-- Ignore warnings about documentation comments -->
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.19.4.11002, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">

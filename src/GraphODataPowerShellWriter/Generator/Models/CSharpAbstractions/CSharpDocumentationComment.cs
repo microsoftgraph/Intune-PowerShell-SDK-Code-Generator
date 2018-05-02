@@ -30,20 +30,20 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             if (this.Summary != null)
             {
                 resultBuilder.AppendLine(LinePrefix + @"<summary>");
-                resultBuilder.AppendLine(CSharpDocumentationComment.PrefixLines(this.Summary.Indent()));
+                resultBuilder.AppendLine(CSharpDocumentationComment.MakeCommentString(this.Summary.Indent()));
                 resultBuilder.AppendLine(LinePrefix + @"</summary>");
             }
 
             // Misc
             if (this.RawNotes != null)
             {
-                resultBuilder.AppendLine(CSharpDocumentationComment.PrefixLines(this.RawNotes));
+                resultBuilder.AppendLine(CSharpDocumentationComment.MakeCommentString(this.RawNotes));
             }
 
             return resultBuilder.ToString().Trim();
         }
 
-        private static string PrefixLines(string str)
+        private static string MakeCommentString(string str)
         {
             return str.Indent(indentToken: LinePrefix);
         }

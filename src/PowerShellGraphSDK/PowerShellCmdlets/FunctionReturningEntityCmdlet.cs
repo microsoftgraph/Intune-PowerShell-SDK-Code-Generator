@@ -8,6 +8,9 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     public abstract class FunctionReturningEntityCmdlet : GetCmdlet
     {
         // TODO: Allow dynamic parameters once the generator supports them
+        /// <summary>
+        /// Creates a new <see cref="FunctionReturningEntityCmdlet"/>.
+        /// </summary>
         public FunctionReturningEntityCmdlet()
         {
             this.DynamicParameters = null;

@@ -15,10 +15,13 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     /// </summary>
     public abstract class GetOrSearchCmdlet : GetCmdlet
     {
+        /// <summary>
+        /// The operation name.
+        /// </summary>
         public new const string OperationName = "Search";
 
         /// <summary>
-        /// The $filter query option value.
+        /// <para type="description">The $filter query option value.</para>
         /// </summary>
         [Parameter(ParameterSetName = GetOrSearchCmdlet.OperationName)]
         public string Filter { get; set; }
@@ -31,18 +34,21 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         public string[] OrderBy = null;
 
         /// <summary>
-        /// The $skip query option value.
+        /// <para type="description">The $skip query option value.</para>
         /// </summary>
         [Parameter(ParameterSetName = GetOrSearchCmdlet.OperationName)]
         public int? Skip { get; set; }
 
         /// <summary>
-        /// The $top query option value.
+        /// <para type="description">The $top query option value.</para>
         /// </summary>
         [Parameter(ParameterSetName = GetOrSearchCmdlet.OperationName)]
         [Alias("First")] // Required to be compatible with the PowerShell paging parameters
         public int? Top { get; set; }
 
+        /// <summary>
+        /// Creates a new <see cref="GetOrSearchCmdlet"/>.
+        /// </summary>
         public GetOrSearchCmdlet()
         {
             // Get the properties

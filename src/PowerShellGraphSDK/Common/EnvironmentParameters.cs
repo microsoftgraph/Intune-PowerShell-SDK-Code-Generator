@@ -60,6 +60,10 @@ namespace PowerShellGraphSDK
             this.RedirectLink = toCopy.RedirectLink;
         }
 
+        /// <summary>
+        /// Creates a copy of this instance of <see cref="EnvironmentParameters"/>.
+        /// </summary>
+        /// <returns>The copy of this instance.</returns>
         public EnvironmentParameters Copy()
         {
             return new EnvironmentParameters(this);

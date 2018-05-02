@@ -3,14 +3,11 @@
 namespace PowerShellGraphSDK
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
+    /// <summary>
+    /// Indicates that this property is able to be included in the list of properties for the $orderBy
+    /// query parameter when retrieving the entity from Graph.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-    public class SortableAttribute : Attribute
-    {
-
-    }
+    public class SortableAttribute : Attribute { }
 }

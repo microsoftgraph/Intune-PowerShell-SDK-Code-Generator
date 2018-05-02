@@ -7,20 +7,29 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     using System.Net.Http;
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
+    /// <summary>
+    /// <para type="description">Authenticates with Graph.</para>
+    /// </summary>
     [Cmdlet(
         CmdletVerb, CmdletNoun,
         ConfirmImpact = ConfirmImpact.None)]
     public class Connect : PSCmdlet
     {
+        /// <summary>
+        /// Cmdlet name's verb.
+        /// </summary>
         public const string CmdletVerb = VerbsCommunications.Connect;
+
+        /// <summary>
+        /// Cmdlet name's noun.
+        /// </summary>
         public const string CmdletNoun = "MSGraph";
 
         private const string ParameterSetPSCredential = "PSCredential";
         private const string ParameterSetCertificate = "Certificate";
 
         /// <summary>
-        /// <para type="description">Description 1</para>
-        /// <para type="description">Description 2</para>
+        /// <para type="description">Whether or not to use Graph PPE.</para>
         /// </summary>
         [Parameter]
         public bool UsePPE { get; set; }
@@ -33,6 +42,9 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         //[ValidateNotNull]
         //public IClientAssertionCertificate Cert { get; set; }
 
+        /// <summary>
+        /// Run the cmdlet.
+        /// </summary>
         protected override void ProcessRecord()
         {
             // Get the environment parameters
@@ -57,12 +69,22 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         }
     }
 
+    /// <summary>
+    /// <para type="description">Gets the $metadata for the currently selected Graph schema.</para>
+    /// </summary>
     [Cmdlet(
         CmdletVerb, CmdletNoun,
         ConfirmImpact = ConfirmImpact.None)]
     public class GetMetadata : GetCmdlet
     {
+        /// <summary>
+        /// Cmdlet name's verb.
+        /// </summary>
         public const string CmdletVerb = VerbsCommon.Get;
+
+        /// <summary>
+        /// Cmdlet name's noun.
+        /// </summary>
         public const string CmdletNoun = "MSGraphMetadata";
 
         internal override string GetResourcePath()
@@ -77,25 +99,49 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         }
     }
 
+    /// <summary>
+    /// <para type="description">Gets the next page of a search result if an @odata.nextLink is provided.</para>
+    /// </summary>
     [Cmdlet(
         CmdletVerb, CmdletNoun,
         ConfirmImpact = ConfirmImpact.Low,
         DefaultParameterSetName = GetOrSearchCmdlet.OperationName)]
     public class GetNextPage : GetOrSearchCmdlet // we need the behavior of "Search"
     {
+        /// <summary>
+        /// Cmdlet name's verb.
+        /// </summary>
         public const string CmdletVerb = VerbsCommon.Get;
+
+        /// <summary>
+        /// Cmdlet name's noun.
+        /// </summary>
         public const string CmdletNoun = "MSGraphNextPage";
 
+        /// <summary>
+        /// <para type="description">The value provided in the search result in the "@odata.nextLink" property.</para>
+        /// </summary>
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true)]
         [Alias(ODataConstants.SearchResultProperties.NextLink)]
         public string NextLink { get; set; }
 
-        /// The properties in this section hide base classes' PowerShell parameters by
-        /// redefining the properties without adding the [Parameter] attribute
+        // The properties in this section hide base classes' PowerShell parameters by
+        // redefining the properties without adding the [Parameter] attribute
         #region Hidden Parameters
         
+        /// <summary>
+        /// Hides $filter.
+        /// </summary>
         public new string Filter { get; set; }
+
+        /// <summary>
+        /// Hides $skip.
+        /// </summary>
         public new int? Skip { get; set; }
+
+        /// <summary>
+        /// Hides $top.
+        /// </summary>
         public new int? Top { get; set; }
 
         #endregion Hidden Parameters
@@ -106,61 +152,109 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         }
     }
 
+    /// <summary>
+    /// <para type="description">Gets the name of the currently selected Graph schema version.</para>
+    /// </summary>
     [Cmdlet(
         CmdletVerb, CmdletNoun,
         ConfirmImpact = ConfirmImpact.None)]
     public class GetSchemaVersion : PSCmdlet
     {
+        /// <summary>
+        /// Cmdlet name's verb.
+        /// </summary>
         public const string CmdletVerb = VerbsCommon.Get;
+
+        /// <summary>
+        /// Cmdlet name's noun.
+        /// </summary>
         public const string CmdletNoun = "MSGraphSchemaVersion";
 
+        /// <summary>
+        /// Runs the cmdlet.
+        /// </summary>
         protected override sealed void ProcessRecord()
         {
             this.WriteObject(ODataPowerShellSDKCmdletBase.SchemaVersion);
         }
     }
 
+    /// <summary>
+    /// <para type="description">Selectes a new Graph schema version.</para>
+    /// </summary>
     [Cmdlet(
         CmdletVerb, CmdletNoun,
         ConfirmImpact = ConfirmImpact.High)]
     public class UpdateSchemaVersion : PSCmdlet
     {
+        /// <summary>
+        /// Cmdlet name's verb.
+        /// </summary>
         public const string CmdletVerb = VerbsData.Update;
+
+        /// <summary>
+        /// Cmdlet name's noun.
+        /// </summary>
         public const string CmdletNoun = "MSGraphSchemaVersion";
 
+        /// <summary>
+        /// <para type="description">The name of the Graph schema version to select.</para>
+        /// </summary>
         [Parameter(
             Mandatory = true,
             ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
         [ValidateNotNullOrEmpty]
         public string SchemaVersion { get; set; }
 
+        /// <summary>
+        /// Runs the cmdlet.
+        /// </summary>
         protected override sealed void ProcessRecord()
         {
             ODataPowerShellSDKCmdletBase.SchemaVersion = this.SchemaVersion;
         }
     }
 
+    /// <summary>
+    /// <para type="description">Sends a custom request with the currently active authentication token.</para>
+    /// </summary>
     [Cmdlet(
         CmdletVerb, CmdletNoun,
         ConfirmImpact = ConfirmImpact.Low)]
     public class InvokeRequest : ODataPowerShellSDKCmdletBase
     {
+        /// <summary>
+        /// Cmdlet name's verb.
+        /// </summary>
         public const string CmdletVerb = VerbsLifecycle.Invoke;
+
+        /// <summary>
+        /// Cmdlet name's noun.
+        /// </summary>
         public const string CmdletNoun = "MSGraphRequest";
 
+        /// <summary>
+        /// <para type="description">The HTTP method to use when making the request.</para>
+        /// </summary>
         [Parameter(
             Mandatory = true,
             ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
         [ValidateNotNullOrEmpty]
         public string HttpMethod { get; set; }
 
+        /// <summary>
+        /// <para type="description">The URL to send the request to.</para>
+        /// </summary>
         [Parameter(
             Mandatory = true,
             ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
         [ValidateUrl]
         public string Url { get; set; }
 
-        // TODO: Document that this parameter can be a string, PSObject, Hashtable or an HttpContent object
+        /// <summary>
+        /// <para type="description">The content that should be sent in the body of the request.</para>
+        /// <para type="description">PSObject, Hashtable and HttpContent values will be serialized as JSON, and strings will be sent as-is</para>
+        /// </summary>
         [Parameter(ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
         [ValidateType(typeof(string), typeof(PSObject), typeof(Hashtable), typeof(HttpContent))]
         public object Content { get; set; }

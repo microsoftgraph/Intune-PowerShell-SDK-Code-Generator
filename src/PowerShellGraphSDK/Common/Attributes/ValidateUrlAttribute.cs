@@ -5,16 +5,30 @@ namespace PowerShellGraphSDK
     using System;
     using System.Management.Automation;
 
+    /// <summary>
+    /// Checks that a given property's value represents a valid URL string.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public class ValidateUrlAttribute : ValidateEnumeratedArgumentsAttribute
     {
+        /// <summary>
+        /// The kind of URL (e.g. relative, absolute).
+        /// </summary>
         private UriKind UriKind { get; set; }
 
+        /// <summary>
+        /// Creates a new <see cref="ValidateUrlAttribute"/>.
+        /// </summary>
+        /// <param name="uriKind">The kind or URL</param>
         public ValidateUrlAttribute(UriKind uriKind = UriKind.Absolute)
         {
             this.UriKind = uriKind;
         }
 
+        /// <summary>
+        /// Validates that the given object represents a valid URL string.
+        /// </summary>
+        /// <param name="url">The URL to validate</param>
         protected override void ValidateElement(object url)
         {
             if (url == null)
