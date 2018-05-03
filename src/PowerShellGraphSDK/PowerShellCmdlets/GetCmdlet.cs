@@ -37,7 +37,9 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// This value is declared as a dynamic parameter so that values can be validated per cmdlet.
         /// </summary>
         public string[] Expand = null;
-        
+
+        #region Setup
+
         /// <summary>
         /// Creates a new instance of <see cref="GetCmdlet"/>.
         /// </summary>
@@ -127,6 +129,8 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             }
         }
 
+        #endregion Setup
+
         internal override string GetHttpMethod()
         {
             return "GET";
@@ -152,5 +156,93 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
 
             return queryOptions;
         }
+
+        internal override object ReadResponse(string content)
+        {
+            // Convert the string content into a C# object
+            object result = base.ReadResponse(content);
+
+            // If this is the final page of a SEARCH result, unwrap and return just the values
+            if (// Make sure that this is a JSON response
+                result is PSObject response
+                // Make sure that the "@odata.context" property exists (to make sure that this is an OData response)
+                && response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.Context)
+                // Make sure that there is no nextLink (i.e. there is only 1 page of results)
+                && !response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.NextLink))
+            {
+                // Check if there were any values in the page of results
+                if (response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.Value))
+                {
+                    // There were values in the page, so unwrap and return them
+                    result = response.Members[ODataConstants.SearchResultProperties.Value].Value;
+                    return result;
+                }
+                else
+                {
+                    // There were no values in the page
+                    return null;
+                }
+            }
+            else
+            {
+                // If this is a GET result or a SEARCH result with multiple pages, return the result as-is
+                return result;
+            }
+        }
+
+        #region Helpers
+
+        /// <summary>
+        /// Creates the URL segment containing the function name and arguments.
+        /// </summary>
+        /// <returns>The URL segment containing the function name and arguments.</returns>
+        public string GetFunctionUrlSegment()
+        {
+            Type cmdletType = this.GetType();
+            if (!(this is FunctionReturningEntityCmdlet) &&
+                !(this is FunctionReturningCollectionCmdlet))
+            {
+                throw new PSArgumentException($"Cannot call method '{nameof(GetFunctionUrlSegment)}()' on a cmdlet of type '{cmdletType}'.");
+            }
+
+            // Create the list of arguments
+            IEnumerable<string> paramArguments = this.GetBoundProperties(false).Select(param =>
+            {
+                object paramValue = param.GetValue(this);
+                Type paramType = param.PropertyType;
+
+                // Check if we need special handling of the value based on the parameter type
+                string paramArgumentValue;
+                if (paramType == typeof(string))
+                {
+                    // If the type is a basic string, surround it in single quotes
+                    paramArgumentValue = $"'{paramValue.ToString()}'";
+                }
+                else if (
+                    paramType.IsPrimitive
+                    || paramType == typeof(DateTime)
+                    || paramType == typeof(DateTimeOffset)
+                    || paramType == typeof(TimeSpan))
+                {
+                    // If the type is primitive or a date/time, call "ToString()" on it
+                    paramArgumentValue = paramValue.ToString();
+                }
+                else
+                {
+                    // If the type is complex, serialize it as JSON
+                    paramArgumentValue = JsonUtils.WriteJson(paramValue);
+                }
+
+                // Create the parameter mapping
+                return $"{param.Name}={paramArgumentValue}";
+            });
+
+            // Join the list of arguments
+            string result = string.Join(",", paramArguments);
+
+            return result;
+        }
+
+        #endregion Helpers
     }
 }

@@ -8,7 +8,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 
     public static class CSharpMethodHelper
     {
-        public static CSharpMethod CreateGetResourcePathMethod(string url)
+        public static CSharpMethod CreateGetResourcePathMethod(string url, bool isFunction = false)
         {
             if (url == null)
             {
@@ -18,7 +18,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             // Create the method definition
             string methodName = nameof(ODataPowerShellSDKCmdletBase.GetResourcePath);
             Type returnType = typeof(string);
-            string methodBody = $"return $\"{url}\";";
+            string methodBody = isFunction
+                ? $"return $\"{url}({{this.{nameof(GetCmdlet.GetFunctionUrlSegment)}()}})\";"
+                : $"return $\"{url}\";";
 
             // Create the method object
             CSharpMethod result = new CSharpMethod(methodName, returnType, methodBody)

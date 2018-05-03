@@ -124,40 +124,5 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
 
             return queryOptions;
         }
-
-        internal override object ReadResponse(string content)
-        {
-            // Convert the string content into a C# object
-            object result = base.ReadResponse(content);
-
-            // If this is the final page of a SEARCH result, unwrap and return just the values
-            if (// Make sure that this result is for a SEARCH call
-                this.ParameterSetName == GetOrSearchCmdlet.OperationName
-                // Make sure that this is a JSON response
-                && result is PSObject response
-                // Make sure that the "@odata.context" property exists (to make sure that this is an OData response)
-                && response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.Context)
-                // Make sure that there is no nextLink (i.e. there is only 1 page of results)
-                && !response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.NextLink))
-            {
-                // Check if there were any values in the page of results
-                if (response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.Value))
-                {
-                    // There were values in the page, so unwrap and return them
-                    result = response.Members[ODataConstants.SearchResultProperties.Value].Value;
-                    return result;
-                }
-                else
-                {
-                    // There were no values in the page
-                    return null;
-                }
-            }
-            else
-            {
-                // If this is a GET result or a SEARCH result with multiple pages, return the result as-is
-                return result;
-            }
-        }
     }
 }

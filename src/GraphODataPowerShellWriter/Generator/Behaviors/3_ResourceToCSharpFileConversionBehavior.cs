@@ -94,8 +94,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 yield return CSharpMethodHelper.CreateGetHttpMethodMethod(cmdlet.HttpMethod);
             }
 
+            // Determine whether this cmdlet calls a function
+            bool isFunction =
+                cmdlet.OperationType == CmdletOperationType.FunctionReturningCollection 
+                || cmdlet.OperationType == CmdletOperationType.FunctionReturningEntity;
+
             // "GetResourcePath()" method override
-            yield return CSharpMethodHelper.CreateGetResourcePathMethod(cmdlet.CallUrl);
+            yield return CSharpMethodHelper.CreateGetResourcePathMethod(cmdlet.CallUrl, isFunction);
         }
 
         private static IEnumerable<CSharpProperty> CreateProperties(this Cmdlet cmdlet)

@@ -10,6 +10,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Reflection;
+    using System.Text;
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
     using Newtonsoft.Json.Linq;
 

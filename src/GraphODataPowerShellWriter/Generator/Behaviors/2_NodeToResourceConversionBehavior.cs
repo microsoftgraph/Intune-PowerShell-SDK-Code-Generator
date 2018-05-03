@@ -133,7 +133,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                         : $"Gets the '{resource.Name}'.",
                     Descriptions = new string[]
                     {
-                        $"GET {oDataRoute.ToODataRouteString()}",
+                        $"GET ~/{oDataRoute.ToODataRouteString()}",
                         resource.IsCollection
                             ? $"Gets '{resource.Type.FullName}' objects in the '{resource.Name}' collection."
                             : $"Gets the '{resource.Name}' (which is of type '{resource.Type.FullName}').",
@@ -183,7 +183,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     Synopsis = $"Creates a '{resource.Type.FullName}'.",
                     Descriptions = new string[]
                     {
-                        $"POST {oDataRoute.ToODataRouteString()}",
+                        $"POST ~/{oDataRoute.ToODataRouteString()}",
                         resource.IsCollection
                             ? $"Creates a '{resource.Type.FullName}' in the '{resource.Name}' collection."
                             : $"Creates the '{resource.Name}' (which is of type '{resource.Type.FullName}').",
@@ -222,7 +222,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     Synopsis = $"Updates a '{resource.Type.FullName}'.",
                     Descriptions = new string[]
                     {
-                        $"PATCH {oDataRoute.ToODataRouteString()}",
+                        $"PATCH ~/{oDataRoute.ToODataRouteString()}",
                         resource.IsCollection
                             ? $"Updates a '{resource.Type.FullName}' in the '{resource.Name}' collection."
                             : $"Updates the '{resource.Name}' (which is of type '{resource.Type.FullName}').",
@@ -261,7 +261,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     Synopsis = $"Deletes a '{resource.Type.FullName}'.",
                     Descriptions = new string[]
                     {
-                        $"DELETE {oDataRoute.ToODataRouteString()}",
+                        $"DELETE ~/{oDataRoute.ToODataRouteString()}",
                         resource.IsCollection
                             ? $"Deletes a '{resource.Type.FullName}' from the '{resource.Name}' collection."
                             : $"Deletes the '{resource.Name}' (which is of type '{resource.Type.FullName}').",
@@ -296,76 +296,16 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     Cmdlet cmdlet = new Cmdlet(new CmdletName(PS.VerbsLifecycle.Invoke, oDataRoute.ToCmdletNameNounString(method.Name)));
 
                     // Figure out if this method is a function or an action
-                    string urlPostfixSegment = method.Name;
                     string methodType;
                     if (method.IsFunction)
                     {
                         methodType = "function";
-
-                        // Since this is a function, it should not have any observable side-effects (according to the OData v4 spec)
-                        cmdlet.ImpactLevel = PS.ConfirmImpact.None;
-
-                        // The behavior of the function should be different based on whether it returns a collection or not
-                        if (method.IsCollection)
-                        {
-                            cmdlet.DefaultParameterSetName = GetOrSearchCmdlet.OperationName;
-                            cmdlet.OperationType = CmdletOperationType.FunctionReturningCollection;
-                        }
-                        else
-                        {
-                            cmdlet.DefaultParameterSetName = GetCmdlet.OperationName;
-                            cmdlet.OperationType = CmdletOperationType.FunctionReturningEntity;
-                        }
-
-                        // Setup the function parameters
-                        // TODO: create a parameter set per overload
-                        cmdlet.AddFunctionParameters(method);
-
-                        // Add the placeholders for the function arguments in the URL
-                        string paramNamesArgumentsString = string.Join(
-                            ",",
-                            method.Parameters.Select(param =>
-                            {
-                                // Set the default placeholder for the parameter's value
-                                string valuePlaceholder = $"{{{param.Name}}}";
-
-                                // Get the parameter's type
-                                Type paramType = param.Type.ToPowerShellType(param.IsCollection);
-
-                                // Check if we need special handling of the value based on the parameter type
-                                if (paramType == typeof(DateTime)
-                                    || paramType == typeof(DateTimeOffset)
-                                    || paramType == typeof(TimeSpan))
-                                {
-                                    // If the type should be converted to a string, call "ToString()" on it
-                                    valuePlaceholder = $"{{{param.Name}.{nameof(Object.ToString)}()}}";
-                                }
-                                else if (paramType == typeof(string))
-                                {
-                                    // If the type is a basic string, surround it in single quotes
-                                    valuePlaceholder = $"'{{{param.Name}}}'";
-                                }
-                                else if (!paramType.IsPrimitive)
-                                {
-                                    // If the type is complex, serialize it as JSON
-                                    valuePlaceholder = $"{{{nameof(JsonUtils)}.{nameof(JsonUtils.WriteJson)}({param.Name})}}";
-                                }
-
-                                // Create the parameter mapping
-                                return $"{param.Name}={valuePlaceholder}";
-                            }));
-                        urlPostfixSegment += $"({paramNamesArgumentsString})";
+                        cmdlet.SetupFunctionDetails(method);
                     }
                     else
                     {
                         methodType = "action";
-
-                        // Set the cmdlet up as a method
-                        cmdlet.OperationType = CmdletOperationType.Action;
-                        cmdlet.ImpactLevel = PS.ConfirmImpact.High;
-
-                        // Setup the action parameters
-                        cmdlet.AddActionParameters(method);
+                        cmdlet.SetupActionDetails(method);
                     }
 
                     // Documentation
@@ -373,9 +313,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     {
                         Descriptions = new string[]
                         {
-                            methodType == "action"
-                                ? $"POST {oDataRoute.ToODataRouteString()}" // action
-                                : $"GET {oDataRoute.ToODataRouteString()}", // function
+                            method.IsFunction
+                                ? $"GET ~/{oDataRoute.ToODataRouteString()}" // function
+                                : $"POST ~/{oDataRoute.ToODataRouteString()}", // action
                             $"The {methodType} '{method.FullName}', which exists on type '{resourceType.FullName}'",
                             method.ReturnType != null
                                 ? method.IsCollection
@@ -390,7 +330,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     CmdletParameter idParameter = cmdlet.SetupIdParametersAndCallUrl(
                         oDataRoute,
                         addEntityId: !method.IsBoundToCollection, // if the function is bound to a collection, we don't need an ID parameter
-                        postfixUrlSegments: urlPostfixSegment);
+                        postfixUrlSegments: method.Name);
 
                     // TODO: Add fake parameters for the properties in the result entities
                     //cmdlet.AddParametersForEntityProperties(method.ReturnType, null, false, false);
@@ -807,6 +747,153 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             return result;
         }
 
+        /// <summary>
+        /// Sets up the cmdlet's values for the specified function.
+        /// </summary>
+        /// <param name="cmdlet">The cmdlet</param>
+        /// <param name="function">The function</param>
+        private static void SetupFunctionDetails(this Cmdlet cmdlet, OdcmMethod function)
+        {
+            // Since this is a function, it should not have any observable side-effects (according to the OData v4 spec)
+            cmdlet.ImpactLevel = PS.ConfirmImpact.None;
+
+            // The behavior of the function should be different based on whether it returns a collection or not
+            if (function.IsCollection)
+            {
+                cmdlet.DefaultParameterSetName = GetOrSearchCmdlet.OperationName;
+                cmdlet.OperationType = CmdletOperationType.FunctionReturningCollection;
+            }
+            else
+            {
+                cmdlet.DefaultParameterSetName = GetCmdlet.OperationName;
+                cmdlet.OperationType = CmdletOperationType.FunctionReturningEntity;
+            }
+
+            // Setup the function parameters for each overload
+            IEnumerable<OdcmMethod> functionOverloads = function.SingleObjectAsEnumerable().Concat(function.Overloads); // combined list
+            int overloadNum = 0;
+            CmdletParameterSet selectedParameterSet = null;
+            foreach (OdcmMethod currentFunction in functionOverloads)
+            {
+                string parameterSetName = $"Overload_{overloadNum}";
+                CmdletParameterSet createdParameterSet = cmdlet.AddFunctionParameters(currentFunction, parameterSetName);
+
+                // Only increment the count if the function's overload takes parameters
+                if (createdParameterSet != cmdlet.DefaultParameterSet)
+                {
+                    overloadNum++;
+                }
+
+                // If we have selected the default parameter set, we know that we cannot find any overloads with less parameters
+                if (selectedParameterSet != cmdlet.DefaultParameterSet)
+                {
+                    // Decide whether this should be the default parameter set
+                    if (selectedParameterSet == null)
+                    {
+                        selectedParameterSet = createdParameterSet;
+                    }
+                    else
+                    {
+                        int createdNumMandatoryParams = createdParameterSet.Where(param => param.Mandatory).Count();
+                        int selectedNumMandatoryParams = selectedParameterSet.Where(param => param.Mandatory).Count();
+
+                        if (// Use the parameter set with the smallest number of mandatory parameters
+                            createdNumMandatoryParams < selectedNumMandatoryParams
+                            // Use the parameter set with the smallest number of parameters if the mandatory parameters are equal
+                            || (createdNumMandatoryParams == selectedNumMandatoryParams && createdParameterSet.Count < selectedParameterSet.Count))
+                        {
+                            selectedParameterSet = createdParameterSet;
+                        }
+                    }
+                }
+            }
+
+            // Set the default parameter set if it is not the default parameter set
+            if (selectedParameterSet != cmdlet.DefaultParameterSet)
+            {
+                cmdlet.DefaultParameterSetName = selectedParameterSet.Name;
+            }
+        }
+
+        /// <summary>
+        /// Sets up the cmdlet's values for the specified action.
+        /// </summary>
+        /// <param name="cmdlet">The cmdlet</param>
+        /// <param name="action">The action</param>
+        private static void SetupActionDetails(this Cmdlet cmdlet, OdcmMethod action)
+        {
+            // Set the cmdlet up as a method
+            cmdlet.OperationType = CmdletOperationType.Action;
+            cmdlet.ImpactLevel = PS.ConfirmImpact.High;
+
+            // Setup the action parameters
+            cmdlet.AddActionParameters(action);
+        }
+
+        private static CmdletParameterSet AddFunctionParameters(this Cmdlet cmdlet, OdcmMethod function, string parameterSetName = null)
+        {
+            if (cmdlet == null)
+            {
+                throw new ArgumentNullException(nameof(cmdlet));
+            }
+            if (function == null)
+            {
+                throw new ArgumentNullException(nameof(function));
+            }
+            if (!function.IsFunction)
+            {
+                throw new ArgumentException($"The given ODCM method '{function.Name}' does not represent a function - it represents an action", nameof(function));
+            }
+
+            // Don't continue if there aren't any parameters
+            if (!function.Parameters.Any())
+            {
+                return cmdlet.DefaultParameterSet;
+            }
+
+            // Get the parameter set that we should add the parameters to
+            CmdletParameterSet selectedParameterSet;
+            if (parameterSetName == null)
+            {
+                selectedParameterSet = cmdlet.DefaultParameterSet;
+            }
+            else
+            {
+                selectedParameterSet = cmdlet.GetOrCreateParameterSet(parameterSetName);
+            }
+
+            // Iterate over each parameter
+            foreach (OdcmParameter parameter in function.Parameters)
+            {
+                // Create the equivalent CmdletParameter object
+                Type powerShellType = parameter.Type.ToPowerShellType(parameter.IsCollection);
+                CmdletParameter cmdletParameter = new CmdletParameter(parameter.Name, powerShellType)
+                {
+                    Mandatory = true,
+                    ValidateNotNull = !parameter.IsNullable,
+                    Documentation = new CmdletParameterDocumentation()
+                    {
+                        Descriptions = new string[]
+                        {
+                            $"The '{parameter.Name}' parameter, which is accepted by the '{function.FullName}' function.",
+                            parameter.Description,
+                        },
+                    }
+                };
+
+                // Setup valid values if the parameter type is an enum
+                if (parameter.Type is OdcmEnum @enum)
+                {
+                    cmdletParameter.Documentation.ValidValues = @enum.Members.Select(enumMember => enumMember.Name);
+                }
+
+                // Add the CmdletParameter to the specified parameter set
+                selectedParameterSet.Add(cmdletParameter);
+            }
+
+            return selectedParameterSet;
+        }
+
         private static void AddActionParameters(this Cmdlet cmdlet, OdcmMethod action)
         {
             if (cmdlet == null)
@@ -848,58 +935,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
                 // Add the CmdletParameter to the default parameter set
                 cmdlet.DefaultParameterSet.Add(cmdletParameter);
-            }
-        }
-
-        private static void AddFunctionParameters(this Cmdlet cmdlet, OdcmMethod function, string defaultParameterSetName = null)
-        {
-            if (cmdlet == null)
-            {
-                throw new ArgumentNullException(nameof(cmdlet));
-            }
-            if (function == null)
-            {
-                throw new ArgumentNullException(nameof(function));
-            }
-            if (!function.IsFunction)
-            {
-                throw new ArgumentException($"The given ODCM method '{function.Name}' does not represent a function - it represents an action", nameof(function));
-            }
-
-            // Iterate over each parameter
-            foreach (OdcmParameter parameter in function.Parameters)
-            {
-                // Create the equivalent CmdletParameter object
-                Type powerShellType = parameter.Type.ToPowerShellType(parameter.IsCollection);
-                CmdletParameter cmdletParameter = new CmdletParameter(parameter.Name, powerShellType)
-                {
-                    Mandatory = true,
-                    ValidateNotNull = !parameter.IsNullable,
-                    Documentation = new CmdletParameterDocumentation()
-                    {
-                        Descriptions = new string[]
-                        {
-                            $"The '{parameter.Name}' parameter, which is accepted by the '{function.FullName}' function.",
-                            parameter.Description,
-                        },
-                    }
-                };
-
-                // Setup valid values if the parameter type is an enum
-                if (parameter.Type is OdcmEnum @enum)
-                {
-                    cmdletParameter.Documentation.ValidValues = @enum.Members.Select(enumMember => enumMember.Name);
-                }
-
-                // Add the CmdletParameter to the specified parameter set
-                if (defaultParameterSetName == null)
-                {
-                    cmdlet.DefaultParameterSet.Add(cmdletParameter);
-                }
-                else
-                {
-                    cmdlet.GetOrCreateParameterSet(defaultParameterSetName).Add(cmdletParameter);
-                }
             }
         }
 
