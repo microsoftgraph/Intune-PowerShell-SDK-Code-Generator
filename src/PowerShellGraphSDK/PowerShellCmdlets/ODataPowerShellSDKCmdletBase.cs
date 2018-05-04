@@ -6,11 +6,9 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     using System.Collections.Generic;
     using System.Linq;
     using System.Management.Automation;
-    using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Reflection;
-    using System.Text;
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
     using Newtonsoft.Json.Linq;
 
@@ -65,11 +63,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     public abstract class ODataPowerShellSDKCmdletBase : PSCmdlet, IDynamicParameters
     {
         /// <summary>
-        /// The Graph schema version to use when making a Graph call.
-        /// </summary>
-        internal static string SchemaVersion { get; set; } = "v1.0";
-
-        /// <summary>
         /// The defined dynamic parameters.
         /// </summary>
         protected RuntimeDefinedParameterDictionary DynamicParameters = new RuntimeDefinedParameterDictionary();
@@ -77,7 +70,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// <summary>
         /// The currently selected environment parameters
         /// </summary>
-        private static EnvironmentParameters CurrentEnvironmentParameters = GraphAuthentication.EnvironmentParameters;
+        internal static EnvironmentParameters CurrentEnvironmentParameters = GraphAuthentication.EnvironmentParameters;
 
         /// <summary>
         /// The method that the PowerShell runtime will call.  This is the entry point for the cmdlet.
@@ -418,7 +411,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 //resourcePath = WebUtility.UrlEncode(resourcePath);
 
                 // Get the full base URL
-                string baseUrlWithSchema = $"{baseAddress}/{SchemaVersion}";
+                string baseUrlWithSchema = $"{baseAddress}/{CurrentEnvironmentParameters.SchemaVersion}";
 
                 // Append the relative URL to the base URL
                 requestUrl = $"{baseUrlWithSchema}/{resourcePath}";

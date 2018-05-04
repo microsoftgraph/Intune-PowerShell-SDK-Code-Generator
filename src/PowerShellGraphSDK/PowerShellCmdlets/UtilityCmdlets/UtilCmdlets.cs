@@ -182,7 +182,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// </summary>
         protected override sealed void ProcessRecord()
         {
-            this.WriteObject(ODataPowerShellSDKCmdletBase.SchemaVersion);
+            this.WriteObject(ODataPowerShellSDKCmdletBase.CurrentEnvironmentParameters.SchemaVersion);
         }
     }
 
@@ -218,7 +218,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// </summary>
         protected override sealed void ProcessRecord()
         {
-            ODataPowerShellSDKCmdletBase.SchemaVersion = this.SchemaVersion;
+            ODataPowerShellSDKCmdletBase.CurrentEnvironmentParameters.SchemaVersion = this.SchemaVersion;
         }
     }
 

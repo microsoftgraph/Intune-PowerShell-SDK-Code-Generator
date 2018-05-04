@@ -7,7 +7,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
     using System.Linq;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils;
-    using PowerShellGraphSDK;
     using PowerShellGraphSDK.PowerShellCmdlets;
     using Vipr.Core.CodeModel;
     using PS = System.Management.Automation;
@@ -771,17 +770,20 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
             // Setup the function parameters for each overload
             IEnumerable<OdcmMethod> functionOverloads = function.SingleObjectAsEnumerable().Concat(function.Overloads); // combined list
-            int overloadNum = 0;
+            int numOverloads = functionOverloads.Count();
+            int overloadIndex = 1;
             CmdletParameterSet selectedParameterSet = null;
             foreach (OdcmMethod currentFunction in functionOverloads)
             {
-                string parameterSetName = $"Overload_{overloadNum}";
+                string parameterSetName = numOverloads == 1
+                    ? null
+                    : $"Overload_{overloadIndex}";
                 CmdletParameterSet createdParameterSet = cmdlet.AddFunctionParameters(currentFunction, parameterSetName);
 
                 // Only increment the count if the function's overload takes parameters
                 if (createdParameterSet != cmdlet.DefaultParameterSet)
                 {
-                    overloadNum++;
+                    overloadIndex++;
                 }
 
                 // If we have selected the default parameter set, we know that we cannot find any overloads with less parameters

@@ -22,6 +22,16 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         public new const string OperationName = "Search";
 
         /// <summary>
+        /// The string that should be postfixed to the property name to sort results in ascending order.
+        /// </summary>
+        private const string OrderByAscPostfix = "asc";
+
+        /// <summary>
+        /// The string that should be postfixed to the property name to sort results in descending order.
+        /// </summary>
+        private const string OrderByDescPostfix = "desc";
+
+        /// <summary>
         /// <para type="description">The "$filter" query option value.</para>
         /// </summary>
         [Parameter(ParameterSetName = GetOrSearchCmdlet.OperationName)]
@@ -64,7 +74,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             // Create the "OrderBy" parameter
             IEnumerable<string> orderByValidValues = properties
                 .Where(param => Attribute.IsDefined(param, typeof(SortableAttribute)))
-                .Select(param => param.Name);
+                .SelectMany(param => new string[] { $"{param.Name} {OrderByAscPostfix}", $"{param.Name} {OrderByDescPostfix}" });
             if (orderByValidValues.Any())
             {
                 // Create the collection of attributes
@@ -92,10 +102,10 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             if (this.DynamicParameters != null)
             {
                 // OrderBy
-                if (this.DynamicParameters.TryGetValue(nameof(this.OrderBy), out RuntimeDefinedParameter selectParam)
-                    && selectParam.IsSet)
+                if (this.DynamicParameters.TryGetValue(nameof(this.OrderBy), out RuntimeDefinedParameter orderByParam)
+                    && orderByParam.IsSet)
                 {
-                    this.OrderBy = selectParam.Value as string[];
+                    this.OrderBy = orderByParam.Value as string[];
                 }
             }
         }
@@ -107,7 +117,29 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             // OrderBy
             if (this.OrderBy != null && this.OrderBy.Any())
             {
-                IEnumerable<string> sortable = this.OrderBy.Select(param => this.TypeCastMappings[param]);
+                IEnumerable<string> sortable = this.OrderBy.Select(param =>
+                {
+                    string propertyName;
+                    string postfix;
+                    int i;
+                    if ((i = param.LastIndexOf($" {OrderByAscPostfix}")) != -1)
+                    {
+                        propertyName = param.Substring(0, i);
+                        postfix = OrderByAscPostfix;
+                    }
+                    else if ((i = param.LastIndexOf($" {OrderByDescPostfix}")) != -1)
+                    {
+                        propertyName = param.Substring(0, i);
+                        postfix = OrderByDescPostfix;
+                    }
+                    else
+                    {
+                        // This should never happen since we set it up in the constructor
+                        throw new PSArgumentOutOfRangeException(nameof(this.OrderBy), param, "Expected the OrderBy parameter to contain property names ending with ' asc' or ' desc'");
+                    }
+                    this.WriteObject(propertyName);
+                    return $"{this.TypeCastMappings[propertyName]} {postfix}";
+                });
                 queryOptions.Add(ODataConstants.QueryParameters.OrderBy, string.Join(",", sortable));
             }
 

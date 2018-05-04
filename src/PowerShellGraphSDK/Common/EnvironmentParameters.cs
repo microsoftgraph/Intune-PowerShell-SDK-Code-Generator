@@ -39,6 +39,11 @@ namespace PowerShellGraphSDK
         internal string RedirectLink { get; set; }
 
         /// <summary>
+        /// The schema version to use when making a Graph call.
+        /// </summary>
+        internal string SchemaVersion { get; set; }
+
+        /// <summary>
         /// Authentication result.
         /// </summary>
         internal AuthenticationResult AuthResult { get; set; }
@@ -56,8 +61,10 @@ namespace PowerShellGraphSDK
         {
             this.AuthUrl = toCopy.AuthUrl;
             this.ResourceId = toCopy.ResourceId;
+            this.ResourceBaseAddress = toCopy.ResourceBaseAddress;
             this.ClientId = toCopy.ClientId;
             this.RedirectLink = toCopy.RedirectLink;
+            this.SchemaVersion = toCopy.SchemaVersion;
         }
 
         /// <summary>
@@ -76,6 +83,7 @@ namespace PowerShellGraphSDK
             ResourceBaseAddress = "https://graph.microsoft.com",
             ClientId = powerShellClientId,
             RedirectLink = applicationRedirectLink,
+            SchemaVersion = "v1.0",
         };
 
         internal static EnvironmentParameters PPE { get; } = new EnvironmentParameters()
@@ -85,6 +93,7 @@ namespace PowerShellGraphSDK
             ResourceBaseAddress = "https://graph.microsoft-ppe.com",
             ClientId = powerShellClientId,
             RedirectLink = applicationRedirectLink,
+            SchemaVersion = "v1.0",
         };
     }
 }
