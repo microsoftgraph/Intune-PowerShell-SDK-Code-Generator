@@ -25,6 +25,10 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     ///         <description>Description</description>
     ///     </listheader>
     ///     <item>
+    ///         <term><see cref="GetHttpMethod"/></term>
+    ///         <description>Gets the HTTP method to use when making the call</description>
+    ///     </item>
+    ///     <item>
     ///         <term><see cref="GetResourcePath"/></term>
     ///         <description>Gets the relative URL of the OData resource</description>
     ///     </item>
@@ -33,16 +37,16 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     ///         <description>Gets the query options for the call</description>
     ///     </item>
     ///     <item>
-    ///         <term><see cref="GetHttpMethod"/></term>
-    ///         <description>Gets the HTTP method to use when making the call</description>
-    ///     </item>
-    ///     <item>
     ///         <term><see cref="GetContentType"/></term>
     ///         <description>Gets the MIME type for the content in the request body</description>
     ///     </item>
     ///     <item>
     ///         <term><see cref="GetContent"/></term>
     ///         <description>Gets the request body for the HTTP call</description>
+    ///     </item>
+    ///     <item>
+    ///         <term><see cref="GetHeaders"/></term>
+    ///         <description>Gets the request headers to be added to the HTTP call</description>
     ///     </item>
     ///     <item>
     ///         <term><see cref="ProceedWithCall(string, string, IDictionary{string, string}, object, string)"/></term>
@@ -63,12 +67,17 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// <summary>
         /// The Graph schema version to use when making a Graph call.
         /// </summary>
-        public static string SchemaVersion { get; set; } = "v1.0";
+        internal static string SchemaVersion { get; set; } = "v1.0";
 
         /// <summary>
         /// The defined dynamic parameters.
         /// </summary>
         protected RuntimeDefinedParameterDictionary DynamicParameters = new RuntimeDefinedParameterDictionary();
+
+        /// <summary>
+        /// The currently selected environment parameters
+        /// </summary>
+        private static EnvironmentParameters CurrentEnvironmentParameters = GraphAuthentication.EnvironmentParameters;
 
         /// <summary>
         /// The method that the PowerShell runtime will call.  This is the entry point for the cmdlet.
@@ -143,6 +152,24 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         internal virtual string GetContentType()
         {
             return "application/json";
+        }
+
+        /// <summary>
+        /// Returns a mapping of header names to their values.  This method should never return null.
+        /// Implementations of this method should first call <code>base.GetHeaders()</code> and then
+        /// add additional headers to the result.
+        /// </summary>
+        /// <returns></returns>
+        internal virtual HttpRequestHeaders GetHeaders()
+        {
+            // Auth
+            AuthenticationResult authResult = this.Auth(CurrentEnvironmentParameters);
+
+            // Create the headers and add the auth token
+            HttpRequestHeaders headers = new HttpClient().DefaultRequestHeaders;
+            headers.Authorization = new AuthenticationHeaderValue(authResult.AccessTokenType, authResult.AccessToken);
+
+            return headers;
         }
 
         /// <summary>
@@ -349,16 +376,11 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// </summary>
         internal void Run()
         {
-            // Get the environment parameters
-            EnvironmentParameters environmentParameters = GraphAuthentication.EnvironmentParameters;
-
-            // Auth
-            AuthenticationResult authResult = this.Auth(environmentParameters);
-
             // Get all the evaluated values
             string httpMethodString = this.GetHttpMethod();
             string resourcePath = this.GetResourcePath();
             IDictionary<string, string> queryOptions = this.GetUrlQueryOptions();
+            HttpRequestHeaders headers = this.GetHeaders();
             object contentObject = this.GetContent();
             string contentType = this.GetContentType();
 
@@ -384,7 +406,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                     resourcePath);
             }
             // Remove the leading slash if it exists so relative URLs don't get treated as absolute URLs
-            string baseAddress = environmentParameters.ResourceBaseAddress?.Trim('/');
+            string baseAddress = CurrentEnvironmentParameters.ResourceBaseAddress?.Trim('/');
             if (Uri.IsWellFormedUriString(resourcePath, UriKind.Absolute))
             {
                 // Since this is an absolute URL, it must be the full request URL
@@ -457,14 +479,19 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             // Prepare the HTTP request
             HttpClient httpClient = new HttpClient();
             HttpRequestMessage requestMessage = new HttpRequestMessage(httpMethod, requestUrl);
-            string requestContent = null; // need to evaluate this before making the call otherwise the content object will get disposed
+            foreach (var entry in headers)
+            {
+                // Add the headers
+                requestMessage.Headers.Add(entry.Key, entry.Value);
+            }
+            string requestContent = null;
             if (content != null)
             {
                 // Get the content before making the call
                 requestMessage.Content = content;
+                // We need to evaluate this before making the call otherwise the content object will get disposed
                 requestContent = requestMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             }
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authResult.AccessToken);
 
             // Debug request message
             this.WriteDebug(
@@ -473,6 +500,8 @@ $@"
 | Request |
 -----------
 {requestMessage.Method.Method} {requestMessage.RequestUri.ToString()}
+{JsonUtils.WriteJson(headers, true)}
+
 {requestContent ?? "<No request content>"}
 ");
 
@@ -486,6 +515,9 @@ $@"
 ------------
 | Response |
 ------------
+Status: {responseMessage.ReasonPhrase}
+{JsonUtils.WriteJson(responseMessage.Headers, true)}
+
 {responseContent ?? "<No response content>"}
 ");
 

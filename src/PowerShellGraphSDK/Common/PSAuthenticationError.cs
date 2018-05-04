@@ -8,7 +8,7 @@ namespace PowerShellGraphSDK
     /// <summary>
     /// PowerShell authentication error.
     /// </summary>
-    public class PSAuthenticationError : PSGraphSDKException
+    internal class PSAuthenticationError : PSGraphSDKException
     {
         /// <summary>
         /// Creates a new <see cref="PSAuthenticationError"/>.
@@ -17,7 +17,7 @@ namespace PowerShellGraphSDK
         /// <param name="specificErrorId">The error ID which should be unique to this error type</param>
         /// <param name="errorCategory">The error category</param>
         /// <param name="targetObject">An object that can provide more debugging information (e.g. the object that caused the error)</param>
-        public PSAuthenticationError(Exception innerException, string specificErrorId, ErrorCategory errorCategory, object targetObject)
+        internal PSAuthenticationError(Exception innerException, string specificErrorId, ErrorCategory errorCategory, object targetObject)
             : base(innerException, specificErrorId, errorCategory, targetObject) { }
     }
 }

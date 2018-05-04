@@ -18,6 +18,17 @@ namespace PowerShellGraphSDK
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             DateFormatHandling = DateFormatHandling.IsoDateFormat,
             DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+            Formatting = Formatting.None,
+            NullValueHandling = NullValueHandling.Include,
+            Converters = new List<JsonConverter> { new StringEnumConverter() }
+        };
+
+        private static readonly JsonSerializerSettings _jsonSettingsPrettyPrint = new JsonSerializerSettings()
+        {
+            TypeNameHandling = TypeNameHandling.None,
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            DateFormatHandling = DateFormatHandling.IsoDateFormat,
+            DateTimeZoneHandling = DateTimeZoneHandling.Utc,
             Formatting = Formatting.Indented,
             NullValueHandling = NullValueHandling.Include,
             Converters = new List<JsonConverter> { new StringEnumConverter() }
@@ -27,16 +38,21 @@ namespace PowerShellGraphSDK
         /// Serializes an object into a JSON string.
         /// </summary>
         /// <param name="obj">The object to serialize</param>
+        /// <param name="prettyPrint">Whether or not to pretty print (i.e. indent) the JSON output</param>
         /// <returns>The JSON string</returns>
-        public static string WriteJson(object obj)
+        internal static string WriteJson(object obj, bool prettyPrint = false)
         {
+            JsonSerializerSettings settings = prettyPrint
+                ? _jsonSettingsPrettyPrint
+                : _jsonSettings;
+
             if (obj is PSObject psObject)
             {
-                return JsonConvert.SerializeObject(psObject.BaseObject, _jsonSettings);
+                return JsonConvert.SerializeObject(psObject.BaseObject, settings);
             }
             else
             {
-                return JsonConvert.SerializeObject(obj, _jsonSettings);
+                return JsonConvert.SerializeObject(obj, settings);
             }
         }
 
@@ -45,7 +61,7 @@ namespace PowerShellGraphSDK
         /// </summary>
         /// <param name="json">The JSON string</param>
         /// <returns>The deserialized JToken object</returns>
-        public static JToken ReadJson(string json)
+        internal static JToken ReadJson(string json)
         {
             return JsonConvert.DeserializeObject<JToken>(json, _jsonSettings);
         }
@@ -55,7 +71,7 @@ namespace PowerShellGraphSDK
         /// </summary>
         /// <param name="json">The JSON string</param>
         /// <returns>The deserialized object</returns>
-        public static T ReadJson<T>(string json)
+        internal static T ReadJson<T>(string json)
         {
             return JsonConvert.DeserializeObject<T>(json, _jsonSettings);
         }
@@ -65,7 +81,7 @@ namespace PowerShellGraphSDK
         /// </summary>
         /// <param name="json">The JToken representing the json</param>
         /// <returns>The native PowerShell object</returns>
-        public static object ToPowerShellObject(this JToken json)
+        internal static object ToPowerShellObject(this JToken json)
         {
             if (json == null)
             {

@@ -8,9 +8,9 @@ namespace PowerShellGraphSDK
 
     internal static class GraphAuthentication
     {
-        public static EnvironmentParameters EnvironmentParameters { get; private set; }
+        internal static EnvironmentParameters EnvironmentParameters { get; private set; }
 
-        public async static Task<AuthenticationResult> Auth(EnvironmentParameters environmentParameters)
+        internal async static Task<AuthenticationResult> Auth(EnvironmentParameters environmentParameters)
         {
             // Create auth context that we will use to connect to the AAD endpoint
             AuthenticationContext authContext = new AuthenticationContext(environmentParameters.AuthUrl);

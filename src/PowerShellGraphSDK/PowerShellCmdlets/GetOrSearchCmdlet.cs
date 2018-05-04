@@ -7,6 +7,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     using System.Collections.ObjectModel;
     using System.Linq;
     using System.Management.Automation;
+    using System.Net.Http.Headers;
     using System.Reflection;
 
     /// <summary>
@@ -21,30 +22,36 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         public new const string OperationName = "Search";
 
         /// <summary>
-        /// <para type="description">The $filter query option value.</para>
+        /// <para type="description">The "$filter" query option value.</para>
         /// </summary>
         [Parameter(ParameterSetName = GetOrSearchCmdlet.OperationName)]
         public string Filter { get; set; }
 
         /// <summary>
-        /// The list of $orderBy query option values (i.e. property names).
+        /// The list of "$orderBy" query option values (i.e. property names).
         /// 
         /// This value is declared as a dynamic parameter so that values can be validated per cmdlet.
         /// </summary>
         public string[] OrderBy = null;
 
         /// <summary>
-        /// <para type="description">The $skip query option value.</para>
+        /// <para type="description">The "$skip" query option value.</para>
         /// </summary>
         [Parameter(ParameterSetName = GetOrSearchCmdlet.OperationName)]
         public int? Skip { get; set; }
 
         /// <summary>
-        /// <para type="description">The $top query option value.</para>
+        /// <para type="description">The "$top" query option value.</para>
         /// </summary>
         [Parameter(ParameterSetName = GetOrSearchCmdlet.OperationName)]
         [Alias("First")] // Required to be compatible with the PowerShell paging parameters
         public int? Top { get; set; }
+
+        /// <summary>
+        /// <para type="description">The "Prefer: odata.maxpagesize" header value.</para>
+        /// </summary>
+        [Parameter(ParameterSetName = GetOrSearchCmdlet.OperationName)]
+        public int? MaxPageSize { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="GetOrSearchCmdlet"/>.
@@ -123,6 +130,17 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             }
 
             return queryOptions;
+        }
+
+        internal override HttpRequestHeaders GetHeaders()
+        {
+            HttpRequestHeaders headers = base.GetHeaders();
+            if (this.MaxPageSize != null)
+            {
+                headers.Add("Prefer", $"odata.maxpagesize={this.MaxPageSize}");
+            }
+
+            return headers;
         }
     }
 }

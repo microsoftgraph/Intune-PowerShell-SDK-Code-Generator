@@ -13,7 +13,7 @@ namespace PowerShellGraphSDK
         /// <summary>
         /// The prefix for the error name.
         /// </summary>
-        public const string ErrorPrefix = "PowerShellGraphSDK_";
+        internal const string ErrorPrefix = "PowerShellGraphSDK_";
 
         /// <summary>
         /// The PowerShell error record which contains the error details.
@@ -27,7 +27,7 @@ namespace PowerShellGraphSDK
         /// <param name="specificErrorId">The error ID which should be unique to this error type</param>
         /// <param name="errorCategory">The error category</param>
         /// <param name="targetObject">An object that can provide more debugging information (e.g. the object that caused the error)</param>
-        public PSGraphSDKException(Exception innerException, string specificErrorId, ErrorCategory errorCategory, object targetObject)
+        internal PSGraphSDKException(Exception innerException, string specificErrorId, ErrorCategory errorCategory, object targetObject)
             : base(specificErrorId, innerException)
         {
             this.ErrorRecord = new ErrorRecord(

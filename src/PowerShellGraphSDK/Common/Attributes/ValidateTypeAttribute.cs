@@ -10,7 +10,7 @@ namespace PowerShellGraphSDK
     /// Validates that the parameter is set to a value which is one of the specified types.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
-    public class ValidateTypeAttribute : ValidateEnumeratedArgumentsAttribute
+    internal class ValidateTypeAttribute : ValidateEnumeratedArgumentsAttribute
     {
         /// <summary>
         /// The list of valid types.

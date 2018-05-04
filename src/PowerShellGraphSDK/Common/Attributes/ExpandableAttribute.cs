@@ -9,5 +9,5 @@ namespace PowerShellGraphSDK
     /// query parameter when retrieving the entity from Graph.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-    public class ExpandableAttribute : Attribute { }
+    internal class ExpandableAttribute : Attribute { }
 }

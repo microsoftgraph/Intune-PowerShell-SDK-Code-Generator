@@ -9,7 +9,7 @@ namespace PowerShellGraphSDK
     /// Checks that a given property's value represents a valid URL string.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
-    public class ValidateUrlAttribute : ValidateEnumeratedArgumentsAttribute
+    internal class ValidateUrlAttribute : ValidateEnumeratedArgumentsAttribute
     {
         /// <summary>
         /// The kind of URL (e.g. relative, absolute).

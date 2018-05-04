@@ -9,7 +9,6 @@ namespace GraphODataPowerShellTemplateWriter
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils;
-    using PowerShellGraphSDK;
     using Vipr.Core;
     using Vipr.Core.CodeModel;
 

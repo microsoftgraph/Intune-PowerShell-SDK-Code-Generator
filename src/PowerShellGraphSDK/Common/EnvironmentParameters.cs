@@ -16,43 +16,43 @@ namespace PowerShellGraphSDK
         /// <summary>
         /// Location of the auth endpoint.
         /// </summary>
-        public string AuthUrl { get; set; }
+        internal string AuthUrl { get; set; }
 
         /// <summary>
         /// The ID of the resource.
         /// </summary>
-        public string ResourceId { get; set; }
+        internal string ResourceId { get; set; }
 
         /// <summary>
         /// The location of the resource.
         /// </summary>
-        public string ResourceBaseAddress { get; set; }
+        internal string ResourceBaseAddress { get; set; }
 
         /// <summary>
         /// The client ID to use when authenticating.
         /// </summary>
-        public string ClientId { get; set; }
+        internal string ClientId { get; set; }
 
         /// <summary>
         /// The redirect link to use when authenticating.
         /// </summary>
-        public string RedirectLink { get; set; }
+        internal string RedirectLink { get; set; }
 
         /// <summary>
         /// Authentication result.
         /// </summary>
-        public AuthenticationResult AuthResult { get; set; }
+        internal AuthenticationResult AuthResult { get; set; }
 
         /// <summary>
         /// Creates a new EnvironmentParameters object.
         /// </summary>
-        public EnvironmentParameters() { }
+        internal EnvironmentParameters() { }
 
         /// <summary>
         /// Copies an existing EnvironmentParameters object.
         /// </summary>
         /// <param name="toCopy">The EnvironmentParameters object to copy</param>
-        public EnvironmentParameters(EnvironmentParameters toCopy)
+        internal EnvironmentParameters(EnvironmentParameters toCopy)
         {
             this.AuthUrl = toCopy.AuthUrl;
             this.ResourceId = toCopy.ResourceId;
@@ -64,7 +64,7 @@ namespace PowerShellGraphSDK
         /// Creates a copy of this instance of <see cref="EnvironmentParameters"/>.
         /// </summary>
         /// <returns>The copy of this instance.</returns>
-        public EnvironmentParameters Copy()
+        internal EnvironmentParameters Copy()
         {
             return new EnvironmentParameters(this);
         }

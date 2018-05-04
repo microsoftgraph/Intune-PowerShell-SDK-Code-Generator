@@ -3,8 +3,10 @@
 namespace PowerShellGraphSDK.PowerShellCmdlets
 {
     using System.Collections;
+    using System.Collections.Generic;
     using System.Management.Automation;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
     /// <summary>
@@ -144,6 +146,11 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// </summary>
         public new int? Top { get; set; }
 
+        /// <summary>
+        /// Hides the "odata.maxpagesize" header.
+        /// </summary>
+        public new int? MaxPageSize { get; set; }
+
         #endregion Hidden Parameters
 
         internal override string GetResourcePath()
@@ -252,6 +259,14 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         public string Url { get; set; }
 
         /// <summary>
+        /// <para type="description">The headers that should be sent with the request.</para>
+        /// <para type="description">The authentication token (i.e. the "Bearer" header) is automatically added to the request.</para>
+        /// </summary>
+        [Parameter(ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
+        [ValidateType(typeof(PSObject), typeof(Hashtable))]
+        public object Headers { get; set; }
+
+        /// <summary>
         /// <para type="description">The content that should be sent in the body of the request.</para>
         /// <para type="description">PSObject, Hashtable and HttpContent values will be serialized as JSON, and strings will be sent as-is</para>
         /// </summary>
@@ -267,6 +282,81 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         internal override string GetResourcePath()
         {
             return this.Url;
+        }
+
+        internal override HttpRequestHeaders GetHeaders()
+        {
+            HttpRequestHeaders headers = base.GetHeaders();
+            if (this.Headers != null)
+            {
+                IDictionary<string, IEnumerable<string>> headerPairs = new Dictionary<string, IEnumerable<string>>();
+                if (this.Headers is PSObject psHeaders)
+                {
+                    foreach (PSPropertyInfo prop in psHeaders.Properties)
+                    {
+                        if (prop.Value == null)
+                        {
+                            throw new PSArgumentNullException(nameof(this.Headers), $"The value for the header '{prop.Name}' cannot be null");
+                        }
+
+                        if (prop.Value is string propValue)
+                        {
+                            headerPairs.Add(prop.Name, new string[] { propValue });
+                        }
+                        else if (prop.Value is IEnumerable<string> propValues)
+                        {
+                            headerPairs.Add(prop.Name, propValues);
+                        }
+                        else
+                        {
+                            throw new PSArgumentException($"The header '{prop.Name}' has an invalid value - all header values must be strings or arrays of strings", nameof(this.Headers));
+                        }
+                    }
+                }
+                else if (this.Headers is Hashtable hashHeaders)
+                {
+                    foreach (object key in hashHeaders.Keys)
+                    {
+                        if (key == null)
+                        {
+                            throw new PSArgumentNullException(nameof(this.Headers), "Keys in the 'Headers' hashtable cannot be null");
+                        }
+
+                        if (key is string keyStr)
+                        {
+                            object headerValue = hashHeaders[key];
+                            if (headerValue == null)
+                            {
+                                throw new PSArgumentNullException(nameof(this.Headers), $"The value for the header '{keyStr}' cannot be null");
+                            }
+
+                            if (headerValue is string propValue)
+                            {
+                                headerPairs.Add(keyStr, new string[] { propValue });
+                            }
+                            else if (headerValue is IEnumerable<string> propValues)
+                            {
+                                headerPairs.Add(keyStr, propValues);
+                            }
+                            else
+                            {
+                                throw new PSArgumentException($"The header '{keyStr}' has an invalid value - all header values must be strings or arrays of strings", nameof(this.Headers));
+                            }
+                        }
+                        else
+                        {
+                            throw new PSArgumentException($"Key in the 'Headers' hashtable strings - the provided key is of type '{key.GetType()}'");
+                        }
+                    }
+                }
+
+                foreach (KeyValuePair<string, IEnumerable<string>> entry in headerPairs)
+                {
+                    headers.Add(entry.Key, entry.Value);
+                }
+            }
+
+            return headers;
         }
 
         internal override object GetContent()
