@@ -53,7 +53,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             }
 
             // Add the property definition itself
-            resultBuilder.AppendLine($"{this.AccessModifier.ToCSharpString()} {this.Type.FullName} {this.Name} {{ get; set; }}");
+            resultBuilder.AppendLine($"{this.AccessModifier.ToCSharpString()} {this.Type.FullName} {this.Name.SanitizeIdentifier()} {{ get; set; }}");
 
             // Compile the string
             string result = resultBuilder.ToString().Trim();

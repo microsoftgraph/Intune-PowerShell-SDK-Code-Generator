@@ -15,7 +15,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
     public class ODataRoute
     {
         /// <summary>
-        /// The segments in the route.
+        /// The segments in the route (not including IDs).
         /// </summary>
         public IEnumerable<OdcmProperty> Segments { get; }
 
