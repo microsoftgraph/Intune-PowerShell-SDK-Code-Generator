@@ -11,6 +11,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
     public static class OdcmModelToNodesConversionBehavior
     {
         /// <summary>
+        /// The maximum depth to which we should traverse the ODCM model.
+        /// This is primarily to ensure that we don't generate cmdlets for an unreasonable number of routes.
+        /// </summary>
+        private const int MaxTraversalDepth = 5;
+
+        /// <summary>
         /// Converts the structure of an ODCM model into a tree and returns all of the nodes in the tree.
         /// The first node returned is guaranteed to be the root of the tree, however the order of the remaining nodes is undetermined.
         /// </summary>
@@ -48,10 +54,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 // Expand the node
                 IEnumerable<OdcmNode> childNodes = currentNode.CreateChildNodes(model);
 
-                // Mark the child nodes as "to be expanded"
-                foreach (OdcmNode childNode in childNodes)
+                // Mark the child nodes as "to be expanded" if we haven't hit the maximum traversal depth
+                int currentDepth = new ODataRoute(currentNode).Segments.Count();
+                if (currentDepth < MaxTraversalDepth)
                 {
-                    unvisited.Push(childNode);
+                    foreach (OdcmNode childNode in childNodes)
+                    {
+                        unvisited.Push(childNode);
+                    }
                 }
             }
         }
