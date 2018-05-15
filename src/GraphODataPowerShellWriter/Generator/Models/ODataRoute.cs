@@ -5,7 +5,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Inflector;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils;
     using Vipr.Core.CodeModel;
 
@@ -106,7 +105,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public string ToRelativeFilePathString()
         {
             IEnumerable<string> segments = this.Segments
-                .Select(property => this.ConvertPropertyNameToSingularPascalCase(property.Name));
+                .Select(property => property.Name.Pascalize());
 
             string result = string.Join("/", segments);
 
@@ -121,7 +120,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         {
             // Get all the segments in order
             IEnumerable<string> segments = this.Segments
-                .Select(property => this.ConvertPropertyNameToSingularPascalCase(property.Name))
+                .Select(property => property.Name.Pascalize())
                 .Concat(postfixSegments.Select(segment => segment.Pascalize()));
 
             // Join the segments with underscores
@@ -137,17 +136,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public override string ToString()
         {
             return this.ToODataRouteString();
-        }
-
-        /// <summary>
-        /// Converts a property name to singular and then to pascal case.
-        /// </summary>
-        /// <param name="propertyName">The property name</param>
-        /// <returns>The singular pascal case property name.</returns>
-        private string ConvertPropertyNameToSingularPascalCase(string propertyName)
-        {
-            string singularName = propertyName.Singularize() ?? propertyName;
-            return singularName.Pascalize();
         }
     }
 }

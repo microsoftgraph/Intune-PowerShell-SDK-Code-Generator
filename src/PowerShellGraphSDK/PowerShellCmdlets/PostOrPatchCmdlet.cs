@@ -2,10 +2,13 @@
 
 namespace PowerShellGraphSDK.PowerShellCmdlets
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Management.Automation;
+    using System.Net.Http;
     using System.Reflection;
+    using System.Text;
 
     /// <summary>
     /// The common behavior between cmdlets that create or update OData resources.
@@ -13,10 +16,15 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     public abstract class PostOrPatchCmdlet : ODataPowerShellSDKCmdletBase
     {
         /// <summary>
+        /// The name of the parameter set which allows manual selection of the OData type.
+        /// </summary>
+        public const string SharedParameterSet = "ManualTypeSelection";
+
+        /// <summary>
         /// <para type="description">The value provided in a search result (i.e. GET on a collection) in the "@odata.type" property.</para>
         /// </summary>
         [Parameter(
-            ParameterSetName = PatchCmdlet.OperationName,
+            ParameterSetName = SharedParameterSet,
             Mandatory = true,
             ValueFromPipelineByPropertyName = true)]
         [ValidateNotNullOrEmpty]
@@ -37,18 +45,12 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 throw new PSArgumentException("Either the ODataType parameter or a type switch parameter must be set");
             }
 
-            // Create the content
-            IDictionary<string, object> content = new Dictionary<string, object>();
-
             // If the type is missing the leading "#", add it
             if (!selectedODataType.StartsWith("#"))
             {
                 selectedODataType = "#" + selectedODataType;
                 this.WriteWarning($"The ODataType should start with a '#' character.  Prepending ODataType with '#': '{selectedODataType}'");
             }
-
-            // Add the OData type to the request body
-            content.Add(ODataConstants.RequestProperties.Type, selectedODataType);
 
             // Get the rest of the properties that will be serialized into the request body
             IEnumerable<PropertyInfo> typeProperties = boundProperties.Where(property =>
@@ -57,22 +59,18 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 && !this.GetParameterSetSelectorProperties().Contains(property) // don't include the switch parameters
             );
 
-            // Add the parameters to the content
-            foreach (PropertyInfo property in typeProperties)
-            {
-                string propertyName = property.Name;
-                object propertyValue = property.GetValue(this); // get the value for the given property on this instance of the cmdlet
+            // Create the JSON string
+            string jsonBody = this.WriteJsonFromProperties(typeProperties, selectedODataType);
 
-                if (propertyValue is PSObject psObj)
-                {
-                    propertyValue = psObj.BaseObject;
-                }
+            return jsonBody;
+        }
 
-                content.Add(propertyName, propertyValue);
-            }
+        internal override HttpContent WriteContent(object content)
+        {
+            // This should already be a serialized JSON string (provided by the GetContent() method)
+            string stringContent = content as string;
 
-            // Return the content which can be serialized by the "WriteContent" method into a JSON string
-            return content;
+            return stringContent == null ? null : new StringContent(stringContent);
         }
 
         #region Helper Methods
@@ -84,8 +82,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// <exception cref="PSArgumentException">If neither the ODataType property nor any of the type switches are set.</exception>
         private string GetODataType()
         {
-            string result;
-
             // Get the bound properties
             IEnumerable<PropertyInfo> boundProperties = this.GetBoundProperties();
 
@@ -96,10 +92,10 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 // Try to get the switch parameter which represents the OData type
                 IEnumerable<PropertyInfo> typeSelectorPropertyInfos = this.GetParameterSetSelectorProperties();
 
-                // If no parameter set selector was set, throw an exception
+                // If no parameter set selector was set, try to use the parameter set name (this may be the case for cmdlets which only deal with 1 OData type)
                 if (!typeSelectorPropertyInfos.Any())
                 {
-                    throw new PSArgumentException("Either the ODataType parameter or one of the type switches must be set");
+                    return this.ParameterSetName; //throw new PSArgumentException("Either the ODataType parameter or one of the type switches must be set");
                 }
 
                 // If more than 1 parameter set selector was set, throw an exception
@@ -115,7 +111,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                     .SingleOrDefault();
 
                 // Get the OData type name from the "ParameterSetSelector" attribute (parameter set name is the OData type name)
-                result = typeSelectorSwitchAttribute.ParameterSetName;
+                return typeSelectorSwitchAttribute.ParameterSetName;
             }
             else
             {
@@ -126,10 +122,8 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 }
 
                 // Set the result to the value of the ODataType parameter
-                result = this.ODataType;
+                return this.ODataType;
             }
-
-            return result;
         }
 
         private IEnumerable<PropertyInfo> _parameterSetSelectorProperties = null;

@@ -113,11 +113,24 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // We need a mapping of (parameter -> parameter sets) instead of (parameter set -> parameters)
             IReadOnlyDictionary<CmdletParameter, IEnumerable<CmdletParameterSet>> parameters = cmdlet.ParameterSets.GetParameters();
 
+            // Merge duplicate properties into 1 property
+            var dedupedParameters = parameters.Keys
+                .GroupBy(key => key.Name)
+                .ToDictionary(
+                    group => group.Key,
+                    group => new
+                    {
+                        Parameter = group.MergeParameters(group.Key),
+                        ParameterSets = parameters
+                            .Where(entry => entry.Key.Name == group.Key)
+                            .SelectMany(entry => entry.Value),
+                    });
+
             // Create a property per parameter
-            foreach (var entry in parameters)
+            foreach (var entry in dedupedParameters)
             {
-                CmdletParameter parameter = entry.Key;
-                IEnumerable<CmdletParameterSet> parameterSets = entry.Value;
+                CmdletParameter parameter = entry.Value.Parameter;
+                IEnumerable<CmdletParameterSet> parameterSets = entry.Value.ParameterSets;
 
                 // Create the property
                 yield return new CSharpProperty(parameter.Name, parameter.Type)
@@ -138,6 +151,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             if (parameterSets == null)
             {
                 throw new ArgumentNullException(nameof(parameterSets));
+            }
+
+            if (parameter.ODataTypeFullName != null)
+            {
+                yield return CSharpPropertyAttributeHelper.CreateODataTypeAttribute(parameter.ODataTypeFullName);
             }
 
             // Selectable attribute

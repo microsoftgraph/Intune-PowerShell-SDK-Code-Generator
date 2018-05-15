@@ -20,17 +20,7 @@ namespace PowerShellGraphSDK
             DateTimeZoneHandling = DateTimeZoneHandling.Utc,
             Formatting = Formatting.None,
             NullValueHandling = NullValueHandling.Include,
-            Converters = new List<JsonConverter> { new StringEnumConverter() }
-        };
-
-        private static readonly JsonSerializerSettings _jsonSettingsPrettyPrint = new JsonSerializerSettings()
-        {
-            TypeNameHandling = TypeNameHandling.None,
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            DateFormatHandling = DateFormatHandling.IsoDateFormat,
-            DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-            Formatting = Formatting.Indented,
-            NullValueHandling = NullValueHandling.Include,
+            StringEscapeHandling = StringEscapeHandling.EscapeNonAscii,
             Converters = new List<JsonConverter> { new StringEnumConverter() }
         };
 
@@ -42,17 +32,15 @@ namespace PowerShellGraphSDK
         /// <returns>The JSON string</returns>
         internal static string WriteJson(object obj, bool prettyPrint = false)
         {
-            JsonSerializerSettings settings = prettyPrint
-                ? _jsonSettingsPrettyPrint
-                : _jsonSettings;
+            _jsonSettings.Formatting = prettyPrint ? Formatting.Indented : Formatting.None;
 
             if (obj is PSObject psObject)
             {
-                return JsonConvert.SerializeObject(psObject.BaseObject, settings);
+                return JsonConvert.SerializeObject(psObject.BaseObject, _jsonSettings);
             }
             else
             {
-                return JsonConvert.SerializeObject(obj, settings);
+                return JsonConvert.SerializeObject(obj, _jsonSettings);
             }
         }
 

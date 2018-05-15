@@ -6,12 +6,19 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using Pluralize.NET;
+    using Inflector;
 
     /// <summary>
     /// String utilities.
     /// </summary>
     public static class StringUtils
     {
+        /// <summary>
+        /// The pluralizer which can singularize or pluralize words.
+        /// </summary>
+        private static Pluralizer Pluralizer = new Pluralizer();
+
         /// <summary>
         /// The default indent string.
         /// </summary>
@@ -77,6 +84,36 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             {
                 throw new ArgumentException("Indent level must be greater than or equal to 0", nameof(indentLevel));
             }
+        }
+
+        public static string Pluralize(this string singular)
+        {
+            if (singular == null)
+            {
+                throw new ArgumentNullException(nameof(singular));
+            }
+
+            return Pluralizer.Pluralize(singular);
+        }
+
+        public static string Singularize(this string plural)
+        {
+            if (plural == null)
+            {
+                throw new ArgumentNullException(nameof(plural));
+            }
+
+            return Pluralizer.Singularize(plural);
+        }
+
+        public static string Pascalize(this string identifier)
+        {
+            if (identifier == null)
+            {
+                throw new ArgumentNullException(nameof(identifier));
+            }
+
+            return Inflector.Pascalize(identifier);
         }
     }
 }

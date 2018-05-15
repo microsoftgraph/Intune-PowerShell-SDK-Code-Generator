@@ -9,6 +9,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Reflection;
+    using System.Text;
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
     using Newtonsoft.Json.Linq;
 
@@ -228,26 +229,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         #region Helpers
 
         /// <summary>
-        /// Creates mappings from property names to property values for all bound properties for the current invocation of this cmdlet.
-        /// </summary>
-        /// <param name="filter">The filter for properties to be included in the result (if it evaluates to true, the property is included)</param>
-        /// <returns>The mappings from property names to property values.</returns>
-        internal IDictionary<string, object> CreateDictionaryFromBoundProperties(Func<PropertyInfo, bool> filter = null)
-        {
-            // Get the properties that were set by the user in this invocation of the PowerShell cmdlet
-            IEnumerable<PropertyInfo> boundProperties = this.GetBoundProperties(false, filter);
-
-            // Create a dictionary of the values for these properties
-            IDictionary<string, object> result = new Dictionary<string, object>();
-            foreach (PropertyInfo propInfo in boundProperties)
-            {
-                result.Add(propInfo.Name, propInfo.GetValue(this));
-            }
-
-            return result;
-        }
-
-        /// <summary>
         /// Gets the properties that are bound (set by the user) in the current invocation of this cmdlet.
         /// </summary>
         /// <param name="includeInherited">Whether or not to include inherited properties</param>
@@ -309,6 +290,60 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             }
         }
         private IEnumerable<PropertyInfo> _properties = null;
+
+        /// <summary>
+        /// Creates a JSON string from the given properties.
+        /// </summary>
+        /// <param name="properties">The properties on this cmdlet object which should be serialized into the JSON string</param>
+        /// <param name="oDataType">The OData type (full name) to be included in the JSON string</param>
+        /// <returns>The JSON string.</returns>
+        internal string WriteJsonFromProperties(IEnumerable<PropertyInfo> properties, string oDataType = null)
+        {
+            // We need to build the JSON string manually in order to account for special handling of primitive Edm (OData) types.
+            // See the spec for more details: http://docs.oasis-open.org/odata/odata/v4.0/errata03/os/complete/part3-csdl/odata-v4.0-errata03-os-part3-csdl-complete.html#_The_edm:Documentation_Element
+            StringBuilder jsonString = new StringBuilder();
+            jsonString.AppendLine("{");
+
+            bool isFirst = true;
+
+            // Add the OData type property into the request body
+            if (oDataType != null)
+            {
+                jsonString.Append($"    \"{ODataConstants.RequestProperties.Type}\": \"{oDataType}\"");
+                isFirst = false;
+            }
+
+            // Add the properties into the body
+            foreach (PropertyInfo property in properties)
+            {
+                if (!isFirst)
+                {
+                    jsonString.AppendLine(",");
+                }
+                isFirst = false;
+
+                string propertyName = property.Name;
+                object propertyValue = property.GetValue(this); // get the value for the given property on this instance of the cmdlet
+
+                // Unwrap PowerShell objects
+                if (propertyValue is PSObject psObj)
+                {
+                    propertyValue = psObj.BaseObject;
+                }
+
+                // Get the type of this property
+                string propertyODataType = property.GetCustomAttribute<ODataTypeAttribute>()?.FullName;
+
+                // Convert the value into a JSON string
+                string propertyValueString = propertyValue.ToODataString(propertyODataType, isArray: property.PropertyType.IsArray);
+                jsonString.Append($"    \"{propertyName}\": {propertyValueString}");
+            }
+            jsonString.AppendLine();
+            jsonString.Append("}");
+
+            // Return the JSON string
+            return jsonString.ToString();
+        }
 
         #endregion Helpers
 
@@ -400,12 +435,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             }
             // Remove the leading slash if it exists so relative URLs don't get treated as absolute URLs
             string baseAddress = CurrentEnvironmentParameters.ResourceBaseAddress?.Trim('/');
-            if (Uri.IsWellFormedUriString(resourcePath, UriKind.Absolute))
-            {
-                // Since this is an absolute URL, it must be the full request URL
-                requestUrl = resourcePath;
-            }
-            else if (Uri.IsWellFormedUriString(resourcePath, UriKind.Relative))
+            if (Uri.IsWellFormedUriString(resourcePath, UriKind.Relative))
             {
                 // Sanitize the URL
                 //resourcePath = WebUtility.UrlEncode(resourcePath);
@@ -415,6 +445,11 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
 
                 // Append the relative URL to the base URL
                 requestUrl = $"{baseUrlWithSchema}/{resourcePath}";
+            }
+            else if (Uri.IsWellFormedUriString(resourcePath, UriKind.Absolute))
+            {
+                // Since this is an absolute URL, it must be the full request URL
+                requestUrl = resourcePath;
             }
             else
             {
@@ -464,9 +499,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             {
                 // Create the HttpContent object if there is any content
                 content = this.WriteContent(contentObject);
-
-                // Set the content type
-                content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
             }
 
             // Prepare the HTTP request
@@ -480,9 +512,13 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             string requestContent = null;
             if (content != null)
             {
+                // Set the content type
+                content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+
                 // Get the content before making the call
                 requestMessage.Content = content;
-                // We need to evaluate this before making the call otherwise the content object will get disposed
+
+                // We need to evaluate the raw content value before making the call otherwise the content object will get disposed
                 requestContent = requestMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             }
 

@@ -6,7 +6,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using Inflector;
     using Vipr.Core.CodeModel;
 
     /// <summary>
@@ -15,8 +14,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
     public static class OdcmUtils
     {
         /// <summary>
-        /// The mapping of Edm types to CLR types.  
+        /// The mapping of Edm types to CLR types.
         /// </summary>
+        /// <remarks>
+        /// See the spec for details on primitive types:
+        /// http://docs.oasis-open.org/odata/odata/v4.0/errata03/os/complete/part3-csdl/odata-v4.0-errata03-os-part3-csdl-complete.html#_The_edm:Documentation_Element
+        /// </remarks>
         private static IReadOnlyDictionary<string, Type> EdmTypeMappings = new Dictionary<string, Type>(
             EnumerableUtils.CreateEqualityComparer<string>(
                 equalsFunction: (s1, s2) => s1.Equals(s2, StringComparison.InvariantCultureIgnoreCase),
@@ -50,9 +53,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "Edm.Guid", typeof(Guid) },
 
             // Date/Time
-            { "Edm.Date", typeof(DateTime) },
-            { "Edm.DateTime", typeof(DateTime) },
-            { "Edm.DateTimeOffset", typeof(DateTime) },
+            { "Edm.Date", typeof(DateTimeOffset) },
+            { "Edm.DateTime", typeof(DateTimeOffset) },
+            { "Edm.DateTimeOffset", typeof(DateTimeOffset) },
             { "Edm.TimeOfDay", typeof(TimeSpan) },
             { "Edm.Time", typeof(TimeSpan) },
             { "Edm.Duration", typeof(TimeSpan) },
@@ -109,8 +112,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             }
             else
             {
-                string singularName = property.Name.Singularize() ?? property.Name;
-                idParameterName = $"{singularName}Id";
+                idParameterName = $"{property.Name}Id";
                 return true;
             }
         }

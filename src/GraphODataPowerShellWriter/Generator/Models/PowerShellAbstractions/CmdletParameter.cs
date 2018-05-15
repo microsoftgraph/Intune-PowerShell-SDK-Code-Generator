@@ -79,6 +79,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public string DerivedTypeName { get; set; } = null;
 
         /// <summary>
+        /// The full name of the original OData type defined in the schema for the property that this parameter represents.
+        /// </summary>
+        public string ODataTypeFullName { get; set; } = null;
+
+        /// <summary>
         /// If this is not null, the provided documentation will be added to the parameter.
         /// </summary>
         public CmdletParameterDocumentation Documentation { get; set; } = null;

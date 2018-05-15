@@ -7,6 +7,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     using System.Collections.ObjectModel;
     using System.Linq;
     using System.Management.Automation;
+    using System.Net;
     using System.Reflection;
 
     /// <summary>
@@ -168,7 +169,9 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 // Make sure that the "@odata.context" property exists (to make sure that this is an OData response)
                 && response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.Context)
                 // Make sure that there is no nextLink (i.e. there is only 1 page of results)
-                && !response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.NextLink))
+                && !response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.NextLink)
+                // Make sure that this is for a collection result
+                && ((this is GetOrSearchCmdlet && this.ParameterSetName == GetOrSearchCmdlet.OperationName) || this is FunctionReturningCollectionCmdlet))
             {
                 // Check if there were any values in the page of results
                 if (response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.Value))
@@ -210,31 +213,13 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             {
                 object paramValue = param.GetValue(this);
                 Type paramType = param.PropertyType;
+                string oDataType = param.GetCustomAttribute<ODataTypeAttribute>()?.FullName;
 
                 // Check if we need special handling of the value based on the parameter type
-                string paramArgumentValue;
-                if (paramType == typeof(string))
-                {
-                    // If the type is a basic string, surround it in single quotes
-                    paramArgumentValue = $"'{paramValue.ToString()}'";
-                }
-                else if (
-                    paramType.IsPrimitive
-                    || paramType == typeof(DateTime)
-                    || paramType == typeof(DateTimeOffset)
-                    || paramType == typeof(TimeSpan))
-                {
-                    // If the type is primitive or a date/time, call "ToString()" on it
-                    paramArgumentValue = paramValue.ToString();
-                }
-                else
-                {
-                    // If the type is complex, serialize it as JSON
-                    paramArgumentValue = JsonUtils.WriteJson(paramValue);
-                }
+                string paramArgumentValue = paramValue.ToODataString(oDataType, isArray: paramType.IsArray, isUrlValue: true);
 
                 // Create the parameter mapping
-                return $"{param.Name}={paramArgumentValue}";
+                return $"{param.Name}={WebUtility.UrlEncode(paramArgumentValue)}";
             });
 
             // Join the list of arguments

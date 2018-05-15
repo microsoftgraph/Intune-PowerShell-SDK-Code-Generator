@@ -7,11 +7,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     /// </summary>
     public abstract class PostCmdlet : PostOrPatchCmdlet
     {
-        /// <summary>
-        /// The operation name.
-        /// </summary>
-        public const string OperationName = "Post";
-
         internal override string GetHttpMethod()
         {
             return "POST";

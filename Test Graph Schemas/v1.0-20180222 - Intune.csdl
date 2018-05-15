@@ -8480,6 +8480,7 @@
             <Term Name="downloadUrl" Type="Edm.String" AppliesTo="microsoft.graph.driveItem" />
             <Term Name="sourceUrl" Type="Edm.String" AppliesTo="microsoft.graph.driveItem" />
             <EntityContainer Name="GraphService">
+                <Singleton Name="reports" Type="microsoft.graph.reportRoot" />
                 <Singleton Name="deviceAppManagement" Type="microsoft.graph.deviceAppManagement" />
                 <Singleton Name="deviceManagement" Type="microsoft.graph.deviceManagement" />
             </EntityContainer>
