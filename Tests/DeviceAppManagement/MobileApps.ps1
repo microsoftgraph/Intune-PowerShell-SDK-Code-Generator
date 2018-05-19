@@ -33,6 +33,35 @@ $updatedApps | ForEach-Object {
 Write-Host "Deleting the updated apps with the PowerShell pipeline..."
 $updatedApps | Remove-DeviceAppManagement_MobileApps
 
+# SEARCH all app categories
+Write-Host "Getting all app categories..."
+Get-DeviceAppManagement_MobileAppCategories | Out-Null
+
+# Create a custom category
+Write-Host "Creating a new app category..."
+$appCategory = New-DeviceAppManagement_MobileAppCategories -displayName 'Test Category'
+
+# SEARCH all apps
+Write-Host "Getting all apps..."
+$allApps = Get-DeviceAppManagement_MobileApps
+
+# Create a reference between an app and the custom category
+Write-Host "Creating a reference between an app and the new category..."
+$app = $allApps[0]
+New-DeviceAppManagement_MobileApps_Categories -mobileAppId $app.id -id $appCategory.id
+
+# Get the referenced categories on this app
+Write-Host "Getting the app with categories and assignments expanded..."
+$app = $app | Get-DeviceAppManagement_MobileApps -Expand assignments, categories
+
+# DELETE the reference
+Write-Host "Removing the reference between the app and the category"
+$appCategory | Remove-DeviceAppManagement_MobileApps_Categories -mobileAppId $app.id
+
+# DELETE the category
+Write-Host "Deleting the category"
+$appCategory | Remove-DeviceAppManagement_MobileAppCategories
+
 # Run some paging commands
 Write-Host "Testing paging..."
 $firstPage = Get-DeviceAppManagement_MobileApps -Top 10

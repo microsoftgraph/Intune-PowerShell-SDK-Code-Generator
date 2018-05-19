@@ -79,6 +79,15 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
             // "[Cmdlet]" attribute
             yield return CSharpClassAttributeHelper.CreateCmdletAttribute(cmdlet.Name, cmdlet.ImpactLevel, cmdlet.DefaultParameterSetName);
+
+            // "[ODataType]" attribute
+            yield return CSharpClassAttributeHelper.CreateODataTypeAttribute(cmdlet.ResourceTypeFullName);
+
+            // "[ResourceReference]" attribute
+            if (cmdlet.IsReferenceable)
+            {
+                yield return CSharpClassAttributeHelper.CreateResourceReferenceAttribute(cmdlet.CallUrl);
+            }
         }
 
         private static IEnumerable<CSharpMethod> CreateMethods(this Cmdlet cmdlet)
@@ -96,11 +105,18 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
             // Determine whether this cmdlet calls a function
             bool isFunction =
-                cmdlet.OperationType == CmdletOperationType.FunctionReturningCollection 
+                cmdlet.OperationType == CmdletOperationType.FunctionReturningCollection
                 || cmdlet.OperationType == CmdletOperationType.FunctionReturningEntity;
 
             // "GetResourcePath()" method override
             yield return CSharpMethodHelper.CreateGetResourcePathMethod(cmdlet.CallUrl, isFunction);
+
+            // Determine whether this cmdlet creates a reference (i.e. is a POST/PUT "$ref" call)
+            if (cmdlet.OperationType == CmdletOperationType.PostRefToCollection)
+            {
+                // "GetContent()" method override
+                yield return CSharpMethodHelper.CreateGetContentMethodForCreatingReference();
+            }
         }
 
         private static IEnumerable<CSharpProperty> CreateProperties(this Cmdlet cmdlet)

@@ -46,17 +46,17 @@ namespace ODataConstants
         /// <summary>
         /// @odata.context
         /// </summary>
-        public const string Context = "@odata.context";
+        public const string ODataContext = "@odata.context";
 
         /// <summary>
         /// @odata.count
         /// </summary>
-        public const string Count = "@odata.count";
+        public const string ODataCount = "@odata.count";
 
         /// <summary>
         /// @odata.nextLink
         /// </summary>
-        public const string NextLink = "@odata.nextLink";
+        public const string ODataNextLink = "@odata.nextLink";
 
         /// <summary>
         /// value
@@ -72,7 +72,12 @@ namespace ODataConstants
         /// <summary>
         /// @odata.type
         /// </summary>
-        public const string Type = "@odata.type";
+        public const string ODataType = "@odata.type";
+
+        /// <summary>
+        /// @odata.id
+        /// </summary>
+        public const string ODataId = "@odata.id";
 
         /// <summary>
         /// id

@@ -16,12 +16,17 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <summary>
         /// The segments in the route (not including IDs).
         /// </summary>
-        public IEnumerable<OdcmProperty> Segments { get; }
+        public IList<OdcmProperty> Segments { get; }
 
         /// <summary>
         /// The ODCM Property that represents this route's resource.
         /// </summary>
-        public OdcmProperty ResourceOdcmProperty { get; }
+        public OdcmProperty Property { get; }
+
+        /// <summary>
+        /// The ODCM property that represents the parent resource.
+        /// </summary>
+        public OdcmProperty ParentProperty { get; }
 
         /// <summary>
         /// The parameters for the IDs of entities in the route.
@@ -41,7 +46,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             }
 
             // Store the node's ODCM property
-            this.ResourceOdcmProperty = node.OdcmProperty;
+            this.Property = node.OdcmProperty;
+
+            // Store the parent node's ODCM property if it exists
+            this.ParentProperty = node.Parent?.OdcmProperty;
 
             // Use a stack to add segments so we don't have to reverse them later
             Stack<OdcmProperty> segments = new Stack<OdcmProperty>();
@@ -70,25 +78,27 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
                 currentNode = currentNode.Parent;
             }
 
-            this.Segments = segments;
+            this.Segments = segments.ToList();
         }
 
         /// <summary>
         /// Generates the OData route string with ID placeholders.
         /// It will have neither a leading slash nor trailing slash.
         /// </summary>
+        /// <param name="includeEntityId">Whether or not to include the entity ID placeholder if required</param>
         /// <returns>The OData route.</returns>
-        public string ToODataRouteString()
+        public string ToODataRouteString(bool includeEntityId = true)
         {
             IList<string> segments = new List<string>();
+            OdcmProperty lastSegment = this.Segments.LastOrDefault();
             foreach (OdcmProperty property in this.Segments)
             {
                 // Add this node to the route
                 segments.Add(property.Name);
 
                 // If this segment requires an ID, add it to the route
-                string idParameter;
-                if (this._idParameters.TryGetValue(property, out idParameter))
+                if ((property != lastSegment || includeEntityId)
+                    && this._idParameters.TryGetValue(property, out string idParameter))
                 {
                     segments.Add($"{{{idParameter}}}");
                 }

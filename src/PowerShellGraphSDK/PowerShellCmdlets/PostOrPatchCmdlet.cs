@@ -13,7 +13,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     /// <summary>
     /// The common behavior between cmdlets that create or update OData resources.
     /// </summary>
-    public abstract class PostOrPatchCmdlet : ODataPowerShellSDKCmdletBase
+    public abstract class PostOrPatchCmdlet : ODataCmdlet
     {
         /// <summary>
         /// The name of the parameter set which allows manual selection of the OData type.
@@ -28,7 +28,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             Mandatory = true,
             ValueFromPipelineByPropertyName = true)]
         [ValidateNotNullOrEmpty]
-        [Alias(ODataConstants.RequestProperties.Type)]
+        [Alias(ODataConstants.RequestProperties.ODataType)]
         public string ODataType { get; set; }
 
         internal override object GetContent()

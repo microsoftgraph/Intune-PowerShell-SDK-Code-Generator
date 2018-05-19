@@ -44,7 +44,17 @@ namespace PowerShellGraphSDK
 
             if (!Uri.IsWellFormedUriString(stringUrl, UriKind))
             {
-                throw new ValidationMetadataException("The provided URL is not valid");
+                string errorMessage = "The provided URL is not valid";
+                if (UriKind == UriKind.Absolute)
+                {
+                    errorMessage += " - the URL must be an absolute URL";
+                }
+                else
+                {
+                    errorMessage += " - the URL may be a relative URL";
+                }
+                
+                throw new ValidationMetadataException(errorMessage);
             }
         }
     }

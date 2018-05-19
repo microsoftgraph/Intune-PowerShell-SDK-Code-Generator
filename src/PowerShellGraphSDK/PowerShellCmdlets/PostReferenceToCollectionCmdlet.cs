@@ -3,13 +3,13 @@
 namespace PowerShellGraphSDK.PowerShellCmdlets
 {
     /// <summary>
-    /// The common behavior between all OData PowerShell SDK cmdlets that remove OData resources.
+    /// The common behavior between all OData PowerShell SDK cmdlets that create references from an OData resource to a collection.
     /// </summary>
-    public abstract class DeleteCmdlet : ODataCmdlet
+    public abstract class PostReferenceToCollectionCmdlet : ODataCmdlet
     {
         internal override string GetHttpMethod()
         {
-            return "DELETE";
+            return "POST";
         }
     }
 }

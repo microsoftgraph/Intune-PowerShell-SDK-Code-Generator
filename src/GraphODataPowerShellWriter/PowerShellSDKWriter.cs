@@ -34,16 +34,16 @@ namespace GraphODataPowerShellTemplateWriter
         /// <returns>The TextFile objects representing the generated SDK.</returns>
         public static IEnumerable<TextFile> GeneratePowerShellSDK(OdcmModel model)
         {
-            // Convert the ODCM model into nodes (i.e. routes)
+            // 1. Convert the ODCM model into nodes (i.e. routes)
             foreach (OdcmNode node in model.ConvertToOdcmNodes())
             {
-                // Convert the route into an abstract representation of the PowerShell cmdlets
+                // 2. Convert the route into an abstract representation of the PowerShell cmdlets
                 Resource resource = node.ConvertToResource(@"PowerShellCmdlets\Generated");
 
-                // Convert the resource into an abstract representation of the C# file
+                // 3. Convert the resource into an abstract representation of the C# file
                 CSharpFile cSharpFile = resource.ToCSharpFile();
 
-                // Generate the text file by inserting data from the intermediate type into templates
+                // 4. Generate the text file by inserting data from the intermediate type into templates
                 TextFile outputFile = cSharpFile.ToTextFile();
 
                 // Return the generated file

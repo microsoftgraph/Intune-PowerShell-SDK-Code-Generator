@@ -21,6 +21,16 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public string DefaultParameterSetName { get; set; }
 
         /// <summary>
+        /// The name of the OData resource that this cmdlet operates on.
+        /// </summary>
+        public string ResourceTypeFullName { get; set; }
+
+        /// <summary>
+        /// Whether or not this cmdlet operates on a route that can be referenced from a "$ref" cmdlet.
+        /// </summary>
+        public bool IsReferenceable { get; set; }
+
+        /// <summary>
         /// The base type of this cmdlet in the generated output.
         /// </summary>
         public CmdletOperationType OperationType { get; set; }
@@ -42,7 +52,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// be formatted like an interpolated string with the parameter name as the variable name.
         /// For example, if this cmdlet had a parameter with the name "id", the CallUrl might look like:
         /// <para>
-        /// <code>"/deviceAppManagement/mobileApps/{id}"</code>
+        /// <code>"/deviceAppManagement/mobileApps/{mobileAppId}/categories/{id}"</code>
         /// </para>
         /// </summary>
         public string CallUrl { get; set; }
@@ -69,6 +79,16 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public Cmdlet(CmdletName cmdletName)
         {
             this.Name = cmdletName ?? throw new ArgumentNullException(nameof(cmdletName));
+        }
+
+        /// <summary>
+        /// Creates a new representation of a Graph SDK cmdlet.
+        /// </summary>
+        /// <param name="verb">The verb part of the cmdlet's name</param>
+        /// <param name="noun">The noun part of the cmdlet's name</param>
+        public Cmdlet(string verb, string noun)
+        {
+            this.Name = new CmdletName(verb, noun);
         }
     }
 }

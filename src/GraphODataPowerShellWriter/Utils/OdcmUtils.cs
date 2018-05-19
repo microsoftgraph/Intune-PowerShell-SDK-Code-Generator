@@ -6,6 +6,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
     using Vipr.Core.CodeModel;
 
     /// <summary>
@@ -105,31 +106,17 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 throw new ArgumentException("Property name cannot be null", nameof(property));
             }
 
-            if (!property.IsEnumeration())
+            // If it's a collection, it needs an ID
+            if (property.IsCollection)
+            {
+                idParameterName = $"{property.Name.Singularize()}Id";
+                return true;
+            }
+            else
             {
                 idParameterName = null;
                 return false;
             }
-            else
-            {
-                idParameterName = $"{property.Name}Id";
-                return true;
-            }
-        }
-
-        /// <summary>
-        /// Determines whether or not a given property represents a collection.
-        /// </summary>
-        /// <param name="property">The property</param>
-        /// <returns>True if the property represents a collection, false otherwise.</returns>
-        public static bool IsEnumeration(this OdcmProperty property)
-        {
-            if (property == null)
-            {
-                throw new ArgumentNullException(nameof(property));
-            }
-
-            return property.IsCollection;
         }
 
         /// <summary>
@@ -252,6 +239,31 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             {
                 return Enumerable.Empty<OdcmClass>();
             }
+        }
+
+        /// <summary>
+        /// Checks whether the resource at this route represents a reference
+        /// (i.e. a navigation property which is a collection and not contained).
+        /// If so, it outputs this resource's parent.
+        /// </summary>
+        /// <param name="parentProperty">This resource's parent - if null, this method returns false</param>
+        /// <returns>True if this property is a reference, otherwise false.</returns>
+        public static bool IsReference(this OdcmProperty property, OdcmProperty parentProperty)
+        {
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
+
+            bool isReference =
+                // This has a parent property (i.e. not a top-level entity)
+                parentProperty != null
+                // Navigation property
+                && property.IsLink
+                // Not contained
+                && !property.ContainsTarget;
+
+            return isReference;
         }
     }
 }

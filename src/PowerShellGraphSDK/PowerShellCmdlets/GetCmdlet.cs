@@ -13,7 +13,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     /// <summary>
     /// The common behavior between all OData PowerShell SDK cmdlets that support $select and $expand query parameters.
     /// </summary>
-    public abstract class GetCmdlet : ODataPowerShellSDKCmdletBase
+    public abstract class GetCmdlet : ODataCmdlet
     {
         /// <summary>
         /// The operation name.
@@ -167,9 +167,9 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             if (// Make sure that this is a JSON response
                 result is PSObject response
                 // Make sure that the "@odata.context" property exists (to make sure that this is an OData response)
-                && response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.Context)
+                && response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.ODataContext)
                 // Make sure that there is no nextLink (i.e. there is only 1 page of results)
-                && !response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.NextLink)
+                && !response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.ODataNextLink)
                 // Make sure that this is for a collection result
                 && ((this is GetOrSearchCmdlet && this.ParameterSetName == GetOrSearchCmdlet.OperationName) || this is FunctionReturningCollectionCmdlet))
             {

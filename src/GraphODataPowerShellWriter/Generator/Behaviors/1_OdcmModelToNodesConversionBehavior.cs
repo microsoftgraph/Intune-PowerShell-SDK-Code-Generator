@@ -6,6 +6,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
+    using Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils;
     using Vipr.Core.CodeModel;
 
     public static class OdcmModelToNodesConversionBehavior
@@ -38,7 +39,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // Evaluate the EntityContainer's children
             foreach (OdcmProperty prop in entityContainer.GetChildObjects(model))
             {
-                // Mark the EntityContainer's properties as "to be expanded"
+                // Mark the EntityContainer's properties as "to be expanded" if it is not a "$ref" property
                 unvisited.Push(new OdcmNode(prop));
             }
             
@@ -51,13 +52,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 // Return the visited node so it can be processed immediately
                 yield return currentNode;
 
-                // Expand the node
-                IEnumerable<OdcmNode> childNodes = currentNode.CreateChildNodes(model);
-
-                // Mark the child nodes as "to be expanded" if we haven't hit the maximum traversal depth
-                int currentDepth = new ODataRoute(currentNode).Segments.Count();
-                if (currentDepth < MaxTraversalDepth)
+                // Mark the child nodes as "to be expanded" if we haven't hit the maximum traversal depth and it is not a reference property
+                int currentDepth = new ODataRoute(currentNode).Segments.Count;
+                if (currentDepth < MaxTraversalDepth && !currentNode.OdcmProperty.IsReference(currentNode.Parent?.OdcmProperty))
                 {
+                    // Expand the node
+                    IEnumerable<OdcmNode> childNodes = currentNode.CreateChildNodes(model);
+
                     foreach (OdcmNode childNode in childNodes)
                     {
                         unvisited.Push(childNode);
@@ -184,8 +185,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     property.Type is OdcmClass
                     // which is a navigation property
                     && property.IsLink
-                    // which is contained
-                    && property.ContainsTarget
                 );
 
             return result;

@@ -15,6 +15,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 case CmdletOperationType.Get: return nameof(GetCmdlet);
                 case CmdletOperationType.GetOrSearch: return nameof(GetOrSearchCmdlet);
                 case CmdletOperationType.Post: return nameof(PostCmdlet);
+                case CmdletOperationType.PutRefToSingleEntity: return nameof(PutReferenceToEntityCmdlet);
+                case CmdletOperationType.PostRefToCollection: return nameof(PostReferenceToCollectionCmdlet);
                 case CmdletOperationType.Patch: return nameof(PatchCmdlet);
                 case CmdletOperationType.Delete: return nameof(DeleteCmdlet);
                 case CmdletOperationType.FunctionReturningEntity: return nameof(FunctionReturningEntityCmdlet);

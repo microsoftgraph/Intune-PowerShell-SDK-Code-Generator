@@ -5,6 +5,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
     using System;
     using System.Collections.Generic;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
+    using PowerShellGraphSDK;
     using PS = System.Management.Automation;
 
     public static class CSharpClassAttributeHelper
@@ -36,6 +37,26 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             }
 
             return new CSharpAttribute(nameof(PS.CmdletAttribute), arguments);
+        }
+
+        public static CSharpAttribute CreateODataTypeAttribute(string oDataTypeFullName)
+        {
+            return CSharpPropertyAttributeHelper.CreateODataTypeAttribute(oDataTypeFullName);
+        }
+
+        public static CSharpAttribute CreateResourceReferenceAttribute(string resourceUrl)
+        {
+            if (resourceUrl == null)
+            {
+                throw new ArgumentNullException(nameof(resourceUrl));
+            }
+
+            CSharpAttribute result = new CSharpAttribute(nameof(ResourceReferenceAttribute))
+            {
+                Arguments = $"\"{resourceUrl}\"".SingleObjectAsEnumerable(),
+            };
+
+            return result;
         }
     }
 }

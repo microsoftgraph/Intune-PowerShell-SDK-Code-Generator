@@ -2,6 +2,7 @@
 
 namespace PowerShellGraphSDK.PowerShellCmdlets
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Management.Automation;
@@ -124,7 +125,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// <para type="description">The value provided in the search result in the "@odata.nextLink" property.</para>
         /// </summary>
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true)]
-        [Alias(ODataConstants.SearchResultProperties.NextLink)]
+        [Alias(ODataConstants.SearchResultProperties.ODataNextLink)]
         public string NextLink { get; set; }
 
         // The properties in this section hide base classes' PowerShell parameters by
@@ -182,7 +183,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// </summary>
         protected override sealed void ProcessRecord()
         {
-            this.WriteObject(ODataPowerShellSDKCmdletBase.CurrentEnvironmentParameters.SchemaVersion);
+            this.WriteObject(ODataCmdlet.CurrentEnvironmentParameters.SchemaVersion);
         }
     }
 
@@ -207,9 +208,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// <summary>
         /// <para type="description">The name of the Graph schema version to select.</para>
         /// </summary>
-        [Parameter(
-            Mandatory = true,
-            ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
+        [Parameter(Mandatory = true)]
         [ValidateNotNullOrEmpty]
         public string SchemaVersion { get; set; }
 
@@ -218,7 +217,78 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// </summary>
         protected override sealed void ProcessRecord()
         {
-            ODataPowerShellSDKCmdletBase.CurrentEnvironmentParameters.SchemaVersion = this.SchemaVersion;
+            ODataCmdlet.CurrentEnvironmentParameters.SchemaVersion = this.SchemaVersion;
+        }
+    }
+
+    /// <summary>
+    /// <para type="description">Gets the name of the currently selected Graph schema version.</para>
+    /// </summary>
+    [Cmdlet(
+        CmdletVerb, CmdletNoun,
+        ConfirmImpact = ConfirmImpact.None)]
+    public class GetBaseUrl : PSCmdlet
+    {
+        /// <summary>
+        /// Cmdlet name's verb.
+        /// </summary>
+        public const string CmdletVerb = VerbsCommon.Get;
+
+        /// <summary>
+        /// Cmdlet name's noun.
+        /// </summary>
+        public const string CmdletNoun = "MSGraphBaseUrl";
+
+        /// <summary>
+        /// Runs the cmdlet.
+        /// </summary>
+        protected override sealed void ProcessRecord()
+        {
+            this.WriteObject(ODataCmdlet.CurrentEnvironmentParameters.ResourceBaseAddress);
+        }
+    }
+
+    /// <summary>
+    /// <para type="description">Selectes a new Graph schema version.</para>
+    /// </summary>
+    [Cmdlet(
+        CmdletVerb, CmdletNoun,
+        ConfirmImpact = ConfirmImpact.High)]
+    public class UpdateBaseUrl : PSCmdlet
+    {
+        /// <summary>
+        /// Cmdlet name's verb.
+        /// </summary>
+        public const string CmdletVerb = VerbsData.Update;
+
+        /// <summary>
+        /// Cmdlet name's noun.
+        /// </summary>
+        public const string CmdletNoun = "MSGraphBaseUrl";
+
+        /// <summary>
+        /// <para type="description">The name of the Graph schema version to select.</para>
+        /// </summary>
+        [Parameter(Mandatory = true, ValueFromPipeline = true)]
+        [ValidateNotNullOrEmpty]
+        [ValidateUrl]
+        public string Url { get; set; }
+
+        /// <summary>
+        /// Runs the cmdlet.
+        /// </summary>
+        protected override sealed void ProcessRecord()
+        {
+            if (!Uri.IsWellFormedUriString(this.Url, UriKind.Absolute))
+            {
+                throw new PSGraphSDKException(
+                    new ArgumentException($"Invalid URL", nameof(this.Url)),
+                    "InvalidBaseUrl",
+                    ErrorCategory.InvalidArgument,
+                    this.Url);
+            }
+
+            ODataCmdlet.CurrentEnvironmentParameters.ResourceBaseAddress = this.Url;
         }
     }
 
@@ -228,7 +298,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     [Cmdlet(
         CmdletVerb, CmdletNoun,
         ConfirmImpact = ConfirmImpact.Low)]
-    public class InvokeRequest : ODataPowerShellSDKCmdletBase
+    public class InvokeRequest : ODataCmdlet
     {
         /// <summary>
         /// Cmdlet name's verb.
