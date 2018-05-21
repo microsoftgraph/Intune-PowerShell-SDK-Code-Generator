@@ -6,7 +6,7 @@ namespace PowerShellGraphSDK
     using System;
     using System.Threading.Tasks;
 
-    internal static class GraphAuthentication
+    internal static class AuthUtils
     {
         internal static EnvironmentParameters EnvironmentParameters { get; private set; }
 

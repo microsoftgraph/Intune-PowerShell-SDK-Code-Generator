@@ -66,7 +66,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                     // TODO: Implement Certificate auth
                     throw new PSNotImplementedException();
                 default:
-                    authResult = GraphAuthentication.Auth(environmentParameters).GetAwaiter().GetResult();
+                    authResult = AuthUtils.Auth(environmentParameters).GetAwaiter().GetResult();
                     break;
             }
         }

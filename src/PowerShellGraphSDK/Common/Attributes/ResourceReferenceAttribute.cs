@@ -10,7 +10,7 @@ namespace PowerShellGraphSDK
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     internal class ResourceReferenceAttribute : Attribute
     {
-        internal string ResourceTypeFullName { get; }
+        internal string ResourceUrl { get; }
 
         /// <summary>
         /// Creates a new <see cref="ResourceReferenceAttribute"/>.
@@ -18,7 +18,7 @@ namespace PowerShellGraphSDK
         /// <param name="resourceUrl">The URL at which the resource can be accessed</param>
         internal ResourceReferenceAttribute(string resourceUrl)
         {
-            this.ResourceTypeFullName = resourceUrl ?? throw new ArgumentNullException(nameof(resourceUrl));
+            this.ResourceUrl = resourceUrl ?? throw new ArgumentNullException(nameof(resourceUrl));
         }
     }
 }

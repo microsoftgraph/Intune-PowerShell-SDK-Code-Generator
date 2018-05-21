@@ -57,11 +57,12 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                         // Namespace is "PowerShellGraphSDK.PowerShellCmdlets"
                         && type.Namespace == $"{nameof(PowerShellGraphSDK)}.{nameof(PowerShellGraphSDK.PowerShellCmdlets)}"
                         // Is a cmdlet for a GET call on a resource
-                        && typeof(GetOrSearchCmdlet).IsAssignableFrom(type)
+                        && typeof(GetCmdlet).IsAssignableFrom(type)
                         // The resource types match
                         && type.GetCustomAttribute<ODataTypeAttribute>()?.FullName == refCmdletType.GetCustomAttribute<ODataTypeAttribute>().FullName
                         // Has the "ResourceReference" attribute
-                        && type.GetCustomAttribute<ResourceReferenceAttribute>() != null)
+                        && type.GetCustomAttribute<ResourceReferenceAttribute>()?.ResourceUrl != null)
+                    .OrderBy(type => type.GetCustomAttribute<ResourceReferenceAttribute>().ResourceUrl.Length)
                     .FirstOrDefault();
 
                 // Make sure we found a cmdlet which operates on the resource we'd like to reference

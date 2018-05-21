@@ -70,11 +70,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // Get the parent ODCM property
             OdcmProperty parentProperty = oDataRoute.ParentProperty;
 
-            // Get/Search
-            yield return oDataRoute.CreateGetCmdlet();
-
             // Figure out whether this should be a "$ref" path
-            if (property.IsReference(parentProperty))
+            bool isReference = property.IsReference(parentProperty);
+
+            // Get/Search
+            yield return oDataRoute.CreateGetCmdlet(isReference);
+
+            // If this is for a "$ref" path, only implement POST/PUT and DELETE
+            if (isReference)
             {
                 // Delete
                 if (property.Projection.SupportsDelete())
@@ -118,7 +121,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
         #region Operation Cmdlets
 
-        private static Cmdlet CreateGetCmdlet(this ODataRoute oDataRoute)
+        private static Cmdlet CreateGetCmdlet(this ODataRoute oDataRoute, bool isReference = false)
         {
             if (oDataRoute == null)
             {
@@ -129,7 +132,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
-            Cmdlet cmdlet = new Cmdlet(PS.VerbsCommon.Get, oDataRoute.ToCmdletNameNounString())
+            Cmdlet cmdlet = new Cmdlet(PS.VerbsCommon.Get, oDataRoute.ToCmdletNameNounString(isReference))
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 ImpactLevel = PS.ConfirmImpact.None,
@@ -226,7 +229,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
-            Cmdlet cmdlet = new Cmdlet(PS.VerbsCommon.New, oDataRoute.ToCmdletNameNounString())
+            Cmdlet cmdlet = new Cmdlet(PS.VerbsCommon.New, oDataRoute.ToCmdletNameNounString(isReference: true))
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 OperationType = resource.IsCollection
@@ -346,7 +349,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
-            Cmdlet cmdlet = new Cmdlet(PS.VerbsCommon.Remove, oDataRoute.ToCmdletNameNounString())
+            Cmdlet cmdlet = new Cmdlet(PS.VerbsCommon.Remove, oDataRoute.ToCmdletNameNounString(isReference: true))
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 OperationType = CmdletOperationType.Delete,
@@ -388,7 +391,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 foreach (OdcmMethod method in resourceType.Methods)
                 {
                     // Create the cmdlet
-                    Cmdlet cmdlet = new Cmdlet(PS.VerbsLifecycle.Invoke, oDataRoute.ToCmdletNameNounString(method.Name))
+                    Cmdlet cmdlet = new Cmdlet(PS.VerbsLifecycle.Invoke, oDataRoute.ToCmdletNameNounString(postfixSegments: method.Name))
                     {
                         ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                     };
@@ -875,7 +878,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 DerivedTypeName = markAsPowerShellParameter || isBaseType
                                 ? null
                                 : entityTypeFullName,
-                IsExpandable = !markAsPowerShellParameter && property.IsLink,
+                IsExpandable = !markAsPowerShellParameter && property.IsLink, // TODO: use the annotations in the schema to determine whether the property is expandable
                 IsSortable = !markAsPowerShellParameter && !property.IsCollection,
                 Documentation = new CmdletParameterDocumentation()
                 {

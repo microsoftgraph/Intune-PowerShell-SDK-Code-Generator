@@ -126,11 +126,25 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// Generates a cmdlet name's noun for the resource that can be found at the given ODataRoute.
         /// </summary>
         /// <returns>The cmdlet name.</returns>
-        public string ToCmdletNameNounString(params string[] postfixSegments)
+        public string ToCmdletNameNounString(bool isReference = false, params string[] postfixSegments)
         {
             // Get all the segments in order
+            string lastSegment = this.Segments.Last().Name;
             IEnumerable<string> segments = this.Segments
-                .Select(property => property.Name.Pascalize())
+                .Select(property =>
+                {
+                    string segmentName;
+                    if (isReference && property.Name == lastSegment)
+                    {
+                        segmentName = property.Name.Pascalize().Singularize() + (property.IsCollection ? "References" : "Reference");
+                    }
+                    else
+                    {
+                        segmentName = property.Name.Pascalize();
+                    }
+
+                    return segmentName;
+                })
                 .Concat(postfixSegments.Select(segment => segment.Pascalize()));
 
             // Join the segments with underscores
