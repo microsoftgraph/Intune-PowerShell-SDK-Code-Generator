@@ -255,7 +255,10 @@ Status: {responseMessage.ReasonPhrase}
                     powerShellResponseObjectHeaders.Members.Add(new PSNoteProperty(header.Key, string.Join(",", header.Value)));
                 }
                 powerShellResponseObject.Members.Add(new PSNoteProperty("Headers", powerShellResponseObjectHeaders));
-                powerShellResponseObject.Members.Add(new PSNoteProperty("Content", responseContent));
+                powerShellResponseObject.Members.Add(new PSNoteProperty("Content",
+                    JsonUtils.TryReadAsPowerShellObject(responseContent, out object powerShellErrorResponseObject)
+                        ? powerShellErrorResponseObject
+                        : responseContent));
 
                 // Create PowerShell error object
                 PSObject powerShellErrorObject = new PSObject();

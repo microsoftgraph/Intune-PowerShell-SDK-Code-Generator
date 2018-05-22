@@ -29,7 +29,7 @@ namespace PowerShellGraphSDK
         /// </summary>
         /// <param name="obj">The object to serialize</param>
         /// <param name="prettyPrint">Whether or not to pretty print (i.e. indent) the JSON output</param>
-        /// <returns>The JSON string</returns>
+        /// <returns>The JSON string.</returns>
         internal static string WriteJson(object obj, bool prettyPrint = false)
         {
             _jsonSettings.Formatting = prettyPrint ? Formatting.Indented : Formatting.None;
@@ -45,30 +45,81 @@ namespace PowerShellGraphSDK
         }
 
         /// <summary>
-        /// Deserializes a JSON string into a JToken object.
-        /// </summary>
-        /// <param name="json">The JSON string</param>
-        /// <returns>The deserialized JToken object</returns>
-        internal static JToken ReadJson(string json)
-        {
-            return JsonConvert.DeserializeObject<JToken>(json, _jsonSettings);
-        }
-
-        /// <summary>
         /// Deserializes a JSON string into an object of the given type.
         /// </summary>
         /// <param name="json">The JSON string</param>
-        /// <returns>The deserialized object</returns>
+        /// <returns>The deserialized object.</returns>
         internal static T ReadJson<T>(string json)
         {
             return JsonConvert.DeserializeObject<T>(json, _jsonSettings);
         }
 
         /// <summary>
+        /// Deserializes a JSON string into a JToken object.
+        /// </summary>
+        /// <param name="json">The JSON string</param>
+        /// <returns>The deserialized JToken object.</returns>
+        internal static JToken ReadJson(string json)
+        {
+            return ReadJson<JToken>(json);
+        }
+
+        /// <summary>
+        /// Safely deserializes a JSON string into an object of the given type.
+        /// </summary>
+        /// <param name="json">The JSON string</param>
+        /// <param name="result">The deserialized object if the string is a valid JSON string, otherwise null</param>
+        /// <returns>True if the string is a valid JSON string, otherwise false.</returns>
+        internal static bool TryReadJson<T>(string json, out T result)
+        {
+            try
+            {
+                result = ReadJson<T>(json);
+                return true;
+            }
+            catch (JsonException)
+            {
+                result = default(T);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Safely deserializes a JSON string into a JToken object.
+        /// </summary>
+        /// <param name="json">The JSON string</param>
+        /// <param name="result">The deserialized JToken if the string is a valid JSON string, otherwise null</param>
+        /// <returns>True if the string is a valid JSON string, otherwise false.</returns>
+        internal static bool TryReadJson(string json, out JToken result)
+        {
+            return TryReadJson<JToken>(json, out result);
+        }
+
+        /// <summary>
+        /// Safely deserializes a JSON string into a PowerShell object.
+        /// </summary>
+        /// <param name="json">The JSON string</param>
+        /// <param name="result">The deserialized PowerShell object if the string is a valid JSON string, otherwise null</param>
+        /// <returns>True if the string is a valid JSON string, otherwise false.</returns>
+        internal static bool TryReadAsPowerShellObject(string json, out object result)
+        {
+            if (TryReadJson(json, out JToken jToken))
+            {
+                result = jToken.ToPowerShellObject();
+                return true;
+            }
+            else
+            {
+                result = null;
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Converts a JToken into an object that is native to PowerShell.
         /// </summary>
         /// <param name="json">The JToken representing the json</param>
-        /// <returns>The native PowerShell object</returns>
+        /// <returns>The native PowerShell object.</returns>
         internal static object ToPowerShellObject(this JToken json)
         {
             if (json == null)

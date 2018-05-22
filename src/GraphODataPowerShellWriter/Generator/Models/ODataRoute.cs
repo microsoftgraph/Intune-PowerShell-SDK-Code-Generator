@@ -31,8 +31,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <summary>
         /// The parameters for the IDs of entities in the route.
         /// </summary>
-        public IEnumerable<string> IdParameters => this._idParameters.Values;
         private IDictionary<OdcmProperty, string> _idParameters = new Dictionary<OdcmProperty, string>();
+
+        /// <summary>
+        /// The ODCM properties which require an ID to build this OData route.
+        /// </summary>
+        public IEnumerable<OdcmProperty> IdParameterProperties => this._idParameters.Keys;
 
         /// <summary>
         /// Creates an OData route from an ODCM node.
@@ -79,6 +83,28 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             }
 
             this.Segments = segments.ToList();
+        }
+
+        /// <summary>
+        /// Gets the name of the ID parameter given the 
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        public string GetIdParameterName(OdcmProperty property)
+        {
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
+
+            if (this._idParameters.TryGetValue(property, out string idParameterName))
+            {
+                return idParameterName;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>

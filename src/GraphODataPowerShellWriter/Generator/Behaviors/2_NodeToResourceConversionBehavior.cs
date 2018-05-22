@@ -639,8 +639,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // For each ID in the URL, add a parameter
-            foreach (string idParameterName in oDataRoute.IdParameters)
+            foreach (OdcmProperty segmentProperty in oDataRoute.IdParameterProperties)
             {
+                string idParameterName = oDataRoute.GetIdParameterName(segmentProperty);
                 CmdletParameter idParameter = new CmdletParameter(idParameterName, typeof(string))
                 {
                     Mandatory = true,
@@ -649,7 +650,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     {
                         Descriptions = new string[]
                         {
-                            $"A required ID for referencing a '{resource.Type.FullName}' object in the '{resource.Name}' collection",
+                            $"A required ID for referencing a '{segmentProperty.Type.FullName}' object in the '{segmentProperty.Name}' collection",
                         },
                     },
                 };
