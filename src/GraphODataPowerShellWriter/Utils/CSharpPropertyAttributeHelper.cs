@@ -111,7 +111,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             }
             if (helpMessage != null)
             {
-                arguments.Add($"{nameof(PS.ParameterAttribute.HelpMessage)} = @\"{helpMessage}\"");
+                arguments.Add($"{nameof(PS.ParameterAttribute.HelpMessage)} = @\"{helpMessage.EscapeForXml()}\"");
             }
 
             return new CSharpAttribute(nameof(PS.ParameterAttribute), arguments.ToArray());
@@ -174,11 +174,25 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             // Convert the list of types to type names wrapped in "typeof()"
             IEnumerable<string> typeNames = types.Select(type => $"typeof({type.ToCSharpString()})");
 
-            // Put the arguments on separate lines to make it more readable if we have more than 1 type
-            return new CSharpAttribute(nameof(ValidateTypeAttribute), typeNames.ToArray())
+            // Put the arguments on separate lines to make it more readable if we have more than 2 types
+            return new CSharpAttribute(nameof(ValidateTypeAttribute), typeNames)
             {
-                MultiLineArguments = typeNames.Count() > 1,
+                MultiLineArguments = typeNames.Count() > 2,
             };
+        }
+
+        public static CSharpAttribute CreateAliasAttribute(IEnumerable<string> aliases)
+        {
+            if (aliases == null)
+            {
+                throw new ArgumentNullException(nameof(aliases));
+            }
+            if (!aliases.Any())
+            {
+                throw new ArgumentException("Must have 1 or more aliases", nameof(aliases));
+            }
+
+            return new CSharpAttribute(nameof(PS.AliasAttribute), aliases.Select(alias => $"\"{alias}\""));
         }
     }
 }

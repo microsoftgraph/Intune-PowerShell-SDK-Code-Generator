@@ -2,13 +2,11 @@
 
 namespace PowerShellGraphSDK.PowerShellCmdlets
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Management.Automation;
     using System.Net.Http;
     using System.Reflection;
-    using System.Text;
 
     /// <summary>
     /// The common behavior between cmdlets that create or update OData resources.
@@ -55,7 +53,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             // Get the rest of the properties that will be serialized into the request body
             IEnumerable<PropertyInfo> typeProperties = boundProperties.Where(property =>
                 property.Name != nameof(this.ODataType) // don't include the ODataType parameter since we already got it
-                && property.Name != ODataConstants.RequestProperties.Id // don't include the ID property
+                && property.GetCustomAttribute<ODataTypeAttribute>() != null // don't include properties that don't have an OData type associated
                 && !this.GetParameterSetSelectorProperties().Contains(property) // don't include the switch parameters
             );
 

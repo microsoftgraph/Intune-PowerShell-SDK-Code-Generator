@@ -115,7 +115,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             if (cmdlet.OperationType == CmdletOperationType.PostRefToCollection)
             {
                 // "GetContent()" method override
-                yield return CSharpMethodHelper.CreateGetContentMethodForCreatingReference();
+                yield return CSharpMethodHelper.CreateGetContentMethodForCreatingReference(cmdlet.IdParameter.Name);
             }
         }
 
@@ -207,6 +207,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // Parameter attribute
             if (parameter.IsPowerShellParameter)
             {
+                // Aliases
+                if (parameter.Aliases != null && parameter.Aliases.Any())
+                {
+                    yield return CSharpPropertyAttributeHelper.CreateAliasAttribute(parameter.Aliases);
+                }
+
                 // Validate not null
                 if (parameter.ValidateNotNull)
                 {

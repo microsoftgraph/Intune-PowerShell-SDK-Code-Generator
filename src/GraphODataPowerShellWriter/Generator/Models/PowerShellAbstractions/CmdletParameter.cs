@@ -21,6 +21,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public Type Type { get; }
 
         /// <summary>
+        /// The alternative names for this parameter, which will appear as aliases.
+        /// </summary>
+        public IEnumerable<string> Aliases { get; set; }
+
+        /// <summary>
         /// Whether or not the parameter is mandatory.
         /// </summary>
         public bool Mandatory { get; set; } = false;

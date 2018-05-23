@@ -4,6 +4,8 @@ namespace PowerShellGraphSDK
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Management.Automation;
     using System.Reflection;
     using PowerShellGraphSDK.PowerShellCmdlets;
 
@@ -32,7 +34,12 @@ namespace PowerShellGraphSDK
             Type cmdletType = this._cmdletInstance.GetType();
 
             // Get the "id" property
-            this._idProperty = cmdletType.GetProperty(ODataConstants.RequestProperties.Id);
+            PropertyInfo idProperty = cmdletType.GetProperties()
+                .Where(prop => prop.GetCustomAttribute<AliasAttribute>().AliasNames
+                    .Contains(ODataConstants.RequestProperties.Id))
+                .FirstOrDefault();
+
+            this._idProperty = idProperty;
         }
 
         /// <summary>

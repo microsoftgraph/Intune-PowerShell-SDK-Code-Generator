@@ -35,7 +35,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// <para type="description">Whether or not this cmdlet should return the access token that was obtained.</para>
         /// </summary>
         [Parameter]
-        public SwitchParameter ReturnAccessToken { get; set; }
+        public SwitchParameter AccessToken { get; set; }
 
         /// <summary>
         /// <para type="description">Whether or not to use Graph PPE.</para>
@@ -77,7 +77,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             }
 
             // Return the access token
-            if (this.ReturnAccessToken)
+            if (this.AccessToken)
             {
                 this.WriteObject(authResult.AccessToken);
             }

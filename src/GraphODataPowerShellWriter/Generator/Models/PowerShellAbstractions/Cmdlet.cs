@@ -16,6 +16,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public CmdletName Name { get; }
 
         /// <summary>
+        /// A reference to the parameter that is used to represent the entity's ID.
+        /// Leave this null if there is no ID parameter.
+        /// </summary>
+        public CmdletParameter IdParameter { get; set; }
+
+        /// <summary>
         /// The name of the default parameter set.  If this is null, PowerShell's default will be used.
         /// </summary>
         public string DefaultParameterSetName { get; set; }
@@ -52,7 +58,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// be formatted like an interpolated string with the parameter name as the variable name.
         /// For example, if this cmdlet had a parameter with the name "id", the CallUrl might look like:
         /// <para>
-        /// <code>"/deviceAppManagement/mobileApps/{mobileAppId}/categories/{id}"</code>
+        /// <code>/deviceAppManagement/mobileApps/{mobileAppId}/categories/{id}</code>
         /// </para>
         /// </summary>
         public string CallUrl { get; set; }

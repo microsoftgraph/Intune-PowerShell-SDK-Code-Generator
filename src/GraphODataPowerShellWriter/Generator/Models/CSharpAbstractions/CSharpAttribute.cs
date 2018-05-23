@@ -21,7 +21,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             set => this._arguments = new HashSet<string>(value ?? throw new ArgumentNullException(nameof(value)));
         }
 
-        public CSharpAttribute(string name, params string[] arguments)
+        public CSharpAttribute(string name, params string[] arguments) : this(name, arguments.AsEnumerable()) { }
+
+        public CSharpAttribute(string name, IEnumerable<string> arguments)
         {
             if (string.IsNullOrWhiteSpace(name))
             {

@@ -139,14 +139,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 Documentation = new CmdletDocumentation()
                 {
                     Synopsis = resource.IsCollection
-                        ? $"Retrieves '{resource.Type.FullName}' objects."
-                        : $"Retrieves the '{resource.Name}' object.",
+                        ? $"Retrieves \"{resource.Type.FullName}\" objects."
+                        : $"Retrieves the \"{resource.Name}\" object.",
                     Descriptions = new string[]
                     {
                         $"GET ~/{oDataRoute.ToODataRouteString()}",
                         resource.IsCollection
-                            ? $"Retrieves '{resource.Type.FullName}' objects in the '{resource.Name}' collection."
-                            : $"Retrieves the '{resource.Name}' object (which is of type '{resource.Type.FullName}').",
+                            ? $"Retrieves \"{resource.Type.FullName}\" objects in the \"{resource.Name}\" collection."
+                            : $"Retrieves the \"{resource.Name}\" object (which is of type \"{resource.Type.FullName}\").",
                         resource.Description,
                         resource.LongDescription,
                     },
@@ -154,16 +154,16 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             };
 
             // Setup the parameters for the cmdlet
-            CmdletParameter idParameter = cmdlet.SetupIdParametersAndCallUrl(oDataRoute, idParameterSetName: GetCmdlet.OperationName);
-            if (idParameter != null)
+            cmdlet.SetupIdParametersAndCallUrl(oDataRoute, idParameterSetName: GetCmdlet.OperationName);
+            if (cmdlet.IdParameter != null)
             {
-                // Since the resource has an optional ID parameter, use the "search" base type to handle cases where the ID isn't provided
+                // Since the resource has an optional ID parameter, use the "SEARCH" base type to handle cases where the ID isn't provided
                 cmdlet.OperationType = CmdletOperationType.GetOrSearch;
                 cmdlet.DefaultParameterSetName = GetOrSearchCmdlet.OperationName;
             }
             else
             {
-                // This resource doesn't have an ID parameter, so use the basic "get" base type
+                // This resource doesn't have an ID parameter, so use the basic "GET" base type
                 cmdlet.OperationType = CmdletOperationType.Get;
                 cmdlet.DefaultParameterSetName = GetCmdlet.OperationName;
             }
@@ -192,13 +192,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 ImpactLevel = PS.ConfirmImpact.Low,
                 Documentation = new CmdletDocumentation()
                 {
-                    Synopsis = $"Creates a '{resource.Type.FullName}' object.",
+                    Synopsis = $"Creates a \"{resource.Type.FullName}\" object.",
                     Descriptions = new string[]
                     {
                         $"POST ~/{oDataRoute.ToODataRouteString()}",
                         resource.IsCollection
-                            ? $"Adds a '{resource.Type.FullName}' object to the '{resource.Name}' collection."
-                            : $"Creates the '{resource.Name}' object (which is of type '{resource.Type.FullName}').",
+                            ? $"Adds a \"{resource.Type.FullName}\" object to the \"{resource.Name}\" collection."
+                            : $"Creates the \"{resource.Name}\" object (which is of type \"{resource.Type.FullName}\").",
                         resource.Description,
                         resource.LongDescription,
                     },
@@ -238,13 +238,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 ImpactLevel = PS.ConfirmImpact.Low,
                 Documentation = new CmdletDocumentation()
                 {
-                    Synopsis = $"Creates a reference from a '{parentResource.Name.Singularize()}' to a '{resource.Type.FullName}' object.",
+                    Synopsis = $"Creates a reference from a \"{parentResource.Name.Singularize()}\" to a \"{resource.Type.FullName}\" object.",
                     Descriptions = new string[]
                     {
                         $"{(resource.IsCollection ? "POST" : "PUT")} ~/{oDataRoute.ToODataRouteString(includeEntityId: false)}",
                         resource.IsCollection
-                            ? $"Creates a reference from the specified '{parentResource.Name.Singularize()}' object to a '{resource.Name.Singularize()}'."
-                            : $"Creates a reference from the '{parentResource.Name.Singularize()}' object to a '{resource.Name.Singularize()}'.",
+                            ? $"Creates a reference from the specified \"{parentResource.Name.Singularize()}\" object to a \"{resource.Name.Singularize()}\"."
+                            : $"Creates a reference from the \"{parentResource.Name.Singularize()}\" object to a \"{resource.Name.Singularize()}\".",
                         resource.Description,
                         resource.LongDescription,
                     },
@@ -275,13 +275,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 ImpactLevel = PS.ConfirmImpact.Medium,
                 Documentation = new CmdletDocumentation()
                 {
-                    Synopsis = $"Updates a '{resource.Type.FullName}'.",
+                    Synopsis = $"Updates a \"{resource.Type.FullName}\".",
                     Descriptions = new string[]
                     {
                         $"PATCH ~/{oDataRoute.ToODataRouteString()}",
                         resource.IsCollection
-                            ? $"Updates a '{resource.Type.FullName}' object in the '{resource.Name}' collection."
-                            : $"Updates the '{resource.Name}' object (which is of type '{resource.Type.FullName}').",
+                            ? $"Updates a \"{resource.Type.FullName}\" object in the \"{resource.Name}\" collection."
+                            : $"Updates the \"{resource.Name}\" object (which is of type \"{resource.Type.FullName}\").",
                         resource.Description,
                         resource.LongDescription,
                     },
@@ -315,13 +315,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 ImpactLevel = PS.ConfirmImpact.High,
                 Documentation = new CmdletDocumentation()
                 {
-                    Synopsis = $"Removes a '{resource.Type.FullName}' object.",
+                    Synopsis = $"Removes a \"{resource.Type.FullName}\" object.",
                     Descriptions = new string[]
                     {
                         $"DELETE ~/{oDataRoute.ToODataRouteString()}",
                         resource.IsCollection
-                            ? $"Removes a '{resource.Type.FullName}' object from the '{resource.Name}' collection."
-                            : $"Removes the '{resource.Name}' object (which is of type '{resource.Type.FullName}').",
+                            ? $"Removes a \"{resource.Type.FullName}\" object from the \"{resource.Name}\" collection."
+                            : $"Removes the \"{resource.Name}\" object (which is of type \"{resource.Type.FullName}\").",
                         resource.Description,
                         resource.LongDescription,
                     },
@@ -356,13 +356,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 ImpactLevel = PS.ConfirmImpact.High,
                 Documentation = new CmdletDocumentation()
                 {
-                    Synopsis = $"Removes a reference from a '{parentResource.Name.Singularize()}' to a '{resource.Type.FullName}' object.",
+                    Synopsis = $"Removes a reference from a \"{parentResource.Name.Singularize()}\" to a \"{resource.Type.FullName}\" object.",
                     Descriptions = new string[]
                     {
                         $"DELETE ~/{oDataRoute.ToODataRouteString()}",
                         resource.IsCollection
-                            ? $"Removes a reference from the specified '{parentResource.Name.Singularize()}' object to a '{resource.Name.Singularize()}'."
-                            : $"Removes a reference from the '{parentResource.Name.Singularize()}' object to a '{resource.Name.Singularize()}'.",
+                            ? $"Removes a reference from the specified \"{parentResource.Name.Singularize()}\" object to a \"{resource.Name.Singularize()}\"."
+                            : $"Removes a reference from the \"{parentResource.Name.Singularize()}\" object to a \"{resource.Name.Singularize()}\".",
                         resource.Description,
                         resource.LongDescription,
                     },
@@ -418,18 +418,18 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                             method.IsFunction
                                 ? $"GET ~/{oDataRouteString}" // function
                                 : $"POST ~/{oDataRouteString}", // action
-                            $"The {methodType} '{method.FullName}', which exists on the type '{resourceType.FullName}'",
+                            $"The {methodType} \"{method.FullName}\", which exists on the type \"{resourceType.FullName}\"",
                             method.ReturnType != null
                                 ? method.IsCollection
-                                    ? $"This {methodType} returns a collection of '{method.ReturnType.FullName}' objects." // collection
-                                    : $"This {methodType} returns a '{method.ReturnType.FullName}' object." // single entity
+                                    ? $"This {methodType} returns a collection of \"{method.ReturnType.FullName}\" objects." // collection
+                                    : $"This {methodType} returns a \"{method.ReturnType.FullName}\" object." // single entity
                                 : $"This {methodType} does not return any objects", // void return type
                             method.Description,
                         },
                     };
 
                     // Setup the ID parameters and call URL
-                    CmdletParameter idParameter = cmdlet.SetupIdParametersAndCallUrl(
+                    cmdlet.SetupIdParametersAndCallUrl(
                         oDataRoute,
                         addEntityId: !method.IsBoundToCollection, // if the function is bound to a collection, we don't need an ID parameter
                         postfixUrlSegments: method.Name);
@@ -474,6 +474,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
         /// <summary>
         /// Sets up the ID parameters for a cmdlet based on the resource.
+        /// 
+        /// If an ID parameter is required for the ID, a reference will be provided in the cmdlet's <see cref="Cmdlet.IdParameter"/> property.
         /// </summary>
         /// <param name="cmdlet">The cmdlet</param>
         /// <param name="oDataRoute">The OData route to the resource</param>
@@ -536,6 +538,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     }
                 }
 
+                // Track the ID parameter in the cmdlet
+                cmdlet.IdParameter = idParameter;
+
                 // Track whether we added the entity ID
                 addedEntityId = true;
             }
@@ -586,12 +591,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // Get the ODCM property for this resource
             OdcmProperty resource = oDataRoute.Property;
 
-            // We need the ID parameter only if the property is an enumeration
-            if (resource.IsCollection)
+            // Add the ID parameter only if it requires it
+            if (oDataRoute.Property.TryGetIdParameterName(out string idParameterName))
             {
                 // Create the ID parameter
-                idParameter = new CmdletParameter(ODataConstants.RequestProperties.Id, typeof(string))
+                idParameter = new CmdletParameter(idParameterName, typeof(string))
                 {
+                    Aliases = ODataConstants.RequestProperties.Id.SingleObjectAsEnumerable(),
                     Mandatory = entityIdIsMandatory,
                     ValueFromPipeline = valueFromPipeline,
                     ValueFromPipelineByPropertyName = true,
@@ -600,7 +606,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     {
                         Descriptions = new string[]
                         {
-                            $"The ID for a '{resource.Type.FullName}' object in the '{resource.Name}' collection",
+                            $"The ID for a \"{resource.Type.FullName}\" object in the \"{resource.Name}\" collection",
                         },
                     },
                 };
@@ -650,7 +656,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     {
                         Descriptions = new string[]
                         {
-                            $"A required ID for referencing a '{segmentProperty.Type.FullName}' object in the '{segmentProperty.Name}' collection",
+                            $"A required ID for referencing a \"{segmentProperty.Type.FullName}\" object in the \"{segmentProperty.Name}\" collection",
                         },
                     },
                 };
@@ -768,7 +774,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                         {
                             Descriptions = new string[]
                             {
-                                $"A switch parameter for selecting the parameter set which corresponds to the '{type.FullName}' type.",
+                                $"A switch parameter for selecting the parameter set which corresponds to the \"{type.FullName}\" type.",
                             },
                         },
                     });
@@ -884,8 +890,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 Documentation = new CmdletParameterDocumentation()
                 {
                     Descriptions = new string[] {
-                        $"The '{property.Name}' property, of type '{property.Type.FullName}'.",
-                        $"This property is on the '{entityTypeFullName}' type.",
+                        $"The \"{property.Name}\" property, of type \"{property.Type.FullName}\".",
+                        $"This property is on the \"{entityTypeFullName}\" type.",
                         property.Description,
                     },
                     ValidValues = enumValues,
@@ -993,7 +999,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             }
             if (!function.IsFunction)
             {
-                throw new ArgumentException($"The given ODCM method '{function.Name}' does not represent a function - it represents an action", nameof(function));
+                throw new ArgumentException($"The given ODCM method \"{function.Name}\" does not represent a function - it represents an action", nameof(function));
             }
 
             // Don't continue if there aren't any parameters
@@ -1027,7 +1033,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     {
                         Descriptions = new string[]
                         {
-                            $"The '{parameter.Name}' parameter, which is accepted by the '{function.FullName}' function.",
+                            $"The \"{parameter.Name}\" parameter, which is accepted by the \"{function.FullName}\" function.",
                             parameter.Description,
                         },
                     }
@@ -1058,7 +1064,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             }
             if (action.IsFunction)
             {
-                throw new ArgumentException($"The given ODCM method '{action.Name}' does not represent an action - it represents a function", nameof(action));
+                throw new ArgumentException($"The given ODCM method \"{action.Name}\" does not represent an action - it represents a function", nameof(action));
             }
 
             // Iterate over each parameter
@@ -1074,7 +1080,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     {
                         Descriptions = new string[]
                         {
-                            $"The '{parameter.Name}' parameter, which is accepted by the '{action.FullName}' action.",
+                            $"The \"{parameter.Name}\" parameter, which is accepted by the \"{action.FullName}\" action.",
                             parameter.Description,
                         },
                     }
