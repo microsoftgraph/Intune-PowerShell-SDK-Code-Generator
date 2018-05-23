@@ -132,11 +132,18 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         private static readonly IEnumerable<Type> _defaultAllowedTypes = new Type[]
         {
             // Primitive OData types
+            typeof(bool),
+            typeof(short),
+            typeof(ushort),
             typeof(int),
+            typeof(uint),
             typeof(long),
+            typeof(ulong),
             typeof(float),
             typeof(double),
+            typeof(decimal),
             typeof(byte),
+            typeof(sbyte),
             typeof(char),
             typeof(string),
             typeof(DateTime),
