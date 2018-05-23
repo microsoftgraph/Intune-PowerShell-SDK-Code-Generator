@@ -32,6 +32,12 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         private const string ParameterSetCertificate = "Certificate";
 
         /// <summary>
+        /// <para type="description">Whether or not this cmdlet should return the access token that was obtained.</para>
+        /// </summary>
+        [Parameter]
+        public SwitchParameter ReturnAccessToken { get; set; }
+
+        /// <summary>
         /// <para type="description">Whether or not to use Graph PPE.</para>
         /// </summary>
         [Parameter]
@@ -68,6 +74,12 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 default:
                     authResult = AuthUtils.Auth(environmentParameters).GetAwaiter().GetResult();
                     break;
+            }
+
+            // Return the access token
+            if (this.ReturnAccessToken)
+            {
+                this.WriteObject(authResult.AccessToken);
             }
         }
     }
