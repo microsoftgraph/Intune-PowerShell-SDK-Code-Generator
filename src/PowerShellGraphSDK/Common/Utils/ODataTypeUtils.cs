@@ -45,11 +45,6 @@ namespace PowerShellGraphSDK
                     return $"\"{stringValue}\"";
                 }
             }
-            else if (value.GetType().IsPrimitive)
-            {
-                // Primitive (e.g. int, long, etc.)
-                return value.ToString();
-            }
             else if (value is DateTimeOffset date)
             {
                 // Date

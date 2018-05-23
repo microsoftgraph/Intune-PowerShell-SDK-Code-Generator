@@ -15,7 +15,7 @@ namespace PowerShellGraphSDK
         /// <summary>
         /// The list of valid types.
         /// </summary>
-        private Type[] Types { get; set; }
+        private Type[] Types { get; }
 
         /// <summary>
         /// Creates a new <see cref="ValidateTypeAttribute"/>.
@@ -23,11 +23,15 @@ namespace PowerShellGraphSDK
         /// <param name="types">The list of valid types</param>
         public ValidateTypeAttribute(params Type[] types)
         {
-            if (types == null || !types.Any())
+            if (types == null)
             {
-                throw new ArgumentException("The list of types cannot be null or empty", nameof(types));
+                throw new ArgumentNullException(nameof(types));
             }
-
+            if (!types.Any())
+            {
+                throw new ArgumentException("The list of types cannot empty", nameof(types));
+            }
+            
             this.Types = types;
         }
 
@@ -37,11 +41,11 @@ namespace PowerShellGraphSDK
         /// <param name="param"></param>
         protected override void ValidateElement(object param)
         {
-            Type type = param.GetType();
-            if (!Types.Contains(type))
+            Type paramType = param.GetType();
+            if (!this.Types.Any(type => type.IsAssignableFrom(paramType)))
             {
                 string typesString = string.Join(", ", this.Types.Select((t) => $"'{t.ToString()}'"));
-                throw new ValidationMetadataException($"The provided parameter of type '{type}' is not a valid type.  Accepted types are: [{typesString}].");
+                throw new ValidationMetadataException($"The provided parameter of type '{paramType}' is not a valid type.  Accepted types are: [{typesString}].");
             }
         }
     }

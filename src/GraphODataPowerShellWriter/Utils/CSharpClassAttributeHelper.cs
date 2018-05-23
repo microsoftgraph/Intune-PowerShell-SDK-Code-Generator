@@ -4,6 +4,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
     using PowerShellGraphSDK;
     using PS = System.Management.Automation;
@@ -36,7 +37,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 arguments.Add($"{nameof(PS.CmdletAttribute.DefaultParameterSetName)} = @\"{defaultParameterSetName}\"");
             }
 
-            return new CSharpAttribute(nameof(PS.CmdletAttribute), arguments);
+            return new CSharpAttribute(nameof(PS.CmdletAttribute), arguments: arguments.ToArray());
         }
 
         public static CSharpAttribute CreateODataTypeAttribute(string oDataTypeFullName)

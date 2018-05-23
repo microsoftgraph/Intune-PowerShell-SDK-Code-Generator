@@ -3,6 +3,7 @@
 namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
@@ -35,6 +36,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         private static readonly CSharpAttribute _sortableAttribute = new CSharpAttribute(nameof(SortableAttribute));
         public static CSharpAttribute CreateSortableAttribute() => _sortableAttribute;
 
+        // ODataType
         public static CSharpAttribute CreateODataTypeAttribute(string oDataTypeFullName)
         {
             if (oDataTypeFullName == null)
@@ -50,7 +52,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             return result;
         }
 
-        // Derived type attribute
+        // DerivedType
         public static CSharpAttribute CreateDerivedTypeAttribute(string derivedTypeFullName)
         {
             if (derivedTypeFullName == null)
@@ -66,7 +68,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             return result;
         }
 
-        // ValidateSet attribute
+        // ValidateSet
         public static CSharpAttribute CreateValidateSetAttribute(IEnumerable<string> validValues)
         {
             if (validValues == null)
@@ -112,7 +114,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 arguments.Add($"{nameof(PS.ParameterAttribute.HelpMessage)} = @\"{helpMessage}\"");
             }
 
-            return new CSharpAttribute(nameof(PS.ParameterAttribute), arguments);
+            return new CSharpAttribute(nameof(PS.ParameterAttribute), arguments.ToArray());
         }
 
         // ParameterSetSwitch
@@ -123,7 +125,60 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 throw new ArgumentNullException(nameof(parameterSetName));
             }
 
-            return new CSharpAttribute(nameof(ParameterSetSelectorAttribute), new string[] { $"@\"{parameterSetName}\"" });
+            return new CSharpAttribute(nameof(ParameterSetSelectorAttribute), $"@\"{parameterSetName}\"");
+        }
+
+        // ValidateType
+        private static readonly IEnumerable<Type> _defaultAllowedTypes = new Type[]
+        {
+            // Primitive OData types
+            typeof(int),
+            typeof(long),
+            typeof(float),
+            typeof(double),
+            typeof(byte),
+            typeof(char),
+            typeof(string),
+            typeof(DateTime),
+            typeof(DateTimeOffset),
+            typeof(TimeSpan),
+
+            // Complex types
+            typeof(PS.PSObject),
+            typeof(Hashtable),
+            typeof(IDictionary<string, object>),
+        };
+        private static readonly IEnumerable<Type> _defaultAllowedArrayTypes = _defaultAllowedTypes.Select(type => type.MakeArrayType());
+        public static CSharpAttribute CreateValidateTypeAttribute(bool isArray)
+        {
+            if (isArray)
+            {
+                return CreateValidateTypeAttribute(_defaultAllowedArrayTypes);
+            }
+            else
+            {
+                return CreateValidateTypeAttribute(_defaultAllowedTypes);
+            }
+        }
+        public static CSharpAttribute CreateValidateTypeAttribute(IEnumerable<Type> types)
+        {
+            if (types == null)
+            {
+                throw new ArgumentNullException(nameof(types));
+            }
+            if (!types.Any())
+            {
+                throw new ArgumentException("List of types cannot be empty", nameof(types));
+            }
+
+            // Convert the list of types to type names wrapped in "typeof()"
+            IEnumerable<string> typeNames = types.Select(type => $"typeof({type.ToCSharpString()})");
+
+            // Put the arguments on separate lines to make it more readable if we have more than 1 type
+            return new CSharpAttribute(nameof(ValidateTypeAttribute), typeNames.ToArray())
+            {
+                MultiLineArguments = typeNames.Count() > 1,
+            };
         }
     }
 }

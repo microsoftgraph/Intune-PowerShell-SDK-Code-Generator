@@ -5,10 +5,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
+    using Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils;
 
     public class CSharpAttribute
     {
         public string Name { get; }
+
+        public bool MultiLineArguments { get; set; } = false;
 
         private IEnumerable<string> _arguments = new HashSet<string>();
         public IEnumerable<string> Arguments
@@ -17,18 +21,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             set => this._arguments = new HashSet<string>(value ?? throw new ArgumentNullException(nameof(value)));
         }
 
-        public CSharpAttribute(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException("C# Property name cannot be null or whitespace", nameof(name));
-            }
-
-            this.Name = name;
-            this.Arguments = new List<string>();
-        }
-
-        public CSharpAttribute(string name, IEnumerable<string> arguments)
+        public CSharpAttribute(string name, params string[] arguments)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -44,7 +37,39 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             string attributeName = this.Name.EndsWith("Attribute")
                 ? this.Name.Substring(0, this.Name.LastIndexOf("Attribute"))
                 : this.Name;
-            string argumentString = this.Arguments.Any() ? $"({string.Join(", ", this.Arguments)})" : string.Empty;
+
+            string argumentString;
+            if (this.Arguments.Any())
+            {
+                if (this.MultiLineArguments)
+                {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.AppendLine();
+                    string lastArgument = this.Arguments.Last();
+                    foreach (string argument in this.Arguments)
+                    {
+                        if (argument != lastArgument)
+                        {
+                            stringBuilder.AppendLine($"{argument},".Indent());
+                        }
+                        else
+                        {
+                            stringBuilder.AppendLine(argument.Indent());
+                        }
+                    }
+
+                    argumentString = $"({stringBuilder.ToString()})";
+                }
+                else
+                {
+                    argumentString = $"({string.Join(", ", this.Arguments)})";
+                }
+            }
+            else
+            {
+                argumentString = string.Empty;
+            }
+
             return $"[{attributeName}{argumentString}]";
         }
     }
