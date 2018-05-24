@@ -7,8 +7,8 @@
     <ProjectGuid>{9D827326-2642-428E-8D87-1D0E7990CF7A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PowerShellGraphSDK</RootNamespace>
-    <AssemblyName>PowerShellGraphSDK</AssemblyName>
+    <RootNamespace>Microsoft.Intune.PowerShellGraphSDK</RootNamespace>
+    <AssemblyName>Microsoft.Intune.PowerShellGraphSDK</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,7 +30,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <DocumentationFile>$(OutputPath)\PowerShellGraphSDK.xml</DocumentationFile>
+    <DocumentationFile>$(OutputPath)\Microsoft.Intune.PowerShellGraphSDK.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.19.4.11002, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">

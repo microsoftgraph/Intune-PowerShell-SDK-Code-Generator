@@ -8,7 +8,7 @@
 
 @{
     # Script module or binary module file associated with this manifest
-    RootModule = 'PowerShellGraphSDK.dll'
+    RootModule = 'Microsoft.Intune.PowerShellGraphSDK.dll'
     
     # Version number of this module.
     ModuleVersion = '6.1806.0.0'
