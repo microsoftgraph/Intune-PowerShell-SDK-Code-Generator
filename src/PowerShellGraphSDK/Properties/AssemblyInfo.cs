@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft Corporation")]
-[assembly: AssemblyProduct("Microsoft Intune")]
+[assembly: AssemblyProduct("Microsoft Intune Graph PowerShell Client SDK")]
 [assembly: AssemblyCopyright("Copyright © Microsoft Corporation 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
