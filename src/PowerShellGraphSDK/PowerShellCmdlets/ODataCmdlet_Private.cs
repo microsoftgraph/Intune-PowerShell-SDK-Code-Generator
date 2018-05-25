@@ -164,6 +164,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 // Add the headers
                 requestMessage.Headers.Add(entry.Key, entry.Value);
             }
+            requestMessage.Headers.UserAgent.Add(new ProductInfoHeaderValue(AssemblyName, AssemblyVersion));
             string requestContent = null;
             if (content != null)
             {

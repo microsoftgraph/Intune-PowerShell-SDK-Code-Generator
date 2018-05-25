@@ -58,6 +58,16 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     public abstract partial class ODataCmdlet : PSCmdlet, IDynamicParameters
     {
         /// <summary>
+        /// The name of this assembly.
+        /// </summary>
+        private readonly string AssemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+
+        /// <summary>
+        /// The version of this assembly.
+        /// </summary>
+        private readonly string AssemblyVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+        /// <summary>
         /// The defined dynamic parameters.
         /// </summary>
         protected RuntimeDefinedParameterDictionary DynamicParameters = new RuntimeDefinedParameterDictionary();
