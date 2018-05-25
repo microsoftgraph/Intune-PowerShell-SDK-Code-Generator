@@ -7,6 +7,37 @@
 #
 
 @{
+    PrivateData = @{
+        PSData = @{
+            # Tags applied to this module. These help with module discovery in online galleries.
+            Tags = @(
+                'Microsoft',
+                'Microsoft Graph',
+                'Graph',
+                'Microsoft Intune',
+                'Intune'
+            )
+            
+            # Flag to indicate whether the module requires explicit user acceptance
+            RequireLicenseAcceptance = $true
+
+            # A URL to the license for this module.
+            # LicenseUri = ''
+            
+            # A URL to the main website for this project.
+            # ProjectUri = ''
+            
+            # A URL to an icon representing this module.
+            # IconUri = ''
+            
+            # ReleaseNotes of this module
+            # ReleaseNotes = ''
+            
+            # External dependent modules of this module
+            # ExternalModuleDependencies = ''
+        } # End of PSData hashtable
+    }
+
     # Script module or binary module file associated with this manifest
     RootModule = 'PowerShellGraphSDK.dll'
     
