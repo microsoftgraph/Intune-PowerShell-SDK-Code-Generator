@@ -125,6 +125,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// </summary>
         /// <remarks>
         /// This method defaults to assuming a JSON response body, and then converting it to a <see cref="PSObject"/> instance.
+        /// If the response body is a primitive value, it is returned without wrapping it in a <see cref="PSObject"/> instance.
         /// </remarks>
         /// <param name="content">The HTTP response body</param>
         /// <returns>The converted object.</returns>

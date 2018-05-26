@@ -61,8 +61,9 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                         // The resource types match
                         && type.GetCustomAttribute<ODataTypeAttribute>()?.FullName == refCmdletType.GetCustomAttribute<ODataTypeAttribute>().FullName
                         // Has the "ResourceReference" attribute
-                        && type.GetCustomAttribute<ResourceReferenceAttribute>()?.ResourceUrl != null)
-                    .OrderBy(type => type.GetCustomAttribute<ResourceReferenceAttribute>().ResourceUrl.Length)
+                        && type.GetCustomAttribute<ResourceReferenceDepthAttribute>() != null)
+                    // Pick the shortest route possible (i.e. with the least number of segments)
+                    .OrderBy(type => type.GetCustomAttribute<ResourceReferenceDepthAttribute>().NumSegments)
                     .FirstOrDefault();
 
                 // Make sure we found a cmdlet which operates on the resource we'd like to reference

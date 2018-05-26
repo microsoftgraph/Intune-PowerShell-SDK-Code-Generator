@@ -163,37 +163,84 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             // Convert the string content into a C# object
             object result = base.ReadResponse(content);
 
-            // If this is the final page of a SEARCH result, unwrap and return just the values
-            if (// Make sure that this is a JSON response
-                result is PSObject response
-                // Make sure that the "@odata.context" property exists (to make sure that this is an OData response)
-                && response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.ODataContext)
-                // Make sure that there is no nextLink (i.e. there is only 1 page of results)
-                && !response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.ODataNextLink)
-                // Make sure that this is for a collection result
-                && ((this is GetOrSearchCmdlet && this.ParameterSetName == GetOrSearchCmdlet.OperationName) || this is FunctionReturningCollectionCmdlet))
+            // Check if this is a JSON response
+            if (result is PSObject response)
             {
-                // Check if there were any values in the page of results
-                if (response.Members.Any(member => member.Name == ODataConstants.SearchResultProperties.Value))
+                // Check if this is a collection of results
+                if (// Make sure that the "@odata.context" property exists (to make sure that this is an OData response)
+                    response.Properties.Any(property => property.Name == ODataConstants.SearchResultProperties.ODataContext)
+                    // Make sure that this is for a collection result
+                    && ((this is GetOrSearchCmdlet && this.ParameterSetName == GetOrSearchCmdlet.OperationName) || this is FunctionReturningCollectionCmdlet))
                 {
-                    // There were values in the page, so unwrap and return them
-                    result = response.Members[ODataConstants.SearchResultProperties.Value].Value;
-                    return result;
+                    // Process the results
+                    IEnumerable<object> resultObjects = null;
+                    if (response.Properties.Any(property => property.Name == ODataConstants.SearchResultProperties.Value))
+                    {
+                        // Get the values
+                        resultObjects = response.Properties[ODataConstants.SearchResultProperties.Value].Value as IEnumerable<object>;
+
+                        // Add an alias to the ID properties of each result object
+                        foreach (object obj in resultObjects)
+                        {
+                            this.ProcessResultObject(obj);
+                        }
+                    }
+
+                    // If there is no nextLink, unwrap and return just the result objects
+                    if (!response.Properties.Any(property => property.Name == ODataConstants.SearchResultProperties.ODataNextLink))
+                    {
+                        // There were values in the page and there was no nextLink, so unwrap and return the values
+                        result = resultObjects;
+                    }
+                    else
+                    {
+                        // There was a nextLink - return the whole response so we don't lose the link to the next page
+                        result = response;
+                    }
                 }
-                else
+                else // The response is not a collection of results, it is just a single object
                 {
-                    // There were no values in the page
-                    return null;
+                    // Process the result object
+                    this.ProcessResultObject(result);
                 }
             }
-            else
-            {
-                // If this is a GET result or a SEARCH result with multiple pages, return the result as-is
-                return result;
-            }
+
+            return result;
         }
 
         #region Helpers
+
+        /// <summary>
+        /// Processes a result object.
+        /// </summary>
+        /// <param name="obj">The result object to process</param>
+        private void ProcessResultObject(object obj)
+        {
+            if (obj is PSObject psObj)
+            {
+                // Add alias for the "id" property if it exists on the result object
+                if (psObj.Properties.Any(property => property.Name == ODataConstants.SearchResultProperties.Id))
+                {
+                    string idPropertyName = this.GetIdPropertyName();
+                    if (idPropertyName != null)
+                    {
+                        psObj.Properties.Add(new PSAliasProperty(idPropertyName, ODataConstants.SearchResultProperties.Id));
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the property which represents the resource ID.
+        /// </summary>
+        /// <returns>The property which represents the resource ID if it exists, otherwise null.</returns>
+        private string GetIdPropertyName()
+        {
+            // Get the name of the ID property from the cmdlet's attribute
+            string propertyName = this.GetType().GetCustomAttribute<ResourceIdPropertyNameAttribute>()?.PropertyName;
+            
+            return propertyName;
+        }
 
         /// <summary>
         /// Creates the URL segment containing the function name and arguments.

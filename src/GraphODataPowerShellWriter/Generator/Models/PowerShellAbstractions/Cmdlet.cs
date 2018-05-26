@@ -22,6 +22,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public CmdletParameter IdParameter { get; set; }
 
         /// <summary>
+        /// The depth of the OData route (i.e. number of route segments not including IDs).
+        /// </summary>
+        public int ODataRouteDepth { get; set; }
+
+        /// <summary>
         /// The name of the default parameter set.  If this is null, PowerShell's default will be used.
         /// </summary>
         public string DefaultParameterSetName { get; set; }

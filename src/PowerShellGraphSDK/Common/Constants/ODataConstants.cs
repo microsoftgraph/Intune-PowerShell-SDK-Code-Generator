@@ -62,6 +62,11 @@ namespace ODataConstants
         /// value
         /// </summary>
         public const string Value = "value";
+
+        /// <summary>
+        /// id
+        /// </summary>
+        public const string Id = ODataConstants.RequestProperties.Id;
     }
 
     /// <summary>

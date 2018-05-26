@@ -23,7 +23,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <summary>
         /// The alternative names for this parameter, which will appear as aliases.
         /// </summary>
-        public IEnumerable<string> Aliases { get; set; }
+        public IEnumerable<string> Aliases { get; set; } = null;
 
         /// <summary>
         /// Whether or not the parameter is mandatory.

@@ -134,6 +134,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // Create the cmdlet
             Cmdlet cmdlet = new Cmdlet(PS.VerbsCommon.Get, oDataRoute.ToCmdletNameNounString(isReference))
             {
+                ODataRouteDepth = oDataRoute.Segments.Count,
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 ImpactLevel = PS.ConfirmImpact.None,
                 Documentation = new CmdletDocumentation()
@@ -187,6 +188,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // Create the cmdlet
             Cmdlet cmdlet = new Cmdlet(PS.VerbsCommon.New, oDataRoute.ToCmdletNameNounString())
             {
+                ODataRouteDepth = oDataRoute.Segments.Count,
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 OperationType = CmdletOperationType.Post,
                 ImpactLevel = PS.ConfirmImpact.Low,
@@ -231,6 +233,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // Create the cmdlet
             Cmdlet cmdlet = new Cmdlet(PS.VerbsCommon.New, oDataRoute.ToCmdletNameNounString(isReference: true))
             {
+                ODataRouteDepth = oDataRoute.Segments.Count,
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 OperationType = resource.IsCollection
                     ? CmdletOperationType.PostRefToCollection
@@ -270,6 +273,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // Create the cmdlet
             Cmdlet cmdlet = new Cmdlet(PS.VerbsData.Update, oDataRoute.ToCmdletNameNounString())
             {
+                ODataRouteDepth = oDataRoute.Segments.Count,
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 OperationType = CmdletOperationType.Patch,
                 ImpactLevel = PS.ConfirmImpact.Medium,
@@ -310,6 +314,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // Create the cmdlet
             Cmdlet cmdlet = new Cmdlet(PS.VerbsCommon.Remove, oDataRoute.ToCmdletNameNounString())
             {
+                ODataRouteDepth = oDataRoute.Segments.Count,
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 OperationType = CmdletOperationType.Delete,
                 ImpactLevel = PS.ConfirmImpact.High,
@@ -351,6 +356,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // Create the cmdlet
             Cmdlet cmdlet = new Cmdlet(PS.VerbsCommon.Remove, oDataRoute.ToCmdletNameNounString(isReference: true))
             {
+                ODataRouteDepth = oDataRoute.Segments.Count,
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 OperationType = CmdletOperationType.Delete,
                 ImpactLevel = PS.ConfirmImpact.High,
@@ -393,6 +399,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     // Create the cmdlet
                     Cmdlet cmdlet = new Cmdlet(PS.VerbsLifecycle.Invoke, oDataRoute.ToCmdletNameNounString(postfixSegments: method.Name))
                     {
+                        ODataRouteDepth = oDataRoute.Segments.Count,
                         ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                     };
 

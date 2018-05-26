@@ -77,16 +77,22 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 throw new ArgumentNullException(nameof(cmdlet));
             }
 
-            // "[Cmdlet]" attribute
+            // Cmdlet attribute
             yield return CSharpClassAttributeHelper.CreateCmdletAttribute(cmdlet.Name, cmdlet.ImpactLevel, cmdlet.DefaultParameterSetName);
 
-            // "[ODataType]" attribute
+            // ODataType attribute
             yield return CSharpClassAttributeHelper.CreateODataTypeAttribute(cmdlet.ResourceTypeFullName);
 
-            // "[ResourceReference]" attribute
+            // ResourceId attribute
+            if (cmdlet.IdParameter != null)
+            {
+                yield return CSharpClassAttributeHelper.CreateResourceIdPropertyNameAttribute(cmdlet.IdParameter.Name);
+            }
+
+            // ResourceReference attribute
             if (cmdlet.IsReferenceable)
             {
-                yield return CSharpClassAttributeHelper.CreateResourceReferenceAttribute(cmdlet.CallUrl);
+                yield return CSharpClassAttributeHelper.CreateResourceReferenceAttribute(cmdlet.ODataRouteDepth);
             }
         }
 
@@ -169,6 +175,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 throw new ArgumentNullException(nameof(parameterSets));
             }
 
+            // ODataType attribute
             if (parameter.ODataTypeFullName != null)
             {
                 yield return CSharpPropertyAttributeHelper.CreateODataTypeAttribute(parameter.ODataTypeFullName);
