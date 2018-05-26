@@ -219,7 +219,17 @@ Status: {responseMessage.ReasonPhrase}
                 // Write the result to the pipeline
                 if (cmdletResult != null)
                 {
-                    this.WriteObject(cmdletResult);
+                    if (cmdletResult is IEnumerable<object> collectionResult)
+                    {
+                        foreach (object collectionResultItem in collectionResult)
+                        {
+                            this.WriteObject(collectionResultItem);
+                        }
+                    }
+                    else
+                    {
+                        this.WriteObject(cmdletResult);
+                    }
                 }
             }
             else
