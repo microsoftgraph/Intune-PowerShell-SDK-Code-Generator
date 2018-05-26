@@ -1,14 +1,15 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("GraphODataPowerShellSDKWriter")]
+[assembly: AssemblyTitle("Microsoft.Intune.PowerShellGraphSDK")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft Corporation")]
-[assembly: AssemblyProduct("GraphODataPowerShellSDKWriter")]
+[assembly: AssemblyProduct("Microsoft Intune")]
 [assembly: AssemblyCopyright("Copyright © Microsoft Corporation 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -19,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("3b8c0953-5e14-4d77-98f3-411ca0a3ce78")]
+[assembly: Guid("9d827326-2642-428e-8d87-1d0e7990cf7a")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -33,3 +34,5 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("6.1806.0.0")]
 [assembly: AssemblyFileVersion("6.1806.0.0")]
+
+[assembly: InternalsVisibleTo("GraphODataPowerShellSDKWriter")]

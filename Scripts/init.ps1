@@ -7,7 +7,7 @@ $env:writerBuildDir = "$($env:writerDir)\bin\Release"
 $env:generatedDir = "$($env:writerBuildDir)\output"
 $env:sdkDir = "$($env:generatedDir)\bin\Release"
 $env:testDir = "$($env:PowerShellSDKRepoRoot)\Tests"
-$env:moduleName = 'PowerShellGraphSDK'
+$env:moduleName = 'IntunePreview'
 $env:moduleExtension = 'psd1'
 $env:defaultGraphSchema = "$($env:PowerShellSDKRepoRoot)\Test Graph Schemas\v1.0-20180222 - Intune.csdl"
 # Remember the settings that will change when launching a child PowerShell context
