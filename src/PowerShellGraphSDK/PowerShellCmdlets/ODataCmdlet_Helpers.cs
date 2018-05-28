@@ -140,7 +140,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 }
 
                 // Get the type of this property
-                string propertyODataType = property.GetCustomAttribute<ODataTypeAttribute>()?.FullName;
+                string propertyODataType = property.GetODataTypeName();
 
                 // Convert the value into a JSON string
                 string propertyValueString = propertyValue.ToODataString(propertyODataType, isArray: property.PropertyType.IsArray);

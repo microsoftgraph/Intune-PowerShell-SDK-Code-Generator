@@ -44,7 +44,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             foreach (Type refCmdletType in referenceCmdletTypes)
             {
                 // The cmdlet should have the "[ODataType]" attribute
-                if (refCmdletType.GetCustomAttribute<ODataTypeAttribute>() == null)
+                if (refCmdletType.GetODataResourceTypeName() == null)
                 {
                     throw new PSArgumentException($"Could not find the '[{nameof(ODataTypeAttribute)}]' attribute on type '{refCmdletType.Name}'");
                 }
@@ -59,7 +59,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                         // Is a cmdlet for a GET call on a resource
                         && typeof(GetCmdlet).IsAssignableFrom(type)
                         // The resource types match
-                        && type.GetCustomAttribute<ODataTypeAttribute>()?.FullName == refCmdletType.GetCustomAttribute<ODataTypeAttribute>().FullName
+                        && type.GetODataResourceTypeName() == refCmdletType.GetODataResourceTypeName()
                         // Has the "ResourceReference" attribute
                         && type.GetCustomAttribute<ResourceReferenceDepthAttribute>() != null)
                     // Pick the shortest route possible (i.e. with the least number of segments)

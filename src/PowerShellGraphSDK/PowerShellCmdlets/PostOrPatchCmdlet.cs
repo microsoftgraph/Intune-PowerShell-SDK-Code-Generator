@@ -53,7 +53,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             // Get the rest of the properties that will be serialized into the request body
             IEnumerable<PropertyInfo> typeProperties = boundProperties.Where(property =>
                 property.Name != nameof(this.ODataType) // don't include the ODataType parameter since we already got it
-                && property.GetCustomAttribute<ODataTypeAttribute>() != null // don't include properties that don't have an OData type associated
+                && property.GetODataTypeName() != null // don't include properties that don't have an OData type associated
                 && !this.GetParameterSetSelectorProperties().Contains(property) // don't include the switch parameters
             );
 

@@ -3,12 +3,29 @@
 namespace PowerShellGraphSDK
 {
     using System;
+    using System.Reflection;
 
     /// <summary>
     /// Utility methods for OData (Edm) type conversions.
     /// </summary>
     internal static class ODataTypeUtils
     {
+        internal static string GetODataTypeName(this PropertyInfo cmdletProperty)
+        {
+            return cmdletProperty.GetCustomAttribute<ODataTypeAttribute>(false)?.FullName;
+        }
+
+        /// <summary>
+        /// Gets the OData type of the resource from the <see cref="ODataTypeAttribute"/> that is defined on this cmdlet.
+        /// </summary>
+        /// <returns>
+        /// The OData type of the resource if it is defined on this cmdlet, otherwise null.
+        /// </returns>
+        internal static string GetODataResourceTypeName(this Type cmdletType)
+        {
+            return cmdletType.GetCustomAttribute<ODataTypeAttribute>(false)?.FullName;
+        }
+
         internal static string ToODataString(this object value, string oDataTypeFullName, bool isArray = false, bool isUrlValue = false)
         {
             if (string.IsNullOrWhiteSpace(oDataTypeFullName))

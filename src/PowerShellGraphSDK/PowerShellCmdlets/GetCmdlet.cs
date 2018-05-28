@@ -221,12 +221,27 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 // Add alias for the "id" property if it exists on the result object
                 if (psObj.Properties.Any(property => property.Name == ODataConstants.SearchResultProperties.Id))
                 {
+                    // Get the name of the alias property
                     string idPropertyName = this.GetIdPropertyName();
                     if (idPropertyName != null)
                     {
+                        // Create the alias
                         psObj.Properties.Add(new PSAliasProperty(idPropertyName, ODataConstants.SearchResultProperties.Id));
                     }
                 }
+
+                string typeName = this.GetType().GetODataResourceTypeName();
+                if (typeName == null)
+                {
+                    typeName = psObj.Properties[ODataConstants.SearchResultProperties.ODataType]?.Name?.TrimStart('#');
+                }
+                if (typeName != null)
+                {
+                    psObj.TypeNames.Add(typeName);
+                }
+
+                // Hide all alias properties
+                psObj.SetDefaultProperties(prop => !(prop is PSAliasProperty aliasProp));
             }
         }
 
@@ -260,7 +275,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             {
                 object paramValue = param.GetValue(this);
                 Type paramType = param.PropertyType;
-                string oDataType = param.GetCustomAttribute<ODataTypeAttribute>()?.FullName;
+                string oDataType = param.GetODataTypeName();
 
                 // Check if we need special handling of the value based on the parameter type
                 string paramArgumentValue = paramValue.ToODataString(oDataType, isArray: paramType.IsArray, isUrlValue: true);
