@@ -44,11 +44,6 @@ namespace PowerShellGraphSDK
         internal string SchemaVersion { get; set; }
 
         /// <summary>
-        /// Authentication result.
-        /// </summary>
-        internal AuthenticationResult AuthResult { get; set; }
-
-        /// <summary>
         /// Creates a new EnvironmentParameters object.
         /// </summary>
         internal EnvironmentParameters() { }

@@ -18,7 +18,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             if (!Uri.IsWellFormedUriString(baseAddress, UriKind.Absolute))
             {
                 throw new PSGraphSDKException(
-                    new ArgumentException($"Invalid base URL - use the '{UpdateBaseUrl.CmdletVerb}-{UpdateBaseUrl.CmdletNoun}' cmdlet to set it to a valid URL", "BaseUrl"),
+                    new ArgumentException($"Invalid base URL - use the '{UpdateEnvironmentParameters.CmdletVerb}-{UpdateEnvironmentParameters.CmdletNoun}' cmdlet to set it to a valid URL", "BaseUrl"),
                     "InvalidBaseUrl",
                     ErrorCategory.InvalidArgument,
                     baseAddress);

@@ -38,7 +38,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
 
         private AuthenticationResult Auth(EnvironmentParameters environmentParameters)
         {
-            AuthenticationResult authResult = environmentParameters?.AuthResult;
+            AuthenticationResult authResult = AuthUtils.AuthResult;
             string cmdletName = $"{PowerShellCmdlets.Connect.CmdletVerb}-{PowerShellCmdlets.Connect.CmdletNoun}";
             if (authResult == null)
             {

@@ -35,13 +35,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// <para type="description">Whether or not this cmdlet should return the access token that was obtained.</para>
         /// </summary>
         [Parameter]
-        public SwitchParameter AccessToken { get; set; }
-
-        /// <summary>
-        /// <para type="description">Whether or not to use Graph PPE.</para>
-        /// </summary>
-        [Parameter]
-        public bool UsePPE { get; set; }
+        public SwitchParameter PassThru { get; set; }
 
         //[Parameter(ParameterSetName = ParameterSetPSCredential, Mandatory = true)]
         //[ValidateNotNull]
@@ -56,11 +50,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// </summary>
         protected override void ProcessRecord()
         {
-            // Get the environment parameters
-            EnvironmentParameters environmentParameters = UsePPE
-                ? EnvironmentParameters.PPE
-                : EnvironmentParameters.Prod;
-
             // Auth
             AuthenticationResult authResult;
             switch (this.ParameterSetName)
@@ -72,14 +61,157 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                     // TODO: Implement Certificate auth
                     throw new PSNotImplementedException();
                 default:
-                    authResult = AuthUtils.Auth(environmentParameters).GetAwaiter().GetResult();
+                    authResult = AuthUtils.Auth().GetAwaiter().GetResult();
                     break;
             }
 
             // Return the access token
-            if (this.AccessToken)
+            if (this.PassThru)
             {
                 this.WriteObject(authResult.AccessToken);
+            }
+        }
+    }
+
+    /// <summary>
+    /// <para type="description">Returns the currently set environment parameters.</para>
+    /// </summary>
+    [Cmdlet(
+        CmdletVerb, CmdletNoun,
+        ConfirmImpact = ConfirmImpact.None)]
+    public class GetEnvironmentParameters : PSCmdlet
+    {
+        /// <summary>
+        /// Cmdlet name's verb.
+        /// </summary>
+        public const string CmdletVerb = VerbsCommon.Get;
+
+        /// <summary>
+        /// Cmdlet name's noun.
+        /// </summary>
+        public const string CmdletNoun = "MSGraphEnvironment";
+
+        /// <summary>
+        /// Run the cmdlet.
+        /// </summary>
+        protected override void ProcessRecord()
+        {
+            object result = ODataCmdlet.CurrentEnvironmentParameters.ToPowerShellObject();
+            if (result is IEnumerable<object> objArray)
+            {
+                foreach (object obj in objArray)
+                {
+                    this.WriteObject(obj);
+                }
+            }
+            else
+            {
+                this.WriteObject(result);
+            }
+        }
+    }
+
+    /// <summary>
+    /// <para type="description">Updates the environment parameters.</para>
+    /// </summary>
+    [Cmdlet(
+        CmdletVerb, CmdletNoun,
+        ConfirmImpact = ConfirmImpact.High)]
+    public class UpdateEnvironmentParameters : PSCmdlet
+    {
+        /// <summary>
+        /// Cmdlet name's verb.
+        /// </summary>
+        public const string CmdletVerb = VerbsData.Update;
+
+        /// <summary>
+        /// Cmdlet name's noun.
+        /// </summary>
+        public const string CmdletNoun = "MSGraphEnvironment";
+
+        /// <summary>
+        /// <para type="description">The name of the Graph schema version to select.</para>
+        /// </summary>
+        [Parameter]
+        [ValidateNotNullOrEmpty]
+        public string SchemaVersion { get; set; }
+
+        /// <summary>
+        /// <para type="description">The AppId to use when authenticating.</para>
+        /// </summary>
+        [Parameter]
+        [ValidateNotNullOrEmpty]
+        public string AppId { get; set; }
+
+        /// <summary>
+        /// <para type="description">The redirect link to use when authenticating with the provided AppId.</para>
+        /// </summary>
+        [Parameter]
+        [ValidateNotNullOrEmpty]
+        public string RedirectLink { get; set; }
+
+        /// <summary>
+        /// <para type="description">The AAD endpoint to call when authenticating.</para>
+        /// </summary>
+        [Parameter]
+        [ValidateNotNullOrEmpty]
+        [ValidateUrl]
+        public string AuthUrl { get; set; }
+
+        /// <summary>
+        /// <para type="description">The Microsoft Graph Resource ID.</para>
+        /// </summary>
+        [Parameter]
+        [ValidateNotNullOrEmpty]
+        public string GraphResourceId { get; set; }
+
+        /// <summary>
+        /// <para type="description">The Microsoft Graph base URL.</para>
+        /// </summary>
+        [Parameter]
+        [ValidateNotNullOrEmpty]
+        [ValidateUrl]
+        public string GraphBaseUrl { get; set; }
+
+        /// <summary>
+        /// Run the cmdlet.
+        /// </summary>
+        protected override void ProcessRecord()
+        {
+            // Schema version
+            if (!string.IsNullOrEmpty(this.SchemaVersion))
+            {
+                ODataCmdlet.CurrentEnvironmentParameters.SchemaVersion = this.SchemaVersion;
+            }
+
+            // AppId
+            if (!string.IsNullOrEmpty(this.AppId))
+            {
+                ODataCmdlet.CurrentEnvironmentParameters.ClientId = this.AppId;
+            }
+
+            // Redirect URL
+            if (!string.IsNullOrEmpty(this.RedirectLink))
+            {
+                ODataCmdlet.CurrentEnvironmentParameters.RedirectLink = this.RedirectLink;
+            }
+
+            // Auth URL
+            if (!string.IsNullOrEmpty(this.AuthUrl))
+            {
+                ODataCmdlet.CurrentEnvironmentParameters.AuthUrl = this.AuthUrl;
+            }
+
+            // Graph resource ID
+            if (!string.IsNullOrEmpty(this.GraphResourceId))
+            {
+                ODataCmdlet.CurrentEnvironmentParameters.ResourceId = this.GraphResourceId;
+            }
+
+            // Graph base URL
+            if (!string.IsNullOrEmpty(this.GraphBaseUrl))
+            {
+                ODataCmdlet.CurrentEnvironmentParameters.ResourceBaseAddress = this.GraphBaseUrl;
             }
         }
     }
@@ -169,138 +301,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         internal override string GetResourcePath()
         {
             return this.NextLink;
-        }
-    }
-
-    /// <summary>
-    /// <para type="description">Gets the name of the currently selected Graph schema version.</para>
-    /// </summary>
-    [Cmdlet(
-        CmdletVerb, CmdletNoun,
-        ConfirmImpact = ConfirmImpact.None)]
-    public class GetSchemaVersion : PSCmdlet
-    {
-        /// <summary>
-        /// Cmdlet name's verb.
-        /// </summary>
-        public const string CmdletVerb = VerbsCommon.Get;
-
-        /// <summary>
-        /// Cmdlet name's noun.
-        /// </summary>
-        public const string CmdletNoun = "MSGraphSchemaVersion";
-
-        /// <summary>
-        /// Runs the cmdlet.
-        /// </summary>
-        protected override sealed void ProcessRecord()
-        {
-            this.WriteObject(ODataCmdlet.CurrentEnvironmentParameters.SchemaVersion);
-        }
-    }
-
-    /// <summary>
-    /// <para type="description">Selectes a new Graph schema version.</para>
-    /// </summary>
-    [Cmdlet(
-        CmdletVerb, CmdletNoun,
-        ConfirmImpact = ConfirmImpact.High)]
-    public class UpdateSchemaVersion : PSCmdlet
-    {
-        /// <summary>
-        /// Cmdlet name's verb.
-        /// </summary>
-        public const string CmdletVerb = VerbsData.Update;
-
-        /// <summary>
-        /// Cmdlet name's noun.
-        /// </summary>
-        public const string CmdletNoun = "MSGraphSchemaVersion";
-
-        /// <summary>
-        /// <para type="description">The name of the Graph schema version to select.</para>
-        /// </summary>
-        [Parameter(Mandatory = true)]
-        [ValidateNotNullOrEmpty]
-        public string SchemaVersion { get; set; }
-
-        /// <summary>
-        /// Runs the cmdlet.
-        /// </summary>
-        protected override sealed void ProcessRecord()
-        {
-            ODataCmdlet.CurrentEnvironmentParameters.SchemaVersion = this.SchemaVersion;
-        }
-    }
-
-    /// <summary>
-    /// <para type="description">Gets the name of the currently selected Graph schema version.</para>
-    /// </summary>
-    [Cmdlet(
-        CmdletVerb, CmdletNoun,
-        ConfirmImpact = ConfirmImpact.None)]
-    public class GetBaseUrl : PSCmdlet
-    {
-        /// <summary>
-        /// Cmdlet name's verb.
-        /// </summary>
-        public const string CmdletVerb = VerbsCommon.Get;
-
-        /// <summary>
-        /// Cmdlet name's noun.
-        /// </summary>
-        public const string CmdletNoun = "MSGraphBaseUrl";
-
-        /// <summary>
-        /// Runs the cmdlet.
-        /// </summary>
-        protected override sealed void ProcessRecord()
-        {
-            this.WriteObject(ODataCmdlet.CurrentEnvironmentParameters.ResourceBaseAddress);
-        }
-    }
-
-    /// <summary>
-    /// <para type="description">Selectes a new Graph schema version.</para>
-    /// </summary>
-    [Cmdlet(
-        CmdletVerb, CmdletNoun,
-        ConfirmImpact = ConfirmImpact.High)]
-    public class UpdateBaseUrl : PSCmdlet
-    {
-        /// <summary>
-        /// Cmdlet name's verb.
-        /// </summary>
-        public const string CmdletVerb = VerbsData.Update;
-
-        /// <summary>
-        /// Cmdlet name's noun.
-        /// </summary>
-        public const string CmdletNoun = "MSGraphBaseUrl";
-
-        /// <summary>
-        /// <para type="description">The name of the Graph schema version to select.</para>
-        /// </summary>
-        [Parameter(Mandatory = true, ValueFromPipeline = true)]
-        [ValidateNotNullOrEmpty]
-        [ValidateUrl]
-        public string Url { get; set; }
-
-        /// <summary>
-        /// Runs the cmdlet.
-        /// </summary>
-        protected override sealed void ProcessRecord()
-        {
-            if (!Uri.IsWellFormedUriString(this.Url, UriKind.Absolute))
-            {
-                throw new PSGraphSDKException(
-                    new ArgumentException($"Invalid URL", nameof(this.Url)),
-                    "InvalidBaseUrl",
-                    ErrorCategory.InvalidArgument,
-                    this.Url);
-            }
-
-            ODataCmdlet.CurrentEnvironmentParameters.ResourceBaseAddress = this.Url;
         }
     }
 
