@@ -3,6 +3,7 @@
 namespace PowerShellGraphSDK
 {
     using System;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Indicates that the property was generated from an OData property of the given type.

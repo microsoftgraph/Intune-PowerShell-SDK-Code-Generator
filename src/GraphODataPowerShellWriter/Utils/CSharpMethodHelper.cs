@@ -54,12 +54,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             return result;
         }
 
-        public static CSharpMethod CreateGetContentMethodForCreatingReference(string idParameterName)
+        public static CSharpMethod CreateGetContentMethodForCreatingReference(string referenceUrlParameterName)
         {
             // Create the method definition
             string methodName = nameof(ODataCmdlet.GetContent);
             Type returnType = typeof(object);
-            string methodBody = $"return this.{nameof(ODataCmdlet.GetODataIdContent)}({idParameterName});";
+            string methodBody = $"return this.{nameof(ODataCmdlet.GetReferenceRequestContent)}({referenceUrlParameterName});";
 
             // Create the method object
             CSharpMethod result = new CSharpMethod(methodName, returnType, methodBody)

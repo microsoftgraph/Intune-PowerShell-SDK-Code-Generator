@@ -48,7 +48,7 @@ $allApps = Get-DeviceAppManagement_MobileApps
 # Create a reference between an app and the custom category
 Write-Host "Creating a reference between an app and the new category..."
 $app = $allApps[0]
-New-DeviceAppManagement_MobileApps_CategoryReferences -mobileAppId $app.id -id $appCategory.id
+$appCategory | New-DeviceAppManagement_MobileApps_CategoryReferences -mobileAppId $app.id
 
 # Get the referenced categories on this app
 Write-Host "Getting the app with categories and assignments expanded..."

@@ -211,53 +211,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         #region Helpers
 
         /// <summary>
-        /// Processes a result object.
-        /// </summary>
-        /// <param name="obj">The result object to process</param>
-        private void ProcessResultObject(object obj)
-        {
-            if (obj is PSObject psObj)
-            {
-                // Add alias for the "id" property if it exists on the result object
-                if (psObj.Properties.Any(property => property.Name == ODataConstants.SearchResultProperties.Id))
-                {
-                    // Get the name of the alias property
-                    string idPropertyName = this.GetIdPropertyName();
-                    if (idPropertyName != null)
-                    {
-                        // Create the alias
-                        psObj.Properties.Add(new PSAliasProperty(idPropertyName, ODataConstants.SearchResultProperties.Id));
-                    }
-                }
-
-                string typeName = this.GetType().GetODataResourceTypeName();
-                if (typeName == null)
-                {
-                    typeName = psObj.Properties[ODataConstants.SearchResultProperties.ODataType]?.Name?.TrimStart('#');
-                }
-                if (typeName != null)
-                {
-                    psObj.TypeNames.Add(typeName);
-                }
-
-                // Hide all alias properties
-                psObj.SetDefaultProperties(prop => !(prop is PSAliasProperty aliasProp));
-            }
-        }
-
-        /// <summary>
-        /// Gets the property which represents the resource ID.
-        /// </summary>
-        /// <returns>The property which represents the resource ID if it exists, otherwise null.</returns>
-        private string GetIdPropertyName()
-        {
-            // Get the name of the ID property from the cmdlet's attribute
-            string propertyName = this.GetType().GetCustomAttribute<ResourceIdPropertyNameAttribute>()?.PropertyName;
-            
-            return propertyName;
-        }
-
-        /// <summary>
         /// Creates the URL segment containing the function name and arguments.
         /// </summary>
         /// <returns>The URL segment containing the function name and arguments.</returns>

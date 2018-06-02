@@ -50,19 +50,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             return new CSharpAttribute(nameof(ResourceIdPropertyNameAttribute), arguments: $"\"{idParameterName}\"");
         }
 
-        public static CSharpAttribute CreateResourceReferenceAttribute(int routeDepth)
+        public static CSharpAttribute CreateResourceReferenceAttribute()
         {
-            if (routeDepth <= 0)
-            {
-                throw new ArgumentException("OData route depth must be greater than 0", nameof(routeDepth));
-            }
-
-            CSharpAttribute result = new CSharpAttribute(nameof(ResourceReferenceDepthAttribute))
-            {
-                Arguments = routeDepth.ToString().SingleObjectAsEnumerable(),
-            };
-
-            return result;
+            return new CSharpAttribute(nameof(ResourceReferenceAttribute));
         }
     }
 }

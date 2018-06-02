@@ -7,6 +7,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
     using System.IO;
     using System.Linq;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
+    using PowerShellGraphSDK;
     using Vipr.Core.CodeModel;
 
     /// <summary>
@@ -117,6 +118,21 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 idParameterName = null;
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Gets the name of a parameter which accepts a resource URL.
+        /// </summary>
+        /// <param name="type">The ODCM type of the object that will be referenced</param>
+        /// <returns>The name of the parameter which accepts a resource URL.</returns>
+        public static string GetResourceUrlParameterName(this OdcmType type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            return ODataTypeUtils.GetReferenceUrlParameterName(type.FullName);
         }
 
         /// <summary>

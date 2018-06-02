@@ -92,7 +92,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // ResourceReference attribute
             if (cmdlet.IsReferenceable)
             {
-                yield return CSharpClassAttributeHelper.CreateResourceReferenceAttribute(cmdlet.ODataRouteDepth);
+                yield return CSharpClassAttributeHelper.CreateResourceReferenceAttribute();
             }
         }
 

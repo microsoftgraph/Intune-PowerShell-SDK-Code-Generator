@@ -16,14 +16,21 @@ namespace PowerShellGraphSDK
         }
 
         /// <summary>
-        /// Gets the OData type of the resource from the <see cref="ODataTypeAttribute"/> that is defined on this cmdlet.
+        /// Gets the name of a parameter which can accept a reference URL for the given type.
         /// </summary>
-        /// <returns>
-        /// The OData type of the resource if it is defined on this cmdlet, otherwise null.
-        /// </returns>
-        internal static string GetODataResourceTypeName(this Type cmdletType)
+        /// <param name="typeFullName">The fully qualified name of the type (i.e. including the namespace)</param>
+        /// <returns>The name of the parameter</returns>
+        internal static string GetReferenceUrlParameterName(string typeFullName)
         {
-            return cmdletType.GetCustomAttribute<ODataTypeAttribute>(false)?.FullName;
+            if (string.IsNullOrEmpty(typeFullName))
+            {
+                throw new ArgumentException("Type name cannot be null or empty", nameof(typeFullName));
+            }
+
+            // Get the short name of the type
+            string shortTypeName = typeFullName.Substring(typeFullName.LastIndexOf('.') + 1);
+
+            return $"{shortTypeName}ReferenceUrl";
         }
 
         internal static string ToODataString(this object value, string oDataTypeFullName, bool isArray = false, bool isUrlValue = false)

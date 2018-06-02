@@ -31,59 +31,35 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 // Get all types in all assemblies
                 .SelectMany(assembly => assembly.GetTypes());
 
-            // Get all the "$ref" cmdlets
-            IEnumerable<Type> referenceCmdletTypes = allTypes
+            // Get all the cmdlets that return resources (i.e. not "$ref", function or action cmdlets)
+            IEnumerable<Type> referenceableCmdletTypes = allTypes
                 // Select only the types that represent "$ref" cmdlets
                 .Where(type => type.IsClass && !type.IsAbstract
                     // Namespace is "PowerShellGraphSDK.PowerShellCmdlets"
                     && type.Namespace == $"{nameof(PowerShellGraphSDK)}.{nameof(PowerShellGraphSDK.PowerShellCmdlets)}"
-                    // Is a cmdlet for a GET call on a resource
-                    && (typeof(PostReferenceToCollectionCmdlet).IsAssignableFrom(type) || typeof(PutReferenceToEntityCmdlet).IsAssignableFrom(type)));
+                    // Is a "GET" cmdlet that returns resources that can be referenced
+                    && typeof(GetCmdlet).IsAssignableFrom(type) && type.GetCustomAttribute<ResourceReferenceAttribute>() != null);
 
-            // For each "$ref" cmdlet, create a mapping to a ReferencePathGenerator
-            foreach (Type refCmdletType in referenceCmdletTypes)
+            // For each "GET" cmdlet, create a mapping to a ReferencePathGenerator
+            foreach (Type cmdletType in referenceableCmdletTypes)
             {
-                // The cmdlet should have the "[ODataType]" attribute
-                if (refCmdletType.GetODataResourceTypeName() == null)
+                // Construct an instance of the cmdlet
+                ODataCmdlet cmdlet = cmdletType
+                    .GetConstructor(Array.Empty<Type>())?
+                    .Invoke(Array.Empty<object>())
+                    as ODataCmdlet;
+
+                // Get this cmdlet name's noun
+                string cmdletNoun = cmdletType.GetCmdletNoun();
+
+                // Make sure we were able to construct an instance of the cmdlet
+                if (cmdlet != null)
                 {
-                    throw new PSArgumentException($"Could not find the '[{nameof(ODataTypeAttribute)}]' attribute on type '{refCmdletType.Name}'");
-                }
+                    // Create the URL generator
+                    ReferencePathGenerator urlGenerator = new ReferencePathGenerator(cmdlet);
 
-                // Get the cmdlet that represents the resource we want to reference
-                Type referenceCmdletType = allTypes
-                    // Filter them down to the correct cmdlet classes
-                    .Where(
-                        type => type.IsClass
-                        // Namespace is "PowerShellGraphSDK.PowerShellCmdlets"
-                        && type.Namespace == $"{nameof(PowerShellGraphSDK)}.{nameof(PowerShellGraphSDK.PowerShellCmdlets)}"
-                        // Is a cmdlet for a GET call on a resource
-                        && typeof(GetCmdlet).IsAssignableFrom(type)
-                        // The resource types match
-                        && type.GetODataResourceTypeName() == refCmdletType.GetODataResourceTypeName()
-                        // Has the "ResourceReference" attribute
-                        && type.GetCustomAttribute<ResourceReferenceDepthAttribute>() != null)
-                    // Pick the shortest route possible (i.e. with the least number of segments)
-                    .OrderBy(type => type.GetCustomAttribute<ResourceReferenceDepthAttribute>().NumSegments)
-                    .FirstOrDefault();
-
-                // Make sure we found a cmdlet which operates on the resource we'd like to reference
-                if (referenceCmdletType != null)
-                {
-                    // Construct an instance of the cmdlet
-                    ODataCmdlet cmdlet = referenceCmdletType
-                        .GetConstructor(Array.Empty<Type>())?
-                        .Invoke(Array.Empty<object>())
-                        as ODataCmdlet;
-
-                    // Make sure we were able to construct an instance of the cmdlet
-                    if (cmdlet != null)
-                    {
-                        // Create the URL generator
-                        ReferencePathGenerator urlGenerator = new ReferencePathGenerator(cmdlet);
-
-                        // Add the mapping
-                        ReferencePathGenerator.Cache.Add(refCmdletType, urlGenerator);
-                    }
+                    // Add the mapping
+                    ReferencePathGenerator.AddToCache(cmdletNoun, urlGenerator);
                 }
             }
         }

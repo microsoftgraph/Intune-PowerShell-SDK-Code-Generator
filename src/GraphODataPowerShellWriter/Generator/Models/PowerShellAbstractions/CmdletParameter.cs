@@ -57,6 +57,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public bool ValidateNotNullOrEmpty { get; set; } = false;
 
         /// <summary>
+        /// If not null, adds the [<see cref="PowerShellGraphSDK.ValidateUrlAttribute"/>] to the parameter.
+        /// This should be applied to string parameters that only accept valid URLs.
+        /// If this value is set to true, the parameter will only accept absolute URLs.
+        /// If this value is set to false, the parameter will accept both absolute and relative URLs.
+        /// </summary>
+        public bool? ValidateUrlIsAbsolute { get; set; } = null;
+
+        /// <summary>
         /// If not null, adds the [<see cref="PowerShellGraphSDK.ParameterSetSelectorAttribute"/>] to the parameter with the given name.
         /// </summary>
         public string ParameterSetSelectorName { get; set; } = null;

@@ -156,26 +156,86 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// <summary>
         /// Creates the content object for a POST/PUT "$ref" call.
         /// </summary>
-        /// <param name="id">The ID</param>
+        /// <param name="referenceUrl">The URL which can be used to retrieve the object that is being referenced</param>
         /// <returns>The content object for a POST/PUT "$ref" call.</returns>
-        internal IDictionary<string, string> GetODataIdContent(string id)
+        internal IDictionary<string, string> GetReferenceRequestContent(string referenceUrl)
         {
-            if (!ReferencePathGenerator.Cache.TryGetValue(this.GetType(), out ReferencePathGenerator referencePathGenerator))
-            {
-                throw new PSNotSupportedException($"Unable to generate reference URL");
-            }
-
-            // Get the relative resource path
-            string resourceUrl = referencePathGenerator.GenerateResourcePath(id);
-
-            // Build the full URL
-            string referenceUrl = this.BuildUrl(resourceUrl);
-
             // Return the object which is to be serialized into the body of the request
             return new Dictionary<string, string>()
             {
                 { ODataConstants.RequestProperties.ODataId, $"{referenceUrl}" }
             };
+        }
+
+        /// <summary>
+        /// Processes a result object.
+        /// </summary>
+        /// <param name="obj">The result object to process</param>
+        internal void ProcessResultObject(object obj)
+        {
+            if (obj is PSObject psObj)
+            {
+                // Track the properties to hide
+                ICollection<string> propertiesToHide = new List<string>();
+
+                // Add alias for the "id" property if it exists on the result object
+                string objectId = psObj.Properties[ODataConstants.SearchResultProperties.Id]?.Value as string;
+                if (objectId != null)
+                {
+                    // Get the name of the alias property
+                    string idPropertyName = this.GetType().GetCustomAttribute<ResourceIdPropertyNameAttribute>()?.PropertyName;
+                    if (idPropertyName != null)
+                    {
+                        // Create the alias
+                        psObj.Properties.Add(new PSAliasProperty(idPropertyName, ODataConstants.SearchResultProperties.Id));
+
+                        // Hide this property
+                        propertiesToHide.Add(idPropertyName);
+                    }
+                }
+
+                // Get the type name without the leading "#"
+                string typeName = psObj.Properties[ODataConstants.SearchResultProperties.ODataType]?.Name?.TrimStart('#');
+                if (string.IsNullOrEmpty(typeName))
+                {
+                    typeName = this.GetType().GetCustomAttribute<ODataTypeAttribute>(false)?.FullName;
+                }
+
+                // Add the type name to the list of PowerShell type names for this object
+                if (typeName != null)
+                {
+                    psObj.TypeNames.Insert(0, typeName);
+
+                    // Get this cmdlet's noun
+                    string cmdletNoun = this.GetCmdletNoun();
+
+                    // If this cmdlet retrieves resources that can be referenced, add a property to represent the URL which can be used to retrieve this object
+                    if (ReferencePathGenerator.TryGetFromCache(cmdletNoun, out ReferencePathGenerator pathGenerator))
+                    {
+                        // Get the full resource URL
+                        string referencePath = pathGenerator.GenerateResourcePath(objectId);
+                        string referenceUrl = this.BuildUrl(referencePath);
+
+                        // Get the name of the reference parameter
+                        string propertyName = ODataTypeUtils.GetReferenceUrlParameterName(typeName);
+
+                        // Add this reference URL as a property
+                        PSNoteProperty psNoteProperty = new PSNoteProperty(propertyName, referenceUrl);
+                        psObj.Properties.Add(psNoteProperty);
+
+                        // Hide this property
+                        propertiesToHide.Add(propertyName);
+                    }
+                }
+
+                // Hide the properties we have been tracking
+                psObj.SetDefaultProperties(prop => !propertiesToHide.Contains(prop.Name));
+            }
+        }
+
+        internal string GetCmdletNoun()
+        {
+            return this.GetType().GetCmdletNoun();
         }
     }
 }

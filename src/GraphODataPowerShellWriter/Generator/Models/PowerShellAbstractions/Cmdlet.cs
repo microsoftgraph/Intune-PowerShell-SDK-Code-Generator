@@ -22,11 +22,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public CmdletParameter IdParameter { get; set; }
 
         /// <summary>
-        /// The depth of the OData route (i.e. number of route segments not including IDs).
-        /// </summary>
-        public int ODataRouteDepth { get; set; }
-
-        /// <summary>
         /// The name of the default parameter set.  If this is null, PowerShell's default will be used.
         /// </summary>
         public string DefaultParameterSetName { get; set; }
@@ -37,7 +32,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public string ResourceTypeFullName { get; set; }
 
         /// <summary>
-        /// Whether or not this cmdlet operates on a route that can be referenced from a "$ref" cmdlet.
+        /// Indicates that this cmdlet retrieves resources that can be referenced by "$ref" requests.
         /// </summary>
         public bool IsReferenceable { get; set; }
 
