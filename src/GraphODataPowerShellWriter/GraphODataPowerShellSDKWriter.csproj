@@ -48,7 +48,7 @@
     <OutputPath>$(MSBuildProjectDirectory)\bin\Release</OutputPath>
   </PropertyGroup>
   <PropertyGroup>
-    <GraphSchemaPath>$(MSBuildProjectDirectory)\..\..\Test Graph Schemas\v1.0-20180222 - Intune.csdl</GraphSchemaPath>
+    <GraphSchemaPath>$(MSBuildProjectDirectory)\..\..\Test Graph Schemas\v1.0-20180406 - Intune.csdl</GraphSchemaPath>
     <StartAction>Program</StartAction>
     <StartProgram>$(OutputPath)\Vipr.exe</StartProgram>
     <StartArguments>"$(GraphSchemaPath)" --writer="$(AssemblyName)"</StartArguments>
@@ -131,6 +131,7 @@
     <Message Importance="high" Text="Output Directory:  $(OUTPUT_FOLDER)" />
   </Target>
   <Target Name="Run">
+    <Message Importance="high" Text="Executing Command:  $(StartProgram) $(StartArguments)" />
     <Exec WorkingDirectory="$(OutputPath)" Command="$(StartProgram) $(StartArguments)" ConsoleToMSBuild="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="OutputOfExec" />
     </Exec>

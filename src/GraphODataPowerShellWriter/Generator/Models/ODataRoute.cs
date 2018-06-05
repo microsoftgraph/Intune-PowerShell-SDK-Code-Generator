@@ -143,7 +143,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             IEnumerable<string> segments = this.Segments
                 .Select(property => property.Name.Pascalize());
 
-            string result = string.Join("/", segments);
+            string result = string.Join("\\", segments);
 
             return result;
         }

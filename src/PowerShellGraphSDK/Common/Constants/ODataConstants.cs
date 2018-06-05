@@ -94,4 +94,22 @@ namespace ODataConstants
         /// </summary>
         public const string Id = "id";
     }
+
+    /// <summary>
+    /// OData annotation term names.
+    /// </summary>
+    public static class AnnotationTerms
+    {
+        /// <summary>
+        /// The "Computed" term.  This annotation (if set to "true") identifies a
+        /// property which cannot be written to with an insert, update or delete operation.
+        /// </summary>
+        public const string Computed = "Org.OData.Core.V1.Computed";
+
+        /// <summary>
+        /// The "Immutable" term.  This annotation (if set to "true") identifies a
+        /// property which cannot be written to with an update or delete operation.
+        /// </summary>
+        public const string Immutable = "Org.OData.Core.V1.Immutable";
+    }
 }

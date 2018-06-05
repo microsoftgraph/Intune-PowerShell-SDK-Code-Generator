@@ -25,5 +25,15 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 default: throw new ArgumentException("Unknown operation type", nameof(operationType));
             }
         }
+
+        public static bool IsInsertOrDeleteOperation(this CmdletOperationType operationType)
+        {
+            return operationType == CmdletOperationType.Post || operationType == CmdletOperationType.Delete;
+        }
+
+        public static bool IsInsertUpdateOrDeleteOperation(this CmdletOperationType operationType)
+        {
+            return operationType.IsInsertOrDeleteOperation() || operationType == CmdletOperationType.Patch;
+        }
     }
 }

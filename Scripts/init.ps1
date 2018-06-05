@@ -9,7 +9,7 @@ $env:sdkDir = "$($env:generatedDir)\bin\Release"
 $env:testDir = "$($env:PowerShellSDKRepoRoot)\Tests"
 $env:moduleName = 'IntunePreview'
 $env:moduleExtension = 'psd1'
-$env:defaultGraphSchema = "$($env:PowerShellSDKRepoRoot)\Test Graph Schemas\v1.0-20180222 - Intune.csdl"
+$env:defaultGraphSchema = "$($env:PowerShellSDKRepoRoot)\Test Graph Schemas\v1.0-20180406 - Intune.csdl"
 # Remember the settings that will change when launching a child PowerShell context
 $env:standardWindowTitle = (Get-Host).UI.RawUI.WindowTitle
 $env:standardForegroundColor = (Get-Host).UI.RawUI.ForegroundColor

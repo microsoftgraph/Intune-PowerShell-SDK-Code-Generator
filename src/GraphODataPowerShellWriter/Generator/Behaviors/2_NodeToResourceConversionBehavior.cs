@@ -73,19 +73,22 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // Figure out whether this should be a "$ref" path
             bool isReference = property.IsReference(parentProperty);
 
-            // Get/Search
-            yield return oDataRoute.CreateGetCmdlet(isReference);
+            // Get/Search for the objects irrespective of whether it is a "$ref" path
+            yield return oDataRoute.CreateGetCmdlet();
 
             // If this is for a "$ref" path, only implement POST/PUT and DELETE
             if (isReference)
             {
-                // Post
+                // Get the reference URLs (not the actual referenced objects)
+                yield return oDataRoute.CreateGetCmdlet(isReference);
+
+                // Post (create a reference)
                 if (property.Projection.SupportsInsert())
                 {
                     yield return oDataRoute.CreatePostRefCmdlet(parentProperty);
                 }
 
-                // Delete
+                // Delete (remove a reference)
                 if (property.Projection.SupportsDelete())
                 {
                     yield return oDataRoute.CreateDeleteRefCmdlet(parentProperty);
@@ -94,19 +97,19 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             else
             {
                 // Post
-                if (property.Projection.SupportsInsert())
+                if (property.Projection.SupportsInsert() && !property.IsComputed())
                 {
                     yield return oDataRoute.CreatePostCmdlet();
                 }
 
                 // Patch
-                if (property.Projection.SupportsUpdate())
+                if (property.Projection.SupportsUpdate() && !property.IsComputed() && !property.IsImmutable())
                 {
                     yield return oDataRoute.CreatePatchCmdlet();
                 }
 
                 // Delete
-                if (property.Projection.SupportsDelete())
+                if (property.Projection.SupportsDelete() && !property.IsComputed())
                 {
                     yield return oDataRoute.CreateDeleteCmdlet();
                 }
@@ -154,7 +157,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             };
 
             // Setup the parameters for the cmdlet
-            cmdlet.SetupIdParametersAndCallUrl(oDataRoute, idParameterSetName: GetCmdlet.OperationName, cmdletReturnsReferenceableEntities: true);
+            cmdlet.SetupIdParametersAndCallUrl(
+                oDataRoute,
+                idParameterSetName: GetCmdlet.OperationName,
+                cmdletReturnsReferenceableEntities: !isReference,
+                postfixUrlSegments: isReference ? new string[] { "$ref" } : Array.Empty<string>());
             if (cmdlet.IdParameter != null)
             {
                 // Since the resource has an optional ID parameter, use the "SEARCH" base type to handle cases where the ID isn't provided
@@ -882,7 +889,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                             markAsPowerShellParameter,
                             type == baseType,
                             type.FullName,
-                            enumMembers);
+                            isReadOnly: (property.IsComputed() && cmdlet.OperationType.IsInsertUpdateOrDeleteOperation())
+                                     || (property.IsImmutable() && cmdlet.OperationType.IsInsertOrDeleteOperation()),
+                            enumValues: enumMembers);
 
                         parameterLookup.Add(property.Name, parameter);
                     }
@@ -894,9 +903,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                             typeof(object),
                             markAsPowerShellParameter,
                             type == baseType,
-                            type.FullName);
+                            type.FullName,
+                            isReadOnly: (property.IsComputed() && cmdlet.OperationType.IsInsertUpdateOrDeleteOperation())
+                                     || (property.IsImmutable() && cmdlet.OperationType.IsInsertOrDeleteOperation()));
 
-                        parameterLookup.Add(property.Name, parameter);
+                        parameterLookup[property.Name] = parameter;
                     }
 
                     // Save the original OData type name
@@ -924,13 +935,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             bool markAsPowerShellParameter,
             bool isBaseType,
             string entityTypeFullName,
+            bool isReadOnly = false,
             IEnumerable<string> enumValues = null)
         {
             var result = new CmdletParameter(property.Name, powerShellType)
             {
                 Mandatory = property.IsRequired,
                 ValueFromPipelineByPropertyName = false,
-                IsPowerShellParameter = markAsPowerShellParameter && !property.ReadOnly,
+                IsPowerShellParameter = markAsPowerShellParameter && !isReadOnly,
 
                 DerivedTypeName = markAsPowerShellParameter || isBaseType
                                 ? null

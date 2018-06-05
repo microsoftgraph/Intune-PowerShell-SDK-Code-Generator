@@ -9,6 +9,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
     using PowerShellGraphSDK;
     using Vipr.Core.CodeModel;
+    using Vipr.Core.CodeModel.Vocabularies.Capabilities;
 
     /// <summary>
     /// A set of utility methods to simplify operations on ODCM objects.
@@ -280,6 +281,44 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 && !property.ContainsTarget;
 
             return isReference;
+        }
+
+        /// <summary>
+        /// Determines whether or not a given ODCM object is marked with a "Computed" annotation.
+        /// </summary>
+        /// <param name="obj">The ODCM object</param>
+        /// <returns>True if the ODCM object is marked as "Computed", otherwise false.</returns>
+        public static bool IsComputed(this OdcmObject obj)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            OdcmBooleanCapability capability = obj.Projection?.Capabilities?
+                .Where(c => c.TermName == ODataConstants.AnnotationTerms.Computed)?
+                .SingleOrDefault() as OdcmBooleanCapability;
+
+            return (capability != null && capability.Value == true);
+        }
+
+        /// <summary>
+        /// Determines whether or not a given ODCM object is marked with a "Immutable" annotation.
+        /// </summary>
+        /// <param name="obj">The ODCM object</param>
+        /// <returns>True if the ODCM object is marked as "Immutable", otherwise false.</returns>
+        public static bool IsImmutable(this OdcmObject obj)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            OdcmBooleanCapability capability = obj.Projection?.Capabilities?
+                .Where(c => c.TermName == ODataConstants.AnnotationTerms.Immutable)?
+                .SingleOrDefault() as OdcmBooleanCapability;
+
+            return (capability != null && capability.Value == true);
         }
     }
 }
