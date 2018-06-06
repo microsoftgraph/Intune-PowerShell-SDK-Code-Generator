@@ -7,7 +7,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
     using System.Linq;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils;
+    using PowerShellGraphSDK.ODataConstants;
     using PowerShellGraphSDK.PowerShellCmdlets;
+    using Vipr.Core;
     using Vipr.Core.CodeModel;
     using PS = System.Management.Automation;
 
@@ -83,13 +85,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 yield return oDataRoute.CreateGetCmdlet(isReference);
 
                 // Post (create a reference)
-                if (property.Projection.SupportsInsert())
+                if (property.SupportsInsert())
                 {
                     yield return oDataRoute.CreatePostRefCmdlet(parentProperty);
                 }
 
                 // Delete (remove a reference)
-                if (property.Projection.SupportsDelete())
+                if (property.SupportsDelete())
                 {
                     yield return oDataRoute.CreateDeleteRefCmdlet(parentProperty);
                 }
@@ -97,19 +99,19 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             else
             {
                 // Post
-                if (property.Projection.SupportsInsert() && !property.IsComputed())
+                if (property.SupportsInsert() && !property.IsComputed())
                 {
                     yield return oDataRoute.CreatePostCmdlet();
                 }
 
                 // Patch
-                if (property.Projection.SupportsUpdate() && !property.IsComputed() && !property.IsImmutable())
+                if (property.SupportsUpdate() && !property.IsComputed() && !property.IsImmutable())
                 {
                     yield return oDataRoute.CreatePatchCmdlet();
                 }
 
                 // Delete
-                if (property.Projection.SupportsDelete() && !property.IsComputed())
+                if (property.SupportsDelete() && !property.IsComputed())
                 {
                     yield return oDataRoute.CreateDeleteCmdlet();
                 }
@@ -662,7 +664,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 // Create the ID parameter
                 idParameter = new CmdletParameter(idParameterName, typeof(string))
                 {
-                    Aliases = ODataConstants.RequestProperties.Id.SingleObjectAsEnumerable(),
+                    Aliases = RequestProperties.Id.SingleObjectAsEnumerable(),
                     Mandatory = entityIdIsMandatory,
                     ValueFromPipeline = valueFromPipeline,
                     ValueFromPipelineByPropertyName = true,
@@ -840,7 +842,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 // Evaluate the properties on this type
                 // TODO: Include collections and navigation properties as expandable, selectable and sortable
                 IEnumerable<OdcmProperty> properties = type.EvaluateProperties(type == baseType)
-                    .Where(prop => prop.Name != ODataConstants.RequestProperties.Id);
+                    .Where(prop => prop.Name != RequestProperties.Id);
 
                 // Add this type into the parmeter name lookup table
                 parameterNameLookup.Add(type, properties

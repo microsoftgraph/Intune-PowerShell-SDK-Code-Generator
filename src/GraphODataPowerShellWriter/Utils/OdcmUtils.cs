@@ -6,8 +6,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
     using PowerShellGraphSDK;
+    using PowerShellGraphSDK.ODataConstants;
     using Vipr.Core.CodeModel;
     using Vipr.Core.CodeModel.Vocabularies.Capabilities;
 
@@ -29,39 +29,40 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 getHashCodeFunction: str => str.ToLowerInvariant().GetHashCode()))
         {
             // Boolean
-            { "Edm.Boolean", typeof(bool) },
+            { EdmTypeNames.Boolean, typeof(bool) },
 
             // String
-            { "Edm.String", typeof(string) },
+            { EdmTypeNames.String, typeof(string) },
 
             // Byte
-            { "Edm.Byte", typeof(byte) },
-            { "Edm.SByte", typeof(sbyte) },
-            { "Edm.Stream", typeof(Stream) },
+            { EdmTypeNames.Byte, typeof(byte) },
+            { EdmTypeNames.SByte, typeof(sbyte) },
+            { EdmTypeNames.Stream, typeof(Stream) },
+            { EdmTypeNames.Binary, typeof(byte[]) },
 
             // Integer
-            { "Edm.Int16", typeof(short) },
-            { "Edm.UInt16", typeof(UInt16) },
-            { "Edm.Int32", typeof(int) },
-            { "Edm.UInt32", typeof(UInt32) },
-            { "Edm.Int64", typeof(long) },
-            { "Edm.UInt64", typeof(UInt64) },
+            { EdmTypeNames.Int16, typeof(short) },
+            { EdmTypeNames.UInt16, typeof(UInt16) },
+            { EdmTypeNames.Int32, typeof(int) },
+            { EdmTypeNames.UInt32, typeof(UInt32) },
+            { EdmTypeNames.Int64, typeof(long) },
+            { EdmTypeNames.UInt64, typeof(UInt64) },
 
             // Decimal
-            { "Edm.Single", typeof(Single) },
-            { "Edm.Double", typeof(double) },
-            { "Edm.Decimal", typeof(decimal) },
+            { EdmTypeNames.Single, typeof(Single) },
+            { EdmTypeNames.Double, typeof(double) },
+            { EdmTypeNames.Decimal, typeof(decimal) },
 
             // Guid
-            { "Edm.Guid", typeof(Guid) },
+            { EdmTypeNames.Guid, typeof(Guid) },
 
             // Date/Time
-            { "Edm.Date", typeof(DateTimeOffset) },
-            { "Edm.DateTime", typeof(DateTimeOffset) },
-            { "Edm.DateTimeOffset", typeof(DateTimeOffset) },
-            { "Edm.TimeOfDay", typeof(TimeSpan) },
-            { "Edm.Time", typeof(TimeSpan) },
-            { "Edm.Duration", typeof(TimeSpan) },
+            { EdmTypeNames.Date, typeof(DateTimeOffset) },
+            { EdmTypeNames.DateTime, typeof(DateTimeOffset) },
+            { EdmTypeNames.DateTimeOffset, typeof(DateTimeOffset) },
+            { EdmTypeNames.TimeOfDay, typeof(TimeSpan) },
+            { EdmTypeNames.Time, typeof(TimeSpan) },
+            { EdmTypeNames.Duration, typeof(TimeSpan) },
         };
 
         /// <summary>
@@ -149,11 +150,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             {
                 throw new ArgumentNullException(nameof(type));
             }
-
-            // Track the properties
+            
             // NOTE: Overridden properties in subtypes is not allowed in OData v4, so we don't need to worry about duplicated properties
-            IList<OdcmProperty> properties = new List<OdcmProperty>();
-
             // If the type is not a class, there are no properties to return
             if (type is OdcmClass @class)
             {
@@ -175,19 +173,17 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                     // Add the immediate properties
                     foreach (OdcmProperty property in currentClass.Properties)
                     {
-                        properties.Add(property);
+                        yield return property;
                     }
                 }
             }
-
-            return properties;
         }
 
         /// <summary>
         /// Gets the immediate base type.  Use <see cref="GetBaseTypes(OdcmType)"/> to get the full chain of base types.
         /// </summary>
         /// <param name="type">The type to evaluate</param>
-        /// <returns>The type's immediate base type.</returns>
+        /// <returns>The type's immediate base type if it has one, otherwise null.</returns>
         public static OdcmClass GetBaseType(this OdcmType type)
         {
             if (type == null)
@@ -218,21 +214,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 throw new ArgumentNullException(nameof(type));
             }
 
-            if (type is OdcmClass @class)
+            OdcmClass currentType = type.GetBaseType();
+            while (currentType != null)
             {
-                ICollection<OdcmClass> result = new List<OdcmClass>();
-                OdcmClass currentClass = @class.Base;
-                while (currentClass != null)
-                {
-                    result.Add(currentClass);
-                    currentClass = currentClass.Base;
-                }
-
-                return result;
-            }
-            else
-            {
-                return Enumerable.Empty<OdcmClass>();
+                yield return currentType;
+                currentType = currentType.GetBaseType();
             }
         }
 
@@ -259,8 +245,36 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         }
 
         /// <summary>
-        /// Checks whether the resource at this route represents a reference
-        /// (i.e. a navigation property which is a collection and not contained).
+        /// Determines whether the given type represents a stream.
+        /// </summary>
+        /// <param name="type">The ODCM type</param>
+        /// <returns>True if the given type represents a stream, otherwise false.</returns>
+        public static bool IsStream(this OdcmType type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            // Check if either this type or one of it's base types are streams
+            OdcmType currentType = type;
+            while (currentType != null)
+            {
+                if (currentType.FullName == EdmTypeNames.Stream ||
+                    currentType is OdcmMediaClass)
+                {
+                    return true;
+                }
+
+                currentType = currentType.GetBaseType();
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Determines whether the resource at this route represents a reference
+        /// (i.e. a navigation property which is not contained).
         /// If so, it outputs this resource's parent.
         /// </summary>
         /// <param name="parentProperty">This resource's parent - if null, this method returns false</param>
@@ -295,9 +309,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 throw new ArgumentNullException(nameof(obj));
             }
 
-            OdcmBooleanCapability capability = obj.Projection?.Capabilities?
-                .Where(c => c.TermName == ODataConstants.AnnotationTerms.Computed)?
-                .SingleOrDefault() as OdcmBooleanCapability;
+            OdcmBooleanCapability capability = obj.TryGetCapability(AnnotationTerms.Computed) as OdcmBooleanCapability;
 
             return (capability != null && capability.Value == true);
         }
@@ -314,11 +326,21 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 throw new ArgumentNullException(nameof(obj));
             }
 
-            OdcmBooleanCapability capability = obj.Projection?.Capabilities?
-                .Where(c => c.TermName == ODataConstants.AnnotationTerms.Immutable)?
-                .SingleOrDefault() as OdcmBooleanCapability;
+            OdcmBooleanCapability capability = obj.TryGetCapability(AnnotationTerms.Immutable) as OdcmBooleanCapability;
 
             return (capability != null && capability.Value == true);
+        }
+
+        private static OdcmCapability TryGetCapability(this OdcmObject obj, string termName)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            return obj.Projection?.Capabilities?
+                .Where(c => c.TermName == termName)?
+                .SingleOrDefault();
         }
     }
 }
