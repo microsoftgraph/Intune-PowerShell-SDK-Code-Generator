@@ -21,19 +21,19 @@ $env:runScript = "$($env:PowerShellSDKRepoRoot)\Scripts\run.ps1"
 $env:testScript = "$($env:PowerShellSDKRepoRoot)\Scripts\test.ps1"
 
 function global:WriterBuild {
-    param (
-        [string]$GraphSchema
-    )
-
     Write-Host "Building the writer..." -f Cyan
-    Invoke-Expression "$env:buildScript -WorkingDirectory '$env:writerDir' -OutputPath '$env:writerBuildDir' -BuildTargets 'Clean;Rebuild' -GraphSchema '$GraphSchema' -Verbosity 'quiet'"
+    Invoke-Expression "$env:buildScript -WorkingDirectory '$env:writerDir' -OutputPath '$env:writerBuildDir' -BuildTargets 'Clean;Rebuild' -Verbosity 'quiet'"
     Write-Host "Finished building the writer" -f Cyan
     Write-Host
 }
 
 function global:WriterRun {
+    param (
+        [string]$GraphSchema
+    )
+
     Write-Host "Running the writer (i.e. generating the cmdlets)..." -f Cyan
-    Invoke-Expression "$env:buildScript -WorkingDirectory '$env:writerDir' -OutputPath '$env:writerBuildDir' -BuildTargets 'Run'"
+    Invoke-Expression "$env:buildScript -WorkingDirectory '$env:writerDir' -OutputPath '$env:writerBuildDir' -BuildTargets 'Run' -GraphSchema '$GraphSchema'"
     Write-Host "Finished running the writer" -f Cyan
     Write-Host
 }
@@ -66,8 +66,8 @@ function global:GenerateSDK {
         [string]$GraphSchema
     )
 
-    global:WriterBuild -GraphSchema $GraphSchema
-    global:WriterRun
+    global:WriterBuild
+    global:WriterRun -GraphSchema $GraphSchema
     global:SDKBuild
 }
 
