@@ -38,8 +38,8 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
 
         private AuthenticationResult Auth(EnvironmentParameters environmentParameters)
         {
-            AuthenticationResult authResult = AuthUtils.AuthResult;
-            string cmdletName = $"{PowerShellCmdlets.Connect.CmdletVerb}-{PowerShellCmdlets.Connect.CmdletNoun}";
+            AuthenticationResult authResult = AuthUtils.LatestAuthResult;
+            string cmdletName = $"{PowerShellCmdlets.Connect.CmdletVerb}-{PowerShellCmdlets.Connect.CmdletNoun} -{nameof(PowerShellCmdlets.Connect.ForceInteractive)}";
             if (authResult == null)
             {
                 // User has not authenticated
@@ -49,14 +49,23 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                     ErrorCategory.AuthenticationError,
                     null);
             }
-            else if (authResult.ExpiresOn <= DateTimeOffset.Now)
+
+            // Check for an expired token
+            if (authResult.ExpiresOn <= DateTimeOffset.Now)
             {
-                // Expired token
-                throw new PSAuthenticationError(
-                    new InvalidOperationException($"Authentication has expired.  Please use the '{cmdletName}' cmdlet to authenticate."),
-                    "AuthenticationExpired",
-                    ErrorCategory.AuthenticationError,
-                    authResult);
+                // If it's expired, attempt to acquire a new one
+                try
+                {
+                    return AuthUtils.Auth(PromptBehavior.Never);
+                }
+                catch (AdalException)
+                {
+                    throw new PSAuthenticationError(
+                        new InvalidOperationException($"Authentication has expired.  Please use the '{cmdletName}' cmdlet to authenticate."),
+                        "AuthenticationExpired",
+                        ErrorCategory.AuthenticationError,
+                        authResult);
+                }
             }
 
             return authResult;

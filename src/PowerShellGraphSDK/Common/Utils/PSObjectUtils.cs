@@ -3,6 +3,7 @@
 namespace PowerShellGraphSDK
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Management.Automation;
@@ -60,10 +61,37 @@ namespace PowerShellGraphSDK
                     return obj;
                 }
             }
-            else if (obj is IEnumerable<object> objArray)
+            else if (obj is IDictionary objDictionary) // Hashtable also implements IDictionary
+            {
+                // Ensure that the keys are all strings (and not null)
+                foreach (object key in objDictionary.Keys)
+                {
+                    // Check for null keys
+                    if (key == null)
+                    {
+                        throw new ArgumentException($"Unable to convert object of type \"{obj.GetType().FullName}\" because this dictionary or hashtable contains a null key");
+                    }
+
+                    // Check for string keys
+                    if (!(key is string))
+                    {
+                        throw new ArgumentException($"Unable to convert object of type \"{obj.GetType().FullName}\" because this dictionary or hashtable contains a key that is not a string");
+                    }
+                }
+
+                // Create a PSObject and process the values
+                PSObject result = new PSObject();
+                foreach (object key in objDictionary.Keys)
+                {
+                    result.Properties.Add(new PSNoteProperty(key as string, objDictionary[key].ToPowerShellObject()));
+                }
+
+                return result;
+            }
+            else if (obj is IEnumerable objArray)
             {
                 // Convert each object in the collection to a PowerShell object and then return them as an array
-                return objArray.Select(o => ToPowerShellObject(o)).ToArray();
+                return objArray.Cast<object>().Select(o => ToPowerShellObject(o)).ToArray();
             }
             else if (type.IsClass)
             {

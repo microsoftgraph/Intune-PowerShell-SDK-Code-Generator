@@ -78,7 +78,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // Get/Search for the objects irrespective of whether it is a "$ref" path
             yield return oDataRoute.CreateGetCmdlet();
 
-            // If this is for a "$ref" path, only implement POST/PUT and DELETE
+            // If this is for a "$ref" path, only implement POST/PUT and DELETE as well as a GET for the reference URLs
             if (isReference)
             {
                 // Get the reference URLs (not the actual referenced objects)

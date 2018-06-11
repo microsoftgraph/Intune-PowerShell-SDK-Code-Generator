@@ -65,6 +65,6 @@ $appCategory | Remove-DeviceAppManagement_MobileAppCategories
 # Run some paging commands
 Write-Host "Testing paging..."
 $firstPage = Get-DeviceAppManagement_MobileApps -Top 10
-$firstPage | Get-MSGraphNextPage | Out-Null
-$allApps = $firstPage | Get-MSGraphAllPages
+$firstPage | Get-NextPage | Out-Null
+$allApps = $firstPage | Get-AllPages
 Write-Host "Found $($allApps.Count) apps"
