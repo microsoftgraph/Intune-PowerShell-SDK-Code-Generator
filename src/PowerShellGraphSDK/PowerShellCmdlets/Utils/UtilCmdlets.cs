@@ -10,6 +10,34 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
     /// <summary>
+    /// <para type="description">Grants admin consent for the currently selected AppId (this can be seen with the "Get-MSGraphEnvironment" cmdlet).</para>
+    /// </summary>
+    [Cmdlet(
+        CmdletVerb, CmdletNoun,
+        ConfirmImpact = ConfirmImpact.High)]
+    public class AdminConsent : PSCmdlet
+    {
+        /// <summary>
+        /// Cmdlet name's verb.
+        /// </summary>
+        public const string CmdletVerb = VerbsSecurity.Grant;
+
+        /// <summary>
+        /// Cmdlet name's noun.
+        /// </summary>
+        public const string CmdletNoun = "MSGraphAdminConsent";
+
+        /// <summary>
+        /// Run the cmdlet.
+        /// </summary>
+        protected override void ProcessRecord()
+        {
+            AuthenticationResult result = AuthUtils.GrantAdminConsent();
+            this.WriteObject($"Successfully granted admin consent on behalf of \"{result.UserInfo.DisplayableId}\".");
+        }
+    }
+
+    /// <summary>
     /// <para type="description">Authenticates with Graph.</para>
     /// </summary>
     [Cmdlet(
@@ -35,8 +63,8 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
 
         /// <summary>
         /// <para type="description">
-        /// If the Force flag is set, this cmdlet will always create an interactive window to authenticate.
-        /// If the Force flag is not set, this cmdlet is attempt to authenticate with cached credentials before falling back to showing an interactive window.
+        /// If the ForceInteractive flag is set, this cmdlet will always create an interactive window to authenticate.
+        /// If the ForceInteractive flag is not set, this cmdlet is attempt to authenticate with cached credentials before falling back to showing an interactive window.
         /// </para>
         /// </summary>
         [Parameter(ParameterSetName = ParameterSetForceInteractive)]
@@ -44,8 +72,8 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
 
         /// <summary>
         /// <para type="description">
-        /// If the Force flag is set, this cmdlet will always create an interactive window to authenticate.
-        /// If the Force flag is not set, this cmdlet is attempt to authenticate with cached credentials before falling back to showing an interactive window.
+        /// If the ForceNonInteractive flag is set, this cmdlet will never create an interactive window to authenticate, and will throw an "AdalException" if authentication fails.
+        /// If the ForceNonInteractive flag is not set, this cmdlet is attempt to authenticate with cached credentials before falling back to showing an interactive window.
         /// </para>
         /// </summary>
         [Parameter(ParameterSetName = ParameterSetForceNonInteractive)]
@@ -237,7 +265,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             // Graph base URL
             if (!string.IsNullOrEmpty(this.GraphBaseUrl))
             {
-                ODataCmdlet.CurrentEnvironmentParameters.ResourceBaseAddress = this.GraphBaseUrl;
+                ODataCmdlet.CurrentEnvironmentParameters.GraphBaseAddress = this.GraphBaseUrl;
             }
         }
     }
