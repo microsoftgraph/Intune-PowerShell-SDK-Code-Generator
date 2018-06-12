@@ -3,6 +3,7 @@
 namespace PowerShellGraphSDK.PowerShellCmdlets
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Management.Automation;
@@ -228,15 +229,21 @@ Status: {responseMessage.ReasonPhrase}
                 // Write the result to the pipeline
                 if (cmdletResult != null)
                 {
-                    if (cmdletResult is IEnumerable<object> collectionResult)
+                    if (cmdletResult is IEnumerable collectionResult)
                     {
-                        foreach (object collectionResultItem in collectionResult)
+                        // Write the items in the collection to the pipeline
+                        try
                         {
-                            this.WriteObject(collectionResultItem);
+                            this.WriteObject(collectionResult, true);
+                        }
+                        catch (PipelineStoppedException)
+                        {
+                            // The pipeline was stopped, so swallow the exception and don't output anything else
                         }
                     }
                     else
                     {
+                        // Write the single object to the pipeline
                         this.WriteObject(cmdletResult);
                     }
                 }
