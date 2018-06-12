@@ -75,7 +75,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// <summary>
         /// The currently selected environment parameters
         /// </summary>
-        internal static EnvironmentParameters CurrentEnvironmentParameters => AuthUtils.EnvironmentParameters;
+        internal static EnvironmentParameters CurrentEnvironmentParameters => AuthUtils.DefaultEnvironmentParameters;
 
         /// <summary>
         /// The method that the PowerShell runtime will call.  This is the entry point for the cmdlet.

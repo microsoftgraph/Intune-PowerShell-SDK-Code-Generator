@@ -3,6 +3,7 @@
 namespace PowerShellGraphSDK.PowerShellCmdlets
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Management.Automation;
@@ -38,8 +39,8 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
 
         private AuthenticationResult Auth(EnvironmentParameters environmentParameters)
         {
-            AuthenticationResult authResult = AuthUtils.AuthResult;
-            string cmdletName = $"{PowerShellCmdlets.Connect.CmdletVerb}-{PowerShellCmdlets.Connect.CmdletNoun}";
+            AuthenticationResult authResult = AuthUtils.LatestAuthResult;
+            string cmdletName = $"{PowerShellCmdlets.Connect.CmdletVerb}-{PowerShellCmdlets.Connect.CmdletNoun} -{nameof(PowerShellCmdlets.Connect.ForceInteractive)}";
             if (authResult == null)
             {
                 // User has not authenticated
@@ -49,14 +50,23 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                     ErrorCategory.AuthenticationError,
                     null);
             }
-            else if (authResult.ExpiresOn <= DateTimeOffset.Now)
+
+            // Check for an expired token
+            if (authResult.ExpiresOn <= DateTimeOffset.Now)
             {
-                // Expired token
-                throw new PSAuthenticationError(
-                    new InvalidOperationException($"Authentication has expired.  Please use the '{cmdletName}' cmdlet to authenticate."),
-                    "AuthenticationExpired",
-                    ErrorCategory.AuthenticationError,
-                    authResult);
+                // If it's expired, attempt to acquire a new one
+                try
+                {
+                    return AuthUtils.Auth(PromptBehavior.Never);
+                }
+                catch (AdalException)
+                {
+                    throw new PSAuthenticationError(
+                        new InvalidOperationException($"Authentication has expired.  Please use the '{cmdletName}' cmdlet to authenticate."),
+                        "AuthenticationExpired",
+                        ErrorCategory.AuthenticationError,
+                        authResult);
+                }
             }
 
             return authResult;
@@ -219,15 +229,21 @@ Status: {responseMessage.ReasonPhrase}
                 // Write the result to the pipeline
                 if (cmdletResult != null)
                 {
-                    if (cmdletResult is IEnumerable<object> collectionResult)
+                    if (cmdletResult is IEnumerable collectionResult)
                     {
-                        foreach (object collectionResultItem in collectionResult)
+                        // Write the items in the collection to the pipeline
+                        try
                         {
-                            this.WriteObject(collectionResultItem);
+                            this.WriteObject(collectionResult, true);
+                        }
+                        catch (PipelineStoppedException)
+                        {
+                            // The pipeline was stopped, so swallow the exception and don't output anything else
                         }
                     }
                     else
                     {
+                        // Write the single object to the pipeline
                         this.WriteObject(cmdletResult);
                     }
                 }

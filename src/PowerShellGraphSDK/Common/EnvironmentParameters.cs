@@ -26,7 +26,7 @@ namespace PowerShellGraphSDK
         /// <summary>
         /// The location of the resource.
         /// </summary>
-        internal string ResourceBaseAddress { get; set; }
+        internal string GraphBaseAddress { get; set; }
 
         /// <summary>
         /// The client ID to use when authenticating.
@@ -56,7 +56,7 @@ namespace PowerShellGraphSDK
         {
             this.AuthUrl = toCopy.AuthUrl;
             this.ResourceId = toCopy.ResourceId;
-            this.ResourceBaseAddress = toCopy.ResourceBaseAddress;
+            this.GraphBaseAddress = toCopy.GraphBaseAddress;
             this.ClientId = toCopy.ClientId;
             this.RedirectLink = toCopy.RedirectLink;
             this.SchemaVersion = toCopy.SchemaVersion;
@@ -75,7 +75,7 @@ namespace PowerShellGraphSDK
         {
             AuthUrl = "https://login.microsoftonline.com/common",
             ResourceId = "https://graph.microsoft.com",
-            ResourceBaseAddress = "https://graph.microsoft.com",
+            GraphBaseAddress = "https://graph.microsoft.com",
             ClientId = powerShellClientId,
             RedirectLink = applicationRedirectLink,
             SchemaVersion = "v1.0",
@@ -85,7 +85,7 @@ namespace PowerShellGraphSDK
         {
             AuthUrl = "https://login.windows-ppe.net/common",
             ResourceId = "https://graph.microsoft-ppe.com",
-            ResourceBaseAddress = "https://graph.microsoft-ppe.com",
+            GraphBaseAddress = "https://graph.microsoft-ppe.com",
             ClientId = powerShellClientId,
             RedirectLink = applicationRedirectLink,
             SchemaVersion = "v1.0",

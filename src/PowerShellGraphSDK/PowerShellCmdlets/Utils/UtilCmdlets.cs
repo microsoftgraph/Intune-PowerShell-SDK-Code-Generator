@@ -2,7 +2,6 @@
 
 namespace PowerShellGraphSDK.PowerShellCmdlets
 {
-    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Management.Automation;
@@ -11,11 +10,40 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
     /// <summary>
+    /// <para type="description">Grants admin consent for the currently selected AppId (this can be seen with the "Get-MSGraphEnvironment" cmdlet).</para>
+    /// </summary>
+    [Cmdlet(
+        CmdletVerb, CmdletNoun,
+        ConfirmImpact = ConfirmImpact.High)]
+    public class AdminConsent : PSCmdlet
+    {
+        /// <summary>
+        /// Cmdlet name's verb.
+        /// </summary>
+        public const string CmdletVerb = VerbsSecurity.Grant;
+
+        /// <summary>
+        /// Cmdlet name's noun.
+        /// </summary>
+        public const string CmdletNoun = "MSGraphAdminConsent";
+
+        /// <summary>
+        /// Run the cmdlet.
+        /// </summary>
+        protected override void ProcessRecord()
+        {
+            AuthenticationResult result = AuthUtils.GrantAdminConsent();
+            this.WriteObject($"Successfully granted admin consent on behalf of \"{result.UserInfo.DisplayableId}\".");
+        }
+    }
+
+    /// <summary>
     /// <para type="description">Authenticates with Graph.</para>
     /// </summary>
     [Cmdlet(
         CmdletVerb, CmdletNoun,
-        ConfirmImpact = ConfirmImpact.None)]
+        ConfirmImpact = ConfirmImpact.None,
+        DefaultParameterSetName = ParameterAttribute.AllParameterSets)]
     public class Connect : PSCmdlet
     {
         /// <summary>
@@ -28,11 +56,31 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// </summary>
         public const string CmdletNoun = "MSGraph";
 
+        private const string ParameterSetForceInteractive = "ForceInteractive";
+        private const string ParameterSetForceNonInteractive = "ForceNonInteractive";
         private const string ParameterSetPSCredential = "PSCredential";
         private const string ParameterSetCertificate = "Certificate";
 
         /// <summary>
-        /// <para type="description">Whether or not this cmdlet should return the access token that was obtained.</para>
+        /// <para type="description">
+        /// If the ForceInteractive flag is set, this cmdlet will always create an interactive window to authenticate.
+        /// If the ForceInteractive flag is not set, this cmdlet is attempt to authenticate with cached credentials before falling back to showing an interactive window.
+        /// </para>
+        /// </summary>
+        [Parameter(ParameterSetName = ParameterSetForceInteractive)]
+        public SwitchParameter ForceInteractive { get; set; }
+
+        /// <summary>
+        /// <para type="description">
+        /// If the ForceNonInteractive flag is set, this cmdlet will never create an interactive window to authenticate, and will throw an "AdalException" if authentication fails.
+        /// If the ForceNonInteractive flag is not set, this cmdlet is attempt to authenticate with cached credentials before falling back to showing an interactive window.
+        /// </para>
+        /// </summary>
+        [Parameter(ParameterSetName = ParameterSetForceNonInteractive)]
+        public SwitchParameter ForceNonInteractive { get; set; }
+
+        /// <summary>
+        /// <para type="description">If the PassThru flag is set, this cmdlet will return the access token that was obtained.</para>
         /// </summary>
         [Parameter]
         public SwitchParameter PassThru { get; set; }
@@ -60,8 +108,14 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 case ParameterSetCertificate:
                     // TODO: Implement Certificate auth
                     throw new PSNotImplementedException();
+                case ParameterSetForceInteractive:
+                    authResult = AuthUtils.Auth(PromptBehavior.SelectAccount);
+                    break;
+                case ParameterSetForceNonInteractive:
+                    authResult = AuthUtils.Auth(PromptBehavior.Never);
+                    break;
                 default:
-                    authResult = AuthUtils.Auth().GetAwaiter().GetResult();
+                    authResult = AuthUtils.Auth();
                     break;
             }
 
@@ -69,6 +123,19 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             if (this.PassThru)
             {
                 this.WriteObject(authResult.AccessToken);
+            }
+            else
+            {
+                this.WriteObject(new
+                {
+                    UPN = authResult.UserInfo.DisplayableId,
+                    UserFamilyName = authResult.UserInfo.FamilyName,
+                    UserGivenName = authResult.UserInfo.GivenName,
+                    UserId = authResult.UserInfo.UniqueId,
+                    TenantId = authResult.TenantId,
+                    AuthenticationExpiry = authResult.ExpiresOn.ToLocalTime(),
+                    Authority = authResult.Authority,
+                }.ToPowerShellObject());
             }
         }
     }
@@ -144,13 +211,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         public string AppId { get; set; }
 
         /// <summary>
-        /// <para type="description">The redirect link to use when authenticating with the provided AppId.</para>
-        /// </summary>
-        [Parameter]
-        [ValidateNotNullOrEmpty]
-        public string RedirectLink { get; set; }
-
-        /// <summary>
         /// <para type="description">The AAD endpoint to call when authenticating.</para>
         /// </summary>
         [Parameter]
@@ -190,12 +250,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 ODataCmdlet.CurrentEnvironmentParameters.ClientId = this.AppId;
             }
 
-            // Redirect URL
-            if (!string.IsNullOrEmpty(this.RedirectLink))
-            {
-                ODataCmdlet.CurrentEnvironmentParameters.RedirectLink = this.RedirectLink;
-            }
-
             // Auth URL
             if (!string.IsNullOrEmpty(this.AuthUrl))
             {
@@ -211,7 +265,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             // Graph base URL
             if (!string.IsNullOrEmpty(this.GraphBaseUrl))
             {
-                ODataCmdlet.CurrentEnvironmentParameters.ResourceBaseAddress = this.GraphBaseUrl;
+                ODataCmdlet.CurrentEnvironmentParameters.GraphBaseAddress = this.GraphBaseUrl;
             }
         }
     }
@@ -263,7 +317,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// <summary>
         /// Cmdlet name's noun.
         /// </summary>
-        public const string CmdletNoun = "MSGraphNextPage";
+        public const string CmdletNoun = "NextPage";
 
         /// <summary>
         /// <para type="description">The value provided in the search result in the "@odata.nextLink" property.</para>

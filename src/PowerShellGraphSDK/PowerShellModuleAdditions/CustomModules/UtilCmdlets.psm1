@@ -23,7 +23,7 @@ function Get-AllErrorsDebugInfo {
     $errorTargetObjects | Write-Output
 }
 
-function Get-MSGraphAllPages {
+function Get-AllPages {
     [CmdletBinding(
         ConfirmImpact = 'Medium',
         DefaultParameterSetName = 'SearchResult'
@@ -57,7 +57,7 @@ function Get-MSGraphAllPages {
     {
         # Make the call to get the next page
         try {
-            $page = Get-MSGraphNextPage -NextLink $currentNextLink
+            $page = Get-NextPage -NextLink $currentNextLink
         } catch {
             throw
         }

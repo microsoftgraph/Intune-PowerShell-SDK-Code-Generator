@@ -14,7 +14,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         internal string BuildUrl(string resourcePath)
         {
             // Check that we have a valid base address
-            string baseAddress = CurrentEnvironmentParameters.ResourceBaseAddress;
+            string baseAddress = CurrentEnvironmentParameters.GraphBaseAddress;
             if (!Uri.IsWellFormedUriString(baseAddress, UriKind.Absolute))
             {
                 throw new PSGraphSDKException(
