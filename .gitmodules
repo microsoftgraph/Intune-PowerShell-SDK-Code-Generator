@@ -2,8 +2,3 @@
 	path = submodules/vipr
 	url = https://github.com/Microsoft/Vipr.git
 	ignore = dirty
-
-[submodule "submodules/Intune-PowerShell-SDK"]
-	path = submodules/vipr
-	url = https://github.com/Microsoft/Intune-PowerShell-SDK.git
-	ignore = dirty
