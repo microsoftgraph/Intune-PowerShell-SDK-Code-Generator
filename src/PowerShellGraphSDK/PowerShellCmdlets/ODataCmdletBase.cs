@@ -55,7 +55,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     ///     </item>
     /// </list>
     /// </remarks>
-    public abstract partial class ODataCmdlet : PSCmdlet, IDynamicParameters
+    public abstract partial class ODataCmdletBase : PSCmdlet, IDynamicParameters
     {
         /// <summary>
         /// The name of this assembly.

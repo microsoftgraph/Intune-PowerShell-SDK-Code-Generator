@@ -19,12 +19,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
     public static class NodeToResourceConversionBehavior
     {
         /// <summary>
-        /// The contract for an ODCM type processor.
-        /// </summary>
-        /// <param name="currentType">The type that is currently being visited</param>
-        private delegate void TypeProcessor(OdcmType currentType);
-
-        /// <summary>
         /// Converts an OData route to a resource.
         /// </summary>
         /// <param name="node">The ODCM node which represents the OData route</param>
@@ -34,6 +28,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             if (node == null)
             {
                 throw new ArgumentNullException(nameof(node));
+            }
+            if (pathPrefix == null)
+            {
+                throw new ArgumentNullException(nameof(pathPrefix));
             }
 
             // Calculate route
@@ -46,7 +44,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             Resource resource = new Resource(fileSystemPath);
 
             // Convert each ODCM property into a set of cmdlets
-            IEnumerable<Cmdlet> cmdlets = oDataRoute.CreateCmdlets();
+            IEnumerable<OperationCmdlet> cmdlets = oDataRoute.CreateCmdlets();
 
             // Add the cmdlets to the resource
             resource.AddAll(cmdlets);
@@ -59,7 +57,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
         /// </summary>
         /// <param name="oDataRoute">The route to the resource (with ID placeholders)</param>
         /// <returns>The cmdlets.</returns>
-        private static IEnumerable<Cmdlet> CreateCmdlets(this ODataRoute oDataRoute)
+        private static IEnumerable<OperationCmdlet> CreateCmdlets(this ODataRoute oDataRoute)
         {
             if (oDataRoute == null)
             {
@@ -117,7 +115,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 }
 
                 // Actions and Functions
-                foreach (Cmdlet actionCmdlet in oDataRoute.CreateActionAndFunctionCmdlets())
+                foreach (OperationCmdlet actionCmdlet in oDataRoute.CreateActionAndFunctionCmdlets())
                 {
                     yield return actionCmdlet;
                 }
@@ -126,7 +124,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
         #region Operation Cmdlets
 
-        private static Cmdlet CreateGetCmdlet(this ODataRoute oDataRoute, bool isReference = false)
+        private static OperationCmdlet CreateGetCmdlet(this ODataRoute oDataRoute, bool isReference = false)
         {
             if (oDataRoute == null)
             {
@@ -137,7 +135,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
-            Cmdlet cmdlet = new Cmdlet(PS.VerbsCommon.Get, oDataRoute.ToCmdletNameNounString(isReference))
+            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.Get, oDataRoute.ToCmdletNameNounString(isReference))
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 ImpactLevel = PS.ConfirmImpact.None,
@@ -180,6 +178,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // Add the properties without marking them as PowerShell parameters to allow for auto-complete when picking columns for $select and $expand
             cmdlet.AddParametersForEntityProperties(
                 baseType: resource.Type,
+                isReadOnlyFunc: cmdlet.GetIsReadOnlyFunc(),
                 sharedParameterSetName: null,
                 addSwitchParameters: false,
                 markAsPowerShellParameter: false);
@@ -187,7 +186,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             return cmdlet;
         }
 
-        private static Cmdlet CreatePostCmdlet(this ODataRoute oDataRoute)
+        private static OperationCmdlet CreatePostCmdlet(this ODataRoute oDataRoute)
         {
             if (oDataRoute == null)
             {
@@ -198,7 +197,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
-            Cmdlet cmdlet = new Cmdlet(PS.VerbsCommon.New, oDataRoute.ToCmdletNameNounString())
+            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.New, oDataRoute.ToCmdletNameNounString())
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 OperationType = CmdletOperationType.Post,
@@ -222,12 +221,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             cmdlet.SetupIdParametersAndCallUrl(oDataRoute, addEntityId: false, idValueFromPipeline: false, cmdletReturnsReferenceableEntities: true);
 
             // Add properties of derived types as parameters to this cmdlet by traversing the tree of derived types
-            cmdlet.AddParametersForEntityProperties(resource.Type, PostOrPatchCmdlet.SharedParameterSet);
+            cmdlet.AddParametersForEntityProperties(resource.Type, cmdlet.GetIsReadOnlyFunc(), PostOrPatchCmdlet.SharedParameterSet);
 
             return cmdlet;
         }
 
-        private static Cmdlet CreatePostRefCmdlet(this ODataRoute oDataRoute, OdcmProperty parentResource)
+        private static OperationCmdlet CreatePostRefCmdlet(this ODataRoute oDataRoute, OdcmProperty parentResource)
         {
             if (oDataRoute == null)
             {
@@ -242,7 +241,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
-            Cmdlet cmdlet = new Cmdlet(PS.VerbsCommon.New, oDataRoute.ToCmdletNameNounString(isReference: true))
+            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.New, oDataRoute.ToCmdletNameNounString(isReference: true))
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 OperationType = resource.IsCollection
@@ -273,7 +272,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             return cmdlet;
         }
 
-        private static Cmdlet CreatePatchCmdlet(this ODataRoute oDataRoute)
+        private static OperationCmdlet CreatePatchCmdlet(this ODataRoute oDataRoute)
         {
             if (oDataRoute == null)
             {
@@ -284,7 +283,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
-            Cmdlet cmdlet = new Cmdlet(PS.VerbsData.Update, oDataRoute.ToCmdletNameNounString())
+            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsData.Update, oDataRoute.ToCmdletNameNounString())
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 OperationType = CmdletOperationType.Patch,
@@ -308,12 +307,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             cmdlet.SetupIdParametersAndCallUrl(oDataRoute, idValueFromPipeline: false);
 
             // Add properties of derived types as parameters to this cmdlet by traversing the tree of derived types
-            cmdlet.AddParametersForEntityProperties(resource.Type, PostOrPatchCmdlet.SharedParameterSet);
+            cmdlet.AddParametersForEntityProperties(resource.Type, cmdlet.GetIsReadOnlyFunc(), PostOrPatchCmdlet.SharedParameterSet);
 
             return cmdlet;
         }
 
-        private static Cmdlet CreateDeleteCmdlet(this ODataRoute oDataRoute)
+        private static OperationCmdlet CreateDeleteCmdlet(this ODataRoute oDataRoute)
         {
             if (oDataRoute == null)
             {
@@ -324,7 +323,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
-            Cmdlet cmdlet = new Cmdlet(PS.VerbsCommon.Remove, oDataRoute.ToCmdletNameNounString())
+            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.Remove, oDataRoute.ToCmdletNameNounString())
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 OperationType = CmdletOperationType.Delete,
@@ -353,7 +352,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             return cmdlet;
         }
 
-        private static Cmdlet CreateDeleteRefCmdlet(this ODataRoute oDataRoute, OdcmProperty parentResource)
+        private static OperationCmdlet CreateDeleteRefCmdlet(this ODataRoute oDataRoute, OdcmProperty parentResource)
         {
             if (oDataRoute == null)
             {
@@ -368,7 +367,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
-            Cmdlet cmdlet = new Cmdlet(PS.VerbsCommon.Remove, oDataRoute.ToCmdletNameNounString(isReference: true))
+            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.Remove, oDataRoute.ToCmdletNameNounString(isReference: true))
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 OperationType = CmdletOperationType.Delete,
@@ -397,7 +396,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             return cmdlet;
         }
 
-        private static IEnumerable<Cmdlet> CreateActionAndFunctionCmdlets(this ODataRoute oDataRoute)
+        private static IEnumerable<OperationCmdlet> CreateActionAndFunctionCmdlets(this ODataRoute oDataRoute)
         {
             if (oDataRoute == null)
             {
@@ -413,7 +412,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 foreach (OdcmMethod method in resourceType.Methods)
                 {
                     // Create the cmdlet
-                    Cmdlet cmdlet = new Cmdlet(PS.VerbsLifecycle.Invoke, oDataRoute.ToCmdletNameNounString(postfixSegments: method.Name))
+                    OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsLifecycle.Invoke, oDataRoute.ToCmdletNameNounString(postfixSegments: method.Name))
                     {
                         ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                     };
@@ -470,37 +469,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
         #region Helpers
 
         /// <summary>
-        /// Gets the parameter set with the given name if it exists on the cmdlet,
-        /// otherwise creates a new parameter set and adds it to the cmdlet.
-        /// </summary>
-        /// <param name="cmdlet">The cmdlet</param>
-        /// <param name="parameterSetName">The name of the parameter set</param>
-        /// <returns>The parameter set that was either retrieved or created</returns>
-        private static CmdletParameterSet GetOrCreateParameterSet(this Cmdlet cmdlet, string parameterSetName)
-        {
-            if (parameterSetName == null)
-            {
-                throw new ArgumentNullException(nameof(parameterSetName));
-            }
-
-            // Create the parameter set if it doesn't already exist
-            CmdletParameterSet parameterSet = cmdlet.ParameterSets.Get(parameterSetName);
-            if (parameterSet == null)
-            {
-                parameterSet = new CmdletParameterSet(parameterSetName);
-                cmdlet.ParameterSets.Add(parameterSet);
-            }
-
-            return parameterSet;
-        }
-
-        /// <summary>
         /// Sets the ID parameter on the cmdlet to be a parameter which accepts a reference URL.
         /// </summary>
         /// <param name="cmdlet">The cmdlet</param>
         /// <param name="oDataRoute">The OData route that the cmdlet operates on</param>
         /// <returns>The parameter which accepts a reference URL.</returns>
-        private static CmdletParameter SetupReferenceUrlParameter(this Cmdlet cmdlet, ODataRoute oDataRoute)
+        private static CmdletParameter SetupReferenceUrlParameter(this OperationCmdlet cmdlet, ODataRoute oDataRoute)
         {
             if (cmdlet == null)
             {
@@ -550,7 +524,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
         /// <summary>
         /// Sets up the ID parameters for a cmdlet based on the resource.
         /// 
-        /// If an ID parameter is required for the ID, a reference will be provided in the cmdlet's <see cref="Cmdlet.IdParameter"/> property.
+        /// If an ID parameter is required for the ID, a reference will be provided in the cmdlet's <see cref="OperationCmdlet.IdParameter"/> property.
         /// </summary>
         /// <param name="cmdlet">The cmdlet</param>
         /// <param name="oDataRoute">The OData route to the resource</param>
@@ -566,7 +540,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
         /// <param name="postfixUrlSegments">The URL segments to postfix if required</param>
         /// <returns>The ID parameter if it was required and added to the cmdlet, otherwise null</returns>
         private static CmdletParameter SetupIdParametersAndCallUrl(
-            this Cmdlet cmdlet,
+            this OperationCmdlet cmdlet,
             ODataRoute oDataRoute,
             bool addEntityId = true,
             string idParameterSetName = null,
@@ -693,7 +667,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
         /// </summary>
         /// <param name="cmdlet">The cmdlet to add the ID parameters to</param>
         /// <param name="oDataRoute">The OData route to the resource</param>
-        private static void AddIdParametersForRoutePlaceholders(this Cmdlet cmdlet, ODataRoute oDataRoute)
+        private static void AddIdParametersForRoutePlaceholders(this OperationCmdlet cmdlet, ODataRoute oDataRoute)
         {
             if (cmdlet == null)
             {
@@ -728,249 +702,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
         }
 
         /// <summary>
-        /// Traverses the tree of a type and its subtypes. 
-        /// </summary>
-        /// <param name="baseType">The base type (i.e. root of the tree)</param>
-        /// <param name="typeProcessor">The processor for handling each type</param>
-        /// <remarks>
-        /// Types are guaranteed to be processed before the types that derive from them.
-        /// In other words, when a type is visited, it is guaranteed that all of its base types have been processed.
-        /// </remarks>
-        private static void VisitDerivedTypes(this OdcmType baseType, TypeProcessor typeProcessor)
-        {
-            if (baseType == null)
-            {
-                throw new ArgumentNullException(nameof(baseType));
-            }
-            if (typeProcessor == null)
-            {
-                throw new ArgumentNullException(nameof(typeProcessor));
-            }
-
-            Stack<OdcmType> unvisited = new Stack<OdcmType>();
-            unvisited.Push(baseType);
-            while (unvisited.Any())
-            {
-                // Get the next type
-                OdcmType type = unvisited.Pop();
-
-                // Add derived types to the unvisited list
-                foreach (OdcmType derivedType in type.GetDerivedTypes())
-                {
-                    unvisited.Push(derivedType);
-                }
-
-                // Process the type
-                typeProcessor(type);
-            }
-        }
-
-        /// <summary>
-        /// Create the processor for adding parameters to a cmdlet.
-        /// </summary>
-        /// <param name="cmdlet">The cmdlet</param>
-        /// <param name="baseType">The type for which we should add parameters</param>
-        /// <param name="addSwitchParametersForAbstractTypes">Whether or not to create a switch parameter for abstract types</param>
-        /// <param name="sharedParameterSetName">
-        /// The name of the shared parameter set, or null if parameters shouldn't be added to the shared parameter set
-        /// </param>
-        private static void AddParametersForEntityProperties(
-            this Cmdlet cmdlet,
-            OdcmType baseType,
-            string sharedParameterSetName = null,
-            bool addSwitchParameters = true,
-            bool markAsPowerShellParameter = true)
-        {
-            if (cmdlet == null)
-            {
-                throw new ArgumentNullException(nameof(cmdlet));
-            }
-            if (baseType == null)
-            {
-                throw new ArgumentNullException(nameof(baseType));
-            }
-
-            // Don't try to add parameters for Edm types
-            if (baseType.Namespace.Name.StartsWith("Edm"))
-            {
-                return;
-            }
-
-            // Track parameters as we visit each type
-            IDictionary<OdcmType, IEnumerable<string>> parameterNameLookup = new Dictionary<OdcmType, IEnumerable<string>>();
-            IDictionary<string, CmdletParameter> parameterLookup = new Dictionary<string, CmdletParameter>();
-
-            // Visit all derived types
-            baseType.VisitDerivedTypes((OdcmType type) =>
-            {
-                string parameterName = type.Name;
-                string parameterSetName = "#" + type.FullName;
-
-                // Determine if this is the only entity type for this cmdlet
-                bool isTheOnlyType = (type == baseType && !type.GetDerivedTypes().Any());
-
-                // Create the parameter set for this type if it doesn't already exist
-                CmdletParameterSet parameterSet = cmdlet.GetOrCreateParameterSet(parameterSetName);
-
-                // Set this as the default parameter set if it's the only type
-                if (markAsPowerShellParameter)
-                {
-                    cmdlet.DefaultParameterSetName = parameterSet.Name;
-                }
-
-                // Add a switch parameter for this type if required
-                if (addSwitchParameters
-                    && !(type is OdcmClass @class && @class.IsAbstract) // don't add a switch for abstract types
-                    && !isTheOnlyType) // if there is only 1 type, don't add a switch parameter for it
-                {
-                    // Add the switch parameter
-                    parameterSet.Add(new CmdletParameter(parameterName, typeof(PS.SwitchParameter))
-                    {
-                        Mandatory = true,
-                        ParameterSetSelectorName = parameterSetName,
-                        ValueFromPipelineByPropertyName = false,
-                        Documentation = new CmdletParameterDocumentation()
-                        {
-                            Descriptions = new string[]
-                            {
-                                $"A switch parameter for selecting the parameter set which corresponds to the \"{type.FullName}\" type.",
-                            },
-                        },
-                    });
-                }
-
-                // Evaluate the properties on this type
-                // TODO: Include collections and navigation properties as expandable, selectable and sortable
-                IEnumerable<OdcmProperty> properties = type.EvaluateProperties(type == baseType)
-                    .Where(prop => prop.Name != RequestProperties.Id);
-
-                // Add this type into the parmeter name lookup table
-                parameterNameLookup.Add(type, properties
-                    .Where(prop => !prop.ReadOnly && !prop.IsCollection && !prop.IsLink)
-                    .Select(prop => prop.Name)
-                    .Distinct());
-
-                // Add the base types' properties as parameters to this parameter set
-                // NOTE: Safe lookups are not necessary since all base types are guaranteed to have already been processed
-                // by the VisitDerivedTypes() method
-                OdcmType currentType = type;
-                while (currentType != baseType)
-                {
-                    // Get the next type
-                    currentType = currentType.GetBaseType();
-
-                    // Lookup the properties for this type
-                    IEnumerable<string> parameterNames = parameterNameLookup[currentType];
-
-                    // Lookup the CmdletParameter objects for each parameter name
-                    IEnumerable<CmdletParameter> parameters = parameterNames.Select(paramName => parameterLookup[paramName]);
-
-                    // Add the parameters to the parameter set
-                    parameterSet.AddAll(parameters);
-                }
-
-                // Iterate over properties
-                foreach (OdcmProperty property in properties)
-                {
-                    // Get the PowerShell type for this property from the Edm type
-                    Type propertyType = property.Type.ToPowerShellType(property.IsCollection);
-
-                    // Create the parameter for this property if it doesn't already exist
-                    if (!parameterLookup.TryGetValue(property.Name, out CmdletParameter parameter))
-                    {
-                        // Get the valid values if it is an enum
-                        IEnumerable<string> enumMembers = null;
-                        if (markAsPowerShellParameter && property.Type is OdcmEnum @enum)
-                        {
-                            enumMembers = @enum.Members.Select(enumMember => enumMember.Name);
-                        }
-
-                        parameter = CreateEntityParameter(
-                            property,
-                            propertyType,
-                            markAsPowerShellParameter,
-                            type == baseType,
-                            type.FullName,
-                            isReadOnly: (property.IsComputed() && cmdlet.OperationType.IsInsertUpdateOrDeleteOperation())
-                                     || (property.IsImmutable() && cmdlet.OperationType.IsInsertOrDeleteOperation()),
-                            enumValues: enumMembers);
-
-                        parameterLookup.Add(property.Name, parameter);
-                    }
-                    else if (propertyType != parameter.Type)
-                    {
-                        // If all uses of this parameter don't use the same type, default to System.Object
-                        parameter = CreateEntityParameter(
-                            property,
-                            typeof(object),
-                            markAsPowerShellParameter,
-                            type == baseType,
-                            type.FullName,
-                            isReadOnly: (property.IsComputed() && cmdlet.OperationType.IsInsertUpdateOrDeleteOperation())
-                                     || (property.IsImmutable() && cmdlet.OperationType.IsInsertOrDeleteOperation()));
-
-                        parameterLookup[property.Name] = parameter;
-                    }
-
-                    // Save the original OData type name
-                    parameter.ODataTypeFullName = property.Type.FullName;
-
-                    // Add this type's properties as parameters to this parameter set
-                    parameterSet.Add(parameter);
-                }
-            });
-
-            // Get/create the shared parameter set if required (e.g. the "Post" parameter set for the "Create" cmdlet)
-            if (sharedParameterSetName != null)
-            {
-                // Create the parameter set if it doesn't already exist
-                CmdletParameterSet sharedParameterSet = cmdlet.GetOrCreateParameterSet(sharedParameterSetName);
-
-                // All properties should be part of the shared parameter set
-                sharedParameterSet.AddAll(parameterLookup.Values);
-            }
-        }
-
-        private static CmdletParameter CreateEntityParameter(
-            OdcmProperty property,
-            Type powerShellType,
-            bool markAsPowerShellParameter,
-            bool isBaseType,
-            string entityTypeFullName,
-            bool isReadOnly = false,
-            IEnumerable<string> enumValues = null)
-        {
-            var result = new CmdletParameter(property.Name, powerShellType)
-            {
-                Mandatory = property.IsRequired,
-                ValueFromPipelineByPropertyName = false,
-                IsPowerShellParameter = markAsPowerShellParameter && !isReadOnly,
-
-                DerivedTypeName = markAsPowerShellParameter || isBaseType
-                                ? null
-                                : entityTypeFullName,
-                IsExpandable = !markAsPowerShellParameter && property.IsLink, // TODO: use the annotations in the schema to determine whether the property is expandable
-                IsSortable = !markAsPowerShellParameter && !property.IsCollection,
-                Documentation = new CmdletParameterDocumentation()
-                {
-                    Descriptions = new string[] {
-                        $"The \"{property.Name}\" property, of type \"{property.Type.FullName}\".",
-                        $"This property is on the \"{entityTypeFullName}\" type.",
-                        property.Description,
-                    },
-                    ValidValues = enumValues,
-                }
-            };
-
-            return result;
-        }
-
-        /// <summary>
         /// Sets up the cmdlet's values for the specified function.
         /// </summary>
         /// <param name="cmdlet">The cmdlet</param>
         /// <param name="function">The function</param>
-        private static void SetupFunctionDetails(this Cmdlet cmdlet, OdcmMethod function)
+        private static void SetupFunctionDetails(this OperationCmdlet cmdlet, OdcmMethod function)
         {
             // Since this is a function, it should not have any observable side-effects (according to the OData v4 spec)
             cmdlet.ImpactLevel = PS.ConfirmImpact.None;
@@ -1041,7 +777,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
         /// </summary>
         /// <param name="cmdlet">The cmdlet</param>
         /// <param name="action">The action</param>
-        private static void SetupActionDetails(this Cmdlet cmdlet, OdcmMethod action)
+        private static void SetupActionDetails(this OperationCmdlet cmdlet, OdcmMethod action)
         {
             // Set the cmdlet up as a method
             cmdlet.OperationType = CmdletOperationType.Action;
@@ -1051,7 +787,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             cmdlet.AddActionParameters(action);
         }
 
-        private static CmdletParameterSet AddFunctionParameters(this Cmdlet cmdlet, OdcmMethod function, string parameterSetName = null)
+        private static CmdletParameterSet AddFunctionParameters(this OperationCmdlet cmdlet, OdcmMethod function, string parameterSetName = null)
         {
             if (cmdlet == null)
             {
@@ -1116,7 +852,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             return selectedParameterSet;
         }
 
-        private static void AddActionParameters(this Cmdlet cmdlet, OdcmMethod action)
+        private static void AddActionParameters(this OperationCmdlet cmdlet, OdcmMethod action)
         {
             if (cmdlet == null)
             {
@@ -1161,23 +897,15 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             }
         }
 
-        private static Type ToPowerShellType(this OdcmType odcmType, bool isCollection = false)
+        private static Func<OdcmProperty, bool> GetIsReadOnlyFunc(this OperationCmdlet cmdlet)
         {
-            if (odcmType == null)
+            if (cmdlet == null)
             {
-                throw new ArgumentNullException(nameof(odcmType));
+                throw new ArgumentNullException(nameof(cmdlet));
             }
 
-            // Convert the type (default to System.Object if we can't convert the type)
-            Type result = odcmType.ToDotNetType();
-
-            // Make it an array type if necessary
-            if (isCollection)
-            {
-                result = result.MakeArrayType();
-            }
-
-            return result;
+            return property => (property.IsComputed() && cmdlet.OperationType.IsInsertUpdateOrDeleteOperation())
+                            || (property.IsImmutable() && cmdlet.OperationType.IsInsertOrDeleteOperation());
         }
 
         #endregion Helpers

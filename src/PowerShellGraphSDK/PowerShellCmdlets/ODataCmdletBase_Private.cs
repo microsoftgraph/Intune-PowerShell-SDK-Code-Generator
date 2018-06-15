@@ -11,7 +11,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     using System.Net.Http.Headers;
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
-    public abstract partial class ODataCmdlet
+    public abstract partial class ODataCmdletBase
     {
         /// <summary>
         /// Writes an exception to the PowerShell console.  If the exception does not represent a PowerShell error,

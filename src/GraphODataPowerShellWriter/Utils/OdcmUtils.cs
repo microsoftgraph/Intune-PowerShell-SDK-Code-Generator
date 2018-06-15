@@ -6,6 +6,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using PS = System.Management.Automation;
+    using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
     using PowerShellGraphSDK;
     using PowerShellGraphSDK.ODataConstants;
     using Vipr.Core.CodeModel;
@@ -309,9 +311,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 throw new ArgumentNullException(nameof(obj));
             }
 
-            OdcmBooleanCapability capability = obj.TryGetCapability(AnnotationTerms.Computed) as OdcmBooleanCapability;
-
-            return (capability != null && capability.Value == true);
+            return (obj.TryGetCapability(AnnotationTerms.Computed) is OdcmBooleanCapability capability && capability.Value == true);
         }
 
         /// <summary>
@@ -326,9 +326,283 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 throw new ArgumentNullException(nameof(obj));
             }
 
-            OdcmBooleanCapability capability = obj.TryGetCapability(AnnotationTerms.Immutable) as OdcmBooleanCapability;
+            return (obj.TryGetCapability(AnnotationTerms.Immutable) is OdcmBooleanCapability capability && capability.Value == true);
+        }
 
-            return (capability != null && capability.Value == true);
+        /// <summary>
+        /// Gets the name of the ObjectFactoryCmdlet that can be generated from the given OdcmType.
+        /// </summary>
+        /// <param name="type">The ODCM type</param>
+        /// <returns>The name of the ObjectFactoryCmdlet.</returns>
+        public static CmdletName GetObjectFactoryCmdletName(this OdcmType type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            return new CmdletName(PS.VerbsCommon.New, $"{type.Name.Pascalize()}Object");
+        }
+
+        /// <summary>
+        /// Converts an ODCM type into a PowerShell acceptable type.
+        /// </summary>
+        /// <param name="odcmType">The ODCM type</param>
+        /// <param name="isCollection">Whether or not the type is the type of object in a collection (e.g. an array)</param>
+        /// <returns>The PowerShell type.</returns>
+        public static Type ToPowerShellType(this OdcmType odcmType, bool isCollection = false)
+        {
+            if (odcmType == null)
+            {
+                throw new ArgumentNullException(nameof(odcmType));
+            }
+
+            // Convert the type (default to System.Object if we can't convert the type)
+            Type result = odcmType.ToDotNetType();
+
+            // Make it an array type if necessary
+            if (isCollection)
+            {
+                result = result.MakeArrayType();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Traverses the tree of a type and its subtypes. 
+        /// </summary>
+        /// <param name="baseType">The base type (i.e. root of the tree)</param>
+        /// <param name="typeProcessor">The processor for handling each type</param>
+        /// <remarks>
+        /// Types are guaranteed to be processed before the types that derive from them.
+        /// In other words, when a type is visited, it is guaranteed that all of its base types have been processed.
+        /// </remarks>
+        public static void VisitDerivedTypes(this OdcmType baseType, Action<OdcmType> typeProcessor)
+        {
+            if (baseType == null)
+            {
+                throw new ArgumentNullException(nameof(baseType));
+            }
+            if (typeProcessor == null)
+            {
+                throw new ArgumentNullException(nameof(typeProcessor));
+            }
+
+            Stack<OdcmType> unvisited = new Stack<OdcmType>();
+            unvisited.Push(baseType);
+            while (unvisited.Any())
+            {
+                // Get the next type
+                OdcmType type = unvisited.Pop();
+
+                // Add derived types to the unvisited list
+                foreach (OdcmType derivedType in type.GetDerivedTypes())
+                {
+                    unvisited.Push(derivedType);
+                }
+
+                // Process the type
+                typeProcessor(type);
+            }
+        }
+
+        /// <summary>
+        /// Create the processor for adding parameters to a cmdlet.
+        /// </summary>
+        /// <param name="cmdlet">The cmdlet</param>
+        /// <param name="baseType">The type for which we should add parameters</param>
+        /// <param name="addSwitchParametersForAbstractTypes">Whether or not to create a switch parameter for abstract types</param>
+        /// <param name="sharedParameterSetName">
+        /// The name of the shared parameter set, or null if parameters shouldn't be added to the shared parameter set
+        /// </param>
+        public static void AddParametersForEntityProperties(
+            this Cmdlet cmdlet,
+            OdcmType baseType,
+            Func<OdcmProperty, bool> isReadOnlyFunc,
+            string sharedParameterSetName = null,
+            bool addSwitchParameters = true,
+            bool markAsPowerShellParameter = true)
+        {
+            if (cmdlet == null)
+            {
+                throw new ArgumentNullException(nameof(cmdlet));
+            }
+            if (baseType == null)
+            {
+                throw new ArgumentNullException(nameof(baseType));
+            }
+
+            // Don't try to add parameters for Edm types
+            if (baseType.Namespace.Name.StartsWith("Edm"))
+            {
+                return;
+            }
+
+            // Track parameters as we visit each type
+            IDictionary<OdcmType, IEnumerable<string>> parameterNameLookup = new Dictionary<OdcmType, IEnumerable<string>>();
+            IDictionary<string, CmdletParameter> parameterLookup = new Dictionary<string, CmdletParameter>();
+
+            // Visit all derived types
+            baseType.VisitDerivedTypes((OdcmType type) =>
+            {
+                string parameterName = type.Name;
+                string parameterSetName = "#" + type.FullName;
+
+                // Determine if this is the only entity type for this cmdlet
+                bool isTheOnlyType = (type == baseType && !type.GetDerivedTypes().Any());
+
+                // Create the parameter set for this type if it doesn't already exist
+                CmdletParameterSet parameterSet = cmdlet.GetOrCreateParameterSet(parameterSetName);
+
+                // Set this as the default parameter set if it's the only type
+                if (markAsPowerShellParameter)
+                {
+                    cmdlet.DefaultParameterSetName = parameterSet.Name;
+                }
+
+                // Add a switch parameter for this type if required
+                if (addSwitchParameters
+                    && !(type is OdcmClass @class && @class.IsAbstract) // don't add a switch for abstract types
+                    && !isTheOnlyType) // if there is only 1 type, don't add a switch parameter for it
+                {
+                    // Add the switch parameter
+                    parameterSet.Add(new CmdletParameter(parameterName, typeof(PS.SwitchParameter))
+                    {
+                        Mandatory = true,
+                        ParameterSetSelectorName = parameterSetName,
+                        ValueFromPipelineByPropertyName = false,
+                        Documentation = new CmdletParameterDocumentation()
+                        {
+                            Descriptions = new string[]
+                            {
+                                $"A switch parameter for selecting the parameter set which corresponds to the \"{type.FullName}\" type.",
+                            },
+                        },
+                    });
+                }
+
+                // Evaluate the properties on this type
+                IEnumerable<OdcmProperty> properties = type.EvaluateProperties(type == baseType)
+                    .Where(prop => prop.Name != RequestProperties.Id);
+
+                // Add this type into the parmeter name lookup table
+                parameterNameLookup.Add(type, properties
+                    //.Where(prop => !prop.ReadOnly && !prop.IsCollection && !prop.IsLink)
+                    .Select(prop => prop.Name)
+                    .Distinct());
+
+                // Add the base types' properties as parameters to this parameter set
+                // NOTE: Safe lookups are not necessary since all base types are guaranteed to have already been processed
+                // by the VisitDerivedTypes() method
+                OdcmType currentType = type;
+                while (currentType != baseType)
+                {
+                    // Get the next type
+                    currentType = currentType.GetBaseType();
+
+                    // Lookup the properties for this type
+                    IEnumerable<string> parameterNames = parameterNameLookup[currentType];
+
+                    // Lookup the CmdletParameter objects for each parameter name
+                    IEnumerable<CmdletParameter> parameters = parameterNames.Select(paramName => parameterLookup[paramName]);
+
+                    // Add the parameters to the parameter set
+                    parameterSet.AddAll(parameters);
+                }
+
+                // Iterate over properties
+                foreach (OdcmProperty property in properties)
+                {
+                    // Get the PowerShell type for this property from the Edm type
+                    Type propertyType = property.Type.ToPowerShellType(property.IsCollection);
+
+                    // Create the parameter for this property if it doesn't already exist
+                    if (!parameterLookup.TryGetValue(property.Name, out CmdletParameter parameter))
+                    {
+                        // Get the valid values if it is an enum
+                        IEnumerable<string> enumMembers = null;
+                        if (markAsPowerShellParameter && property.Type is OdcmEnum @enum)
+                        {
+                            enumMembers = @enum.Members.Select(enumMember => enumMember.Name);
+                        }
+
+                        parameter = CreateEntityParameter(
+                            property,
+                            propertyType,
+                            markAsPowerShellParameter,
+                            type == baseType,
+                            type.FullName,
+                            isReadOnly: isReadOnlyFunc(property),
+                            enumValues: enumMembers);
+
+                        parameterLookup.Add(property.Name, parameter);
+                    }
+                    else if (propertyType != parameter.Type)
+                    {
+                        // If all uses of this parameter don't use the same type, default to System.Object
+                        parameter = CreateEntityParameter(
+                            property,
+                            typeof(object),
+                            markAsPowerShellParameter,
+                            type == baseType,
+                            type.FullName,
+                            isReadOnly: isReadOnlyFunc(property));
+
+                        parameterLookup[property.Name] = parameter;
+                    }
+
+                    // Save the original OData type name
+                    parameter.ODataTypeFullName = property.Type.FullName;
+
+                    // Add this type's properties as parameters to this parameter set
+                    parameterSet.Add(parameter);
+                }
+            });
+
+            // Get/create the shared parameter set if required (e.g. the "Post" parameter set for the "Create" cmdlet)
+            if (sharedParameterSetName != null)
+            {
+                // Create the parameter set if it doesn't already exist
+                CmdletParameterSet sharedParameterSet = cmdlet.GetOrCreateParameterSet(sharedParameterSetName);
+
+                // All properties should be part of the shared parameter set
+                sharedParameterSet.AddAll(parameterLookup.Values);
+            }
+        }
+
+        private static CmdletParameter CreateEntityParameter(
+            OdcmProperty property,
+            Type powerShellType,
+            bool markAsPowerShellParameter,
+            bool isBaseType,
+            string entityTypeFullName,
+            bool isReadOnly = false,
+            IEnumerable<string> enumValues = null)
+        {
+            var result = new CmdletParameter(property.Name, powerShellType)
+            {
+                Mandatory = property.IsRequired,
+                ValueFromPipelineByPropertyName = false,
+                IsPowerShellParameter = markAsPowerShellParameter && !isReadOnly,
+
+                DerivedTypeName = markAsPowerShellParameter || isBaseType
+                                ? null
+                                : entityTypeFullName,
+                IsExpandable = !markAsPowerShellParameter && property.IsLink, // TODO: use the annotations in the schema to determine whether the property is expandable
+                IsSortable = !markAsPowerShellParameter && !property.IsCollection,
+                Documentation = new CmdletParameterDocumentation()
+                {
+                    Descriptions = new string[] {
+                        $"The \"{property.Name}\" property, of type \"{property.Type.FullName}\".",
+                        $"This property is on the \"{entityTypeFullName}\" type.",
+                        property.Description,
+                    },
+                    ValidValues = enumValues,
+                }
+            };
+
+            return result;
         }
 
         private static OdcmCapability TryGetCapability(this OdcmObject obj, string termName)

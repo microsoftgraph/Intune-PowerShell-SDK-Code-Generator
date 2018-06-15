@@ -13,7 +13,8 @@ namespace GraphODataPowerShellTemplateWriter
     /// </summary>
     public class PowerShellSDKWriter : IOdcmWriter
     {
-        public const string CmdletPrefix = "Graph";
+        public const string GeneratedSDKFilesLocation = @"PowerShellCmdlets\Generated\SDK";
+        public const string GeneratedObjectFactoryFilesLocation = @"PowerShellCmdlets\Generated\ObjectFactories";
 
         /// <summary>
         /// Implementation which is provided to Vipr for transforming an ODCM model into the PowerShell SDK.
@@ -22,9 +23,17 @@ namespace GraphODataPowerShellTemplateWriter
         /// <returns>The TextFile objects representing the generated SDK.</returns>
         public IEnumerable<TextFile> GenerateProxy(OdcmModel model)
         {
-            IEnumerable<TextFile> generated =  GeneratePowerShellSDK(model);
+            IEnumerable<TextFile> generatedSdk = GeneratePowerShellSDK(model, PowerShellSDKWriter.GeneratedSDKFilesLocation);
+            foreach (TextFile file in generatedSdk)
+            {
+                yield return file;
+            }
 
-            return generated;
+            IEnumerable<TextFile> generatedObjectFactories = GenerateObjectFactoryCmdlets(model, PowerShellSDKWriter.GeneratedObjectFactoryFilesLocation);
+            foreach (TextFile file in generatedObjectFactories)
+            {
+                yield return file;
+            }
         }
 
         /// <summary>
@@ -32,18 +41,41 @@ namespace GraphODataPowerShellTemplateWriter
         /// </summary>
         /// <param name="model">The ODCM model</param>
         /// <returns>The TextFile objects representing the generated SDK.</returns>
-        public static IEnumerable<TextFile> GeneratePowerShellSDK(OdcmModel model)
+        private static IEnumerable<TextFile> GeneratePowerShellSDK(OdcmModel model, string location)
         {
             // 1. Convert the ODCM model into nodes (i.e. routes)
             foreach (OdcmNode node in model.ConvertToOdcmNodes())
             {
                 // 2. Convert the route into an abstract representation of the PowerShell cmdlets
-                Resource resource = node.ConvertToResource(@"PowerShellCmdlets\Generated");
+                Resource resource = node.ConvertToResource(location);
 
                 // 3. Convert the resource into an abstract representation of the C# file
                 CSharpFile cSharpFile = resource.ToCSharpFile();
 
-                // 4. Generate the text file by inserting data from the intermediate type into templates
+                // 4. Generate the text file by converting the abstract representation of the C# file into a string
+                TextFile outputFile = cSharpFile.ToTextFile();
+
+                // Return the generated file
+                yield return outputFile;
+            }
+        }
+
+        /// <summary>
+        /// Generates factory cmdlets for creating PowerShell objects that can be serialized as types defined
+        /// in the given ODCM model.
+        /// </summary>
+        /// <param name="model">The ODCM model</param>
+        /// <param name="location">The filesystem location at which the generated files should be placed</param>
+        /// <returns></returns>
+        private static IEnumerable<TextFile> GenerateObjectFactoryCmdlets(OdcmModel model, string location)
+        {
+            // 1. Convert the types in the ODCM model into ObjectFactory objects
+            foreach (ObjectFactoryCmdlet objectFactoryCmdlet in model.CreateObjectFactories(location))
+            {
+                // 2. Convert the ObjectFactory into an abstract representation of the C# file
+                CSharpFile cSharpFile = objectFactoryCmdlet.ToCSharpFile();
+
+                // 3. Generate the text file by converting the abstract representation of the C# file into a string
                 TextFile outputFile = cSharpFile.ToTextFile();
 
                 // Return the generated file

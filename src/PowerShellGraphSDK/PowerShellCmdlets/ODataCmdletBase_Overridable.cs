@@ -9,7 +9,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
     using Newtonsoft.Json.Linq;
 
-    public abstract partial class ODataCmdlet
+    public abstract partial class ODataCmdletBase
     {
         /// <summary>
         /// Returns the HTTP method to be used for the network call.  This method should never return null.

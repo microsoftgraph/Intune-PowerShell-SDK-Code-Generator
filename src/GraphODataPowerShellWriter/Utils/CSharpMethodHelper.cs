@@ -16,7 +16,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             }
 
             // Create the method definition
-            string methodName = nameof(ODataCmdlet.GetResourcePath);
+            string methodName = nameof(ODataCmdletBase.GetResourcePath);
             Type returnType = typeof(string);
             string methodBody = isFunction
                 ? $"return $\"{url}({{this.{nameof(GetCmdlet.GetFunctionUrlSegment)}()}})\";"
@@ -40,7 +40,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             }
 
             // Create the method definition
-            string methodName = nameof(ODataCmdlet.GetHttpMethod);
+            string methodName = nameof(ODataCmdletBase.GetHttpMethod);
             Type returnType = typeof(string);
             string methodBody = httpMethod;
 
@@ -57,9 +57,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         public static CSharpMethod CreateGetContentMethodForCreatingReference(string referenceUrlParameterName)
         {
             // Create the method definition
-            string methodName = nameof(ODataCmdlet.GetContent);
+            string methodName = nameof(ODataCmdletBase.GetContent);
             Type returnType = typeof(object);
-            string methodBody = $"return this.{nameof(ODataCmdlet.GetReferenceRequestContent)}({referenceUrlParameterName});";
+            string methodBody = $"return this.{nameof(ODataCmdletBase.GetReferenceRequestContent)}({referenceUrlParameterName});";
 
             // Create the method object
             CSharpMethod result = new CSharpMethod(methodName, returnType, methodBody)

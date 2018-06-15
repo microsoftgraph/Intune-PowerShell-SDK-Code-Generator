@@ -4,12 +4,11 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Management.Automation;
     using System.Reflection;
     using System.Text;
 
-    public abstract partial class ODataCmdlet
+    public abstract partial class ODataCmdletBase
     {
         internal string BuildUrl(string resourcePath)
         {
@@ -35,69 +34,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
 
             return result;
         }
-
-        /// <summary>
-        /// Gets the properties that are bound (set by the user) in the current invocation of this cmdlet.
-        /// </summary>
-        /// <param name="includeInherited">Whether or not to include inherited properties</param>
-        /// <param name="filter">The filter for the properties to include in the result (if it evaluates to true, the property is included)</param>
-        /// <returns>The properties that are bound in the current invocation of this cmdlet.</returns>
-        internal IEnumerable<PropertyInfo> GetBoundProperties(bool includeInherited = true, Func<PropertyInfo, bool> filter = null)
-        {
-            // Get the cmdlet's properties
-            IEnumerable<PropertyInfo> cmdletProperties = this.GetProperties(includeInherited, filter);
-
-            // Get only the properties that were set from PowerShell
-            IEnumerable<string> boundParameterNames = this.MyInvocation.BoundParameters.Keys;
-            IEnumerable<PropertyInfo> boundProperties = cmdletProperties.Where(prop => boundParameterNames.Contains(prop.Name));
-
-            return boundProperties;
-        }
-
-        /// <summary>
-        /// Gets all the properties declared on this class.
-        /// </summary>
-        /// <param name="includeInherited">Whether or not to include inherited properties (defaults to true)</param>
-        /// <param name="filter">The filter for the properties to include in the result (if it evaluates to true, the property is included)</param>
-        /// <returns>The properties that are defined on this cmdlet.</returns>
-        internal IEnumerable<PropertyInfo> GetProperties(bool includeInherited, Func<PropertyInfo, bool> filter = null)
-        {
-            bool useLazyPath = includeInherited == false && filter == null;
-            if (useLazyPath && this._properties != null)
-            {
-                // Shortcut path to avoid re-evaluating properties for the most set of parameters
-                return this._properties;
-            }
-            else
-            {
-                // Create the binding flags
-                BindingFlags bindingFlags =
-                    BindingFlags.Instance | // ignore static/const properties
-                    BindingFlags.Public; // only include public properties
-                if (!includeInherited)
-                {
-                    bindingFlags |= BindingFlags.DeclaredOnly; // ignore inherited properties
-                }
-
-                // Get the properties on this cmdlet
-                IEnumerable<PropertyInfo> result = this.GetType().GetProperties(bindingFlags);
-
-                // Apply filter if necessary
-                if (filter != null)
-                {
-                    result = result.Where(filter);
-                }
-
-                // Store evaluated properties in case this method gets called again with the same parameters
-                if (useLazyPath)
-                {
-                    this._properties = result;
-                }
-
-                return result;
-            }
-        }
-        private IEnumerable<PropertyInfo> _properties = null;
 
         /// <summary>
         /// Creates a JSON string from the given properties.
@@ -231,11 +167,6 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 // Hide the properties we have been tracking
                 psObj.SetDefaultProperties(prop => !propertiesToHide.Contains(prop.Name));
             }
-        }
-
-        internal string GetCmdletNoun()
-        {
-            return this.GetType().GetCmdletNoun();
         }
     }
 }
