@@ -10,6 +10,8 @@ $env:testDir = "$($env:PowerShellSDKRepoRoot)\Tests"
 $env:moduleName = 'IntunePreview'
 $env:moduleExtension = 'psd1'
 $env:defaultGraphSchema = "$($env:PowerShellSDKRepoRoot)\Test Graph Schemas\v1.0-20180406 - Intune.csdl"
+$env:sdkSrcRoot = "$($env:PowerShellSDKRepoRoot)\submodules\Intune-PowerShell-SDK\src"
+
 # Remember the settings that will change when launching a child PowerShell context
 $env:standardWindowTitle = (Get-Host).UI.RawUI.WindowTitle
 $env:standardForegroundColor = (Get-Host).UI.RawUI.ForegroundColor
@@ -68,7 +70,7 @@ function global:GenerateSDK {
 
     global:WriterBuild
     global:WriterRun -GraphSchema $GraphSchema
-    global:SDKBuild
+    global:SDKBuild    
 }
 
 function global:GenerateAndRunSDK {
@@ -78,6 +80,22 @@ function global:GenerateAndRunSDK {
 
     global:GenerateSDK -GraphSchema $GraphSchema
     global:SDKRun
+}
+
+function global:ReleaseSDK {
+[alias("release")]
+    param()
+    
+    global:GenerateSDK
+    Invoke-Expression "rmdir $($env:sdkSrcRoot)"
+    Invoke-Expression "mkdir $($env:sdkSrcRoot)"
+    Invoke-Expression "xcopy /FDVICE /Y $($env:generatedDir)\. $($env:sdkSrcRoot)\."
+    Invoke-Expression "pushd $($env:sdkSrcRoot)"
+    Invoke-Expression "git add $($env:sdkSrcRoot)\."
+    Invoke-Expression "$env:buildScript -WorkingDirectory '$env:sdkSrcRoot' -OutputPath '$env:sdkSrcRoot\bin\Release' -Verbosity 'quiet'"
+
+    Write-Host "Finished building the SDK for release." -f Cyan
+    Write-Host
 }
 
 # Restore NuGet packages
@@ -94,4 +112,5 @@ Write-Host "    WriterRun               " -NoNewline -f Cyan; Write-Host ' | ' -
 Write-Host "    SDKBuild                " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Builds the generated PowerShellSDK project" -f DarkCyan
 Write-Host "    SDKRun (or 'run')       " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Runs the generated PowerShellSDK project" -f DarkCyan
 Write-Host "    SDKTest (or 'test')     " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Runs tests against the generated PowerShellSDK project" -f DarkCyan
+Write-Host "    ReleaseSDK (or 'release')     " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Releases the generated SDK to https://github.com/Microsoft/Intune-PowerShell-SDK." -f DarkCyan
 Write-Host
