@@ -6,6 +6,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     using System.Collections.Generic;
     using System.Management.Automation;
     using System.Net.Http;
+    using PowerShellGraphSDK.PowerShellCmdlets.Utils;
 
     /// <summary>
     /// The common behavior between all OData PowerShell SDK cmdlets.

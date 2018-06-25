@@ -76,7 +76,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 property => property.IsComputed() || property.IsImmutable(),
                 sharedParameterSetName: null,
                 addSwitchParameters: true,
-                markAsPowerShellParameter: true);
+                markAsPowerShellParameter: true,
+                setBaseTypeParameterSetAsDefault: true);
 
             return cmdlet;
         }

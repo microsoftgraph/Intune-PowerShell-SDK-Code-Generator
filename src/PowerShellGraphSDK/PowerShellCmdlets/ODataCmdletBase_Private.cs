@@ -13,39 +13,15 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
 
     public abstract partial class ODataCmdletBase
     {
-        /// <summary>
-        /// Writes an exception to the PowerShell console.  If the exception does not represent a PowerShell error,
-        /// it will be wrapped in a PowerShell error object before being written to the console.
-        /// </summary>
-        /// <param name="ex">The exception to write to the console</param>
-        private void WriteError(Exception ex)
-        {
-            ErrorRecord errorRecord;
-            if (ex is IContainsErrorRecord powerShellError)
-            {
-                errorRecord = powerShellError.ErrorRecord;
-            }
-            else
-            {
-                errorRecord = new ErrorRecord(
-                    ex,
-                    PSGraphSDKException.ErrorPrefix + "UnknownError",
-                    ErrorCategory.OperationStopped,
-                    null);
-            }
-
-            this.WriteError(errorRecord);
-        }
-
         private AuthenticationResult Auth(EnvironmentParameters environmentParameters)
         {
             AuthenticationResult authResult = AuthUtils.LatestAuthResult;
-            string cmdletName = $"{PowerShellCmdlets.Connect.CmdletVerb}-{PowerShellCmdlets.Connect.CmdletNoun} -{nameof(PowerShellCmdlets.Connect.ForceInteractive)}";
+            string cmdletName = $"{PowerShellCmdlets.Connect.CmdletVerb}-{PowerShellCmdlets.Connect.CmdletNoun}";
             if (authResult == null)
             {
                 // User has not authenticated
                 throw new PSAuthenticationError(
-                    new InvalidOperationException($"Not authenticated.  Please use the '{cmdletName}' cmdlet to authenticate."),
+                    new InvalidOperationException($"Not authenticated.  Please use the \"{cmdletName}\" command to authenticate."),
                     "NotAuthenticated",
                     ErrorCategory.AuthenticationError,
                     null);
@@ -62,7 +38,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 catch (AdalException)
                 {
                     throw new PSAuthenticationError(
-                        new InvalidOperationException($"Authentication has expired.  Please use the '{cmdletName}' cmdlet to authenticate."),
+                        new InvalidOperationException($"Authentication has expired.  Please use the \"{cmdletName} -{nameof(PowerShellCmdlets.Connect.ForceInteractive)}\" command to authenticate."),
                         "AuthenticationExpired",
                         ErrorCategory.AuthenticationError,
                         authResult);

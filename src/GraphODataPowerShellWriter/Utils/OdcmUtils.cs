@@ -422,7 +422,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             Func<OdcmProperty, bool> isReadOnlyFunc,
             string sharedParameterSetName = null,
             bool addSwitchParameters = true,
-            bool markAsPowerShellParameter = true)
+            bool markAsPowerShellParameter = true,
+            bool setBaseTypeParameterSetAsDefault = false)
         {
             if (cmdlet == null)
             {
@@ -456,7 +457,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 CmdletParameterSet parameterSet = cmdlet.GetOrCreateParameterSet(parameterSetName);
 
                 // Set this as the default parameter set if it's the only type
-                if (markAsPowerShellParameter)
+                if ((setBaseTypeParameterSetAsDefault && type == baseType)
+                    || (isTheOnlyType && markAsPowerShellParameter))
                 {
                     cmdlet.DefaultParameterSetName = parameterSet.Name;
                 }

@@ -5,6 +5,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
     using System.Collections;
     using System.Collections.Generic;
     using System.Management.Automation;
+    using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
@@ -62,6 +63,12 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         private const string ParameterSetCertificate = "Certificate";
 
         /// <summary>
+        /// <para type="description">If the Quet flag is set, this cmdlet will suppress output upon successfully logging in.</para>
+        /// </summary>
+        [Parameter]
+        public SwitchParameter Quiet { get; set; }
+
+        /// <summary>
         /// <para type="description">
         /// If the ForceInteractive flag is set, this cmdlet will always create an interactive window to authenticate.
         /// If the ForceInteractive flag is not set, this cmdlet is attempt to authenticate with cached credentials before falling back to showing an interactive window.
@@ -85,9 +92,12 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         [Parameter]
         public SwitchParameter PassThru { get; set; }
 
-        //[Parameter(ParameterSetName = ParameterSetPSCredential, Mandatory = true)]
-        //[ValidateNotNull]
-        //public PSCredential PSCredential { get; set; }
+        /// <summary>
+        /// <para type="description">The PSCredential object to use when specifying the username and password while authenticating.</para>
+        /// </summary>
+        [Parameter(ParameterSetName = ParameterSetPSCredential, Mandatory = true)]
+        [ValidateNotNull]
+        public PSCredential PSCredential { get; set; }
 
         //[Parameter(ParameterSetName = ParameterSetCertificate, Mandatory = true)]
         //[ValidateNotNull]
@@ -103,8 +113,9 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             switch (this.ParameterSetName)
             {
                 case ParameterSetPSCredential:
-                    // TODO: Implement PSCredential auth
-                    throw new PSNotImplementedException();
+                    NetworkCredential networkCreds = this.PSCredential.GetNetworkCredential();
+                    authResult = AuthUtils.AuthWithCredentials(networkCreds.UserName, networkCreds.Password);
+                    break;
                 case ParameterSetCertificate:
                     // TODO: Implement Certificate auth
                     throw new PSNotImplementedException();
@@ -119,23 +130,23 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                     break;
             }
 
-            // Return the access token
-            if (this.PassThru)
+            // Decide what to return
+            if (!this.Quiet)
             {
-                this.WriteObject(authResult.AccessToken);
-            }
-            else
-            {
-                this.WriteObject(new
+                if (this.PassThru)
                 {
-                    UPN = authResult.UserInfo.DisplayableId,
-                    UserFamilyName = authResult.UserInfo.FamilyName,
-                    UserGivenName = authResult.UserInfo.GivenName,
-                    UserId = authResult.UserInfo.UniqueId,
-                    TenantId = authResult.TenantId,
-                    AuthenticationExpiry = authResult.ExpiresOn.ToLocalTime(),
-                    Authority = authResult.Authority,
-                }.ToPowerShellObject());
+                    // Return the access token
+                    this.WriteObject(authResult.AccessToken);
+                }
+                else
+                {
+                    // Return details about the logged in user
+                    this.WriteObject(new
+                    {
+                        UPN = authResult.UserInfo.DisplayableId,
+                        TenantId = authResult.TenantId,
+                    }.ToPowerShellObject());
+                }
             }
         }
     }
@@ -163,18 +174,16 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// </summary>
         protected override void ProcessRecord()
         {
-            object result = ODataCmdletBase.CurrentEnvironmentParameters.ToPowerShellObject();
-            if (result is IEnumerable<object> objArray)
+            EnvironmentParameters currentParameters = ODataCmdletBase.CurrentEnvironmentParameters;
+            this.WriteObject(new
             {
-                foreach (object obj in objArray)
-                {
-                    this.WriteObject(obj);
-                }
-            }
-            else
-            {
-                this.WriteObject(result);
-            }
+                SchemaVersion = currentParameters.SchemaVersion,
+                BaseAddress = currentParameters.GraphBaseAddress,
+                AuthenticationUrl = currentParameters.AuthUrl,
+                AppId = currentParameters.AppId,
+                RedirectLink = currentParameters.RedirectLink,
+                GraphResourceId = currentParameters.ResourceId,
+            }.ToPowerShellObject());
         }
     }
 
@@ -247,7 +256,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             // AppId
             if (!string.IsNullOrEmpty(this.AppId))
             {
-                ODataCmdletBase.CurrentEnvironmentParameters.ClientId = this.AppId;
+                ODataCmdletBase.CurrentEnvironmentParameters.AppId = this.AppId;
             }
 
             // Auth URL
