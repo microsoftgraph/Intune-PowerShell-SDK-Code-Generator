@@ -1,7 +1,7 @@
 param (
     [string]$BuildTargets = 'Rebuild',
     [string]$WorkingDirectory = "$(Get-Location)",
-    [string]$OutputPath = "$WorkingDirectory\bin\Release",
+    [string]$OutputPath = "$WorkingDirectory\bin\$($env:buildConfiguration)",
     [string]$MSBuildExe32 = '%ProgramFiles(x86)%\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\MSBuild.exe',
     [string]$MSBuildExe64 = '%ProgramFiles%\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\MSBuild.exe',
     [string]$Verbosity = 'minimal',
@@ -46,7 +46,7 @@ if (-Not (Test-Path $msBuildExe)) {
 
 # Compile the MSBuild arguments
 $MSBuildArguments = @(
-    "/p:Configuration=Release",
+    "/p:Configuration=$($env:buildConfiguration)",
     "/p:OutputPath=`"$OutputPath`"",
     "/t:$BuildTargets",
     "/p:UseSharedCompilation=false",

@@ -1,4 +1,4 @@
-function Get-LatestErrorDebugInfo {
+function Get-MSGraphDebugInfo {
     $myErrors = Get-AllErrorsDebugInfo
     if ($myErrors.Count -eq 0) {
         Write-Host 'No errors found'
@@ -9,21 +9,7 @@ function Get-LatestErrorDebugInfo {
     }
 }
 
-function Get-AllErrorsDebugInfo {
-    # If there are any errors that have not set a TargetObject, make sure to return some default object instead of null.
-    # This will ensure that the index of the debug info returned will match up with the same entry in the global $error variable.
-    $errorTargetObjects = $global:error | ForEach-Object {
-        if ($_.TargetObject -ne $null) {
-            $_.TargetObject
-        } else {
-            ''
-        }
-    }
-
-    $errorTargetObjects | Write-Output
-}
-
-function Get-AllPages {
+function Get-MSGraphAllPages {
     [CmdletBinding(
         ConfirmImpact = 'Medium',
         DefaultParameterSetName = 'SearchResult'
@@ -57,7 +43,7 @@ function Get-AllPages {
     {
         # Make the call to get the next page
         try {
-            $page = Get-NextPage -NextLink $currentNextLink
+            $page = Get-MSGraphNextPage -NextLink $currentNextLink
         } catch {
             throw
         }

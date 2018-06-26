@@ -326,7 +326,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// <summary>
         /// Cmdlet name's noun.
         /// </summary>
-        public const string CmdletNoun = "NextPage";
+        public const string CmdletNoun = "MSGraphNextPage";
 
         /// <summary>
         /// <para type="description">The value provided in the search result in the "@odata.nextLink" property.</para>
@@ -392,6 +392,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             Mandatory = true,
             ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
         [ValidateNotNullOrEmpty]
+        [ValidateSet("GET", "POST", "PUT", "PATCH", "DELETE")]
         public string HttpMethod { get; set; }
 
         /// <summary>
@@ -400,7 +401,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         [Parameter(
             Mandatory = true,
             ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
-        [ValidateUrl]
+        [ValidateUrl(System.UriKind.RelativeOrAbsolute)]
         public string Url { get; set; }
 
         /// <summary>

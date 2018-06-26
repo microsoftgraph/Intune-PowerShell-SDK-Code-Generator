@@ -2,10 +2,11 @@
 $env:PowerShellSDKRepoRoot = Split-Path (Split-Path $script:MyInvocation.MyCommand.Path -Parent) -Parent
 
 # Environment variables
+$env:buildConfiguration = "Release"
 $env:writerDir = "$($env:PowerShellSDKRepoRoot)\src\GraphODataPowerShellWriter"
-$env:writerBuildDir = "$($env:writerDir)\bin\Release"
+$env:writerBuildDir = "$($env:writerDir)\bin\$($env:buildConfiguration)"
 $env:generatedDir = "$($env:writerBuildDir)\output"
-$env:sdkDir = "$($env:generatedDir)\bin\Release"
+$env:sdkDir = "$($env:generatedDir)\bin\$($env:buildConfiguration)"
 $env:testDir = "$($env:PowerShellSDKRepoRoot)\Tests"
 $env:moduleName = 'IntunePreview'
 $env:moduleExtension = 'psd1'

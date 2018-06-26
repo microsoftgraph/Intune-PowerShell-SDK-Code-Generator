@@ -74,7 +74,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="Vipr.Core">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(MSBuildProjectDirectory)\..\..\submodules\vipr\src\Core\Vipr\bin\Debug\Vipr.Core.dll</HintPath>
+      <HintPath>$(MSBuildProjectDirectory)\..\..\submodules\vipr\src\Core\Vipr\bin\$(Configuration)\Vipr.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -99,35 +99,36 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
   </Target>
-  <PropertyGroup Condition=" '$(OS)' != 'Unix' ">
-    <PreBuildEvent>"$(MSBuildBinPath)\msbuild.exe" /m /t:Build /p:Configuration=$(Configuration) "$(MSBuildProjectDirectory)\..\..\submodules\vipr\Vipr.sln"</PreBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(OS)' == 'Unix' ">
-    <PreBuildEvent>xbuild /t:build /p:Configuration=$(Configuration) "$(MSBuildProjectDirectory)\..\..\submodules\vipr\Vipr.sln"</PreBuildEvent>
-  </PropertyGroup>
   <Target Name="BeforeBuild">
+    <PropertyGroup>
+      <VIPR_OUTPUT>$(MSBuildProjectDirectory)\..\..\submodules\vipr\src\Core\Vipr\bin\$(Configuration)</VIPR_OUTPUT>
+    </PropertyGroup>
+    <ItemGroup>
+      <_VIPR_OUTPUT Include="$(VIPR_OUTPUT)\**\*" />
+    </ItemGroup>
+    <Message Importance="high" Text="Output Folder: $(OutputPath)" />
     <RemoveDir Directories="$(OutputPath)" />
+    <Exec Command='"$(MSBuildBinPath)\msbuild.exe" /m /t:Build /p:Configuration=$(Configuration) "$(MSBuildProjectDirectory)\..\..\submodules\vipr\Vipr.sln"' />
+    <MakeDir Directories="$(OutputPath)" />
+    <Copy SourceFiles="@(_VIPR_OUTPUT)" DestinationFolder="$(OutputPath)\%(RecursiveDir)" />
+    <Message Importance="high" Text="Vipr Directory:    $(VIPR_OUTPUT)" />
   </Target>
   <Target Name="AfterBuild">
     <PropertyGroup>
-      <VIPR_OUTPUT>$(MSBuildProjectDirectory)\..\..\submodules\vipr\src\Core\Vipr\bin\Debug</VIPR_OUTPUT>
       <OUTPUT_FOLDER>$(OutputPath)\output</OUTPUT_FOLDER>
       <GENERATED_FOLDER>$(OUTPUT_FOLDER)\PowerShellCmdlets\Generated</GENERATED_FOLDER>
       <GRAPH_SDK_SOURCE_FOLDER>$(MSBuildProjectDirectory)\..\PowerShellGraphSDK</GRAPH_SDK_SOURCE_FOLDER>
       <GRAPH_SDK_TARGET_IGNORE>$(OUTPUT_FOLDER)\.vs; $(OUTPUT_FOLDER)\bin; $(OUTPUT_FOLDER)\obj; $(OUTPUT_FOLDER)\*.log</GRAPH_SDK_TARGET_IGNORE>
     </PropertyGroup>
     <ItemGroup>
-      <_VIPR_OUTPUT Include="$(VIPR_OUTPUT)\**\*" />
-      <_GRAPH_SDK_SOURCE_FOLDER Include="$(GRAPH_SDK_SOURCE_FOLDER)\**\*" />
       <_GENERATED_FOLDER Include="$(GENERATED_FOLDER)" />
+      <_GRAPH_SDK_SOURCE_FOLDER Include="$(GRAPH_SDK_SOURCE_FOLDER)\**\*" />
       <_GRAPH_SDK_TARGET_IGNORE Include="$(GRAPH_SDK_TARGET_IGNORE)" />
     </ItemGroup>
-    <Copy SourceFiles="@(_VIPR_OUTPUT)" DestinationFolder="$(OutputPath)\%(RecursiveDir)" />
     <Copy SourceFiles="@(_GRAPH_SDK_SOURCE_FOLDER)" DestinationFolder="$(OUTPUT_FOLDER)\%(RecursiveDir)" />
     <RemoveDir Directories="@(_GENERATED_FOLDER)" />
     <RemoveDir Directories="@(_GRAPH_SDK_TARGET_IGNORE)" />
     <Message Importance="high" Text="Project Directory: $(MSBuildProjectDirectory)" />
-    <Message Importance="high" Text="Vipr Directory:    $(VIPR_OUTPUT)" />
     <Message Importance="high" Text="Output Directory:  $(OUTPUT_FOLDER)" />
   </Target>
   <Target Name="Run">
