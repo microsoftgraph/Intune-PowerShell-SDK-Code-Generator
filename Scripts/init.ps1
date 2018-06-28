@@ -93,7 +93,7 @@ function global:ReleaseSDK {
     Invoke-Expression "xcopy /FDVICE /Y $($env:generatedDir)\. $($env:sdkSrcRoot)\."
     Invoke-Expression "pushd $($env:sdkSrcRoot)"
     Invoke-Expression "git add $($env:sdkSrcRoot)\."
-    Invoke-Expression "$env:buildScript -WorkingDirectory '$env:sdkSrcRoot' -OutputPath '$env:sdkSrcRoot\bin\Release' -Verbosity 'quiet'"
+    Invoke-Expression "$env:buildScript -WorkingDirectory '$env:sdkSrcRoot' -OutputPath '$env:sdkSrcRoot\bin\$env:BuildConfiguration' -Verbosity 'quiet'"
 
     Write-Host "Finished building the SDK for release." -f Cyan
     Write-Host
