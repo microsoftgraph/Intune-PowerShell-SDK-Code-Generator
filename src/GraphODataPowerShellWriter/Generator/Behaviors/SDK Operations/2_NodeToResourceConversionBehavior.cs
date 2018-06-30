@@ -70,45 +70,64 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // Get the parent ODCM property
             OdcmProperty parentProperty = oDataRoute.ParentProperty;
 
-            // Figure out whether this should be a "$ref" path
-            bool isReference = property.IsReference(parentProperty);
-
-            // Get/Search for the objects irrespective of whether it is a "$ref" path
-            yield return oDataRoute.CreateGetCmdlet();
-
-            // If this is for a "$ref" path, only implement POST/PUT and DELETE as well as a GET for the reference URLs
-            if (isReference)
+            // If this is a stream property (i.e. of type "Edm.Stream"), include GET, PUT and DELETE cmdlets for managing the data stream
+            if (property.IsStream())
             {
-                // Get the reference URLs (not the actual referenced objects)
-                yield return oDataRoute.CreateGetCmdlet(isReference);
+                // GET
+                yield return oDataRoute.CreateGetStreamCmdlet(false);
 
-                // Post (create a reference)
+                // PUT
+                if (property.SupportsInsert() && property.SupportsUpdate() && !property.IsComputed() && !property.IsImmutable())
+                {
+                    yield return oDataRoute.CreateUpdateStreamCmdlet(parentProperty);
+                }
+
+                // Delete
+                if (property.SupportsDelete() && !property.IsComputed())
+                {
+                    yield return oDataRoute.CreateDeleteStreamCmdlet();
+                }
+            }
+            // If this is a "$ref" path, generate GET, POST/PUT and DELETE as well as another GET for the reference URLs
+            else if (property.IsReference(parentProperty))
+            {
+                // GET
+                yield return oDataRoute.CreateGetCmdlet();
+
+                // GET for the reference URLs (not the actual referenced objects)
+                yield return oDataRoute.CreateGetRefCmdlet();
+
+                // POST (create a reference)
                 if (property.SupportsInsert())
                 {
                     yield return oDataRoute.CreatePostRefCmdlet(parentProperty);
                 }
 
-                // Delete (remove a reference)
+                // DELETE (remove a reference)
                 if (property.SupportsDelete())
                 {
                     yield return oDataRoute.CreateDeleteRefCmdlet(parentProperty);
                 }
             }
+            // If this is not a "$ref" path, generate the standard cmdlets
             else
             {
-                // Post
+                // GET
+                yield return oDataRoute.CreateGetCmdlet();
+
+                // POST
                 if (property.SupportsInsert() && !property.IsComputed())
                 {
                     yield return oDataRoute.CreatePostCmdlet();
                 }
 
-                // Patch
+                // PATCH
                 if (property.SupportsUpdate() && !property.IsComputed() && !property.IsImmutable())
                 {
                     yield return oDataRoute.CreatePatchCmdlet();
                 }
 
-                // Delete
+                // DELETE
                 if (property.SupportsDelete() && !property.IsComputed())
                 {
                     yield return oDataRoute.CreateDeleteCmdlet();
@@ -119,12 +138,29 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 {
                     yield return actionCmdlet;
                 }
+
+                // If this is a media entity (i.e. it has a data stream associated with it), include GET, POST, PUT and DELETE cmdlets for managing the data stream.
+                // NOTE: We should also add standard CRUD to manage the media entity's properties (i.e. don't put the rest of CRUD in an "else" block).
+                if (property.HasStream())
+                {
+                    // GET
+                    yield return oDataRoute.CreateGetStreamCmdlet(true);
+
+                    // POST
+                    yield return oDataRoute.CreateUpdateStreamCmdlet(httpMethod: "POST", addValueSegment: true, cmdletVerb: PS.VerbsCommon.New);
+
+                    // PUT
+                    yield return oDataRoute.CreateUpdateStreamCmdlet(addValueSegment: true);
+
+                    // DELETE
+                    yield return oDataRoute.CreateDeleteStreamCmdlet(addValueSegment: true);
+                }
             }
         }
 
         #region Operation Cmdlets
 
-        private static OperationCmdlet CreateGetCmdlet(this ODataRoute oDataRoute, bool isReference = false)
+        private static OperationCmdlet CreateGetCmdlet(this ODataRoute oDataRoute)
         {
             if (oDataRoute == null)
             {
@@ -135,7 +171,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
-            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.Get, oDataRoute.ToCmdletNameNounString(isReference))
+            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.Get, oDataRoute.ToCmdletNameNounString())
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 ImpactLevel = PS.ConfirmImpact.None,
@@ -160,8 +196,71 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             cmdlet.SetupIdParametersAndCallUrl(
                 oDataRoute,
                 idParameterSetName: GetCmdlet.OperationName,
-                cmdletReturnsReferenceableEntities: !isReference,
-                postfixUrlSegments: isReference ? new string[] { "$ref" } : Array.Empty<string>());
+                cmdletReturnsReferenceableEntities: true);
+            if (cmdlet.IdParameter != null)
+            {
+                // Since the resource has an optional ID parameter, use the "SEARCH" base type to handle cases where the ID isn't provided
+                cmdlet.OperationType = CmdletOperationType.GetOrSearch;
+                cmdlet.DefaultParameterSetName = GetOrSearchCmdlet.OperationName;
+            }
+            else
+            {
+                // This resource doesn't have an ID parameter, so use the basic "GET" base type
+                cmdlet.OperationType = CmdletOperationType.Get;
+                cmdlet.DefaultParameterSetName = GetCmdlet.OperationName;
+            }
+
+            // Add the properties without marking them as PowerShell parameters to allow for auto-complete when picking columns for $select and $expand
+            if (!resource.IsStream())
+            {
+                cmdlet.AddParametersForEntityProperties(
+                    baseType: resource.Type,
+                    isReadOnlyFunc: cmdlet.IsReadOnlyFunc(),
+                    sharedParameterSetName: null,
+                    addSwitchParameters: false,
+                    markAsPowerShellParameter: false);
+            }
+
+            return cmdlet;
+        }
+
+        private static OperationCmdlet CreateGetRefCmdlet(this ODataRoute oDataRoute)
+        {
+            if (oDataRoute == null)
+            {
+                throw new ArgumentNullException(nameof(oDataRoute));
+            }
+
+            // Get the ODCM property for this resource
+            OdcmProperty resource = oDataRoute.Property;
+
+            // Create the cmdlet
+            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.Get, oDataRoute.ToCmdletNameNounStringForReference())
+            {
+                ResourceTypeFullName = oDataRoute.Property.Type.FullName,
+                ImpactLevel = PS.ConfirmImpact.None,
+                Documentation = new CmdletDocumentation()
+                {
+                    Synopsis = resource.IsCollection
+                        ? $"Retrieves \"{resource.Type.FullName}\" object references."
+                        : $"Retrieves the \"{resource.Name}\" object reference.",
+                    Descriptions = new string[]
+                    {
+                        $"GET ~/{oDataRoute.ToODataRouteString()}/$ref",
+                        resource.IsCollection
+                            ? $"Retrieves \"{resource.Type.FullName}\" object references in the \"{resource.Name}\" collection."
+                            : $"Retrieves the \"{resource.Name}\" object reference (which is of type \"{resource.Type.FullName}\").",
+                        resource.Description,
+                        resource.LongDescription,
+                    },
+                },
+            };
+
+            // Setup the parameters for the cmdlet
+            cmdlet.SetupIdParametersAndCallUrl(
+                oDataRoute,
+                idParameterSetName: GetCmdlet.OperationName,
+                postfixUrlSegments: new string[] { "$ref" });
             if (cmdlet.IdParameter != null)
             {
                 // Since the resource has an optional ID parameter, use the "SEARCH" base type to handle cases where the ID isn't provided
@@ -178,10 +277,69 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // Add the properties without marking them as PowerShell parameters to allow for auto-complete when picking columns for $select and $expand
             cmdlet.AddParametersForEntityProperties(
                 baseType: resource.Type,
-                isReadOnlyFunc: cmdlet.GetIsReadOnlyFunc(),
+                isReadOnlyFunc: cmdlet.IsReadOnlyFunc(),
                 sharedParameterSetName: null,
                 addSwitchParameters: false,
                 markAsPowerShellParameter: false);
+
+            return cmdlet;
+        }
+
+        private static OperationCmdlet CreateGetStreamCmdlet(this ODataRoute oDataRoute, bool addValueSegment)
+        {
+            if (oDataRoute == null)
+            {
+                throw new ArgumentNullException(nameof(oDataRoute));
+            }
+
+            // Get the ODCM property for this resource
+            OdcmProperty resource = oDataRoute.Property;
+
+            // Create the cmdlet
+            OperationCmdlet cmdlet = new OperationCmdlet(
+                PS.VerbsCommon.Get,
+                addValueSegment
+                    ? oDataRoute.ToCmdletNameNounStringForStream()
+                    : oDataRoute.ToCmdletNameNounString())
+            {
+                ResourceTypeFullName = oDataRoute.Property.Type.FullName,
+                ImpactLevel = PS.ConfirmImpact.None,
+                OperationType = CmdletOperationType.GetStream,
+                Documentation = new CmdletDocumentation()
+                {
+                    Synopsis = $"Retrieves a \"{resource.Name}\" object's data stream.",
+                    Descriptions = new string[]
+                    {
+                        $"GET ~/{oDataRoute.ToODataRouteString(true)}"
+                            + (addValueSegment
+                                ? "/$value"
+                                : string.Empty),
+                        resource.IsCollection
+                            ? $"Retrieves the data streams from the \"{resource.Name}\" collection."
+                            : $"Retrieves the data stream from the \"{resource.Name}\" object.",
+                        resource.Description,
+                        resource.LongDescription,
+                    },
+                },
+            };
+
+            // Setup the parameters for the cmdlet
+            cmdlet.SetupIdParametersAndCallUrl(
+                oDataRoute,
+                postfixUrlSegments: addValueSegment
+                    ? new string[] { "$value" }
+                    : Array.Empty<string>());
+
+            if (addValueSegment)
+            {
+                // Add the properties without marking them as PowerShell parameters to allow for auto-complete when picking columns for $select and $expand
+                cmdlet.AddParametersForEntityProperties(
+                    baseType: resource.Type,
+                    isReadOnlyFunc: cmdlet.IsReadOnlyFunc(),
+                    sharedParameterSetName: null,
+                    addSwitchParameters: false,
+                    markAsPowerShellParameter: false);
+            }
 
             return cmdlet;
         }
@@ -218,10 +376,17 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             };
 
             // Setup the parameters for the cmdlet
-            cmdlet.SetupIdParametersAndCallUrl(oDataRoute, addEntityId: false, idValueFromPipeline: false, cmdletReturnsReferenceableEntities: true);
+            cmdlet.SetupIdParametersAndCallUrl(
+                oDataRoute,
+                addEntityId: false,
+                idValueFromPipeline: false,
+                cmdletReturnsReferenceableEntities: true);
 
             // Add properties of derived types as parameters to this cmdlet by traversing the tree of derived types
-            cmdlet.AddParametersForEntityProperties(resource.Type, cmdlet.GetIsReadOnlyFunc(), PostOrPatchCmdlet.SharedParameterSet);
+            cmdlet.AddParametersForEntityProperties(
+                resource.Type,
+                cmdlet.IsReadOnlyFunc(),
+                PostOrPatchCmdlet.SharedParameterSet);
 
             return cmdlet;
         }
@@ -241,7 +406,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
-            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.New, oDataRoute.ToCmdletNameNounString(isReference: true))
+            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.New, oDataRoute.ToCmdletNameNounStringForReference())
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 OperationType = resource.IsCollection
@@ -264,10 +429,76 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             };
 
             // Create the URL and setup ID parameters
-            cmdlet.SetupIdParametersAndCallUrl(oDataRoute, addEntityId: false, postfixUrlSegments: "$ref");
+            cmdlet.SetupIdParametersAndCallUrl(
+                oDataRoute,
+                addEntityId: false,
+                postfixUrlSegments: "$ref");
 
             // Create the reference URL parameter
             cmdlet.SetupReferenceUrlParameter(oDataRoute);
+
+            return cmdlet;
+        }
+
+        private static OperationCmdlet CreateUpdateStreamCmdlet(
+            this ODataRoute oDataRoute,
+            OdcmProperty parentResource = null,
+            string httpMethod = null,
+            bool addValueSegment = false,
+            string cmdletVerb = PS.VerbsCommon.Set)
+        {
+            if (oDataRoute == null)
+            {
+                throw new ArgumentNullException(nameof(oDataRoute));
+            }
+
+            // Get the ODCM property for this resource
+            OdcmProperty resource = oDataRoute.Property;
+
+            // Create the cmdlet
+            OperationCmdlet cmdlet = new OperationCmdlet(
+                cmdletVerb,
+                addValueSegment
+                    ? oDataRoute.ToCmdletNameNounStringForStream()
+                    : oDataRoute.ToCmdletNameNounString())
+            {
+                ResourceTypeFullName = oDataRoute.Property.Type.FullName,
+                OperationType = CmdletOperationType.UpdateStream,
+                ImpactLevel = PS.ConfirmImpact.Low,
+                Documentation = new CmdletDocumentation()
+                {
+                    Synopsis = $"Sets the data for the \"{resource.Name.Singularize()}\" property"
+                        + (parentResource == null
+                            ? "."
+                            : $" on a \"{parentResource.Type.FullName}\" object."),
+                    Descriptions = new string[]
+                    {
+                        $"PUT ~/{oDataRoute.ToODataRouteString(includeEntityId: false)}"
+                            + (addValueSegment
+                                ? "/$value"
+                                : ""),
+                        $"Sets the data for the \"{resource.Name.Singularize()}\" property"
+                            + (parentResource == null
+                                ? "."
+                                : $" on a \"{parentResource.Type.FullName}\" object."),
+                        resource.Description,
+                        resource.LongDescription,
+                    },
+                },
+            };
+
+            // Set the HTTP method if required
+            if (httpMethod != null)
+            {
+                cmdlet.HttpMethod = httpMethod;
+            }
+
+            // Create the URL and setup ID parameters
+            cmdlet.SetupIdParametersAndCallUrl(
+                oDataRoute,
+                postfixUrlSegments: addValueSegment
+                    ? new string[] { "$value" }
+                    : Array.Empty<string>());
 
             return cmdlet;
         }
@@ -304,10 +535,15 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             };
 
             // Setup the parameters for the cmdlet
-            cmdlet.SetupIdParametersAndCallUrl(oDataRoute, idValueFromPipeline: false);
+            cmdlet.SetupIdParametersAndCallUrl(
+                oDataRoute,
+                idValueFromPipeline: false);
 
             // Add properties of derived types as parameters to this cmdlet by traversing the tree of derived types
-            cmdlet.AddParametersForEntityProperties(resource.Type, cmdlet.GetIsReadOnlyFunc(), PostOrPatchCmdlet.SharedParameterSet);
+            cmdlet.AddParametersForEntityProperties(
+                resource.Type,
+                cmdlet.IsReadOnlyFunc(),
+                PostOrPatchCmdlet.SharedParameterSet);
 
             return cmdlet;
         }
@@ -367,7 +603,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
-            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.Remove, oDataRoute.ToCmdletNameNounString(isReference: true))
+            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.Remove, oDataRoute.ToCmdletNameNounStringForReference())
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 OperationType = CmdletOperationType.Delete,
@@ -388,6 +624,50 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     resource.IsCollection
                         ? $"Removes a reference from the specified \"{parentResource.Name.Singularize()}\" object to a \"{resource.Name.Singularize()}\"."
                         : $"Removes a reference from the \"{parentResource.Name.Singularize()}\" object to a \"{resource.Name.Singularize()}\".",
+                    resource.Description,
+                    resource.LongDescription,
+                },
+            };
+
+            return cmdlet;
+        }
+
+        private static OperationCmdlet CreateDeleteStreamCmdlet(
+            this ODataRoute oDataRoute,
+            bool addValueSegment = false)
+        {
+            if (oDataRoute == null)
+            {
+                throw new ArgumentNullException(nameof(oDataRoute));
+            }
+
+            // Get the ODCM property for this resource
+            OdcmProperty resource = oDataRoute.Property;
+
+            // Create the cmdlet
+            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.Remove, oDataRoute.ToCmdletNameNounStringForStream())
+            {
+                ResourceTypeFullName = oDataRoute.Property.Type.FullName,
+                OperationType = CmdletOperationType.Delete,
+                ImpactLevel = PS.ConfirmImpact.High,
+            };
+
+            // Setup the parameters for the cmdlet
+            CmdletParameter idParameter = cmdlet.SetupIdParametersAndCallUrl(
+                oDataRoute,
+                postfixUrlSegments: addValueSegment
+                    ? new string[] { "$value" }
+                    : Array.Empty<string>());
+
+            // Add documentation
+            string idParameterSegment = idParameter != null ? $"/{idParameter.Name}" : string.Empty;
+            cmdlet.Documentation = new CmdletDocumentation()
+            {
+                Synopsis = $"Removes the data stream from a \"{resource.Name.Singularize()}\" object.",
+                Descriptions = new string[]
+                {
+                    $"DELETE ~/{oDataRoute.ToODataRouteString()}{idParameterSegment}/$ref",
+                    $"Removes a reference from a \"{resource.Name.Singularize()}\" resource (which is of type \"{resource.Type.FullName}\").",
                     resource.Description,
                     resource.LongDescription,
                 },
@@ -897,7 +1177,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             }
         }
 
-        private static Func<OdcmProperty, bool> GetIsReadOnlyFunc(this OperationCmdlet cmdlet)
+        private static Func<OdcmProperty, bool> IsReadOnlyFunc(this OperationCmdlet cmdlet)
         {
             if (cmdlet == null)
             {

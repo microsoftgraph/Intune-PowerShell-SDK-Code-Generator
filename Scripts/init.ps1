@@ -10,7 +10,6 @@ $env:sdkDir = "$($env:generatedDir)\bin\$($env:buildConfiguration)"
 $env:testDir = "$($env:PowerShellSDKRepoRoot)\Tests"
 $env:moduleName = 'IntunePreview'
 $env:moduleExtension = 'psd1'
-$env:defaultGraphSchema = "$($env:PowerShellSDKRepoRoot)\Test Graph Schemas\v1.0-20180406 - Intune.csdl"
 $env:sdkSrcRoot = "$($env:PowerShellSDKRepoRoot)\submodules\Intune-PowerShell-SDK\src"
 
 # Remember the settings that will change when launching a child PowerShell context
@@ -25,7 +24,7 @@ $env:testScript = "$($env:PowerShellSDKRepoRoot)\Scripts\test.ps1"
 
 function global:WriterBuild {
     Write-Host "Building the writer..." -f Cyan
-    Invoke-Expression "$env:buildScript -WorkingDirectory '$env:writerDir' -OutputPath '$env:writerBuildDir' -BuildTargets 'Clean;Rebuild' -Verbosity 'quiet'"
+    Invoke-Expression "$env:buildScript -WorkingDirectory '$env:writerDir' -OutputPath '$env:writerBuildDir' -BuildTargets 'Rebuild' -Verbosity 'minimal'"
     Write-Host "Finished building the writer" -f Cyan
     Write-Host
 }

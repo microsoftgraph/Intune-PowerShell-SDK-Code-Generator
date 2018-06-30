@@ -54,7 +54,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
                 // Mark the child nodes as "to be expanded" if we haven't hit the maximum traversal depth and it is not a reference property
                 int currentDepth = new ODataRoute(currentNode).Segments.Count;
-                if (currentDepth < MaxTraversalDepth && !currentNode.OdcmProperty.IsReference(currentNode.Parent?.OdcmProperty))
+                if (currentDepth <= MaxTraversalDepth && !currentNode.OdcmProperty.IsReference(currentNode.Parent?.OdcmProperty))
                 {
                     // Expand the node
                     IEnumerable<OdcmNode> childNodes = currentNode.CreateChildNodes(model);
@@ -179,13 +179,16 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             bool result = // Make sure that this property is:
                 // top-level
                 property.Class == model.EntityContainer
-                // OR
+                // or expandable
                 || (
                     // a complex type
                     property.Type is OdcmClass
                     // which is a navigation property
                     && property.IsLink
-                );
+                )
+                // or a data stream property
+                || property.IsStream()
+                ;
 
             return result;
         }

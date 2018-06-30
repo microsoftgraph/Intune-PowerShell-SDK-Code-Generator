@@ -6,9 +6,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
     {
         Get,
         GetOrSearch,
+        GetStream,
         Post,
         PutRefToSingleEntity,
         PostRefToCollection,
+        UpdateStream,
         Patch,
         Delete,
         FunctionReturningEntity,

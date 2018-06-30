@@ -174,16 +174,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// </summary>
         protected override void ProcessRecord()
         {
-            EnvironmentParameters currentParameters = ODataCmdletBase.CurrentEnvironmentParameters;
-            this.WriteObject(new
-            {
-                SchemaVersion = currentParameters.SchemaVersion,
-                BaseAddress = currentParameters.GraphBaseAddress,
-                AuthenticationUrl = currentParameters.AuthUrl,
-                AppId = currentParameters.AppId,
-                RedirectLink = currentParameters.RedirectLink,
-                GraphResourceId = currentParameters.ResourceId,
-            }.ToPowerShellObject());
+            this.WriteObject(ODataCmdletBase.CurrentEnvironmentParameters.ToPowerShellObject());
         }
     }
 
@@ -243,38 +234,66 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         public string GraphBaseUrl { get; set; }
 
         /// <summary>
+        /// <para type="description">Suppresses the output of this cmdlet.</para>
+        /// </summary>
+        [Parameter]
+        public SwitchParameter Quiet { get; set; }
+
+        /// <summary>
         /// Run the cmdlet.
         /// </summary>
         protected override void ProcessRecord()
         {
+            bool modified = false;
+
             // Schema version
             if (!string.IsNullOrEmpty(this.SchemaVersion))
             {
                 ODataCmdletBase.CurrentEnvironmentParameters.SchemaVersion = this.SchemaVersion;
+                modified = true;
             }
 
             // AppId
             if (!string.IsNullOrEmpty(this.AppId))
             {
                 ODataCmdletBase.CurrentEnvironmentParameters.AppId = this.AppId;
+                modified = true;
             }
 
             // Auth URL
             if (!string.IsNullOrEmpty(this.AuthUrl))
             {
                 ODataCmdletBase.CurrentEnvironmentParameters.AuthUrl = this.AuthUrl;
+                modified = true;
             }
 
             // Graph resource ID
             if (!string.IsNullOrEmpty(this.GraphResourceId))
             {
                 ODataCmdletBase.CurrentEnvironmentParameters.ResourceId = this.GraphResourceId;
+                modified = true;
             }
 
             // Graph base URL
             if (!string.IsNullOrEmpty(this.GraphBaseUrl))
             {
                 ODataCmdletBase.CurrentEnvironmentParameters.GraphBaseAddress = this.GraphBaseUrl;
+                modified = true;
+            }
+
+            // Output
+            if (!this.Quiet)
+            {
+                if (modified)
+                {
+                    this.WriteWarning($"Call the '{Connect.CmdletVerb}-{Connect.CmdletNoun}' cmdlet to use the updated environment parameters.");
+                }
+                else
+                {
+                    this.WriteWarning("No changes were made to the environment parameters.");
+                }
+
+                this.WriteObject(ODataCmdletBase.CurrentEnvironmentParameters.ToPowerShellObject());
             }
         }
     }

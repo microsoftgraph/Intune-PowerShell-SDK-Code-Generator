@@ -152,29 +152,49 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// Generates a cmdlet name's noun for the resource that can be found at the given ODataRoute.
         /// </summary>
         /// <returns>The cmdlet name.</returns>
-        public string ToCmdletNameNounString(bool isReference = false, params string[] postfixSegments)
+        public string ToCmdletNameNounString(params string[] postfixSegments)
         {
             // Get all the segments in order
             string lastSegment = this.Segments.Last().Name;
             IEnumerable<string> segments = this.Segments
-                .Select(property =>
-                {
-                    string segmentName;
-                    if (isReference && property.Name == lastSegment)
-                    {
-                        segmentName = property.Name.Pascalize().Singularize() + (property.IsCollection ? "References" : "Reference");
-                    }
-                    else
-                    {
-                        segmentName = property.Name.Pascalize();
-                    }
-
-                    return segmentName;
-                })
+                // Convert name to pascal case
+                .Select(property => property.Name.Pascalize())
+                // Convert the postfix segments to pascal case and append them
                 .Concat(postfixSegments.Select(segment => segment.Pascalize()));
 
             // Join the segments with underscores
             string result = string.Join("_", segments);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Generates a cmdlet name's noun for the referenced resource that can be found at the given ODataRoute.
+        /// </summary>
+        /// <returns>The cmdlet name.</returns>
+        public string ToCmdletNameNounStringForReference(params string[] postfixSegments)
+        {
+            string result = this.ToCmdletNameNounString(postfixSegments);
+            if (this.Segments.Last().IsCollection)
+            {
+                result += "References";
+            }
+            else
+            {
+                result += "Reference";
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Generates a cmdlet name's noun for the referenced resource that can be found at the given ODataRoute.
+        /// </summary>
+        /// <returns>The cmdlet name.</returns>
+        public string ToCmdletNameNounStringForStream(params string[] postfixSegments)
+        {
+            string result = this.ToCmdletNameNounString(postfixSegments);
+            result += "Data";
 
             return result;
         }

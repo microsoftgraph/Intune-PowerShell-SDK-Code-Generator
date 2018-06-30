@@ -78,7 +78,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             {
                 throw new ArgumentNullException(nameof(type));
             }
-            
+
             if (type is OdcmEnum)
             {
                 // If it's an enum, accept the enum member name as a string
@@ -152,7 +152,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             {
                 throw new ArgumentNullException(nameof(type));
             }
-            
+
             // NOTE: Overridden properties in subtypes is not allowed in OData v4, so we don't need to worry about duplicated properties
             // If the type is not a class, there are no properties to return
             if (type is OdcmClass @class)
@@ -247,10 +247,64 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         }
 
         /// <summary>
-        /// Determines whether the given type represents a stream.
+        /// Determines whether the given property's type represents a media entity (which has an associated stream).
+        /// </summary>
+        /// <param name="property">The ODCM property</param>
+        /// <returns>True if the given property's type represents a media entity, otherwise false.</returns>
+        public static bool HasStream(this OdcmProperty property)
+        {
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
+            if (property.Type == null)
+            {
+                throw new ArgumentNullException($"{nameof(property)}.{nameof(OdcmProperty.Type)}");
+            }
+
+            return property.Type.HasStream();
+        }
+
+        /// <summary>
+        /// Determines whether the given type represents a media entity (which has an associated stream).
         /// </summary>
         /// <param name="type">The ODCM type</param>
-        /// <returns>True if the given type represents a stream, otherwise false.</returns>
+        /// <returns>True if the given type represents a media entity, otherwise false.</returns>
+        public static bool HasStream(this OdcmType type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            // Check if this is a media entity (i.e. has an associated stream)
+            return type is OdcmMediaClass;
+        }
+
+        /// <summary>
+        /// Determines whether the given property's type represents a data stream.
+        /// </summary>
+        /// <param name="type">The ODCM property</param>
+        /// <returns>True if the given property's type represents a data stream, otherwise false.</returns>
+        public static bool IsStream(this OdcmProperty property)
+        {
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
+            if (property.Type == null)
+            {
+                throw new ArgumentNullException($"{nameof(property)}.{nameof(OdcmProperty.Type)}");
+            }
+
+            return property.Type.IsStream();
+        }
+
+        /// <summary>
+        /// Determines whether the given type represents a data stream.
+        /// </summary>
+        /// <param name="type">The ODCM type</param>
+        /// <returns>True if the given type represents a data stream, otherwise false.</returns>
         public static bool IsStream(this OdcmType type)
         {
             if (type == null)
@@ -258,20 +312,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 throw new ArgumentNullException(nameof(type));
             }
 
-            // Check if either this type or one of it's base types are streams
-            OdcmType currentType = type;
-            while (currentType != null)
-            {
-                if (currentType.FullName == EdmTypeNames.Stream ||
-                    currentType is OdcmMediaClass)
-                {
-                    return true;
-                }
-
-                currentType = currentType.GetBaseType();
-            }
-
-            return false;
+            // Check if this is an "Edm.Stream" type
+            return type.FullName == "Edm.Stream";
         }
 
         /// <summary>

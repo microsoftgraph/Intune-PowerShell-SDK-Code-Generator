@@ -56,22 +56,19 @@ $MSBuildArguments = @(
 )
 
 # Select the default graph schema if one was not provided
-$schemaPath = $GraphSchema
-if (-Not ($schemaPath))
+if ($GraphSchema)
 {
-    $schemaPath = $env:defaultGraphSchema
-}
-
-# Add the schema path to the MSBuild arguments if it is a valid path
-if (Test-Path $schemaPath)
-{
-    $MSBuildArguments += "/p:GraphSchemaPath=`"$schemaPath`""
-    Write-Host "MSBuild arguments: " -f Magenta
-    $MSBuildArguments | ForEach-Object {
-        Write-Host $_ -f Magenta
+    # Add the schema path to the MSBuild arguments if it is a valid path
+    if (Test-Path $GraphSchema)
+    {
+        $MSBuildArguments += "/p:GraphSchemaPath=`"$GraphSchema`""
+        Write-Host "MSBuild arguments: " -f Magenta
+        $MSBuildArguments | ForEach-Object {
+            Write-Host $_ -f Magenta
+        }
+    } else {
+        throw "Unable to find Graph schema at '$GraphSchema' - provide a valid path to a schema file"
     }
-} else {
-    throw "Unable to find Graph schema at '$schemaPath' - provide a valid path to a schema file"
 }
 
 # Run MSBuild in the given working directory

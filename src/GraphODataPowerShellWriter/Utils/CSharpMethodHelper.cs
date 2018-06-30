@@ -42,7 +42,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             // Create the method definition
             string methodName = nameof(ODataCmdletBase.GetHttpMethod);
             Type returnType = typeof(string);
-            string methodBody = httpMethod;
+            string methodBody = $"return \"{httpMethod}\";";
 
             // Create the method object
             CSharpMethod result = new CSharpMethod(methodName, returnType, methodBody)

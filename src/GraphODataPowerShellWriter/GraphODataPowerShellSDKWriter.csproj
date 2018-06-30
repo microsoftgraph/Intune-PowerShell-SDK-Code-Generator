@@ -27,6 +27,11 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkProfile />
+    <OutputPath>$(MSBuildProjectDirectory)\bin\$(Configuration)</OutputPath>
+    <GraphSchemaPath>$(MSBuildProjectDirectory)\..\..\Test Graph Schemas\v1.0-20180628 - Intune.csdl</GraphSchemaPath>
+    <StartAction>Program</StartAction>
+    <StartProgram>$(OutputPath)\Vipr.exe</StartProgram>
+    <StartArguments>"$(GraphSchemaPath)" --writer="$(AssemblyName)"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -36,7 +41,6 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <OutputPath>$(MSBuildProjectDirectory)\bin\Debug</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -45,14 +49,6 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <OutputPath>$(MSBuildProjectDirectory)\bin\Release</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GraphSchemaPath>$(MSBuildProjectDirectory)\..\..\Test Graph Schemas\v1.0-20180406 - Intune.csdl</GraphSchemaPath>
-    <StartAction>Program</StartAction>
-    <StartProgram>$(OutputPath)\Vipr.exe</StartProgram>
-    <StartArguments>"$(GraphSchemaPath)" --writer="$(AssemblyName)"</StartArguments>
-    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Inflector, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -100,36 +96,31 @@
     </PropertyGroup>
   </Target>
   <Target Name="BeforeBuild">
-    <PropertyGroup>
-      <VIPR_OUTPUT>$(MSBuildProjectDirectory)\..\..\submodules\vipr\src\Core\Vipr\bin\$(Configuration)</VIPR_OUTPUT>
-    </PropertyGroup>
-    <ItemGroup>
-      <_VIPR_OUTPUT Include="$(VIPR_OUTPUT)\**\*" />
-    </ItemGroup>
-    <Message Importance="high" Text="Output Folder: $(OutputPath)" />
     <RemoveDir Directories="$(OutputPath)" />
-    <Exec Command='"$(MSBuildBinPath)\msbuild.exe" /m /t:Build /p:Configuration=$(Configuration) "$(MSBuildProjectDirectory)\..\..\submodules\vipr\Vipr.sln"' />
-    <MakeDir Directories="$(OutputPath)" />
-    <Copy SourceFiles="@(_VIPR_OUTPUT)" DestinationFolder="$(OutputPath)\%(RecursiveDir)" />
-    <Message Importance="high" Text="Vipr Directory:    $(VIPR_OUTPUT)" />
   </Target>
   <Target Name="AfterBuild">
     <PropertyGroup>
       <OUTPUT_FOLDER>$(OutputPath)\output</OUTPUT_FOLDER>
+      <VIPR_OUTPUT>$(MSBuildProjectDirectory)\..\..\submodules\vipr\src\Core\Vipr\bin\$(Configuration)</VIPR_OUTPUT>
       <GENERATED_FOLDER>$(OUTPUT_FOLDER)\PowerShellCmdlets\Generated</GENERATED_FOLDER>
       <GRAPH_SDK_SOURCE_FOLDER>$(MSBuildProjectDirectory)\..\PowerShellGraphSDK</GRAPH_SDK_SOURCE_FOLDER>
       <GRAPH_SDK_TARGET_IGNORE>$(OUTPUT_FOLDER)\.vs; $(OUTPUT_FOLDER)\bin; $(OUTPUT_FOLDER)\obj; $(OUTPUT_FOLDER)\*.log</GRAPH_SDK_TARGET_IGNORE>
     </PropertyGroup>
     <ItemGroup>
+    <_VIPR_OUTPUT Include="$(VIPR_OUTPUT)\**\*" />
       <_GENERATED_FOLDER Include="$(GENERATED_FOLDER)" />
       <_GRAPH_SDK_SOURCE_FOLDER Include="$(GRAPH_SDK_SOURCE_FOLDER)\**\*" />
       <_GRAPH_SDK_TARGET_IGNORE Include="$(GRAPH_SDK_TARGET_IGNORE)" />
     </ItemGroup>
+    <Exec Command="&quot;$(MSBuildBinPath)\msbuild.exe&quot; /v:quiet /m /t:Build /p:Configuration=$(Configuration) &quot;$(MSBuildProjectDirectory)\..\..\submodules\vipr\Vipr.sln&quot;" />
+    <Copy SourceFiles="@(_VIPR_OUTPUT)" DestinationFolder="$(OutputPath)\%(RecursiveDir)" />
     <Copy SourceFiles="@(_GRAPH_SDK_SOURCE_FOLDER)" DestinationFolder="$(OUTPUT_FOLDER)\%(RecursiveDir)" />
     <RemoveDir Directories="@(_GENERATED_FOLDER)" />
     <RemoveDir Directories="@(_GRAPH_SDK_TARGET_IGNORE)" />
-    <Message Importance="high" Text="Project Directory: $(MSBuildProjectDirectory)" />
-    <Message Importance="high" Text="Output Directory:  $(OUTPUT_FOLDER)" />
+    <Message Importance="high" Text="Output Folder:               $(OutputPath)" />
+    <Message Importance="high" Text="Vipr Directory:              $(VIPR_OUTPUT)" />
+    <Message Importance="high" Text="Project Directory:           $(MSBuildProjectDirectory)" />
+    <Message Importance="high" Text="Generated Output Directory:  $(OUTPUT_FOLDER)" />
   </Target>
   <Target Name="Run">
     <Message Importance="high" Text="Executing Command:  $(StartProgram) $(StartArguments)" />
