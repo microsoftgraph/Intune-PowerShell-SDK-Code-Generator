@@ -86,12 +86,17 @@ function global:ReleaseSDK {
 [alias("release")]
     param()
     
-    global:GenerateSDK
-    Invoke-Expression "rmdir $($env:sdkSrcRoot)"
-    Invoke-Expression "mkdir $($env:sdkSrcRoot)"
-    Invoke-Expression "xcopy /FDVICE /Y $($env:generatedDir)\. $($env:sdkSrcRoot)\."
+    global:GenerateSDK    
+    
+    Write-Host "Syncing $($env:sdkSrcRoot) ..."
     Invoke-Expression "pushd $($env:sdkSrcRoot)"
+    Invoke-Expression "git pull"
+
+    Write-Host "Copying generated SDK"
+    Invoke-Expression "xcopy /FDVICE /Y $($env:generatedDir)\. $($env:sdkSrcRoot)\."    
     Invoke-Expression "git add $($env:sdkSrcRoot)\."
+
+    Write-Host "Building generated SDK"
     Invoke-Expression "$env:buildScript -WorkingDirectory '$env:sdkSrcRoot' -OutputPath '$env:sdkSrcRoot\bin\$env:BuildConfiguration' -Verbosity 'quiet'"
 
     Write-Host "Finished building the SDK for release." -f Cyan
