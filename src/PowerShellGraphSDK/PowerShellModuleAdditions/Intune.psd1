@@ -8,7 +8,10 @@
 
 @{
     PrivateData = @{ 
-        PSData = @{ 
+        PSData = @{
+            # PreRelease version of the Intune PowerShell SDK
+            PreRelease = 'update20180702'
+
             # Tags applied to this module. These help with module discovery in online galleries. 
             Tags = @( 
                 'Microsoft', 
@@ -22,10 +25,10 @@
             RequireLicenseAcceptance = $true 
             
             # A URL to the license for this module. 
-            # LicenseUri = 'https://github.com/microsoftgraph/Intune-PowerShell-SDK-Code-Generator/blob/master/src/PowerShellGraphSDK/PowerShellModuleAdditions/LICENSE.txt' 
+            LicenseUri = 'https://github.com/microsoftgraph/Intune-PowerShell-SDK-Code-Generator/blob/master/src/PowerShellGraphSDK/PowerShellModuleAdditions/LICENSE.txt' 
              
             # A URL to the main website for this project. 
-            # ProjectUri = 'https://github.com/Microsoft/Intune-PowerShell-SDK' 
+            ProjectUri = 'https://github.com/MicrosoftGraph/Intune-PowerShell-SDK' 
             
             # A URL to an icon representing this module. 
             # IconUri = '' 
@@ -42,7 +45,7 @@
     RootModule = 'Microsoft.Intune.PowerShellGraphSDK.dll'
     
     # Version number of this module.
-    ModuleVersion = '6.1807.0.0'
+    ModuleVersion = '6.1808.1'
     
     # ID used to uniquely identify this module
     GUID = 'A720591A-2D56-4570-B362-E15B84C4CD63'
