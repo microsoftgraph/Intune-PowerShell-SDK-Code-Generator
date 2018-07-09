@@ -54,8 +54,8 @@
     <Reference Include="Inflector, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>$(MSBuildProjectDirectory)\..\..\packages\Inflector.1.0.0.0\lib\net45\Inflector.dll</HintPath>
     </Reference>
-    <Reference Include="Pluralize.NET, Version=0.1.43.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(MSBuildProjectDirectory)\..\..\packages\Pluralize.NET.0.1.43\lib\net40\Pluralize.NET.dll</HintPath>
+    <Reference Include="Pluralize.NET, Version=0.1.84.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(MSBuildProjectDirectory)\..\..\packages\Pluralize.NET.0.1.84\lib\net46\Pluralize.NET.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -107,7 +107,7 @@
       <GRAPH_SDK_TARGET_IGNORE>$(OUTPUT_FOLDER)\.vs; $(OUTPUT_FOLDER)\bin; $(OUTPUT_FOLDER)\obj; $(OUTPUT_FOLDER)\*.log</GRAPH_SDK_TARGET_IGNORE>
     </PropertyGroup>
     <ItemGroup>
-    <_VIPR_OUTPUT Include="$(VIPR_OUTPUT)\**\*" />
+      <_VIPR_OUTPUT Include="$(VIPR_OUTPUT)\**\*" />
       <_GENERATED_FOLDER Include="$(GENERATED_FOLDER)" />
       <_GRAPH_SDK_SOURCE_FOLDER Include="$(GRAPH_SDK_SOURCE_FOLDER)\**\*" />
       <_GRAPH_SDK_TARGET_IGNORE Include="$(GRAPH_SDK_TARGET_IGNORE)" />

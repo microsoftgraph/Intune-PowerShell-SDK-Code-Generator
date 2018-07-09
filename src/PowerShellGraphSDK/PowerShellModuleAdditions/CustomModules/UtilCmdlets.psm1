@@ -1,8 +1,11 @@
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Scope='Function', Target='Get-MSGraphAllPages')]
+param()
+
 function Get-MSGraphDebugInfo {
     $myErrors = Get-AllErrorsDebugInfo
     if ($myErrors.Count -eq 0) {
-        Write-Host 'No errors found'
-    } elseif (($myErrors[0] -eq $null) -or ($myErrors[0] -eq '')) {
+        Write-Information 'No errors found'
+    } elseif (($null -eq $myErrors[0]) -or ('' -eq $myErrors[0])) {
         Write-Warning 'No debugging information found for the most recent error'
     } else {
         $myErrors[0] | Write-Output
