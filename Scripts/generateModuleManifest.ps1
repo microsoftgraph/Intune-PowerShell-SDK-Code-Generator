@@ -84,7 +84,7 @@ powershell.exe -Command {
         RootModule = 'Microsoft.Intune.PowerShellGraphSDK.dll'
 
         # Version number of this module.
-        ModuleVersion = '6.1808.1'
+        ModuleVersion = '6.1808.2'
 
         # ID used to uniquely identify this module
         GUID = 'A720591A-2D56-4570-B362-E15B84C4CD63'
