@@ -103,9 +103,15 @@ function global:ReleaseSDK {
     Invoke-Expression "git add $($env:sdkSrcRoot)\."
 
     Write-Host "Building generated SDK"
+    rmdir $env:sdkSrcRoot\bin\$env:BuildConfiguration
     Invoke-Expression "$env:buildScript -WorkingDirectory '$env:sdkSrcRoot' -OutputPath '$env:sdkSrcRoot\bin\$env:BuildConfiguration' -Verbosity 'quiet'"
-
     Write-Host "Finished building the SDK for release." -f Cyan
+    Write-Host
+
+    Write-Host "Generating module manifest..." -f Cyan
+    $env:sdkDir = "$($env:sdkSrcRoot)\bin\$env:BuildConfiguration"
+    Invoke-Expression "$env:generateModuleManifestScript"
+    Write-Host "Finished generating module manifest" -f Cyan
     Write-Host
 }
 
