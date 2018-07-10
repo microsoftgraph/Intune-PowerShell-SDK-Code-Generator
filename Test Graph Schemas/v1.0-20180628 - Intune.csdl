@@ -8855,15 +8855,6 @@
             <Term Name="downloadUrl" Type="Edm.String" AppliesTo="microsoft.graph.driveItem" />
             <Term Name="sourceUrl" Type="Edm.String" AppliesTo="microsoft.graph.driveItem" />
             <EntityContainer Name="GraphService">
-                <Singleton Name="me" Type="microsoft.graph.user">
-                    <NavigationPropertyBinding Path="ownedDevices" Target="directoryObjects" />
-                    <NavigationPropertyBinding Path="registeredDevices" Target="directoryObjects" />
-                    <NavigationPropertyBinding Path="manager" Target="directoryObjects" />
-                    <NavigationPropertyBinding Path="directReports" Target="directoryObjects" />
-                    <NavigationPropertyBinding Path="memberOf" Target="directoryObjects" />
-                    <NavigationPropertyBinding Path="createdObjects" Target="directoryObjects" />
-                    <NavigationPropertyBinding Path="ownedObjects" Target="directoryObjects" />
-                </Singleton>
                 <Singleton Name="reports" Type="microsoft.graph.reportRoot" />
                 <Singleton Name="deviceAppManagement" Type="microsoft.graph.deviceAppManagement" />
                 <Singleton Name="deviceManagement" Type="microsoft.graph.deviceManagement" />

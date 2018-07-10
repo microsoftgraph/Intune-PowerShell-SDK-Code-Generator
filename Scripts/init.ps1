@@ -8,9 +8,10 @@ $env:writerBuildDir = "$($env:writerDir)\bin\$($env:buildConfiguration)"
 $env:generatedDir = "$($env:writerBuildDir)\output"
 $env:sdkDir = "$($env:generatedDir)\bin\$($env:buildConfiguration)"
 $env:testDir = "$($env:PowerShellSDKRepoRoot)\Tests"
-$env:moduleName = 'IntunePreview'
+$env:moduleName = 'Intune'
 $env:moduleExtension = 'psd1'
 $env:sdkSrcRoot = "$($env:PowerShellSDKRepoRoot)\submodules\Intune-PowerShell-SDK\src"
+$env:sdkAssemblyName = 'Microsoft.Intune.PowerShellGraphSDK'
 
 # Remember the settings that will change when launching a child PowerShell context
 $env:standardWindowTitle = (Get-Host).UI.RawUI.WindowTitle
@@ -19,6 +20,7 @@ $env:standardBackgroundColor = (Get-Host).UI.RawUI.BackgroundColor
 
 # Scripts
 $env:buildScript = "$($env:PowerShellSDKRepoRoot)\Scripts\build.ps1"
+$env:generateModuleManifestScript = "$($env:PowerShellSDKRepoRoot)\Scripts\generateModuleManifest.ps1"
 $env:runScript = "$($env:PowerShellSDKRepoRoot)\Scripts\run.ps1"
 $env:testScript = "$($env:PowerShellSDKRepoRoot)\Scripts\test.ps1"
 
@@ -42,8 +44,12 @@ function global:WriterRun {
 
 function global:SDKBuild {
     Write-Host "Building the SDK (i.e. building the generated cmdlets)..." -f Cyan
-    Invoke-Expression "$env:buildScript -WorkingDirectory '$env:generatedDir' -OutputPath '$env:sdkDir' -Verbosity 'quiet'"
+    Invoke-Expression "$env:buildScript -WorkingDirectory '$env:generatedDir' -OutputPath '$env:sdkDir' -Verbosity 'quiet' -AssemblyName '$env:sdkAssemblyName'"
     Write-Host "Finished building the SDK" -f Cyan
+    Write-Host
+    Write-Host "Generating module manifest..." -f Cyan
+    Invoke-Expression "$env:generateModuleManifestScript"
+    Write-Host "Finished generating module manifest" -f Cyan
     Write-Host
 }
 
@@ -70,7 +76,7 @@ function global:GenerateSDK {
 
     global:WriterBuild
     global:WriterRun -GraphSchema $GraphSchema
-    global:SDKBuild    
+    global:SDKBuild
 }
 
 function global:GenerateAndRunSDK {
@@ -85,15 +91,15 @@ function global:GenerateAndRunSDK {
 function global:ReleaseSDK {
 [alias("release")]
     param()
-    
-    global:GenerateSDK    
-    
+
+    global:GenerateSDK
+
     Write-Host "Syncing $($env:sdkSrcRoot) ..."
     Invoke-Expression "pushd $($env:sdkSrcRoot)"
     Invoke-Expression "git pull"
 
     Write-Host "Copying generated SDK"
-    Invoke-Expression "xcopy /FDVICE /Y $($env:generatedDir)\. $($env:sdkSrcRoot)\."    
+    Invoke-Expression "xcopy /FDVICE /Y $($env:generatedDir)\. $($env:sdkSrcRoot)\."
     Invoke-Expression "git add $($env:sdkSrcRoot)\."
 
     Write-Host "Building generated SDK"
