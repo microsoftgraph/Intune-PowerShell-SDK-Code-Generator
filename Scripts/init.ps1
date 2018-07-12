@@ -10,7 +10,8 @@ $env:sdkDir = "$($env:generatedDir)\bin\$($env:buildConfiguration)"
 $env:testDir = "$($env:PowerShellSDKRepoRoot)\Tests"
 $env:moduleName = 'Intune'
 $env:moduleExtension = 'psd1'
-$env:sdkSrcRoot = "$($env:PowerShellSDKRepoRoot)\submodules\Intune-PowerShell-SDK\src"
+$env:sdkSubmoduleSrc = "$($env:PowerShellSDKRepoRoot)\submodules\Intune-PowerShell-SDK\src"
+$env:sdkSubmoduleBuild = "$($env:sdkSubmoduleSrc)\bin\$($env:buildConfiguration)"
 $env:sdkAssemblyName = 'Microsoft.Intune.PowerShellGraphSDK'
 
 # Remember the settings that will change when launching a child PowerShell context
@@ -24,14 +25,14 @@ $env:generateModuleManifestScript = "$($env:PowerShellSDKRepoRoot)\Scripts\gener
 $env:runScript = "$($env:PowerShellSDKRepoRoot)\Scripts\run.ps1"
 $env:testScript = "$($env:PowerShellSDKRepoRoot)\Scripts\test.ps1"
 
-function global:WriterBuild {
+function global:BuildWriter {
     Write-Host "Building the writer..." -f Cyan
     Invoke-Expression "$env:buildScript -WorkingDirectory '$env:writerDir' -OutputPath '$env:writerBuildDir' -BuildTargets 'Rebuild' -Verbosity 'minimal'"
     Write-Host "Finished building the writer" -f Cyan
     Write-Host
 }
 
-function global:WriterRun {
+function global:RunWriter {
     param (
         [string]$GraphSchema
     )
@@ -42,18 +43,61 @@ function global:WriterRun {
     Write-Host
 }
 
-function global:SDKBuild {
-    Write-Host "Building the SDK (i.e. building the generated cmdlets)..." -f Cyan
-    Invoke-Expression "$env:buildScript -WorkingDirectory '$env:generatedDir' -OutputPath '$env:sdkDir' -Verbosity 'quiet' -AssemblyName '$env:sdkAssemblyName'"
-    Write-Host "Finished building the SDK" -f Cyan
-    Write-Host
+function global:GenerateModuleManifest {
+    param(
+        [string]$ModuleName = $null,
+        [string]$OutputDirectory = $null,
+        [string]$MainModuleRelativePath = $null,
+        [string[]]$NestedModulesRelativePaths = $null
+    )
+
     Write-Host "Generating module manifest..." -f Cyan
-    Invoke-Expression "$env:generateModuleManifestScript"
+
+    # Validate values
+    if (-Not $ModuleName) {
+        $ModuleName = $env:moduleName
+    }
+    if (-Not $OutputDirectory) {
+        $OutputDirectory = $env:sdkDir
+    }
+    if (-Not (Test-Path $OutputDirectory -PathType Container)) {
+        throw "Directory '$OutputDirectory' does not exist"
+    }
+    if (-Not $MainModuleRelativePath) {
+        $MainModuleRelativePath = ".\$($env:sdkAssemblyName).dll"
+    }
+    if (-Not $NestedModulesRelativePaths) {
+        Push-Location $OutputDirectory
+        try {
+            $NestedModulesRelativePaths = Get-ChildItem -Include '*.psm1', '*.ps1' -Recurse -File | Resolve-Path -Relative
+        } finally {
+            Pop-Location
+        }
+    }
+
+    # Call the script to generate the manifest
+    Invoke-Expression "$env:generateModuleManifestScript -ModuleName $ModuleName -OutputDirectory $OutputDirectory -MainModuleRelativePath $MainModuleRelativePath -NestedModulesRelativePaths $NestedModulesRelativePaths"
+
     Write-Host "Finished generating module manifest" -f Cyan
     Write-Host
 }
 
-function global:SDKRun {
+function global:BuildSDK {
+    param(
+        $WorkingDirectory
+    )
+
+    # Build the SDK
+    Write-Host "Building the SDK (i.e. building the generated cmdlets)..." -f Cyan
+    Invoke-Expression "$env:buildScript -WorkingDirectory '$WorkingDirectory' -OutputPath '$env:sdkDir' -Verbosity 'quiet' -AssemblyName '$env:sdkAssemblyName'"
+    Write-Host "Finished building the SDK" -f Cyan
+    Write-Host
+
+    # Generate the module manifest as part of the build
+    GenerateModuleManifest
+}
+
+function global:RunSDK {
 [alias("run")]
     param()
 
@@ -61,7 +105,7 @@ function global:SDKRun {
     Invoke-Expression "$env:runScript"
 }
 
-function global:SDKTest {
+function global:TestSDK {
 [alias("test")]
     param()
 
@@ -74,9 +118,9 @@ function global:GenerateSDK {
         [string]$GraphSchema
     )
 
-    global:WriterBuild
-    global:WriterRun -GraphSchema $GraphSchema
-    global:SDKBuild
+    global:BuildWriter
+    global:RunWriter -GraphSchema $GraphSchema
+    global:BuildSDK -WorkingDirectory "$env:generatedDir"
 }
 
 function global:GenerateAndRunSDK {
@@ -85,34 +129,25 @@ function global:GenerateAndRunSDK {
     )
 
     global:GenerateSDK -GraphSchema $GraphSchema
-    global:SDKRun
+    global:RunSDK
 }
 
 function global:ReleaseSDK {
 [alias("release")]
     param()
 
-    global:GenerateSDK
+    if (-Not (Test-Path $env:generatedDir)) {
+        throw "An SDK build was not found at '$env:generatedDir' - run 'build' before running 'release'"
+    }
 
-    Write-Host "Syncing $($env:sdkSrcRoot) ..."
-    Invoke-Expression "pushd $($env:sdkSrcRoot)"
-    Invoke-Expression "git pull"
+    Write-Host "Syncing '$env:sdkSubmoduleSrc'..."
 
-    Write-Host "Copying generated SDK"
-    Invoke-Expression "xcopy /FDVICE /Y $($env:generatedDir)\. $($env:sdkSrcRoot)\."
-    Invoke-Expression "git add $($env:sdkSrcRoot)\."
+    Write-Host "Copying generated SDK" -f Cyan
+    Remove-Item "$env:sdkSubmoduleSrc" -Recurse
+    New-Item "$env:sdkSubmoduleSrc" -ItemType directory | Out-Null
+    Copy-Item "$env:generatedDir\*" -Destination "$env:sdkSubmoduleSrc\" -Recurse -Force -Container
 
-    Write-Host "Building generated SDK"
-    rmdir $env:sdkSrcRoot\bin\$env:BuildConfiguration
-    Invoke-Expression "$env:buildScript -WorkingDirectory '$env:sdkSrcRoot' -OutputPath '$env:sdkSrcRoot\bin\$env:BuildConfiguration' -Verbosity 'quiet'"
-    Write-Host "Finished building the SDK for release." -f Cyan
-    Write-Host
-
-    Write-Host "Generating module manifest..." -f Cyan
-    $env:sdkDir = "$($env:sdkSrcRoot)\bin\$env:BuildConfiguration"
-    Invoke-Expression "$env:generateModuleManifestScript"
-    Write-Host "Finished generating module manifest" -f Cyan
-    Write-Host
+    Write-Host "REMINDER: Make sure to correctly commit this change to the 'Intune-PowerShell-SDK' git submodule" -f Yellow
 }
 
 # Restore NuGet packages
@@ -122,12 +157,12 @@ nuget restore "src\PowerShellGraphSDK" -Verbosity quiet
 
 Write-Host "Initialized repository." -f Green
 Write-Host "Available commands:" -f Yellow
-Write-Host "    GenerateAndRunSDK             " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Executes the commands 'GenerateSDK' and 'SDKRun' (in that order)" -f DarkCyan
-Write-Host "    GenerateSDK (or 'build')      " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Executes the commands 'WriterBuild', 'WriterRun' and 'SDKBuild' (in that order)" -f DarkCyan
-Write-Host "    WriterBuild                   " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Builds the GraphODataPowerShellSDKWriter project" -f DarkCyan
-Write-Host "    WriterRun                     " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Runs the GraphODataPowerShellSDKWriter project" -f DarkCyan
-Write-Host "    SDKBuild                      " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Builds the generated PowerShellSDK project" -f DarkCyan
-Write-Host "    SDKRun (or 'run')             " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Runs the generated PowerShellSDK project" -f DarkCyan
-Write-Host "    SDKTest (or 'test')           " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Runs tests against the generated PowerShellSDK project" -f DarkCyan
+Write-Host "    GenerateAndRunSDK             " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Executes the commands 'GenerateSDK' and 'RunSDK' (in that order)" -f DarkCyan
+Write-Host "    GenerateSDK (or 'build')      " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Executes the commands 'BuildWriter', 'RunWriter' and 'BuildSDK' (in that order)" -f DarkCyan
+Write-Host "    BuildWriter                   " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Builds the GraphODataPowerShellSDKWriter project" -f DarkCyan
+Write-Host "    RunWriter                     " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Runs the GraphODataPowerShellSDKWriter project" -f DarkCyan
+Write-Host "    BuildSDK                      " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Builds the generated PowerShellSDK project" -f DarkCyan
+Write-Host "    RunSDK (or 'run')             " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Runs the generated PowerShellSDK project" -f DarkCyan
+Write-Host "    TestSDK (or 'test')           " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Runs tests against the generated PowerShellSDK project" -f DarkCyan
 Write-Host "    ReleaseSDK (or 'release')     " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Releases the generated SDK to https://github.com/Microsoft/Intune-PowerShell-SDK." -f DarkCyan
 Write-Host

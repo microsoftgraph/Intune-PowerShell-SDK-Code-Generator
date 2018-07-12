@@ -8,6 +8,7 @@ try {
             (Get-Host).UI.RawUI.WindowTitle = "$env:moduleName"
             (Get-Host).UI.RawUI.ForegroundColor = 'Cyan'
             (Get-Host).UI.RawUI.BackgroundColor = 'Black'
+
             Import-Module "$env:sdkDir\$env:moduleName.$env:moduleExtension"
             Connect-MSGraph
         } catch {
