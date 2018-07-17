@@ -3,9 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2015
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphODataPowerShellSDKWriter", "src\GraphODataPowerShellWriter\GraphODataPowerShellSDKWriter.csproj", "{3B8C0953-5E14-4D77-98F3-411CA0A3CE78}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PowerShellGraphSDK", "src\PowerShellGraphSDK\PowerShellGraphSDK.csproj", "{831E21CA-9580-4B96-A239-2F85190B5E6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerShellGraphSDK", "src\PowerShellGraphSDK\PowerShellGraphSDK.csproj", "{9D827326-2642-428E-8D87-1D0E7990CF7A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphODataPowerShellSDKWriter", "src\GraphODataPowerShellWriter\GraphODataPowerShellSDKWriter.csproj", "{3B8C0953-5E14-4D77-98F3-411CA0A3CE78}"
+	ProjectSection(ProjectDependencies) = postProject
+		{831E21CA-9580-4B96-A239-2F85190B5E6C} = {831E21CA-9580-4B96-A239-2F85190B5E6C}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +16,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{831E21CA-9580-4B96-A239-2F85190B5E6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{831E21CA-9580-4B96-A239-2F85190B5E6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{831E21CA-9580-4B96-A239-2F85190B5E6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{831E21CA-9580-4B96-A239-2F85190B5E6C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3B8C0953-5E14-4D77-98F3-411CA0A3CE78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3B8C0953-5E14-4D77-98F3-411CA0A3CE78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B8C0953-5E14-4D77-98F3-411CA0A3CE78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B8C0953-5E14-4D77-98F3-411CA0A3CE78}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9D827326-2642-428E-8D87-1D0E7990CF7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9D827326-2642-428E-8D87-1D0E7990CF7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9D827326-2642-428E-8D87-1D0E7990CF7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9D827326-2642-428E-8D87-1D0E7990CF7A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

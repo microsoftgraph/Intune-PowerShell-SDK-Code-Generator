@@ -6,7 +6,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
     using System.Collections.Generic;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils;
-    using PowerShellGraphSDK.PowerShellCmdlets;
+    using Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets;
 
     public static class ObjectFactoryToCSharpFileConversionBehavior
     {

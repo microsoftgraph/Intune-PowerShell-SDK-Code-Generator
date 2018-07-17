@@ -7,7 +7,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
-    using PowerShellGraphSDK;
+    using Microsoft.Intune.PowerShellGraphSDK;
     using PS = System.Management.Automation;
 
     public static class CSharpPropertyAttributeHelper

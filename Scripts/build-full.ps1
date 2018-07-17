@@ -1,7 +1,7 @@
 param (
-    [string]$BuildTargets = 'Rebuild',
+    [string]$BuildTargets = 'Restore;Rebuild',
     [string]$WorkingDirectory = "$(Get-Location)",
-    [string]$OutputPath = "$WorkingDirectory\bin\$($env:buildConfiguration)",
+    [string]$OutputPath,
     [string]$MSBuildExe32 = '%ProgramFiles(x86)%\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\MSBuild.exe',
     [string]$MSBuildExe64 = '%ProgramFiles%\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\MSBuild.exe',
     [string]$Verbosity = 'minimal',
@@ -10,7 +10,6 @@ param (
 )
 
 # Expand environment variables
-$BuildTargets = ([System.Environment]::ExpandEnvironmentVariables($BuildTargets))
 $WorkingDirectory = ([System.Environment]::ExpandEnvironmentVariables($WorkingDirectory))
 $OutputPath = ([System.Environment]::ExpandEnvironmentVariables($OutputPath))
 $MSBuildExe32 = ([System.Environment]::ExpandEnvironmentVariables($MSBuildExe32))
@@ -49,7 +48,6 @@ if (-Not (Test-Path $msBuildExe)) {
 # Compile the MSBuild arguments
 $MSBuildArguments = @(
     "/p:Configuration=$($env:buildConfiguration)",
-    "/p:OutputPath=`"$OutputPath`"",
     "/t:$BuildTargets",
     "/p:UseSharedCompilation=false",
     "/nr:false",
@@ -57,11 +55,16 @@ $MSBuildArguments = @(
     "/ignore:.sln"
 )
 
+# Set the output path if required
+if (-Not [string]::IsNullOrWhiteSpace($OutputPath))
+{
+    $MSBuildArguments += "/p:OutputPath=`"$OutputPath`""
+}
+
 # Set the assembly name if required
 if (-Not [string]::IsNullOrWhiteSpace($AssemblyName))
 {
     $MSBuildArguments += "/p:AssemblyName=$AssemblyName"
-    $MSBuildArguments += "/p:RootNamespace=$AssemblyName"
 }
 
 # Select the default graph schema if one was not provided
@@ -83,6 +86,8 @@ if ($GraphSchema)
 # Run MSBuild in the given working directory
 Push-Location $WorkingDirectory
 try {
+    $command = "`"$msBuildExe`" $MSBuildArguments"
+    Write-Host $command -f DarkCyan
     & $msBuildExe $MSBuildArguments
     if (-Not $?)
     {

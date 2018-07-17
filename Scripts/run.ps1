@@ -1,21 +1,40 @@
 # Start the new PowerShell context
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory=$true)]
+    [ValidateNotNullOrEmpty()]
+    [string]$SdkDirectory
+)
+
+$moduleLocation = "$SdkDirectory\$($env:moduleName).$($env:moduleExtension)"
+
+# Check that a build of the SDK exists
+if (-Not (Test-Path "$moduleLocation" -PathType Leaf))
+{
+    throw "Cannot find '$moduleLocation'.  Run the 'build' command before running the module."
+}
+
 try {
     Write-Host 'Importing module in a new PowerShell context...'
     Write-Host 'NOTE: Type ''exit'' to return to the current context.' -f Yellow
 
     powershell -NoExit -Command {
+        param(
+            $module
+        )
+
         try {
-            (Get-Host).UI.RawUI.WindowTitle = "$env:moduleName"
+            (Get-Host).UI.RawUI.WindowTitle = "$module"
             (Get-Host).UI.RawUI.ForegroundColor = 'Cyan'
             (Get-Host).UI.RawUI.BackgroundColor = 'Black'
 
-            Import-Module "$env:sdkDir\$env:moduleName.$env:moduleExtension"
+            Import-Module "$module"
             Connect-MSGraph
         } catch {
             Write-Error "Failed to initialize new PowerShell context: '$_'"
             exit
         }
-    }
+    } -args $moduleLocation
 
     # Check that the special PowerShell context exited successfully
     if (-Not $?)

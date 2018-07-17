@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 
-namespace PowerShellGraphSDK.PowerShellCmdlets
+namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
 {
     using System;
     using System.Collections;
@@ -13,11 +13,10 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
 
     public abstract partial class ODataCmdletBase
     {
-        private AuthenticationResult Auth(EnvironmentParameters environmentParameters)
+        private AuthenticationHeaderValue Auth()
         {
-            AuthenticationResult authResult = AuthUtils.LatestAuthResult;
             string cmdletName = $"{PowerShellCmdlets.Connect.CmdletVerb}-{PowerShellCmdlets.Connect.CmdletNoun}";
-            if (authResult == null)
+            if (AuthUtils.UserHasNeverLoggedIn)
             {
                 // User has not authenticated
                 throw new PSAuthenticationError(
@@ -26,26 +25,21 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                     ErrorCategory.AuthenticationError,
                     null);
             }
-
-            // Check for an expired token
-            if (authResult.ExpiresOn <= DateTimeOffset.Now)
+            
+            // Refresh the token if required
+            try
             {
-                // If it's expired, attempt to acquire a new one
-                try
-                {
-                    return AuthUtils.Auth(PromptBehavior.Never);
-                }
-                catch (AdalException)
-                {
-                    throw new PSAuthenticationError(
-                        new InvalidOperationException($"Authentication has expired.  Please use the \"{cmdletName} -{nameof(PowerShellCmdlets.Connect.ForceInteractive)}\" command to authenticate."),
-                        "AuthenticationExpired",
-                        ErrorCategory.AuthenticationError,
-                        authResult);
-                }
+                return AuthUtils.RefreshAuthIfRequired();
             }
-
-            return authResult;
+            catch (AdalException ex)
+            {
+                // Catch and bubble up any ADAL failures (this should never happen)
+                throw new PSAuthenticationError(
+                    ex,
+                    "AuthenticationExpired",
+                    ErrorCategory.AuthenticationError,
+                    "Failed to refresh the access token");
+            }
         }
 
         /// <summary>

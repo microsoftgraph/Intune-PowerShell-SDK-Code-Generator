@@ -11,8 +11,7 @@ param(
     [ValidateNotNullOrEmpty()]
     [string]$MainModuleRelativePath,
 
-    [Parameter(Mandatory = $true)]
-    [ValidateNotNull()]
+    [Parameter()]
     [string[]]$NestedModulesRelativePaths
 )
 
@@ -27,7 +26,9 @@ $variables = @()
 # Create a single list of all modules
 $modulePaths = @()
 $modulePaths += $MainModuleRelativePath
-$modulePaths += $NestedModulesRelativePaths
+if ($NestedModulesRelativePaths) {
+    $modulePaths += $NestedModulesRelativePaths
+}
 
 Push-Location $OutputDirectory
 try {

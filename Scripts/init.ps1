@@ -2,16 +2,18 @@
 $env:PowerShellSDKRepoRoot = Split-Path (Split-Path $script:MyInvocation.MyCommand.Path -Parent) -Parent
 
 # Environment variables
-$env:buildConfiguration = "Release"
+$env:buildConfiguration = "Debug"
+$env:dotnetFrameworkVersion = "net471" # use "netstandard2.0" for cross-platform build
+$env:repoRootSlnFile = "$($env:PowerShellSDKRepoRoot)\PowerShellGraphSDKGenerator.sln"
 $env:writerDir = "$($env:PowerShellSDKRepoRoot)\src\GraphODataPowerShellWriter"
 $env:writerBuildDir = "$($env:writerDir)\bin\$($env:buildConfiguration)"
 $env:generatedDir = "$($env:writerBuildDir)\output"
-$env:sdkDir = "$($env:generatedDir)\bin\$($env:buildConfiguration)"
+$env:sdkDir = "$($env:generatedDir)\bin\$($env:buildConfiguration)\$($env:dotnetFrameworkVersion)"
 $env:testDir = "$($env:PowerShellSDKRepoRoot)\Tests"
 $env:moduleName = 'Intune'
 $env:moduleExtension = 'psd1'
 $env:sdkSubmoduleSrc = "$($env:PowerShellSDKRepoRoot)\submodules\Intune-PowerShell-SDK\src"
-$env:sdkSubmoduleBuild = "$($env:sdkSubmoduleSrc)\bin\$($env:buildConfiguration)"
+$env:sdkSubmoduleBuild = "$($env:sdkSubmoduleSrc)\bin\$($env:buildConfiguration)\$($env:dotnetFrameworkVersion)"
 $env:sdkAssemblyName = 'Microsoft.Intune.PowerShellGraphSDK'
 
 # Remember the settings that will change when launching a child PowerShell context
@@ -20,14 +22,20 @@ $env:standardForegroundColor = (Get-Host).UI.RawUI.ForegroundColor
 $env:standardBackgroundColor = (Get-Host).UI.RawUI.BackgroundColor
 
 # Scripts
-$env:buildScript = "$($env:PowerShellSDKRepoRoot)\Scripts\build.ps1"
+$env:dotnetInstallScript = "$($env:PowerShellSDKRepoRoot)\Scripts\dotnet-install.ps1"
+$env:buildScriptPortable = "$($env:PowerShellSDKRepoRoot)\Scripts\build-portable.ps1"
+$env:buildScriptFull = "$($env:PowerShellSDKRepoRoot)\Scripts\build-full.ps1"
 $env:generateModuleManifestScript = "$($env:PowerShellSDKRepoRoot)\Scripts\generateModuleManifest.ps1"
 $env:runScript = "$($env:PowerShellSDKRepoRoot)\Scripts\run.ps1"
 $env:testScript = "$($env:PowerShellSDKRepoRoot)\Scripts\test.ps1"
 
+###############
+## Functions ##
+###############
+
 function global:BuildWriter {
     Write-Host "Building the writer..." -f Cyan
-    Invoke-Expression "$env:buildScript -WorkingDirectory '$env:writerDir' -OutputPath '$env:writerBuildDir' -BuildTargets 'Rebuild' -Verbosity 'minimal'"
+    Invoke-Expression "$env:buildScriptFull -WorkingDirectory '$env:writerDir' -Verbosity 'quiet'"
     Write-Host "Finished building the writer" -f Cyan
     Write-Host
 }
@@ -38,78 +46,55 @@ function global:RunWriter {
     )
 
     Write-Host "Running the writer (i.e. generating the cmdlets)..." -f Cyan
-    Invoke-Expression "$env:buildScript -WorkingDirectory '$env:writerDir' -OutputPath '$env:writerBuildDir' -BuildTargets 'Run' -GraphSchema '$GraphSchema'"
+    Invoke-Expression "$env:buildScriptFull -WorkingDirectory '$env:writerDir' -BuildTargets 'Run' -GraphSchema '$GraphSchema'"
     Write-Host "Finished running the writer" -f Cyan
-    Write-Host
-}
-
-function global:GenerateModuleManifest {
-    param(
-        [string]$ModuleName = $null,
-        [string]$OutputDirectory = $null,
-        [string]$MainModuleRelativePath = $null,
-        [string[]]$NestedModulesRelativePaths = $null
-    )
-
-    Write-Host "Generating module manifest..." -f Cyan
-
-    # Validate values
-    if (-Not $ModuleName) {
-        $ModuleName = $env:moduleName
-    }
-    if (-Not $OutputDirectory) {
-        $OutputDirectory = $env:sdkDir
-    }
-    if (-Not (Test-Path $OutputDirectory -PathType Container)) {
-        throw "Directory '$OutputDirectory' does not exist"
-    }
-    if (-Not $MainModuleRelativePath) {
-        $MainModuleRelativePath = ".\$($env:sdkAssemblyName).dll"
-    }
-    if (-Not $NestedModulesRelativePaths) {
-        Push-Location $OutputDirectory
-        try {
-            $NestedModulesRelativePaths = Get-ChildItem -Include '*.psm1', '*.ps1' -Recurse -File | Resolve-Path -Relative
-        } finally {
-            Pop-Location
-        }
-    }
-
-    # Call the script to generate the manifest
-    Invoke-Expression "$env:generateModuleManifestScript -ModuleName $ModuleName -OutputDirectory $OutputDirectory -MainModuleRelativePath $MainModuleRelativePath -NestedModulesRelativePaths $NestedModulesRelativePaths"
-
-    Write-Host "Finished generating module manifest" -f Cyan
     Write-Host
 }
 
 function global:BuildSDK {
     param(
-        $WorkingDirectory
+        [string]$WorkingDirectory
     )
 
     # Build the SDK
     Write-Host "Building the SDK (i.e. building the generated cmdlets)..." -f Cyan
-    Invoke-Expression "$env:buildScript -WorkingDirectory '$WorkingDirectory' -OutputPath '$env:sdkDir' -Verbosity 'quiet' -AssemblyName '$env:sdkAssemblyName'"
+    Invoke-Expression "$env:buildScriptPortable -WorkingDirectory '$WorkingDirectory' -Verbosity 'quiet'"
     Write-Host "Finished building the SDK" -f Cyan
     Write-Host
 
-    # Generate the module manifest as part of the build
-    GenerateModuleManifest
+    # Generate the module manifest as part of the build for each output folder
+    Get-ChildItem (Split-Path $env:sdkDir -Parent) -Directory | ForEach-Object {
+        GenerateModuleManifest -OutputDirectory $_.FullName
+    }
 }
 
 function global:RunSDK {
 [alias("run")]
-    param()
+    param(
+        [string]$SdkDirectory
+    )
+
+    if ([string]::IsNullOrWhitespace($SdkDirectory))
+    {
+        $SdkDirectory = $env:sdkDir
+    }
 
     Write-Host "Running the SDK (importing '$env:moduleName' and running 'Connect-MSGraph')..." -f Cyan
-    Invoke-Expression "$env:runScript"
+    Invoke-Expression "$env:runScript -SdkDirectory $SdkDirectory"
 }
 
 function global:TestSDK {
 [alias("test")]
-    param()
+    param(
+        [string]$SdkDirectory
+    )
 
-    Invoke-Expression "$env:testScript"
+    if ([string]::IsNullOrWhitespace($SdkDirectory))
+    {
+        $SdkDirectory = $env:sdkDir
+    }
+
+    Invoke-Expression "$env:testScript -SdkDirectory $SdkDirectory"
 }
 
 function global:GenerateSDK {
@@ -150,11 +135,64 @@ function global:ReleaseSDK {
     Write-Host "REMINDER: Make sure to correctly commit this change to the 'Intune-PowerShell-SDK' git submodule" -f Yellow
 }
 
-# Restore NuGet packages
-nuget restore -Verbosity quiet
-# Restore packages in the PowerShellGraphSDK separately so it is available when the project folder is copied elsewhere
-nuget restore "src\PowerShellGraphSDK" -Verbosity quiet
+function global:GenerateModuleManifest {
+    param(
+        [string]$ModuleName = $null,
+        [string]$OutputDirectory = $null,
+        [string]$MainModuleRelativePath = $null,
+        [string[]]$NestedModulesRelativePaths = $null
+    )
 
+    Write-Host "Generating module manifest..." -f Cyan
+
+    # Validate values
+    if (-Not $ModuleName) {
+        $ModuleName = $env:moduleName
+    }
+    if (-Not $OutputDirectory) {
+        $OutputDirectory = $env:sdkDir
+    }
+    if (-Not (Test-Path $OutputDirectory -PathType Container)) {
+        throw "Directory '$OutputDirectory' does not exist"
+    }
+    if (-Not $MainModuleRelativePath) {
+        $MainModuleRelativePath = ".\$($env:sdkAssemblyName).dll"
+    }
+    if (-Not $NestedModulesRelativePaths) {
+        Push-Location $OutputDirectory
+        try {
+            Write-Host "    Output directory: $OutputDirectory" -f Cyan
+            $NestedModulesRelativePaths = Get-ChildItem -Include '*.psm1', '*.ps1' -Recurse -File | Resolve-Path -Relative
+        } finally {
+            Pop-Location
+        }
+    }
+
+    # Call the script to generate the manifest
+    &$env:generateModuleManifestScript -ModuleName $ModuleName -OutputDirectory $OutputDirectory -MainModuleRelativePath $MainModuleRelativePath -NestedModulesRelativePaths $NestedModulesRelativePaths
+
+    Write-Host "Finished generating module manifest" -f Cyan
+    Write-Host
+}
+
+##########
+## Init ##
+##########
+
+# Try to download the "dotnet" install script if it doesn't exist
+if (-Not (Test-Path $env:dotnetInstallScript)) {
+    try {
+        Invoke-WebRequest -OutFile $env:dotnetInstallScript 'https://dot.net/v1/dotnet-install.ps1'
+    } catch {
+        Write-Warning "Failed to download 'dotnet' command installer - builds will fail if you do not have 'dotnet' installed"
+    }
+}
+
+# Restore NuGet packages
+dotnet restore --verbosity quiet
+nuget restore -Verbosity Quiet
+
+# Show the available functions
 Write-Host "Initialized repository." -f Green
 Write-Host "Available commands:" -f Yellow
 Write-Host "    GenerateAndRunSDK             " -NoNewline -f Cyan; Write-Host ' | ' -NoNewline -f Gray; Write-Host "Executes the commands 'GenerateSDK' and 'RunSDK' (in that order)" -f DarkCyan

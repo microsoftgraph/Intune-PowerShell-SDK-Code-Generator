@@ -8,8 +8,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
     using System.Linq;
     using PS = System.Management.Automation;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
-    using PowerShellGraphSDK;
-    using PowerShellGraphSDK.ODataConstants;
+    using Microsoft.Intune.PowerShellGraphSDK;
+    using Microsoft.Intune.PowerShellGraphSDK.ODataConstants;
     using Vipr.Core.CodeModel;
     using Vipr.Core.CodeModel.Vocabularies.Capabilities;
 

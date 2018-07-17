@@ -7,8 +7,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
     using System.Linq;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils;
-    using PowerShellGraphSDK.ODataConstants;
-    using PowerShellGraphSDK.PowerShellCmdlets;
+    using Microsoft.Intune.PowerShellGraphSDK.ODataConstants;
+    using Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets;
     using Vipr.Core;
     using Vipr.Core.CodeModel;
     using PS = System.Management.Automation;
@@ -779,7 +779,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             {
                 Aliases = aliases,
                 Mandatory = true,
-                ValueFromPipeline = true,
+                ValueFromPipeline = false,
                 ValueFromPipelineByPropertyName = true,
                 ValidateNotNullOrEmpty = true,
                 ValidateUrlIsAbsolute = true,

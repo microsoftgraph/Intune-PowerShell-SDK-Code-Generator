@@ -7,7 +7,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
     using System.IO;
     using System.Linq;
     using Pluralize.NET;
-    using Inflector;
+    using Humanizer;
 
     /// <summary>
     /// String utilities.
@@ -113,7 +113,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 throw new ArgumentNullException(nameof(identifier));
             }
 
-            return Inflector.Pascalize(identifier);
+            return InflectorExtensions.Pascalize(identifier);
         }
     }
 }

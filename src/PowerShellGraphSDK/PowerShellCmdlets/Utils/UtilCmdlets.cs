@@ -1,42 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 
-namespace PowerShellGraphSDK.PowerShellCmdlets
+namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
 {
     using System.Collections;
     using System.Collections.Generic;
     using System.Management.Automation;
-    using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
-    using Microsoft.IdentityModel.Clients.ActiveDirectory;
-
-    /// <summary>
-    /// <para type="description">Grants admin consent for the currently selected AppId (this can be seen with the "Get-MSGraphEnvironment" cmdlet).</para>
-    /// </summary>
-    [Cmdlet(
-        CmdletVerb, CmdletNoun,
-        ConfirmImpact = ConfirmImpact.High)]
-    public class AdminConsent : PSCmdlet
-    {
-        /// <summary>
-        /// Cmdlet name's verb.
-        /// </summary>
-        public const string CmdletVerb = VerbsSecurity.Grant;
-
-        /// <summary>
-        /// Cmdlet name's noun.
-        /// </summary>
-        public const string CmdletNoun = "MSGraphAdminConsent";
-
-        /// <summary>
-        /// Run the cmdlet.
-        /// </summary>
-        protected override void ProcessRecord()
-        {
-            AuthenticationResult result = AuthUtils.GrantAdminConsent();
-            this.WriteObject($"Successfully granted admin consent on behalf of \"{result.UserInfo.DisplayableId}\".");
-        }
-    }
 
     /// <summary>
     /// <para type="description">Authenticates with Graph.</para>
@@ -57,10 +27,19 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// </summary>
         public const string CmdletNoun = "MSGraph";
 
-        private const string ParameterSetForceInteractive = "ForceInteractive";
-        private const string ParameterSetForceNonInteractive = "ForceNonInteractive";
-        private const string ParameterSetPSCredential = "PSCredential";
-        private const string ParameterSetCertificate = "Certificate";
+        /// <summary>
+        /// Parameter set for triggering the admin consent flow during authentication.
+        /// </summary>
+        private const string ParameterSetAdminConsent = "AdminConsent";
+
+        /// <summary>
+        /// <para type="description">
+        /// If the AdminConsent flag is set, admin consent can be granted for the currently selected AppId
+        /// (this can be seen with the "Get-MSGraphEnvironment" cmdlet) during authentication.
+        /// </para>
+        /// </summary>
+        [Parameter(ParameterSetName = ParameterSetAdminConsent)]
+        public SwitchParameter AdminConsent { get; set; }
 
         /// <summary>
         /// <para type="description">If the Quet flag is set, this cmdlet will suppress output upon successfully logging in.</para>
@@ -70,38 +49,12 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
 
         /// <summary>
         /// <para type="description">
-        /// If the ForceInteractive flag is set, this cmdlet will always create an interactive window to authenticate.
-        /// If the ForceInteractive flag is not set, this cmdlet is attempt to authenticate with cached credentials before falling back to showing an interactive window.
+        /// If the PassThru flag is set, this cmdlet will return the access token that was obtained.
+        /// This flag is ignored if the '-Quet' flag is set.
         /// </para>
-        /// </summary>
-        [Parameter(ParameterSetName = ParameterSetForceInteractive)]
-        public SwitchParameter ForceInteractive { get; set; }
-
-        /// <summary>
-        /// <para type="description">
-        /// If the ForceNonInteractive flag is set, this cmdlet will never create an interactive window to authenticate, and will throw an "AdalException" if authentication fails.
-        /// If the ForceNonInteractive flag is not set, this cmdlet is attempt to authenticate with cached credentials before falling back to showing an interactive window.
-        /// </para>
-        /// </summary>
-        [Parameter(ParameterSetName = ParameterSetForceNonInteractive)]
-        public SwitchParameter ForceNonInteractive { get; set; }
-
-        /// <summary>
-        /// <para type="description">If the PassThru flag is set, this cmdlet will return the access token that was obtained.</para>
         /// </summary>
         [Parameter]
         public SwitchParameter PassThru { get; set; }
-
-        /// <summary>
-        /// <para type="description">The PSCredential object to use when specifying the username and password while authenticating.</para>
-        /// </summary>
-        [Parameter(ParameterSetName = ParameterSetPSCredential, Mandatory = true)]
-        [ValidateNotNull]
-        public PSCredential PSCredential { get; set; }
-
-        //[Parameter(ParameterSetName = ParameterSetCertificate, Mandatory = true)]
-        //[ValidateNotNull]
-        //public IClientAssertionCertificate Cert { get; set; }
 
         /// <summary>
         /// Run the cmdlet.
@@ -109,26 +62,14 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         protected override void ProcessRecord()
         {
             // Auth
-            AuthenticationResult authResult;
-            switch (this.ParameterSetName)
-            {
-                case ParameterSetPSCredential:
-                    NetworkCredential networkCreds = this.PSCredential.GetNetworkCredential();
-                    authResult = AuthUtils.AuthWithCredentials(networkCreds.UserName, networkCreds.Password);
-                    break;
-                case ParameterSetCertificate:
-                    // TODO: Implement Certificate auth
-                    throw new PSNotImplementedException();
-                case ParameterSetForceInteractive:
-                    authResult = AuthUtils.Auth(PromptBehavior.SelectAccount);
-                    break;
-                case ParameterSetForceNonInteractive:
-                    authResult = AuthUtils.Auth(PromptBehavior.Never);
-                    break;
-                default:
-                    authResult = AuthUtils.Auth();
-                    break;
-            }
+            AuthenticationHeaderValue authResult = AuthUtils.AuthWithDeviceCode(
+                displayDeviceCodeMessageToUser: (deviceCodeMessage) =>
+                {
+                    this.WriteWarning(deviceCodeMessage);
+                },
+                userInfo: out object userInfo,
+                useAdminConsentFlow: this.ParameterSetName == ParameterSetAdminConsent
+            );
 
             // Decide what to return
             if (!this.Quiet)
@@ -136,16 +77,12 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                 if (this.PassThru)
                 {
                     // Return the access token
-                    this.WriteObject(authResult.AccessToken);
+                    this.WriteObject(authResult.Parameter);
                 }
                 else
                 {
                     // Return details about the logged in user
-                    this.WriteObject(new
-                    {
-                        UPN = authResult.UserInfo.DisplayableId,
-                        TenantId = authResult.TenantId,
-                    }.ToPowerShellObject());
+                    this.WriteObject(userInfo.ToPowerShellObject());
                 }
             }
         }
@@ -174,7 +111,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
         /// </summary>
         protected override void ProcessRecord()
         {
-            this.WriteObject(ODataCmdletBase.CurrentEnvironmentParameters.ToPowerShellObject());
+            this.WriteObject(AuthUtils.CurrentEnvironmentParameters.ToPowerShellObject());
         }
     }
 
@@ -249,35 +186,35 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
             // Schema version
             if (!string.IsNullOrEmpty(this.SchemaVersion))
             {
-                ODataCmdletBase.CurrentEnvironmentParameters.SchemaVersion = this.SchemaVersion;
+                AuthUtils.CurrentEnvironmentParameters.SchemaVersion = this.SchemaVersion;
                 modified = true;
             }
 
             // AppId
             if (!string.IsNullOrEmpty(this.AppId))
             {
-                ODataCmdletBase.CurrentEnvironmentParameters.AppId = this.AppId;
+                AuthUtils.CurrentEnvironmentParameters.AppId = this.AppId;
                 modified = true;
             }
 
             // Auth URL
             if (!string.IsNullOrEmpty(this.AuthUrl))
             {
-                ODataCmdletBase.CurrentEnvironmentParameters.AuthUrl = this.AuthUrl;
+                AuthUtils.CurrentEnvironmentParameters.AuthUrl = this.AuthUrl;
                 modified = true;
             }
 
             // Graph resource ID
             if (!string.IsNullOrEmpty(this.GraphResourceId))
             {
-                ODataCmdletBase.CurrentEnvironmentParameters.ResourceId = this.GraphResourceId;
+                AuthUtils.CurrentEnvironmentParameters.ResourceId = this.GraphResourceId;
                 modified = true;
             }
 
             // Graph base URL
             if (!string.IsNullOrEmpty(this.GraphBaseUrl))
             {
-                ODataCmdletBase.CurrentEnvironmentParameters.GraphBaseAddress = this.GraphBaseUrl;
+                AuthUtils.CurrentEnvironmentParameters.GraphBaseAddress = this.GraphBaseUrl;
                 modified = true;
             }
 
@@ -293,7 +230,7 @@ namespace PowerShellGraphSDK.PowerShellCmdlets
                     this.WriteWarning("No changes were made to the environment parameters.");
                 }
 
-                this.WriteObject(ODataCmdletBase.CurrentEnvironmentParameters.ToPowerShellObject());
+                this.WriteObject(AuthUtils.CurrentEnvironmentParameters.ToPowerShellObject());
             }
         }
     }

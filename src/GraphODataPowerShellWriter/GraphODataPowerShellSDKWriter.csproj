@@ -6,32 +6,23 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{3B8C0953-5E14-4D77-98F3-411CA0A3CE78}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Microsoft.Graph.GraphODataPowerShellSDKWriter</RootNamespace>
-    <AssemblyName>GraphODataPowerShellSDKWriter</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <RootNamespace Condition=" '$(RootNamespace)' == ''">GraphODataPowerShellSDKWriter</RootNamespace>
+    <AssemblyName Condition=" '$(AssemblyName)' == ''">GraphODataPowerShellSDKWriter</AssemblyName>
+    <Company>Microsoft Corporation</Company>
+    <Product>Vipr Writer module for Microsoft Graph PowerShell Client SDK</Product>
+    <Copyright>Copyright © Microsoft Corporation 2018</Copyright>
+    <Version>6.1808.3</Version>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkProfile />
-    <OutputPath>$(MSBuildProjectDirectory)\bin\$(Configuration)</OutputPath>
-    <GraphSchemaPath>$(MSBuildProjectDirectory)\..\..\Test Graph Schemas\v1.0-20180628 - Intune.csdl</GraphSchemaPath>
+    <OutputPath Condition=" '$(OutputPath)' == ''">$(MSBuildProjectDirectory)\bin\$(Configuration)</OutputPath>
+    <GraphSchemaPath Condition=" '$(GraphSchemaPath)' == ''">$(MSBuildProjectDirectory)\..\..\Test Graph Schemas\v1.0-20180628 - Intune.csdl</GraphSchemaPath>
     <StartAction>Program</StartAction>
     <StartProgram>$(OutputPath)\Vipr.exe</StartProgram>
     <StartArguments>"$(GraphSchemaPath)" --writer="$(AssemblyName)"</StartArguments>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -50,19 +41,14 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <PowerShellGraphSDKProjectLocation>$(MSBuildProjectDirectory)\..\PowerShellGraphSDK</PowerShellGraphSDKProjectLocation>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Inflector, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(MSBuildProjectDirectory)\..\..\packages\Inflector.1.0.0.0\lib\net45\Inflector.dll</HintPath>
-    </Reference>
-    <Reference Include="Pluralize.NET, Version=0.1.84.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(MSBuildProjectDirectory)\..\..\packages\Pluralize.NET.0.1.84\lib\net46\Pluralize.NET.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>$(MSBuildProjectDirectory)\..\..\packages\Microsoft.PowerShell.5.ReferenceAssemblies.1.1.0\lib\net4\System.Management.Automation.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -72,31 +58,32 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(MSBuildProjectDirectory)\..\..\submodules\vipr\src\Core\Vipr\bin\$(Configuration)\Vipr.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Intune.PowerShellGraphSDK">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(PowerShellGraphSDKProjectLocation)\bin\$(Configuration)\net471\Microsoft.Intune.PowerShellGraphSDK.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Humanizer.Core" Version="2.4.2" />
+    <PackageReference Include="Pluralize.NET" Version="0.1.84" />
+    <PackageReference Include="PowerShellStandard.Library" Version="5.1.0-preview-05" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="**\*.cs" Exclude="obj\**\*;bin\**\*" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="**\*.config" Exclude="obj\**\*;bin\**\*" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PowerShellGraphSDK\PowerShellGraphSDK.csproj">
-      <Project>{9d827326-2642-428e-8d87-1d0e7990cf7a}</Project>
-      <Name>PowerShellGraphSDK</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildProjectDirectory)\.nuget\NuGet.targets" Condition="Exists('$(MSBuildProjectDirectory)\.nuget\NuGet.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
+  <Target Name="BuildPowerShellGraphSDK" BeforeTargets="Compile;PreBuildEvent">
+    <ItemGroup>
+      <Command Include="dotnet restore -v quiet" />
+      <Command Include="dotnet build -v quiet" />
+    </ItemGroup>
+    <Exec WorkingDirectory="$(PowerShellGraphSDKProjectLocation)" Command="%(Command.Identity)">
+      <Output TaskParameter="ConsoleOutput" PropertyName="OutputOfExec" />
+    </Exec>
   </Target>
-  <Target Name="BeforeBuild">
-    <RemoveDir Directories="$(OutputPath)" />
+  <Target Name="BuildVipr" BeforeTargets="Compile;PreBuildEvent;BuildPowerShellGraphSDK">
+    <Message Importance="high" Text="Building Vipr..." />
+    <Exec Command="&quot;$(MSBuildBinPath)\msbuild.exe&quot; /v:quiet /m /t:Restore;Build /p:Configuration=$(Configuration) /noconsolelogger &quot;$(MSBuildProjectDirectory)\..\..\submodules\vipr\Vipr.sln&quot;" />
   </Target>
   <Target Name="AfterBuild">
     <PropertyGroup>
@@ -112,7 +99,6 @@
       <_GRAPH_SDK_SOURCE_FOLDER Include="$(GRAPH_SDK_SOURCE_FOLDER)\**\*" />
       <_GRAPH_SDK_TARGET_IGNORE Include="$(GRAPH_SDK_TARGET_IGNORE)" />
     </ItemGroup>
-    <Exec Command="&quot;$(MSBuildBinPath)\msbuild.exe&quot; /v:quiet /m /t:Build /p:Configuration=$(Configuration) &quot;$(MSBuildProjectDirectory)\..\..\submodules\vipr\Vipr.sln&quot;" />
     <Copy SourceFiles="@(_VIPR_OUTPUT)" DestinationFolder="$(OutputPath)\%(RecursiveDir)" />
     <Copy SourceFiles="@(_GRAPH_SDK_SOURCE_FOLDER)" DestinationFolder="$(OUTPUT_FOLDER)\%(RecursiveDir)" />
     <RemoveDir Directories="@(_GENERATED_FOLDER)" />

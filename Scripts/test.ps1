@@ -1,7 +1,16 @@
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory=$true)]
+    [ValidateNotNullOrEmpty()]
+    [string]$SdkDirectory
+)
+
+$moduleLocation = "$SdkDirectory\$($env:moduleName).$($env:moduleExtension)"
+
 # Check that a build of the SDK exists
-if (-Not (Test-Path "$env:sdkDir"))
+if (-Not (Test-Path "$moduleLocation" -PathType Leaf))
 {
-    throw "Cannot find a successful build of the SDK.  Run the 'build' command before running tests."
+    throw "Cannot find '$moduleLocation'.  Run the 'build' command before running tests."
 }
 
 Write-Host
@@ -11,10 +20,14 @@ Write-Host
 # Run the tests in a new PowerShell context
 try {
     powershell -NoExit -Command {
-        (Get-Host).UI.RawUI.WindowTitle = "$env:moduleName"
+        param(
+            $module
+        )
+
+        (Get-Host).UI.RawUI.WindowTitle = "$module"
         (Get-Host).UI.RawUI.ForegroundColor = 'Cyan'
         (Get-Host).UI.RawUI.BackgroundColor = 'Black'
-        Import-Module "$env:sdkDir\$env:moduleName.$env:moduleExtension"
+        Import-Module "$module"
         $testScripts = Get-ChildItem -Path "$env:testDir" -Recurse -Filter '*.ps1'
         Connect-MSGraph
         $testScripts | ForEach-Object {
@@ -28,7 +41,7 @@ try {
             Write-Host
         }
         exit
-    }
+    } -args $moduleLocation
 
     if (-Not $?)
     {
