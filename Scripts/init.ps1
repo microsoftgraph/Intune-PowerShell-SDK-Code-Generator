@@ -2,7 +2,7 @@
 $env:PowerShellSDKRepoRoot = Split-Path (Split-Path $script:MyInvocation.MyCommand.Path -Parent) -Parent
 
 # Environment variables
-$env:buildConfiguration = "Debug"
+$env:buildConfiguration = "Release"
 $env:dotnetFrameworkVersion = "net471" # use "netstandard2.0" for cross-platform build
 $env:repoRootSlnFile = "$($env:PowerShellSDKRepoRoot)\PowerShellGraphSDKGenerator.sln"
 $env:writerDir = "$($env:PowerShellSDKRepoRoot)\src\GraphODataPowerShellWriter"

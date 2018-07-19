@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup Condition=" '$(OS)' != 'Windows_NT' ">
         <TargetFramework>netstandard2.0</TargetFramework>
@@ -9,7 +9,7 @@
 
     <PropertyGroup>
         <OutputType>Library</OutputType>
-        <Version>6.1808.3</Version>
+        <Version>6.1808.10</Version>
         <Authors>Rajesh Soy, Rohit Ramu</Authors>
         <Company>Microsoft Corporation</Company>
         <Product>Microsoft Intune Graph PowerShell Client SDK</Product>
