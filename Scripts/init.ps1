@@ -22,6 +22,7 @@ $env:standardForegroundColor = (Get-Host).UI.RawUI.ForegroundColor
 $env:standardBackgroundColor = (Get-Host).UI.RawUI.BackgroundColor
 
 # Scripts
+$env:msbuildInstallScript = "$($env:PowerShellSDKRepoRoot)\Scripts\msbuild-install.ps1"
 $env:dotnetInstallScript = "$($env:PowerShellSDKRepoRoot)\Scripts\dotnet-install.ps1"
 $env:buildScriptPortable = "$($env:PowerShellSDKRepoRoot)\Scripts\build-portable.ps1"
 $env:buildScriptFull = "$($env:PowerShellSDKRepoRoot)\Scripts\build-full.ps1"
@@ -175,6 +176,18 @@ function global:GenerateModuleManifest {
     Write-Host
 }
 
+function global:UpdateDotnetCoreInstaller {
+    Invoke-WebRequest -OutFile $env:dotnetInstallScript 'https://dot.net/v1/dotnet-install.ps1'
+}
+
+function global:InstallDotnetCore {
+    Invoke-Expression "$env:dotnetInstallScript"
+}
+
+function global:InstallDotnetFramework {
+    Invoke-Expression "$env:msbuildInstallScript"
+}
+
 ##########
 ## Init ##
 ##########
@@ -182,7 +195,7 @@ function global:GenerateModuleManifest {
 # Try to download the "dotnet" install script if it doesn't exist
 if (-Not (Test-Path $env:dotnetInstallScript)) {
     try {
-        Invoke-WebRequest -OutFile $env:dotnetInstallScript 'https://dot.net/v1/dotnet-install.ps1'
+        UpdateDotnetCoreInstaller
     } catch {
         Write-Warning "Failed to download 'dotnet' command installer - builds will fail if you do not have 'dotnet' installed"
     }

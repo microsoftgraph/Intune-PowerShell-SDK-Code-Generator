@@ -24,24 +24,17 @@ if (-Not (Test-Path $msBuildExe)) {
 
 # Install MSBuild.exe if it doesn't exist
 if (-Not (Test-Path $msBuildExe)) {
-    Write-Host "VS Build Tools could not be found.  If the following installation fails, you can install it from 'https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=BuildTools&rel=15'" -ForegroundColor Yellow
-    $msBuildInstaller = ([System.Environment]::ExpandEnvironmentVariables("%TEMP%\vs_BuildTools.exe"))
-    Invoke-WebRequest -OutFile "$msBuildInstaller" "https://download.visualstudio.microsoft.com/download/pr/11923325/e64d79b40219aea618ce2fe10ebd5f0d/vs_BuildTools.exe"
-    $process = Start-Process -FilePath "$msBuildInstaller" -Verb RunAs -Wait -PassThru -ArgumentList "--add Microsoft.VisualStudio.Workload.MSBuildTools --add Microsoft.Net.Component.4.6.2.TargetingPack --add Microsoft.VisualStudio.Component.NuGet.BuildTools --add Microsoft.VisualStudio.Workload.WebBuildTools --norestart --quiet --force"
-    if ($process.ExitCode -eq 0) {
-      Write-Host "Done installing VS Build Tools" -ForegroundColor Green
+    Write-Host "VS Build Tools 2017 could not be found.  If the following installation fails, you can install it from 'https://visualstudio.microsoft.com/downloads/'" -ForegroundColor Yellow
+    Invoke-Expression "$env:msbuildInstallScript"
 
-        # Double check that MSBuild.exe now exists
-        $msBuildExe = $MSBuildExe32
-        if (-Not (Test-Path $msBuildExe)) {
-            $msBuildExe = $MSBuildExe64
-        }
-        if (-Not (Test-Path $msBuildExe)) {
-            Write-Host "MSBuild was not found at '$msBuildExe'" -ForegroundColor Red
-        }
-    } else {
-        # Failed to install - print an error on the command line
-        throw "Failed to install VS Build Tools. Exit code: $($process.ExitCode)"
+    # Double check that MSBuild.exe now exists
+    $msBuildExe = $MSBuildExe32
+    if (-Not (Test-Path $msBuildExe)) {
+        $msBuildExe = $MSBuildExe64
+    }
+    if (-Not (Test-Path $msBuildExe)) {
+        Write-Host "MSBuild was not found at '$msBuildExe'" -ForegroundColor Red
+        throw "Installation of VS Build Tools 2017 failed - please try to install it manually"
     }
 }
 
