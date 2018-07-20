@@ -18,11 +18,19 @@
     <TargetFrameworkProfile />
     <OutputPath Condition=" '$(OutputPath)' == ''">$(MSBuildProjectDirectory)\bin\$(Configuration)</OutputPath>
     <GraphSchemaPath Condition=" '$(GraphSchemaPath)' == ''">$(MSBuildProjectDirectory)\..\..\Test Graph Schemas\v1.0-20180628 - Intune.csdl</GraphSchemaPath>
+    <PowerShellGraphSDKProjectLocation>$(MSBuildProjectDirectory)\..\PowerShellGraphSDK</PowerShellGraphSDKProjectLocation>
     <StartAction>Program</StartAction>
     <StartProgram>$(OutputPath)\Vipr.exe</StartProgram>
     <StartArguments>"$(GraphSchemaPath)" --writer="$(AssemblyName)"</StartArguments>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+  </PropertyGroup>
+  <PropertyGroup>
+    <!--
+      Full list of runtime identifiers are here:
+      https://github.com/dotnet/corefx/blob/master/pkg/Microsoft.NETCore.Platforms/runtime.json
+    -->
+    <RuntimeIdentifiers>win;osx;unix;any</RuntimeIdentifiers>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -41,9 +49,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <PowerShellGraphSDKProjectLocation>$(MSBuildProjectDirectory)\..\PowerShellGraphSDK</PowerShellGraphSDKProjectLocation>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -60,7 +65,7 @@
     </Reference>
     <Reference Include="Microsoft.Intune.PowerShellGraphSDK">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(PowerShellGraphSDKProjectLocation)\bin\$(Configuration)\net471\Microsoft.Intune.PowerShellGraphSDK.dll</HintPath>
+      <HintPath>$(PowerShellGraphSDKProjectLocation)\bin\$(Configuration)\netstandard2.0\Microsoft.Intune.PowerShellGraphSDK.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -72,20 +77,26 @@
     <Compile Include="**\*.cs" Exclude="obj\**\*;bin\**\*" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildProjectDirectory)\.nuget\NuGet.targets" Condition="Exists('$(MSBuildProjectDirectory)\.nuget\NuGet.targets')" />
   <Target Name="BuildPowerShellGraphSDK" BeforeTargets="Compile;PreBuildEvent">
     <ItemGroup>
-      <Command Include="dotnet restore -v quiet" />
-      <Command Include="dotnet build -v quiet" />
+      <Command Include="dotnet restore --verbosity quiet" />
+      <Command Include="dotnet build --verbosity quiet --configuration $(Configuration)" />
     </ItemGroup>
     <Exec WorkingDirectory="$(PowerShellGraphSDKProjectLocation)" Command="%(Command.Identity)">
       <Output TaskParameter="ConsoleOutput" PropertyName="OutputOfExec" />
     </Exec>
   </Target>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild" AfterTargets="BuildPowerShellGraphSDK">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+  </Target>
   <Target Name="BuildVipr" BeforeTargets="Compile;PreBuildEvent;BuildPowerShellGraphSDK">
     <Message Importance="high" Text="Building Vipr..." />
     <Exec Command="&quot;$(MSBuildBinPath)\msbuild.exe&quot; /v:quiet /m /t:Restore;Build /p:Configuration=$(Configuration) /noconsolelogger &quot;$(MSBuildProjectDirectory)\..\..\submodules\vipr\Vipr.sln&quot;" />
   </Target>
-  <Target Name="AfterBuild">
+  <Target Name="SetupOutputForRun" AfterTargets="Build;PostBuildEvent">
     <PropertyGroup>
       <OUTPUT_FOLDER>$(OutputPath)\output</OUTPUT_FOLDER>
       <VIPR_OUTPUT>$(MSBuildProjectDirectory)\..\..\submodules\vipr\src\Core\Vipr\bin\$(Configuration)</VIPR_OUTPUT>
@@ -94,11 +105,13 @@
       <GRAPH_SDK_TARGET_IGNORE>$(OUTPUT_FOLDER)\.vs; $(OUTPUT_FOLDER)\bin; $(OUTPUT_FOLDER)\obj; $(OUTPUT_FOLDER)\*.log</GRAPH_SDK_TARGET_IGNORE>
     </PropertyGroup>
     <ItemGroup>
+      <_OUTPUT_FOLDER Include="$(OUTPUT_FOLDER)" />
       <_VIPR_OUTPUT Include="$(VIPR_OUTPUT)\**\*" />
       <_GENERATED_FOLDER Include="$(GENERATED_FOLDER)" />
       <_GRAPH_SDK_SOURCE_FOLDER Include="$(GRAPH_SDK_SOURCE_FOLDER)\**\*" />
       <_GRAPH_SDK_TARGET_IGNORE Include="$(GRAPH_SDK_TARGET_IGNORE)" />
     </ItemGroup>
+    <RemoveDir Directories="@(_OUTPUT_FOLDER)" />
     <Copy SourceFiles="@(_VIPR_OUTPUT)" DestinationFolder="$(OutputPath)\%(RecursiveDir)" />
     <Copy SourceFiles="@(_GRAPH_SDK_SOURCE_FOLDER)" DestinationFolder="$(OUTPUT_FOLDER)\%(RecursiveDir)" />
     <RemoveDir Directories="@(_GENERATED_FOLDER)" />
