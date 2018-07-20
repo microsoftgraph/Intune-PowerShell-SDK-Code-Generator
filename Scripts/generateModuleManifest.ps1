@@ -32,12 +32,12 @@ if ($NestedModulesRelativePaths) {
 
 Push-Location $OutputDirectory
 try {
+    # Collect module information
     foreach ($modulePath in $modulePaths) {
         if (-Not $modulePath.StartsWith('.\')) {
             throw "Provided paths must start with '.\', but '$modulePath' does not"
         }
-        if (-Not (Test-Path $modulePath))
-        {
+        if (-Not (Test-Path $modulePath)) {
             throw "Module not found at '$modulePath'. Does this path exist under '$OutputDirectory'?"
         }
 

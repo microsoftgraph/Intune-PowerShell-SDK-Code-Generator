@@ -32,6 +32,7 @@
     -->
     <RuntimeIdentifiers>win;osx;unix;any</RuntimeIdentifiers>
   </PropertyGroup>
+
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
@@ -49,6 +50,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -68,16 +70,20 @@
       <HintPath>$(PowerShellGraphSDKProjectLocation)\bin\$(Configuration)\netstandard2.0\Microsoft.Intune.PowerShellGraphSDK.dll</HintPath>
     </Reference>
   </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Humanizer.Core" Version="2.4.2" />
     <PackageReference Include="Pluralize.NET" Version="0.1.84" />
     <PackageReference Include="PowerShellStandard.Library" Version="5.1.0-preview-05" />
   </ItemGroup>
+
   <ItemGroup>
     <Compile Include="**\*.cs" Exclude="obj\**\*;bin\**\*" />
   </ItemGroup>
+
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildProjectDirectory)\.nuget\NuGet.targets" Condition="Exists('$(MSBuildProjectDirectory)\.nuget\NuGet.targets')" />
+
   <Target Name="BuildPowerShellGraphSDK" BeforeTargets="Compile;PreBuildEvent">
     <ItemGroup>
       <Command Include="dotnet restore --verbosity quiet" />
@@ -87,40 +93,41 @@
       <Output TaskParameter="ConsoleOutput" PropertyName="OutputOfExec" />
     </Exec>
   </Target>
+
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild" AfterTargets="BuildPowerShellGraphSDK">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
   </Target>
+
   <Target Name="BuildVipr" BeforeTargets="Compile;PreBuildEvent;BuildPowerShellGraphSDK">
     <Message Importance="high" Text="Building Vipr..." />
     <Exec Command="&quot;$(MSBuildBinPath)\msbuild.exe&quot; /v:quiet /m /t:Restore;Build /p:Configuration=$(Configuration) /noconsolelogger &quot;$(MSBuildProjectDirectory)\..\..\submodules\vipr\Vipr.sln&quot;" />
   </Target>
+
   <Target Name="SetupOutputForRun" AfterTargets="Build;PostBuildEvent">
     <PropertyGroup>
       <OUTPUT_FOLDER>$(OutputPath)\output</OUTPUT_FOLDER>
       <VIPR_OUTPUT>$(MSBuildProjectDirectory)\..\..\submodules\vipr\src\Core\Vipr\bin\$(Configuration)</VIPR_OUTPUT>
       <GENERATED_FOLDER>$(OUTPUT_FOLDER)\PowerShellCmdlets\Generated</GENERATED_FOLDER>
-      <GRAPH_SDK_SOURCE_FOLDER>$(MSBuildProjectDirectory)\..\PowerShellGraphSDK</GRAPH_SDK_SOURCE_FOLDER>
-      <GRAPH_SDK_TARGET_IGNORE>$(OUTPUT_FOLDER)\.vs; $(OUTPUT_FOLDER)\bin; $(OUTPUT_FOLDER)\obj; $(OUTPUT_FOLDER)\*.log</GRAPH_SDK_TARGET_IGNORE>
+      <GRAPH_SDK_SOURCE_FOLDER>$(PowerShellGraphSDKProjectLocation)\**\*.cs; $(PowerShellGraphSDKProjectLocation)\**\*.csproj; $(PowerShellGraphSDKProjectLocation)\**\*.sln; $(PowerShellGraphSDKProjectLocation)\**\*.txt; $(PowerShellGraphSDKProjectLocation)\**\*.md; $(PowerShellGraphSDKProjectLocation)\**\*.ps1; $(PowerShellGraphSDKProjectLocation)\**\*.psm1; $(PowerShellGraphSDKProjectLocation)\**\*.psd1</GRAPH_SDK_SOURCE_FOLDER>
     </PropertyGroup>
     <ItemGroup>
-      <_OUTPUT_FOLDER Include="$(OUTPUT_FOLDER)" />
+      <_OUTPUT_FOLDER Include="$(OUTPUT_FOLDER)\**\*" />
       <_VIPR_OUTPUT Include="$(VIPR_OUTPUT)\**\*" />
       <_GENERATED_FOLDER Include="$(GENERATED_FOLDER)" />
-      <_GRAPH_SDK_SOURCE_FOLDER Include="$(GRAPH_SDK_SOURCE_FOLDER)\**\*" />
-      <_GRAPH_SDK_TARGET_IGNORE Include="$(GRAPH_SDK_TARGET_IGNORE)" />
+      <_GRAPH_SDK_SOURCE_FOLDER Include="$(GRAPH_SDK_SOURCE_FOLDER)" />
     </ItemGroup>
     <RemoveDir Directories="@(_OUTPUT_FOLDER)" />
     <Copy SourceFiles="@(_VIPR_OUTPUT)" DestinationFolder="$(OutputPath)\%(RecursiveDir)" />
     <Copy SourceFiles="@(_GRAPH_SDK_SOURCE_FOLDER)" DestinationFolder="$(OUTPUT_FOLDER)\%(RecursiveDir)" />
     <RemoveDir Directories="@(_GENERATED_FOLDER)" />
-    <RemoveDir Directories="@(_GRAPH_SDK_TARGET_IGNORE)" />
     <Message Importance="high" Text="Output Folder:               $(OutputPath)" />
     <Message Importance="high" Text="Vipr Directory:              $(VIPR_OUTPUT)" />
     <Message Importance="high" Text="Project Directory:           $(MSBuildProjectDirectory)" />
     <Message Importance="high" Text="Generated Output Directory:  $(OUTPUT_FOLDER)" />
   </Target>
+
   <Target Name="Run">
     <Message Importance="high" Text="Executing Command:  $(StartProgram) $(StartArguments)" />
     <Exec WorkingDirectory="$(OutputPath)" Command="$(StartProgram) $(StartArguments)" ConsoleToMSBuild="true">

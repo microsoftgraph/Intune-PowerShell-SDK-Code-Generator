@@ -3,7 +3,8 @@ $env:PowerShellSDKRepoRoot = Split-Path (Split-Path $script:MyInvocation.MyComma
 
 # Environment variables
 $env:buildConfiguration = "Release"
-$env:dotnetFrameworkVersion = "net471" # use "netstandard2.0" for cross-platform build
+$global:allowedDotnetFrameworkVersions = @('net471', 'netstandard2.0')
+$env:dotnetFrameworkVersion = ($global:allowedDotnetFrameworkVersions)[0] # use "netstandard2.0" for cross-platform build, or "net471" for a Windows build
 $env:repoRootSlnFile = "$($env:PowerShellSDKRepoRoot)\PowerShellGraphSDKGenerator.sln"
 $env:writerDir = "$($env:PowerShellSDKRepoRoot)\src\GraphODataPowerShellWriter"
 $env:writerBuildDir = "$($env:writerDir)\bin\$($env:buildConfiguration)"
@@ -70,14 +71,19 @@ function global:BuildSDK {
 }
 
 function global:RunSDK {
-[alias("run")]
+    [alias("run")]
     param(
-        [string]$SdkDirectory
+        [string]$TargetFramework = $env:dotnetFrameworkVersion
     )
 
-    if ([string]::IsNullOrWhitespace($SdkDirectory))
+    if (-Not $global:allowedDotnetFrameworkVersions.Contains($TargetFramework)) {
+        throw "The target framework must be set to one of the following: $([string]::Join(', ', $global:allowedDotnetFrameworkVersions))"
+    }
+
+    $SdkDirectory = $env:sdkDir
+    if ($TargetFramework -ne $env:dotnetFrameworkVersion)
     {
-        $SdkDirectory = $env:sdkDir
+        $SdkDirectory = $SdkDirectory.Replace($env:dotnetFrameworkVersion, $TargetFramework)
     }
 
     Write-Host "Running the SDK (importing '$env:moduleName' and running 'Connect-MSGraph')..." -f Cyan
@@ -85,21 +91,26 @@ function global:RunSDK {
 }
 
 function global:TestSDK {
-[alias("test")]
+    [alias("test")]
     param(
-        [string]$SdkDirectory
+        [string]$TargetFramework = $env:dotnetFrameworkVersion
     )
 
-    if ([string]::IsNullOrWhitespace($SdkDirectory))
+    if (-Not $global:allowedDotnetFrameworkVersions.Contains($TargetFramework)) {
+        throw "The target framework must be set to one of the following: $([string]::Join(', ', $global:allowedDotnetFrameworkVersions))"
+    }
+
+    $SdkDirectory = $env:sdkDir
+    if ($TargetFramework -ne $env:dotnetFrameworkVersion)
     {
-        $SdkDirectory = $env:sdkDir
+        $SdkDirectory = $SdkDirectory.Replace($env:dotnetFrameworkVersion, $TargetFramework)
     }
 
     Invoke-Expression "$env:testScript -SdkDirectory $SdkDirectory"
 }
 
 function global:GenerateSDK {
-[alias("build")]
+    [alias("build")]
     param (
         [string]$GraphSchema
     )
@@ -119,7 +130,7 @@ function global:GenerateAndRunSDK {
 }
 
 function global:ReleaseSDK {
-[alias("release")]
+    [alias("release")]
     param()
 
     if (-Not (Test-Path $env:generatedDir)) {
@@ -162,15 +173,16 @@ function global:GenerateModuleManifest {
     if (-Not $NestedModulesRelativePaths) {
         Push-Location $OutputDirectory
         try {
-            Write-Host "    Output directory: $OutputDirectory" -f Cyan
             $NestedModulesRelativePaths = Get-ChildItem -Include '*.psm1', '*.ps1' -Recurse -File | Resolve-Path -Relative
         } finally {
             Pop-Location
         }
     }
 
+    Write-Host "Output directory: $OutputDirectory" -f Cyan
+
     # Call the script to generate the manifest
-    &$env:generateModuleManifestScript -ModuleName $ModuleName -OutputDirectory $OutputDirectory -MainModuleRelativePath $MainModuleRelativePath -NestedModulesRelativePaths $NestedModulesRelativePaths
+    Invoke-Expression "$env:generateModuleManifestScript -ModuleName $ModuleName -OutputDirectory $OutputDirectory -MainModuleRelativePath $MainModuleRelativePath -NestedModulesRelativePaths $NestedModulesRelativePaths"
 
     Write-Host "Finished generating module manifest" -f Cyan
     Write-Host

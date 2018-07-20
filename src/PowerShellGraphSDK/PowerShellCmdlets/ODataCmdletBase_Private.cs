@@ -13,7 +13,7 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
 
     public abstract partial class ODataCmdletBase
     {
-        private AuthenticationHeaderValue Auth()
+        private AuthResult Auth()
         {
             string cmdletName = $"{PowerShellCmdlets.Connect.CmdletVerb}-{PowerShellCmdlets.Connect.CmdletNoun}";
             if (AuthUtils.UserHasNeverLoggedIn)

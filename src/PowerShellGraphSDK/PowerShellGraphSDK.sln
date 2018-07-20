@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2015
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PowerShellGraphSDK", "PowerShellGraphSDK.csproj", "{0673FFAA-23A8-4BF5-B670-03A41FBD066D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0673FFAA-23A8-4BF5-B670-03A41FBD066D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0673FFAA-23A8-4BF5-B670-03A41FBD066D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0673FFAA-23A8-4BF5-B670-03A41FBD066D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0673FFAA-23A8-4BF5-B670-03A41FBD066D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E45802D0-583B-4A6F-B149-467F7DDBF338}
+	EndGlobalSection
+EndGlobal

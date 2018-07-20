@@ -32,6 +32,44 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
         /// </summary>
         private const string ParameterSetAdminConsent = "AdminConsent";
 
+#if NETFRAMEWORK
+
+        private const string ParameterSetForceInteractive = "ForceInteractive";
+        private const string ParameterSetForceNonInteractive = "ForceNonInteractive";
+        private const string ParameterSetPSCredential = "PSCredential";
+        private const string ParameterSetCertificate = "Certificate";
+
+        /// <summary>
+        /// <para type="description">
+        /// If the ForceInteractive flag is set, this cmdlet will always create an interactive window to authenticate.
+        /// If the ForceInteractive flag is not set, this cmdlet is attempt to authenticate with cached credentials before falling back to showing an interactive window.
+        /// </para>
+        /// </summary>
+        [Parameter(ParameterSetName = ParameterSetForceInteractive)]
+        public SwitchParameter ForceInteractive { get; set; }
+
+        /// <summary>
+        /// <para type="description">
+        /// If the ForceNonInteractive flag is set, this cmdlet will never create an interactive window to authenticate, and will throw an "AdalException" if authentication fails.
+        /// If the ForceNonInteractive flag is not set, this cmdlet is attempt to authenticate with cached credentials before falling back to showing an interactive window.
+        /// </para>
+        /// </summary>
+        [Parameter(ParameterSetName = ParameterSetForceNonInteractive)]
+        public SwitchParameter ForceNonInteractive { get; set; }
+
+        /// <summary>
+        /// <para type="description">The PSCredential object to use when specifying the username and password while authenticating.</para>
+        /// </summary>
+        [Parameter(ParameterSetName = ParameterSetPSCredential, Mandatory = true)]
+        [ValidateNotNull]
+        public PSCredential PSCredential { get; set; }
+
+        //[Parameter(ParameterSetName = ParameterSetCertificate, Mandatory = true)]
+        //[ValidateNotNull]
+        //public IClientAssertionCertificate Cert { get; set; }
+
+#endif
+
         /// <summary>
         /// <para type="description">
         /// If the AdminConsent flag is set, admin consent can be granted for the currently selected AppId
@@ -62,14 +100,36 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
         protected override void ProcessRecord()
         {
             // Auth
-            AuthenticationHeaderValue authResult = AuthUtils.AuthWithDeviceCode(
+            AuthResult authResult;
+#if NETFRAMEWORK
+            switch (this.ParameterSetName)
+            {
+                case ParameterSetPSCredential:
+                    System.Net.NetworkCredential networkCreds = this.PSCredential.GetNetworkCredential();
+                    authResult = AuthUtils.AuthWithCredentials(networkCreds.UserName, networkCreds.Password);
+                    break;
+                case ParameterSetCertificate:
+                    // TODO: Implement Certificate auth
+                    throw new PSNotImplementedException();
+                case ParameterSetForceInteractive:
+                    authResult = AuthUtils.Auth(Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior.SelectAccount);
+                    break;
+                case ParameterSetForceNonInteractive:
+                    authResult = AuthUtils.Auth(Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior.Never);
+                    break;
+                default:
+                    authResult = AuthUtils.Auth();
+                    break;
+            }
+#else
+            authResult = AuthUtils.AuthWithDeviceCode(
                 displayDeviceCodeMessageToUser: (deviceCodeMessage) =>
                 {
                     this.WriteWarning(deviceCodeMessage);
                 },
-                userInfo: out object userInfo,
                 useAdminConsentFlow: this.ParameterSetName == ParameterSetAdminConsent
             );
+#endif
 
             // Decide what to return
             if (!this.Quiet)
@@ -77,12 +137,12 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
                 if (this.PassThru)
                 {
                     // Return the access token
-                    this.WriteObject(authResult.Parameter);
+                    this.WriteObject(authResult.AccessToken);
                 }
                 else
                 {
                     // Return details about the logged in user
-                    this.WriteObject(userInfo.ToPowerShellObject());
+                    this.WriteObject(authResult.PSUserDisplayableInformation);
                 }
             }
         }
@@ -293,7 +353,7 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
 
         // The properties in this section hide base classes' PowerShell parameters by
         // redefining the properties without adding the [Parameter] attribute
-        #region Hidden Parameters
+#region Hidden Parameters
         
         /// <summary>
         /// Hides $filter.
@@ -315,7 +375,7 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
         /// </summary>
         public new int? MaxPageSize { get; set; }
 
-        #endregion Hidden Parameters
+#endregion Hidden Parameters
 
         internal override string GetResourcePath()
         {

@@ -1,12 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup Condition=" '$(OS)' != 'Windows_NT' ">
-        <TargetFramework>netstandard2.0</TargetFramework>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
-        <TargetFrameworks>netstandard2.0;net471</TargetFrameworks>
-    </PropertyGroup>
-
     <PropertyGroup>
         <OutputType>Library</OutputType>
         <Version>6.1808.10</Version>
@@ -18,9 +11,17 @@
         <RootNamespace>Microsoft.Intune.PowerShellGraphSDK</RootNamespace>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
         <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
-        <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>IDE0037</NoWarn>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <WindowsTargetFramework>net471</WindowsTargetFramework>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(OS)' != 'Windows_NT' ">
+        <TargetFramework>netstandard2.0</TargetFramework>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+        <TargetFrameworks>$(WindowsTargetFramework);netstandard2.0</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>
@@ -29,17 +30,17 @@
         <PackageReference Include="XmlDoc2CmdletDoc" Version="0.2.10" />
     </ItemGroup>
 
-    <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-        <DefineConstants>NETSTANDARD2_0</DefineConstants>
+    <PropertyGroup Condition="'$(TargetFramework)'!='$(WindowsTargetFramework)'">
+        <DefineConstants>NETSTANDARD</DefineConstants>
     </PropertyGroup>
-    <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+    <ItemGroup Condition="'$(TargetFramework)'!='$(WindowsTargetFramework)'">
         <PackageReference Include="PowerShellStandard.Library" Version="5.1.0-preview-05" />
     </ItemGroup>
 
-    <PropertyGroup Condition="'$(TargetFramework)'!='netstandard2.0'">
+    <PropertyGroup Condition="'$(TargetFramework)'=='$(WindowsTargetFramework)'">
         <DefineConstants>NETFRAMEWORK</DefineConstants>
     </PropertyGroup>
-    <ItemGroup Condition="'$(TargetFramework)'!='netstandard2.0'">
+    <ItemGroup Condition="'$(TargetFramework)'=='$(WindowsTargetFramework)'">
         <Reference Include="System.Net.Http" />
         <PackageReference Include="Microsoft.PowerShell.5.ReferenceAssemblies" Version="1.1.0" />
     </ItemGroup>
@@ -57,17 +58,6 @@
         <Message Importance="high" Text="Project Directory:                      $(MSBuildProjectDirectory)" />
         <Message Importance="high" Text="Target Framework:                       $(TargetFramework)" />
         <Message Importance="high" Text="OS:                                     $(OS)" />
-    </Target>
-
-    <Target Name="XmlDoc2CmdletDoc" AfterTargets="PostBuildEvent" Inputs="$(TargetPath)" Outputs="$(TargetPath)-Help.xml">
-        <PropertyGroup>
-            <XmlDoc2CmdletDocStrict>false</XmlDoc2CmdletDocStrict>
-            <XmlDocExeName Condition="'$(PlatformTarget)' == 'x86'">XmlDoc2CmdletDoc32.exe</XmlDocExeName>
-            <XmlDocExeName Condition="'$(XmlDocExeName)' == ''">XmlDoc2CmdletDoc.exe</XmlDocExeName>
-        </PropertyGroup>
-        <Message Importance="high" Text="NuGet package folder: $(NuGetPackageFolders)" />
-        <Exec Command="$(NuGetPackageFolders)\XmlDoc2CmdletDoc.0.2.10\tools\$(XmlDocExeName) $(XmlDoc2CmdletDocExcludeParameterSets) $(TargetPath)" />
-        <Message Importance="high" Text="Generated PowerShell binary module documentation" />
     </Target>
 
 </Project>
