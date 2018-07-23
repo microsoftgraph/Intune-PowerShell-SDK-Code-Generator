@@ -66,10 +66,7 @@ try {
 $generateManifestArgs = @{
     Path = "$OutputDirectory/$ModuleName.psd1"
 
-    # START PrivateData.PSData
-        # PreRelease version of the Intune PowerShell SDK
-       	PreRelease = 'update20180723'
-
+    # START PrivateData.PSData        
         # Tags applied to this module. These help with module discovery in online galleries.
         Tags = @(
             'Microsoft',
