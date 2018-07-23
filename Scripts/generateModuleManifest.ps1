@@ -68,7 +68,7 @@ $generateManifestArgs = @{
 
     # START PrivateData.PSData
         # PreRelease version of the Intune PowerShell SDK
-        # PreRelease = 'update20180702'
+       	PreRelease = 'update20180723'
 
         # Tags applied to this module. These help with module discovery in online galleries.
         Tags = @(
@@ -102,7 +102,7 @@ $generateManifestArgs = @{
     RootModule = 'Microsoft.Intune.PowerShellGraphSDK.dll'
 
     # Version number of this module.
-    ModuleVersion = '6.1808.10'
+    ModuleVersion = '6.1808.20'
 
     # ID used to uniquely identify this module
     GUID = 'A720591A-2D56-4570-B362-E15B84C4CD63'
