@@ -205,7 +205,7 @@ function global:InstallDotnetFramework {
 ##########
 
 # Try to download the "dotnet" install script if it doesn't exist
-if (-Not (Test-Path $env:dotnetInstallScript)) {
+#if (-Not (Test-Path $env:dotnetInstallScript)) {
     try {
         UpdateDotnetCoreInstaller
     } catch {
@@ -217,9 +217,9 @@ if (-Not (Test-Path $env:dotnetInstallScript)) {
 dotnet restore --verbosity quiet
 nuget restore -Verbosity Quiet
 
-# Show the available functions
-Write-Host "Initialized repository." -f Green
-Write-Host "Building Intune-PowerShell-SDK:" -f Yellow
+# Build Writer
+Write-Host "Building the writer..." -f Cyan
+Invoke-Expression "$env:buildScriptFull -WorkingDirectory '$env:writerDir' -Verbosity 'quiet'"
+Write-Host "Finished building the writer" -f Cyan
 
-GenerateSDK
 exit
