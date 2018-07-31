@@ -5,7 +5,7 @@ namespace Microsoft.Intune.PowerShellGraphSDK
     using System;
     using System.Net.Http.Headers;
     
-    internal class AuthResult
+    internal class SdkAuthResult
     {
         internal string AccessTokenType { get; }
 
@@ -15,12 +15,20 @@ namespace Microsoft.Intune.PowerShellGraphSDK
 
         internal AuthenticationHeaderValue AuthenticationHeaderValue { get; }
 
-        internal AuthResult(string accessTokenType, string accessToken, object psUserDisplayableInformation = null)
+        internal string UserUniqueId { get; }
+
+        private DateTimeOffset ExpiresOn { get; }
+
+        internal bool IsExpired => (ExpiresOn <= DateTimeOffset.Now);
+
+        internal SdkAuthResult(string accessTokenType, string accessToken, string userId, DateTimeOffset expiresOn, object psUserDisplayableInformation = null)
         {
             this.AccessTokenType = accessTokenType ?? throw new ArgumentNullException(nameof(accessTokenType));
             this.AccessToken = accessToken ?? throw new ArgumentNullException(nameof(accessToken));
             this.AuthenticationHeaderValue = new AuthenticationHeaderValue(accessTokenType, accessToken);
             this.PSUserDisplayableInformation = psUserDisplayableInformation;
+            this.UserUniqueId = userId ?? throw new ArgumentNullException(nameof(userId));
+            this.ExpiresOn = expiresOn;
         }
     }
 }
