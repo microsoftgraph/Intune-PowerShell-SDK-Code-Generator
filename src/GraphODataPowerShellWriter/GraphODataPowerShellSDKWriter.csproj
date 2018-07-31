@@ -102,7 +102,7 @@
 
   <Target Name="BuildVipr" BeforeTargets="Compile;PreBuildEvent;BuildPowerShellGraphSDK">
     <Message Importance="high" Text="Building Vipr..." />
-    <Exec Command="&quot;$(MSBuildBinPath)\msbuild.exe&quot; /v:quiet /m /t:Restore;Build /p:Configuration=$(Configuration) /noconsolelogger &quot;$(MSBuildProjectDirectory)\..\..\submodules\vipr\Vipr.sln&quot;" />
+    <Exec Command="&quot;$(MSBuildBinPath)\msbuild.exe&quot; /v:quiet /m /t:Restore;Build /p:Configuration=$(Configuration) &quot;$(MSBuildProjectDirectory)\..\..\submodules\vipr\Vipr.sln&quot;" />
   </Target>
 
   <Target Name="SetupOutputForRun" AfterTargets="Build;PostBuildEvent">
