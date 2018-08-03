@@ -106,14 +106,24 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             return Pluralizer.Singularize(plural);
         }
 
-        public static string Pascalize(this string identifier)
+        public static string ToPascalCase(this string str)
         {
-            if (identifier == null)
+            if (str == null)
             {
-                throw new ArgumentNullException(nameof(identifier));
+                throw new ArgumentNullException(nameof(str));
             }
 
-            return InflectorExtensions.Pascalize(identifier);
+            return InflectorExtensions.Pascalize(str);
+        }
+
+        public static string ToCamelCase(this string str)
+        {
+            if (str == null)
+            {
+                throw new ArgumentNullException(nameof(str));
+            }
+
+            return InflectorExtensions.Camelize(str);
         }
     }
 }

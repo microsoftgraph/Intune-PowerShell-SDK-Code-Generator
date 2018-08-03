@@ -114,7 +114,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             // If it's a collection, it needs an ID
             if (property.IsCollection)
             {
-                idParameterName = $"{property.Name.Singularize()}Id";
+                idParameterName = $"{property.Name.Singularize()}Id".ToPascalCase();
                 return true;
             }
             else
@@ -383,7 +383,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 throw new ArgumentNullException(nameof(type));
             }
 
-            return new CmdletName(PS.VerbsCommon.New, $"{type.Name.Pascalize()}Object");
+            return new CmdletName(PS.VerbsCommon.New, $"{type.Name.ToPascalCase()}Object");
         }
 
         /// <summary>
@@ -527,8 +527,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 }
 
                 // Evaluate the properties on this type
-                IEnumerable<OdcmProperty> properties = type.EvaluateProperties(type == baseType)
-                    .Where(prop => prop.Name != RequestProperties.Id);
+                IEnumerable<OdcmProperty> properties = type.EvaluateProperties(type == baseType);
+
+                if (markAsPowerShellParameter)
+                {
+                    properties = properties.Where(prop => prop.Name != RequestProperties.Id);
+                }
 
                 // Add this type into the parmeter name lookup table
                 parameterNameLookup.Add(type, properties

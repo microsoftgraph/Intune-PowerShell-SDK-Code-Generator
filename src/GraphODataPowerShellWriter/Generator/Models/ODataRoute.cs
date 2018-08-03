@@ -72,8 +72,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
                 segments.Push(property);
 
                 // If this node is not the final node in the route and the property it represents is an enumeration, track it's ID as a parameter
-                string idParameterName;
-                if (currentNode != node && property.TryGetIdParameterName(out idParameterName))
+                if (currentNode != node && property.TryGetIdParameterName(out string idParameterName))
                 {
                     _idParameters.Add(property, idParameterName);
                 }
@@ -141,7 +140,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public string ToRelativeFilePathString()
         {
             IEnumerable<string> segments = this.Segments
-                .Select(property => property.Name.Pascalize());
+                .Select(property => property.Name.ToPascalCase());
 
             string result = string.Join("\\", segments);
 
@@ -158,9 +157,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             string lastSegment = this.Segments.Last().Name;
             IEnumerable<string> segments = this.Segments
                 // Convert name to pascal case
-                .Select(property => property.Name.Pascalize())
+                .Select(property => property.Name.ToPascalCase())
                 // Convert the postfix segments to pascal case and append them
-                .Concat(postfixSegments.Select(segment => segment.Pascalize()));
+                .Concat(postfixSegments.Select(segment => segment.ToPascalCase()));
 
             // Join the segments with underscores
             string result = string.Join("_", segments);

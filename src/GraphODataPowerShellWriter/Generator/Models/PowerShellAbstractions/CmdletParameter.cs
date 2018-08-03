@@ -4,6 +4,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 {
     using System;
     using System.Collections.Generic;
+    using Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils;
 
     /// <summary>
     /// Represents a PowerShell cmdlet's parameter.
@@ -115,7 +116,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 
             // TODO: Throw ArgumentException if the parameter name is a reserved/common name
 
-            this.Name = parameterName;
+            this.Name = parameterName.ToPascalCase();
             this.Type = parameterType ?? throw new ArgumentNullException(nameof(parameterType));
         }
     }
