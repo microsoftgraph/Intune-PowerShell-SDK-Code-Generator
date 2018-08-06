@@ -918,7 +918,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 // Create the ID parameter
                 idParameter = new CmdletParameter(idParameterName, typeof(string))
                 {
-                    Aliases = RequestProperties.Id.ToPascalCase().SingleObjectAsEnumerable(),
+                    Aliases = RequestProperties.Id.SingleObjectAsEnumerable(),
                     Mandatory = entityIdIsMandatory,
                     ValueFromPipeline = valueFromPipeline,
                     ValueFromPipelineByPropertyName = true,
