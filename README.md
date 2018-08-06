@@ -80,7 +80,7 @@ GitHub: https://github.com/Microsoft/Intune-PowerShell-SDK
 Customers have expressed a lot of interest in using PowerShell to automate tasks which are currently executed through the Intune extension in the Azure Portal.
 
 ## Why do we want to auto-generate the PowerShell module?
-If we manually hand-write the cmdlets, we would need to manually update the cmdlets each time 
+If we write each cmdlet by hand, we would need to manually update the module each time the Graph schema is updated.
 
 ## Why is Intune building it (and why isn't the Graph SDK team building it)?
 Most of Intune's user base (IT Professionals) would prefer to work with PowerShell, whereas the Graph SDK is catered towards developers who would prefer to work with e.g. C#, Java and Python. This is why we need it urgently. The structure of PowerShell's syntax does not lend itself to the structure of the existing .Net/Java/Python SDK generator (see the explanation of why we have a [Custom Vipr Writer](#why-a-custom-writer)).
@@ -92,7 +92,7 @@ Most of Intune's user base (IT Professionals) would prefer to work with PowerShe
 - The executable accepts a Reader assembly and Writer assembly.
     - The Reader is able to parse the input text file into Vipr's intermediate (generic) representation.
     - The Writer accepts this intermediate representation and returns a list of file objects, i.e. (string,path) pairs.
-        - Vipr then writes these files in the given file structure to the output folder.
+        - Vipr then writes these files in the given folder structure to the output folder.
 
 ## Why a custom writer?
 No existing PowerShell writers are available for Vipr. Also, the .Net/Java/Python Graph SDK's writer would not easily lend itself to PowerShell's syntax, behavior or best practices.
