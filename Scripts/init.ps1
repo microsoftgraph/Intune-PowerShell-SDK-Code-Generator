@@ -182,7 +182,7 @@ function global:GenerateModuleManifest {
     Write-Host "Output directory: $OutputDirectory" -f Cyan
 
     # Call the script to generate the manifest
-    Invoke-Expression "$env:generateModuleManifestScript -ModuleName $ModuleName -OutputDirectory $OutputDirectory -MainModuleRelativePath $MainModuleRelativePath -NestedModulesRelativePaths $NestedModulesRelativePaths"
+    & $env:generateModuleManifestScript -ModuleName $ModuleName -OutputDirectory $OutputDirectory -MainModuleRelativePath $MainModuleRelativePath -NestedModulesRelativePaths $NestedModulesRelativePaths
 
     Write-Host "Finished generating module manifest" -f Cyan
     Write-Host
