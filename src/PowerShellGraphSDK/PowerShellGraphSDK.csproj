@@ -55,6 +55,16 @@
         <PackageReference Include="Microsoft.PowerShell.5.ReferenceAssemblies" Version="1.1.0" />
     </ItemGroup>
 
+    <Target Name="DeleteOutputDirs" BeforeTargets="Compile;PreBuildEvent">
+        <PropertyGroup>
+            <REMOVE_DIRS>$(MSBuildProjectDirectory)\bin\$(Configuration); $(MSBuildProjectDirectory)\obj</REMOVE_DIRS>
+        </PropertyGroup>
+        <ItemGroup>
+            <_REMOVE_DIRS Include="$(REMOVE_DIRS)" />
+        </ItemGroup>
+        <RemoveDir Directories="@(REMOVE_DIRS)" />
+    </Target>
+
     <Target Name="CopyPowerShellModuleAdditions" AfterTargets="PostBuildEvent">
         <PropertyGroup>
             <POWERSHELL_EXTRAS>$(MSBuildProjectDirectory)\PowerShellModuleAdditions</POWERSHELL_EXTRAS>
