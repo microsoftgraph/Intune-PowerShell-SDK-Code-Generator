@@ -483,8 +483,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             }
 
             // Track parameters as we visit each type
+            // C# is case sensitive whereas PowerShell is not, so we need to use case-insensitive comparisons when deduping
             IDictionary<OdcmType, IEnumerable<string>> parameterNameLookup = new Dictionary<OdcmType, IEnumerable<string>>();
-            IDictionary<string, CmdletParameter> parameterLookup = new Dictionary<string, CmdletParameter>();
+            IDictionary<string, CmdletParameter> parameterLookup = new Dictionary<string, CmdletParameter>(StringComparer.OrdinalIgnoreCase);
 
             // Visit all derived types
             baseType.VisitDerivedTypes((OdcmType type) =>
