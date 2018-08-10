@@ -13,9 +13,7 @@ $env:sdkDir = "$($env:generatedDir)\bin\$($env:buildConfiguration)\$($env:dotnet
 $env:testDir = "$($env:PowerShellSDKRepoRoot)\Tests"
 $env:moduleName = 'Intune'
 $env:moduleExtension = 'psd1'
-$env:sdkSubmoduleSrc = "$($env:PowerShellSDKRepoRoot)\submodules\Intune-PowerShell-SDK\src"
-$env:sdkSubmoduleBuild = "$($env:sdkSubmoduleSrc)\bin\$($env:buildConfiguration)\$($env:dotnetFrameworkVersion)"
-$env:sdkAssemblyName = 'Microsoft.Intune.PowerShellGraphSDK'
+$env:sdkSubmoduleSrc = "$($env:PowerShellSDKRepoRoot)\submodules\Intune-PowerShell-SDK"
 
 # Remember the settings that will change when launching a child PowerShell context
 $env:standardWindowTitle = (Get-Host).UI.RawUI.WindowTitle
@@ -27,7 +25,6 @@ $env:msbuildInstallScript = "$($env:PowerShellSDKRepoRoot)\Scripts\msbuild-insta
 $env:dotnetInstallScript = "$($env:PowerShellSDKRepoRoot)\Scripts\dotnet-install.ps1"
 $env:buildScriptPortable = "$($env:PowerShellSDKRepoRoot)\Scripts\build-portable.ps1"
 $env:buildScriptFull = "$($env:PowerShellSDKRepoRoot)\Scripts\build-full.ps1"
-$env:generateModuleManifestScript = "$($env:PowerShellSDKRepoRoot)\Scripts\generateModuleManifest.ps1"
 $env:runScript = "$($env:PowerShellSDKRepoRoot)\Scripts\run.ps1"
 $env:testScript = "$($env:PowerShellSDKRepoRoot)\Scripts\test.ps1"
 
@@ -63,11 +60,6 @@ function global:BuildSDK {
     Invoke-Expression "$env:buildScriptPortable -WorkingDirectory '$WorkingDirectory' -Verbosity 'quiet'"
     Write-Host "Finished building the SDK" -f Cyan
     Write-Host
-
-    # Generate the module manifest as part of the build for each output folder
-    Get-ChildItem (Split-Path $env:sdkDir -Parent) -Directory | ForEach-Object {
-        GenerateModuleManifest -OutputDirectory $_.FullName
-    }
 }
 
 function global:RunSDK {
@@ -137,55 +129,12 @@ function global:ReleaseSDK {
         throw "An SDK build was not found at '$env:generatedDir' - run 'build' before running 'release'"
     }
 
-    Write-Host "Syncing '$env:sdkSubmoduleSrc'..."
-
     Write-Host "Copying generated SDK" -f Cyan
-    Remove-Item "$env:sdkSubmoduleSrc" -Recurse
-    New-Item "$env:sdkSubmoduleSrc" -ItemType directory | Out-Null
-    Copy-Item "$env:generatedDir\*" -Destination "$env:sdkSubmoduleSrc\" -Recurse -Force -Container
+    Remove-Item "$env:sdkSubmoduleSrc" -Recurse -ErrorAction SilentlyContinue
+    New-Item "$env:sdkSubmoduleSrc" -ItemType directory -ErrorAction SilentlyContinue | Out-Null
+    Copy-Item "$env:generatedDir\*" -Destination "$env:sdkSubmoduleSrc" -Recurse -Force -Container
 
     Write-Host "REMINDER: Make sure to correctly commit this change to the 'Intune-PowerShell-SDK' git submodule" -f Yellow
-}
-
-function global:GenerateModuleManifest {
-    param(
-        [string]$ModuleName = $null,
-        [string]$OutputDirectory = $null,
-        [string]$MainModuleRelativePath = $null,
-        [string[]]$NestedModulesRelativePaths = $null
-    )
-
-    Write-Host "Generating module manifest..." -f Cyan
-
-    # Validate values
-    if (-Not $ModuleName) {
-        $ModuleName = $env:moduleName
-    }
-    if (-Not $OutputDirectory) {
-        $OutputDirectory = $env:sdkDir
-    }
-    if (-Not (Test-Path $OutputDirectory -PathType Container)) {
-        throw "Directory '$OutputDirectory' does not exist"
-    }
-    if (-Not $MainModuleRelativePath) {
-        $MainModuleRelativePath = ".\$($env:sdkAssemblyName).dll"
-    }
-    if (-Not $NestedModulesRelativePaths) {
-        Push-Location $OutputDirectory
-        try {
-            $NestedModulesRelativePaths = Get-ChildItem -Include '*.psm1', '*.ps1' -Recurse -File | Resolve-Path -Relative
-        } finally {
-            Pop-Location
-        }
-    }
-
-    Write-Host "Output directory: $OutputDirectory" -f Cyan
-
-    # Call the script to generate the manifest
-    & $env:generateModuleManifestScript -ModuleName $ModuleName -OutputDirectory $OutputDirectory -MainModuleRelativePath $MainModuleRelativePath -NestedModulesRelativePaths $NestedModulesRelativePaths
-
-    Write-Host "Finished generating module manifest" -f Cyan
-    Write-Host
 }
 
 function global:UpdateDotnetCoreInstaller {

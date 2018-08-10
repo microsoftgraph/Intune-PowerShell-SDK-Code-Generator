@@ -79,13 +79,13 @@ Get-DeviceManagement_ManagedDevices
 ## Creating objects
 Create a web application:
 ```PowerShell
-$bingWebApp = New-DeviceAppManagement_MobileApps -WebApp -DisplayName 'Bing' -Publisher 'Microsoft Corporation' -AppUrl 'https://www.bing.com'
+$bingWebApp = New-DeviceAppManagement_MobileApps -webApp -displayName 'Bing' -publisher 'Microsoft Corporation' -AppUrl 'https://www.bing.com'
 ```
 
 ## Modifying objects
 Update the web application that we created in the '[Creating objects](#creating-objects)' section:
 ```PowerShell
-$bingWebApp | Update-DeviceAppmanagement_MobileApps -WebApp -DisplayName 'Bing Search'
+$bingWebApp | Update-DeviceAppmanagement_MobileApps -webApp -displayName 'Bing Search'
 ```
 
 ## Deleting objects
