@@ -131,7 +131,7 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
                 }
 
                 // Get the type name without the leading "#"
-                string typeName = psObj.Properties[ODataConstants.SearchResultProperties.ODataType]?.Name?.TrimStart('#');
+                string typeName = (psObj.Properties[ODataConstants.SearchResultProperties.ODataType]?.Value as string)?.TrimStart('#');
                 if (string.IsNullOrEmpty(typeName))
                 {
                     typeName = this.GetType().GetCustomAttribute<ODataTypeAttribute>(false)?.FullName;

@@ -109,7 +109,7 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
                     .SingleOrDefault();
 
                 // Get the OData type name from the "ParameterSetSelector" attribute (parameter set name is the OData type name)
-                return typeSelectorSwitchAttribute.ParameterSetName;
+                return $"#{typeSelectorSwitchAttribute.ParameterSetName}";
             }
             else
             {
