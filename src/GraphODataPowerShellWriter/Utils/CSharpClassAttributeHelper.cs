@@ -40,18 +40,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             return new CSharpAttribute(nameof(PS.CmdletAttribute), arguments: arguments.ToArray());
         }
 
-        public static CSharpAttribute CreateODataTypeAttribute(string oDataTypeFullName, IEnumerable<string> subTypeFullNames)
+        public static CSharpAttribute CreateODataTypeAttribute(string oDataTypeFullName, IEnumerable<string> subTypeFullNames = null)
         {
             if (oDataTypeFullName == null)
             {
                 throw new ArgumentNullException(nameof(oDataTypeFullName));
             }
-            if (subTypeFullNames == null)
-            {
-                throw new ArgumentNullException(nameof(subTypeFullNames));
-            }
 
-            return CSharpPropertyAttributeHelper.CreateODataTypeAttribute(oDataTypeFullName, subTypeFullNames);
+            return CSharpPropertyAttributeHelper.CreateODataTypeAttribute(oDataTypeFullName, subTypeFullNames ?? Array.Empty<string>());
         }
 
         public static CSharpAttribute CreateResourceIdPropertyNameAttribute(string idParameterName)

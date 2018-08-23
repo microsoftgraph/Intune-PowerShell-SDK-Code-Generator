@@ -174,7 +174,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.Get, oDataRoute.ToCmdletNameNounString())
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
-                ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes(false).Select(type => type.FullName),
+                ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
                 ResourceTypePropertyName = oDataRoute.Property.GetResourceTypeParameterName(),
                 ImpactLevel = PS.ConfirmImpact.None,
                 Documentation = new CmdletDocumentation()
@@ -240,7 +240,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.Get, oDataRoute.ToCmdletNameNounStringForReference())
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
-                ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes(false).Select(type => type.FullName),
+                ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
                 ResourceTypePropertyName = oDataRoute.Property.GetResourceTypeParameterName(),
                 ImpactLevel = PS.ConfirmImpact.None,
                 Documentation = new CmdletDocumentation()
@@ -307,7 +307,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     : oDataRoute.ToCmdletNameNounString())
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
-                ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes(false).Select(type => type.FullName),
+                ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
                 ResourceTypePropertyName = oDataRoute.Property.GetResourceTypeParameterName(),
                 ImpactLevel = PS.ConfirmImpact.None,
                 OperationType = CmdletOperationType.GetStream,
@@ -364,7 +364,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.New, oDataRoute.ToCmdletNameNounString())
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
-                ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes(false).Select(type => type.FullName),
+                ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
                 ResourceTypePropertyName = oDataRoute.Property.GetResourceTypeParameterName(),
                 OperationType = CmdletOperationType.Post,
                 ImpactLevel = PS.ConfirmImpact.Low,
@@ -417,7 +417,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.New, oDataRoute.ToCmdletNameNounStringForReference())
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
-                ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes(false).Select(type => type.FullName),
+                ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
                 ResourceTypePropertyName = oDataRoute.Property.GetResourceTypeParameterName(),
                 OperationType = resource.IsCollection
                     ? CmdletOperationType.PostRefToCollection
@@ -473,7 +473,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     : oDataRoute.ToCmdletNameNounString())
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
-                ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes(false).Select(type => type.FullName),
+                ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
                 ResourceTypePropertyName = oDataRoute.Property.GetResourceTypeParameterName(),
                 OperationType = CmdletOperationType.UpdateStream,
                 ImpactLevel = PS.ConfirmImpact.Low,
@@ -529,7 +529,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsData.Update, oDataRoute.ToCmdletNameNounString())
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
-                ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes(false).Select(type => type.FullName),
+                ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
                 ResourceTypePropertyName = oDataRoute.Property.GetResourceTypeParameterName(),
                 OperationType = CmdletOperationType.Patch,
                 ImpactLevel = PS.ConfirmImpact.Medium,
@@ -576,7 +576,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.Remove, oDataRoute.ToCmdletNameNounString())
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
-                ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes(false).Select(type => type.FullName),
+                ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
                 ResourceTypePropertyName = oDataRoute.Property.GetResourceTypeParameterName(),
                 OperationType = CmdletOperationType.Delete,
                 ImpactLevel = PS.ConfirmImpact.High,
@@ -622,7 +622,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.Remove, oDataRoute.ToCmdletNameNounStringForReference())
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
-                ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes(false).Select(type => type.FullName),
+                ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
                 ResourceTypePropertyName = oDataRoute.Property.GetResourceTypeParameterName(),
                 OperationType = CmdletOperationType.Delete,
                 ImpactLevel = PS.ConfirmImpact.High,
@@ -666,7 +666,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.Remove, oDataRoute.ToCmdletNameNounStringForStream())
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
-                ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes(false).Select(type => type.FullName),
+                ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
                 ResourceTypePropertyName = oDataRoute.Property.GetResourceTypeParameterName(),
                 OperationType = CmdletOperationType.Delete,
                 ImpactLevel = PS.ConfirmImpact.High,
@@ -717,7 +717,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsLifecycle.Invoke, oDataRoute.ToCmdletNameNounString(postfixSegments: method.Name))
                     {
                         ResourceTypeFullName = oDataRoute.Property.Type.FullName,
-                        ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes(false).Select(type => type.FullName),
+                        ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
                         ResourceTypePropertyName = oDataRoute.Property.GetResourceTypeParameterName(),
                     };
 
@@ -1025,6 +1025,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                             {
                                 $"A required type cast for referencing properties that exist only on certain types of \"{segmentProperty.Type.FullName}\" objects.",
                             },
+                            ValidValues = segmentProperty.Type.GetAllDerivedTypes(includeBaseType: true).Select(type => type.FullName),
                         },
                     });
                 }
@@ -1159,7 +1160,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     Mandatory = true,
                     ValidateNotNull = !parameter.IsNullable,
                     ODataTypeFullName = parameter.Type.FullName,
-                    ODataSubTypeFullNames = parameter.Type.GetAllDerivedTypes(false).Select(type => type.FullName),
+                    ODataSubTypeFullNames = parameter.Type.GetAllDerivedTypes().Select(type => type.FullName),
                     Documentation = new CmdletParameterDocumentation()
                     {
                         Descriptions = new string[]
@@ -1207,7 +1208,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     Mandatory = true,
                     ValidateNotNull = !parameter.IsNullable,
                     ODataTypeFullName = parameter.Type.FullName,
-                    ODataSubTypeFullNames = parameter.Type.GetAllDerivedTypes(false).Select(type => type.FullName),
+                    ODataSubTypeFullNames = parameter.Type.GetAllDerivedTypes().Select(type => type.FullName),
                     Documentation = new CmdletParameterDocumentation()
                     {
                         Descriptions = new string[]

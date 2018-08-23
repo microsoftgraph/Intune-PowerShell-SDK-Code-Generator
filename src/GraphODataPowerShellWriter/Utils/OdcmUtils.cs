@@ -233,7 +233,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             if (type is OdcmClass @class)
             {
                 // Get all derived types
-                foreach (OdcmClass derivedType in @class.GetAllDerivedTypes(false))
+                foreach (OdcmClass derivedType in @class.GetAllDerivedTypes())
                 {
                     foreach (OdcmProperty property in derivedType.Properties)
                     {
@@ -312,9 +312,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         /// Get the given type's derived types.
         /// </summary>
         /// <param name="baseType">The given base type to get derived types for</param>
-        /// <param name="includeBaseType">Whether or not to include the given base type (defaults to true)</param>
+        /// <param name="includeBaseType">Whether or not to include the given base type (defaults to false)</param>
         /// <returns>The derived types of the given base type</returns>
-        public static IEnumerable<OdcmClass> GetAllDerivedTypes(this OdcmType baseType, bool includeBaseType = true)
+        public static IEnumerable<OdcmClass> GetAllDerivedTypes(this OdcmType baseType, bool includeBaseType = false)
         {
             if (baseType == null)
             {
@@ -698,7 +698,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                     parameter.ODataTypeFullName = property.Type.FullName;
 
                     // Save the names of the subtypes of the original OData type
-                    parameter.ODataSubTypeFullNames = property.Type.GetAllDerivedTypes(false).Select(type => type.FullName);
+                    parameter.ODataSubTypeFullNames = property.Type.GetAllDerivedTypes().Select(type => type.FullName);
 
                     // Add this type's properties as parameters to this parameter set
                     parameterSet.Add(parameter);
