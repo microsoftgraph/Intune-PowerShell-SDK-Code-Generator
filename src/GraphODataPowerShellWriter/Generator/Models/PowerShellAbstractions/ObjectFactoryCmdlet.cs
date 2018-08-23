@@ -2,8 +2,6 @@
 
 namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 {
-    using System;
-
     public class ObjectFactoryCmdlet : Cmdlet
     {
         public string RelativeFilePath { get; set; }

@@ -65,7 +65,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             yield return CSharpClassAttributeHelper.CreateCmdletAttribute(cmdlet.Name, cmdlet.ImpactLevel, cmdlet.DefaultParameterSetName);
 
             // ODataType attribute
-            yield return CSharpClassAttributeHelper.CreateODataTypeAttribute(cmdlet.ResourceTypeFullName);
+            yield return CSharpClassAttributeHelper.CreateODataTypeAttribute(cmdlet.ResourceTypeFullName, Array.Empty<string>());
         }
 
         #endregion Helpers

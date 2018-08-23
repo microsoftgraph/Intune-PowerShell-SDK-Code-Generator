@@ -5,14 +5,14 @@ namespace Microsoft.Intune.PowerShellGraphSDK
     using System;
 
     /// <summary>
-    /// Indicates that the given property is defined on the specified type.
+    /// Specifies the name of the property whose value can be used as an input to type cast parameters.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-    internal class ResourceIdPropertyNameAttribute : Attribute
+    internal class ResourceTypePropertyNameAttribute : Attribute
     {
-        internal string PropertyName { get; }
+        internal string ResourceTypePropertyName { get; }
 
-        internal ResourceIdPropertyNameAttribute(string propertyName)
+        internal ResourceTypePropertyNameAttribute(string propertyName)
         {
             if (propertyName == null)
             {
@@ -20,10 +20,10 @@ namespace Microsoft.Intune.PowerShellGraphSDK
             }
             if (string.IsNullOrWhiteSpace(propertyName))
             {
-                throw new ArgumentException("ID property name cannot be empty or whitespace");
+                throw new ArgumentException("Resource type property name cannot be empty or whitespace");
             }
 
-            this.PropertyName = propertyName;
+            this.ResourceTypePropertyName = propertyName;
         }
     }
 }

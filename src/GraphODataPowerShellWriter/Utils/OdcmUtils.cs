@@ -95,6 +95,34 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         }
 
         /// <summary>
+        /// Determines whether the property can be part of an OData route.
+        /// </summary>
+        /// <param name="property">The property</param>
+        /// <returns>True if the property can be part of an OData route, otherwise false.</returns>
+        public static bool IsODataRouteSegment(this OdcmProperty property, bool isTopLevelProperty)
+        {
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
+
+            bool result = // Make sure that this property is:
+                // top-level
+                isTopLevelProperty
+                // or expandable
+                || (
+                    // a complex type
+                    property.Type is OdcmClass
+                    // which is a navigation property
+                    && property.IsLink
+                )
+                // or a data stream property
+                || property.IsStream();
+
+            return result;
+        }
+
+        /// <summary>
         /// Tries to get the name of the parameter that represents the ID of this property.
         /// </summary>
         /// <param name="property">The property</param>
@@ -124,6 +152,16 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             }
         }
 
+        public static string GetResourceTypeParameterName(this OdcmProperty property)
+        {
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
+
+            return $"{property.Name.Singularize()}ODataType";
+        }
+
         /// <summary>
         /// Gets the name of a parameter which accepts a resource URL.
         /// </summary>
@@ -141,7 +179,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 
         /// <summary>
         /// Gets all properties for a type.
-        /// The values are the properties and the keys are the types they came from.
         /// </summary>
         /// <param name="type">The type to evaluate</param>
         /// <param name="includeInherited">Whether or not to include inherited properties</param>
@@ -153,7 +190,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 throw new ArgumentNullException(nameof(type));
             }
 
-            // NOTE: Overridden properties in subtypes is not allowed in OData v4, so we don't need to worry about duplicated properties
+            // NOTE: Overridden properties in subtypes are not allowed in OData v4, so we don't need to worry about duplicated properties.
             // If the type is not a class, there are no properties to return
             if (type is OdcmClass @class)
             {
@@ -174,6 +211,31 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 {
                     // Add the immediate properties
                     foreach (OdcmProperty property in currentClass.Properties)
+                    {
+                        yield return property;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets all properties on derived types of the given base type.  This does not include properties on the given type.
+        /// </summary>
+        /// <param name="type">The base type</param>
+        /// <returns>The properties on the derived types of the given base type.</returns>
+        public static IEnumerable<OdcmProperty> EvaluatePropertiesOnDerivedTypes(this OdcmType type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+            
+            if (type is OdcmClass @class)
+            {
+                // Get all derived types
+                foreach (OdcmClass derivedType in @class.GetAllDerivedTypes(false))
+                {
+                    foreach (OdcmProperty property in derivedType.Properties)
                     {
                         yield return property;
                     }
@@ -229,7 +291,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         /// </summary>
         /// <param name="type">The type to evaluate</param>
         /// <returns>The derived types.</returns>
-        public static IEnumerable<OdcmClass> GetDerivedTypes(this OdcmType type)
+        public static IEnumerable<OdcmClass> GetImmediateDerivedTypes(this OdcmType type)
         {
             if (type == null)
             {
@@ -244,6 +306,28 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             {
                 return Enumerable.Empty<OdcmClass>();
             }
+        }
+
+        /// <summary>
+        /// Get the given type's derived types.
+        /// </summary>
+        /// <param name="baseType">The given base type to get derived types for</param>
+        /// <param name="includeBaseType">Whether or not to include the given base type (defaults to true)</param>
+        /// <returns>The derived types of the given base type</returns>
+        public static IEnumerable<OdcmClass> GetAllDerivedTypes(this OdcmType baseType, bool includeBaseType = true)
+        {
+            if (baseType == null)
+            {
+                throw new ArgumentNullException(nameof(baseType));
+            }
+
+            IList<OdcmClass> result = new List<OdcmClass>();
+            if (baseType is OdcmClass @class)
+            {
+                @class.VisitAllDerivedTypes(result.Add, includeBaseType);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -353,7 +437,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 throw new ArgumentNullException(nameof(obj));
             }
 
-            return (obj.TryGetCapability(AnnotationTerms.Computed) is OdcmBooleanCapability capability && capability.Value == true);
+            return (obj.TryGetCapability(AnnotationTerms.Computed) is OdcmBooleanCapability capability
+                && capability.Value == true);
         }
 
         /// <summary>
@@ -368,7 +453,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 throw new ArgumentNullException(nameof(obj));
             }
 
-            return (obj.TryGetCapability(AnnotationTerms.Immutable) is OdcmBooleanCapability capability && capability.Value == true);
+            return (obj.TryGetCapability(AnnotationTerms.Immutable) is OdcmBooleanCapability capability
+                && capability.Value == true);
         }
 
         /// <summary>
@@ -412,15 +498,16 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         }
 
         /// <summary>
-        /// Traverses the tree of a type and its subtypes. 
+        /// Traverses the tree of a type and its subtypes.
         /// </summary>
         /// <param name="baseType">The base type (i.e. root of the tree)</param>
         /// <param name="typeProcessor">The processor for handling each type</param>
+        /// <param name="visitBaseType">If false, the provided base type is not visited (defaults to true)</param>
         /// <remarks>
         /// Types are guaranteed to be processed before the types that derive from them.
         /// In other words, when a type is visited, it is guaranteed that all of its base types have been processed.
         /// </remarks>
-        public static void VisitDerivedTypes(this OdcmType baseType, Action<OdcmType> typeProcessor)
+        public static void VisitAllDerivedTypes(this OdcmType baseType, Action<OdcmClass> typeProcessor, bool visitBaseType = true)
         {
             if (baseType == null)
             {
@@ -431,15 +518,21 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 throw new ArgumentNullException(nameof(typeProcessor));
             }
 
-            Stack<OdcmType> unvisited = new Stack<OdcmType>();
-            unvisited.Push(baseType);
+            // Inheritance only applies to classes (i.e. entities and complex types)
+            if (!(baseType is OdcmClass @class))
+            {
+                return;
+            }
+
+            Stack<OdcmClass> unvisited = new Stack<OdcmClass>();
+            unvisited.Push(@class);
             while (unvisited.Any())
             {
                 // Get the next type
-                OdcmType type = unvisited.Pop();
+                OdcmClass type = unvisited.Pop();
 
                 // Add derived types to the unvisited list
-                foreach (OdcmType derivedType in type.GetDerivedTypes())
+                foreach (OdcmClass derivedType in type.GetImmediateDerivedTypes())
                 {
                     unvisited.Push(derivedType);
                 }
@@ -475,6 +568,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             {
                 throw new ArgumentNullException(nameof(baseType));
             }
+            if (isReadOnlyFunc == null)
+            {
+                throw new ArgumentNullException(nameof(isReadOnlyFunc));
+            }
 
             // Don't try to add parameters for Edm types
             if (baseType.Namespace.Name.StartsWith("Edm"))
@@ -488,19 +585,19 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             IDictionary<string, CmdletParameter> parameterLookup = new Dictionary<string, CmdletParameter>(StringComparer.OrdinalIgnoreCase);
 
             // Visit all derived types
-            baseType.VisitDerivedTypes((OdcmType type) =>
+            baseType.VisitAllDerivedTypes((OdcmClass @class) =>
             {
-                string parameterName = type.Name;
-                string parameterSetName = "#" + type.FullName;
+                string parameterName = @class.Name;
+                string parameterSetName = @class.FullName;
 
                 // Determine if this is the only entity type for this cmdlet
-                bool isTheOnlyType = (type == baseType && !type.GetDerivedTypes().Any());
+                bool isTheOnlyType = (@class == baseType && !@class.GetImmediateDerivedTypes().Any());
 
                 // Create the parameter set for this type if it doesn't already exist
                 CmdletParameterSet parameterSet = cmdlet.GetOrCreateParameterSet(parameterSetName);
 
                 // Set this as the default parameter set if it's the only type
-                if ((setBaseTypeParameterSetAsDefault && type == baseType)
+                if ((setBaseTypeParameterSetAsDefault && @class == baseType)
                     || (isTheOnlyType && markAsPowerShellParameter))
                 {
                     cmdlet.DefaultParameterSetName = parameterSet.Name;
@@ -508,7 +605,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 
                 // Add a switch parameter for this type if required
                 if (addSwitchParameters
-                    && !(type is OdcmClass @class && @class.IsAbstract) // don't add a switch for abstract types
+                    && !@class.IsAbstract // don't add a switch for abstract types
                     && !isTheOnlyType) // if there is only 1 type, don't add a switch parameter for it
                 {
                     // Add the switch parameter
@@ -521,18 +618,18 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                         {
                             Descriptions = new string[]
                             {
-                                $"A switch parameter for selecting the parameter set which corresponds to the \"{type.FullName}\" type.",
+                                $"A switch parameter for selecting the parameter set which corresponds to the \"{@class.FullName}\" type.",
                             },
                         },
                     });
                 }
 
                 // Evaluate the properties on this type
-                IEnumerable<OdcmProperty> properties = type.EvaluateProperties(type == baseType)
+                IEnumerable<OdcmProperty> properties = @class.EvaluateProperties(@class == baseType)
                     .Where(prop => prop.Name != RequestProperties.Id);
 
                 // Add this type into the parmeter name lookup table
-                parameterNameLookup.Add(type, properties
+                parameterNameLookup.Add(@class, properties
                     //.Where(prop => !prop.ReadOnly && !prop.IsCollection && !prop.IsLink)
                     .Select(prop => prop.Name)
                     .Distinct());
@@ -540,7 +637,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 // Add the base types' properties as parameters to this parameter set
                 // NOTE: Safe lookups are not necessary since all base types are guaranteed to have already been processed
                 // by the VisitDerivedTypes() method
-                OdcmType currentType = type;
+                OdcmType currentType = @class;
                 while (currentType != baseType)
                 {
                     // Get the next type
@@ -576,8 +673,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                             property,
                             propertyType,
                             markAsPowerShellParameter,
-                            type == baseType,
-                            type.FullName,
+                            @class == baseType,
+                            @class.FullName,
                             isReadOnly: isReadOnlyFunc(property),
                             enumValues: enumMembers);
 
@@ -590,8 +687,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                             property,
                             typeof(object),
                             markAsPowerShellParameter,
-                            type == baseType,
-                            type.FullName,
+                            @class == baseType,
+                            @class.FullName,
                             isReadOnly: isReadOnlyFunc(property));
 
                         parameterLookup[property.Name] = parameter;
@@ -599,6 +696,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 
                     // Save the original OData type name
                     parameter.ODataTypeFullName = property.Type.FullName;
+
+                    // Save the names of the subtypes of the original OData type
+                    parameter.ODataSubTypeFullNames = property.Type.GetAllDerivedTypes(false).Select(type => type.FullName);
 
                     // Add this type's properties as parameters to this parameter set
                     parameterSet.Add(parameter);

@@ -31,12 +31,22 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <summary>
         /// The parameters for the IDs of entities in the route.
         /// </summary>
-        private IDictionary<OdcmProperty, string> _idParameters = new Dictionary<OdcmProperty, string>();
+        private readonly IDictionary<OdcmProperty, string> _idParameters = new Dictionary<OdcmProperty, string>();
 
         /// <summary>
         /// The ODCM properties which require an ID to build this OData route.
         /// </summary>
         public IEnumerable<OdcmProperty> IdParameterProperties => this._idParameters.Keys;
+
+        /// <summary>
+        /// The parameters for the IDs of entities in the route.
+        /// </summary>
+        private readonly IDictionary<OdcmProperty, string> _typeCastParameters = new Dictionary<OdcmProperty, string>();
+
+        /// <summary>
+        /// The ODCM properties which require an ID to build this OData route.
+        /// </summary>
+        public IEnumerable<OdcmProperty> TypeCastParameterProperties => this._typeCastParameters.Keys;
 
         /// <summary>
         /// Creates an OData route from an ODCM node.
@@ -61,8 +71,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             // Keep track of the ID parameters
             ICollection<string> idParameters = new List<string>();
 
-            // Iterate over the node's parents
+            // Iterate over the node's parents (i.e. traverse the route in reverse)
             OdcmNode currentNode = node;
+            OdcmNode childNode = null;
             while (currentNode != null)
             {
                 // Get the current node's property
@@ -71,14 +82,25 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
                 // Add this node to the route
                 segments.Push(property);
 
-                // If this node is not the final node in the route and the property it represents is an enumeration, track it's ID as a parameter
-                string idParameterName;
-                if (currentNode != node && property.TryGetIdParameterName(out idParameterName))
+                // Ignore this logic for the last segment in the route
+                bool isLastSegment = childNode != null;
+                if (isLastSegment)
                 {
-                    _idParameters.Add(property, idParameterName);
+                    // If the property this node represents is an enumeration, track its ID as a parameter
+                    if (property.TryGetIdParameterName(out string idParameterName))
+                    {
+                        this._idParameters.Add(property, idParameterName);
+                    }
+
+                    // If the property's type is not the same as the class that the child property is defined in, the child class must be a subtype
+                    if (property.Type != childNode.OdcmProperty.Class)
+                    {
+                        this._typeCastParameters.Add(property, property.GetResourceTypeParameterName());
+                    }
                 }
 
-                // Get the parent node
+                // Update pointers
+                childNode = currentNode;
                 currentNode = currentNode.Parent;
             }
 
@@ -86,10 +108,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         }
 
         /// <summary>
-        /// Gets the name of the ID parameter given the 
+        /// Gets the name of the ID parameter given a property.
         /// </summary>
-        /// <param name="property"></param>
-        /// <returns></returns>
+        /// <param name="property">The property</param>
+        /// <returns>The ID parameter name if the property represents a collection, otherwise null.</returns>
         public string GetIdParameterName(OdcmProperty property)
         {
             if (property == null)
@@ -97,23 +119,35 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
                 throw new ArgumentNullException(nameof(property));
             }
 
-            if (this._idParameters.TryGetValue(property, out string idParameterName))
-            {
-                return idParameterName;
-            }
-            else
-            {
-                return null;
-            }
+            return this._idParameters.TryGetValue(property, out string idParameterName)
+                ? idParameterName
+                : null;
         }
 
         /// <summary>
-        /// Generates the OData route string with ID placeholders.
+        /// Gets the name of the typecast parameter given a property.
+        /// </summary>
+        /// <param name="property">The property</param>
+        /// <returns>The typecast parameter name</returns>
+        public string GetTypeCastParameterName(OdcmProperty property)
+        {
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
+
+            return this._typeCastParameters.TryGetValue(property, out string typeCastParameterName)
+                ? typeCastParameterName
+                : null;
+        }
+
+        /// <summary>
+        /// Generates the OData route string with ID and typecast placeholders.
         /// It will have neither a leading slash nor trailing slash.
         /// </summary>
-        /// <param name="includeEntityId">Whether or not to include the entity ID placeholder if required</param>
+        /// <param name="includeEntityIdAndTypeCast">Whether or not to include the entity ID and typecast placeholders if required</param>
         /// <returns>The OData route.</returns>
-        public string ToODataRouteString(bool includeEntityId = true)
+        public string ToODataRouteString(bool includeEntityIdAndTypeCast = true)
         {
             IList<string> segments = new List<string>();
             OdcmProperty lastSegment = this.Segments.LastOrDefault();
@@ -122,11 +156,20 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
                 // Add this node to the route
                 segments.Add(property.Name);
 
-                // If this segment requires an ID, add it to the route
-                if ((property != lastSegment || includeEntityId)
-                    && this._idParameters.TryGetValue(property, out string idParameter))
+                // Add the ID and typecast after the final segment only if the caller wants to include them
+                if (property != lastSegment || includeEntityIdAndTypeCast)
                 {
-                    segments.Add($"{{{idParameter}}}");
+                    // If this segment requires an ID, add it to the route
+                    if (this._idParameters.TryGetValue(property, out string idParameterName))
+                    {
+                        segments.Add($"{{{idParameterName}}}");
+                    }
+
+                    // If this segment requires a typecast, add it to the route
+                    if (this._typeCastParameters.TryGetValue(property, out string typeCastParameterName))
+                    {
+                        segments.Add($"{{{typeCastParameterName}}}");
+                    }
                 }
             }
 

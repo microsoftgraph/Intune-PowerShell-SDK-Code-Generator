@@ -2,6 +2,8 @@
 
 namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 {
+    using System.Collections.Generic;
+
     public class OperationCmdlet : Cmdlet
     {
         /// <summary>
@@ -14,6 +16,16 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// The name of the OData resource that this cmdlet operates on.
         /// </summary>
         public string ResourceTypeFullName { get; set; }
+
+        /// <summary>
+        /// The full names of the derived types of this resource's OData type.
+        /// </summary>
+        public IEnumerable<string> ResourceSubTypeFullNames { get; set; }
+
+        /// <summary>
+        /// The name of the property on output objects whose value should be the object's type name.
+        /// </summary>
+        public string ResourceTypePropertyName { get; set; }
 
         /// <summary>
         /// Indicates that this cmdlet retrieves resources that can be referenced by "$ref" requests.

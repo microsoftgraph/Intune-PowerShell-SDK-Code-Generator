@@ -37,17 +37,21 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         public static CSharpAttribute CreateSortableAttribute() => _sortableAttribute;
 
         // ODataType
-        public static CSharpAttribute CreateODataTypeAttribute(string oDataTypeFullName)
+        public static CSharpAttribute CreateODataTypeAttribute(string oDataTypeFullName, IEnumerable<string> subTypeFullNames)
         {
             if (oDataTypeFullName == null)
             {
                 throw new ArgumentNullException(nameof(oDataTypeFullName));
             }
-
-            CSharpAttribute result = new CSharpAttribute(nameof(ODataTypeAttribute))
+            if (subTypeFullNames == null)
             {
-                Arguments = $"\"{oDataTypeFullName}\"".SingleObjectAsEnumerable(),
-            };
+                throw new ArgumentNullException(nameof(subTypeFullNames));
+            }
+
+            CSharpAttribute result = new CSharpAttribute(
+                nameof(ODataTypeAttribute),
+                $"\"{oDataTypeFullName}\"".SingleObjectAsEnumerable() // the main type
+                    .Concat(subTypeFullNames.Select(name => $"\"{name}\""))); // subtypes
 
             return result;
         }
@@ -60,10 +64,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 throw new ArgumentNullException(nameof(derivedTypeFullName));
             }
 
-            CSharpAttribute result = new CSharpAttribute(nameof(DerivedTypeAttribute))
-            {
-                Arguments = $"\"{derivedTypeFullName}\"".SingleObjectAsEnumerable(),
-            };
+            CSharpAttribute result = new CSharpAttribute(
+                nameof(DerivedTypeAttribute),
+                $"\"{derivedTypeFullName}\"".SingleObjectAsEnumerable());
 
             return result;
         }
@@ -76,10 +79,25 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 throw new ArgumentNullException(nameof(validValues));
             }
 
-            CSharpAttribute result = new CSharpAttribute(nameof(PS.ValidateSetAttribute))
-            {
-                Arguments = validValues.Select(value => $"@\"{value}\""),
-            };
+            CSharpAttribute result = new CSharpAttribute(
+                nameof(PS.ValidateSetAttribute),
+                validValues.Select(value => $"@\"{value}\""));
+
+            return result;
+        }
+
+        // IdParameter
+        public static CSharpAttribute CreateIdParameterAttribute()
+        {
+            CSharpAttribute result = new CSharpAttribute(nameof(IdParameterAttribute));
+
+            return result;
+        }
+
+        // TypeCastParameter
+        public static CSharpAttribute CreateTypeCastParameterAttribute()
+        {
+            CSharpAttribute result = new CSharpAttribute(nameof(TypeCastParameterAttribute));
 
             return result;
         }
@@ -114,7 +132,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 arguments.Add($"{nameof(PS.ParameterAttribute.HelpMessage)} = @\"{helpMessage.EscapeForXml()}\"");
             }
 
-            return new CSharpAttribute(nameof(PS.ParameterAttribute), arguments.ToArray());
+            return new CSharpAttribute(nameof(PS.ParameterAttribute), arguments);
         }
 
         // ParameterSetSwitch

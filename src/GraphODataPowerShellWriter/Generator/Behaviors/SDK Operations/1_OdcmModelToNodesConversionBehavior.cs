@@ -59,6 +59,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     // Expand the node
                     IEnumerable<OdcmNode> childNodes = currentNode.CreateChildNodes(model);
 
+                    // Mark the child nodes as "to be expanded"
                     foreach (OdcmNode childNode in childNodes)
                     {
                         unvisited.Push(childNode);
@@ -86,7 +87,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
             // Identify the kind of ODCM element this node represents and expand it if we need to
             OdcmProperty obj = node.OdcmProperty;
-            IEnumerable<OdcmProperty> childObjects = obj.GetChildObjects(model);
+            IEnumerable<OdcmProperty> childObjects = obj.Type.GetChildObjects(model);
 
             // Don't allow loops in the list of ODCM nodes
             ICollection<string> parents = new HashSet<string>();
@@ -110,87 +111,22 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
         /// <param name="class">The ODCM class</param>
         /// <param name="model">The ODCM model</param>
         /// <returns>The child ODCM objects for the given ODCM class.</returns>
-        private static IEnumerable<OdcmProperty> GetChildObjects(this OdcmClass @class, OdcmModel model)
+        private static IEnumerable<OdcmProperty> GetChildObjects(this OdcmType type, OdcmModel model)
         {
-            if (@class == null)
+            if (type == null)
             {
-                throw new ArgumentNullException(nameof(@class));
+                throw new ArgumentNullException(nameof(type));
             }
             if (model == null)
             {
                 throw new ArgumentNullException(nameof(model));
             }
 
-            // Return the properties of the class which can be part of the OData route
-            IEnumerable<OdcmProperty> properties = @class.Properties.Where(prop => prop.IsODataRouteSegment(model));
-            foreach (OdcmProperty property in properties)
-            {
-                yield return property;
-            }
-        }
+            // Get the property's type and subtypes, and expand them to get their properties
+            IEnumerable<OdcmProperty> properties = type.EvaluateProperties().Where(prop => prop.IsODataRouteSegment(prop.Class == model.EntityContainer));
+            IEnumerable<OdcmProperty> derivedTypeProperties = type.EvaluatePropertiesOnDerivedTypes().Where(prop => prop.IsODataRouteSegment(prop.Class == model.EntityContainer));
 
-        /// <summary>
-        /// Gets child ODCM objects for an ODCM property.
-        /// </summary>
-        /// <param name="class">The ODCM property</param>
-        /// <param name="model">The ODCM model</param>
-        /// <returns>The child ODCM objects for the given ODCM property.</returns>
-        private static IEnumerable<OdcmProperty> GetChildObjects(this OdcmProperty property, OdcmModel model)
-        {
-            if (property == null)
-            {
-                throw new ArgumentNullException(nameof(property));
-            }
-            if (model == null)
-            {
-                throw new ArgumentNullException(nameof(model));
-            }
-
-            // Get the property's type and expand it to get it's properties
-            OdcmType propertyType = property.Type;
-            if (propertyType is OdcmClass @class)
-            {
-                // Return this class' properties
-                return @class.GetChildObjects(model);
-            }
-            else
-            {
-                // Return nothing
-                return Enumerable.Empty<OdcmProperty>();
-            }
-        }
-
-        /// <summary>
-        /// Determines whether the property can be part of an OData route.
-        /// </summary>
-        /// <param name="property">The property</param>
-        /// <returns>True if the property can be part of an OData route, otherwise false.</returns>
-        private static bool IsODataRouteSegment(this OdcmProperty property, OdcmModel model)
-        {
-            if (property == null)
-            {
-                throw new ArgumentNullException(nameof(property));
-            }
-            if (model == null)
-            {
-                throw new ArgumentNullException(nameof(model));
-            }
-
-            bool result = // Make sure that this property is:
-                // top-level
-                property.Class == model.EntityContainer
-                // or expandable
-                || (
-                    // a complex type
-                    property.Type is OdcmClass
-                    // which is a navigation property
-                    && property.IsLink
-                )
-                // or a data stream property
-                || property.IsStream()
-                ;
-
-            return result;
+            return properties.Concat(derivedTypeProperties);
         }
     }
 }

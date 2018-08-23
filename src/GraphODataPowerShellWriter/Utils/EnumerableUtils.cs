@@ -34,8 +34,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 
         private class GenericEqualityComparer<T> : IEqualityComparer<T>
         {
-            Func<T, T, bool> _equals;
-            Func<T, int> _getHashCode;
+            private readonly Func<T, T, bool> _equals;
+            private readonly Func<T, int> _getHashCode;
 
             public GenericEqualityComparer(Func<T, T, bool> equalsFunction, Func<T, int> getHashCodeFunction = null)
             {

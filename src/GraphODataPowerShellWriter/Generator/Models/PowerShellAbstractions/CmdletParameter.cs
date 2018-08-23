@@ -57,7 +57,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public bool ValidateNotNullOrEmpty { get; set; } = false;
 
         /// <summary>
-        /// If not null, adds the [<see cref="PowerShellGraphSDK.ValidateUrlAttribute"/>] to the parameter.
+        /// If not null, adds the [<see cref="Microsoft.Intune.PowerShellGraphSDK.ValidateUrlAttribute"/>] to the parameter.
         /// This should be applied to string parameters that only accept valid URLs.
         /// If this value is set to true, the parameter will only accept absolute URLs.
         /// If this value is set to false, the parameter will accept both absolute and relative URLs.
@@ -65,27 +65,37 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public bool? ValidateUrlIsAbsolute { get; set; } = null;
 
         /// <summary>
-        /// If not null, adds the [<see cref="PowerShellGraphSDK.ParameterSetSelectorAttribute"/>] to the parameter with the given name.
+        /// If not null, adds the [<see cref="Microsoft.Intune.PowerShellGraphSDK.ParameterSetSelectorAttribute"/>] to the parameter with the given name.
         /// </summary>
         public string ParameterSetSelectorName { get; set; } = null;
 
         /// <summary>
-        /// Whether or not to add the [<see cref="PowerShellGraphSDK.SelectableAttribute"/>] to the parameter.
+        /// Whether or not to add the [<see cref="Microsoft.Intune.PowerShellGraphSDK.TypeCastParameterAttribute"/>] to the parameter.
+        /// </summary>
+        public bool IsTypeCastParameter { get; set; } = false;
+
+        /// <summary>
+        /// Whether or not to add the [<see cref="Microsoft.Intune.PowerShellGraphSDK.IdParameterAttribute"/>] to the parameter.
+        /// </summary>
+        public bool IsIdParameter { get; set; } = false;
+
+        /// <summary>
+        /// Whether or not to add the [<see cref="Microsoft.Intune.PowerShellGraphSDK.SelectableAttribute"/>] to the parameter.
         /// </summary>
         public bool IsSelectable { get; set; } = true;
 
         /// <summary>
-        /// Whether or not to add the [<see cref="PowerShellGraphSDK.ExpandableAttribute"/>] to the parameter.
+        /// Whether or not to add the [<see cref="Microsoft.Intune.PowerShellGraphSDK.ExpandableAttribute"/>] to the parameter.
         /// </summary>
         public bool IsExpandable { get; set; } = false;
 
         /// <summary>
-        /// Whether or not to add the [<see cref="PowerShellGraphSDK.SortableAttribute"/>] to the parameter.
+        /// Whether or not to add the [<see cref="Microsoft.Intune.PowerShellGraphSDK.SortableAttribute"/>] to the parameter.
         /// </summary>
         public bool IsSortable { get; set; } = false;
 
         /// <summary>
-        /// If this is not null, the [<see cref="PowerShellGraphSDK.DerivedTypeAttributeAttribute"/>] will be added to the parameter.
+        /// If this is not null, the [<see cref="Microsoft.Intune.PowerShellGraphSDK.DerivedTypeAttribute"/>] will be added to the parameter.
         /// 
         /// This property is not allowed to be empty or whitespace - it must either be null or a valid type name (including the namespace).
         /// </summary>
@@ -95,6 +105,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// The full name of the original OData type defined in the schema for the property that this parameter represents.
         /// </summary>
         public string ODataTypeFullName { get; set; } = null;
+
+        /// <summary>
+        /// The full names of the subtypes of the property's OData type.
+        /// </summary>
+        public IEnumerable<string> ODataSubTypeFullNames { get; set; }
 
         /// <summary>
         /// If this is not null, the provided documentation will be added to the parameter.

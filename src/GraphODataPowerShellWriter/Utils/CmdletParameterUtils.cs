@@ -166,7 +166,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             // ODataType attribute
             if (parameter.ODataTypeFullName != null)
             {
-                yield return CSharpPropertyAttributeHelper.CreateODataTypeAttribute(parameter.ODataTypeFullName);
+                yield return CSharpPropertyAttributeHelper.CreateODataTypeAttribute(parameter.ODataTypeFullName, parameter.ODataSubTypeFullNames);
             }
 
             // Selectable attribute
@@ -197,6 +197,18 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             if (parameter.Documentation?.ValidValues != null && parameter.Documentation.ValidValues.Any())
             {
                 yield return CSharpPropertyAttributeHelper.CreateValidateSetAttribute(parameter.Documentation.ValidValues);
+            }
+
+            // ID attribute
+            if (parameter.IsIdParameter)
+            {
+                yield return CSharpPropertyAttributeHelper.CreateIdParameterAttribute();
+            }
+
+            // TypeCastParameter attribute
+            if (parameter.IsTypeCastParameter)
+            {
+                yield return CSharpPropertyAttributeHelper.CreateTypeCastParameterAttribute();
             }
 
             // Parameter attribute
