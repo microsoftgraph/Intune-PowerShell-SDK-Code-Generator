@@ -864,13 +864,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // Create the OData route
             string oDataRouteString = oDataRoute.ToODataRouteString();
 
-            // Check whether this route needs to have an ID parameter added to the end
-            bool idParameterIsMandatory = idParameterSetName == null;
-            if (oDataRoute.TryCreateEntityIdParameter(out CmdletParameter idParameter, idParameterIsMandatory, idValueFromPipeline))
+            // Create the entity ID parameter if it's required
+            if (oDataRoute.TryCreateEntityIdParameter(out CmdletParameter idParameter, idValueFromPipeline))
             {
                 // Set the URL to use this parameter and add it to the appropriate parameter set
                 cmdlet.CallUrl = oDataRouteString;
-                if (idParameterIsMandatory)
+                if (idParameterSetName == null) // Check whether this route needs to have an ID parameter added to the end
                 {
                     // Add the parameter to the parameter set
                     cmdlet.DefaultParameterSet.Add(idParameter);
@@ -918,16 +917,15 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
         }
 
         /// <summary>
-        /// Creates an ID parameter if it is required by the resource.
+        /// Creates an ID parameter if it is required by the resource.  This parameter is always marked as mandatory.
+        /// In order to make it optional during usage, it should be placed in a non-default parameter set.
         /// </summary>
         /// <param name="oDataRoute">The OData route to the resource</param>
-        /// <param name="entityIdIsMandatory">Whether or not the ID parameter should be mandatory</param>
         /// <param name="idParameter">The resulting ID parameter if it was created, otherwise null</param>
         /// <returns>True if the ID parameter was created, otherwise false.</returns>
         private static bool TryCreateEntityIdParameter(
             this ODataRoute oDataRoute,
             out CmdletParameter idParameter,
-            bool entityIdIsMandatory,
             bool valueFromPipeline)
         {
             if (oDataRoute == null)
@@ -945,7 +943,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 idParameter = new CmdletParameter(idParameterName, typeof(string))
                 {
                     Aliases = RequestProperties.Id.SingleObjectAsEnumerable(),
-                    Mandatory = entityIdIsMandatory,
+                    Mandatory = true,
                     ValueFromPipeline = valueFromPipeline,
                     ValueFromPipelineByPropertyName = true,
                     ValidateNotNullOrEmpty = true,
