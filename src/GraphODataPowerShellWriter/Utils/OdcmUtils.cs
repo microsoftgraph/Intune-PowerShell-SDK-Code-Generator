@@ -558,7 +558,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             string sharedParameterSetName = null,
             bool addSwitchParameters = true,
             bool markAsPowerShellParameter = true,
-            bool setBaseTypeParameterSetAsDefault = false)
+            bool setBaseTypeParameterSetAsDefault = false,
+            bool allowPipelineInputByName = true)
         {
             if (cmdlet == null)
             {
@@ -676,6 +677,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                             @class == baseType,
                             @class.FullName,
                             isReadOnly: isReadOnlyFunc(property),
+                            allowPipelineInputByName: allowPipelineInputByName,
                             enumValues: enumMembers);
 
                         parameterLookup.Add(property.Name, parameter);
@@ -689,7 +691,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                             markAsPowerShellParameter,
                             @class == baseType,
                             @class.FullName,
-                            isReadOnly: isReadOnlyFunc(property));
+                            isReadOnly: isReadOnlyFunc(property),
+                            allowPipelineInputByName: allowPipelineInputByName);
 
                         parameterLookup[property.Name] = parameter;
                     }
@@ -723,14 +726,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             bool isBaseType,
             string entityTypeFullName,
             bool isReadOnly = false,
+            bool allowPipelineInputByName = true,
             IEnumerable<string> enumValues = null)
         {
             var result = new CmdletParameter(property.Name, powerShellType)
             {
                 Mandatory = property.IsRequired,
-                ValueFromPipelineByPropertyName = false,
                 IsPowerShellParameter = markAsPowerShellParameter && !isReadOnly,
-
+                ValueFromPipelineByPropertyName = allowPipelineInputByName,
                 DerivedTypeName = markAsPowerShellParameter || isBaseType
                                 ? null
                                 : entityTypeFullName,

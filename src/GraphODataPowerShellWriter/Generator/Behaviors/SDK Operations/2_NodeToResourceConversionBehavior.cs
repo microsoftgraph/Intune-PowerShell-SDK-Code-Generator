@@ -557,7 +557,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             cmdlet.AddParametersForEntityProperties(
                 resource.Type,
                 cmdlet.IsReadOnlyFunc(),
-                PostOrPatchCmdlet.SharedParameterSet);
+                PostOrPatchCmdlet.SharedParameterSet,
+                allowPipelineInputByName: false);
 
             return cmdlet;
         }

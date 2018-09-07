@@ -77,6 +77,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 sharedParameterSetName: null,
                 addSwitchParameters: true,
                 markAsPowerShellParameter: true,
+                allowPipelineInputByName: false,
                 setBaseTypeParameterSetAsDefault: true);
 
             return cmdlet;
