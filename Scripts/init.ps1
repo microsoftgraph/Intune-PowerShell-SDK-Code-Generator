@@ -11,7 +11,7 @@ $env:writerBuildDir = "$($env:writerDir)\bin\$($env:buildConfiguration)"
 $env:generatedDir = "$($env:writerBuildDir)\output"
 $env:sdkDir = "$($env:generatedDir)\bin\$($env:buildConfiguration)\$($env:dotnetFrameworkVersion)"
 $env:testDir = "$($env:PowerShellSDKRepoRoot)\Tests"
-$env:moduleName = 'Intune'
+$env:moduleName = 'Microsoft.Graph.Intune'
 $env:moduleExtension = 'psd1'
 $env:sdkSubmoduleSrc = "$($env:PowerShellSDKRepoRoot)\submodules\Intune-PowerShell-SDK"
 
