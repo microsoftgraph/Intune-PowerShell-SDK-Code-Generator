@@ -73,16 +73,14 @@ Write-Host "Testing the pipeline..." -NoNewline
 $success = $false
 try {
     $firstApp = Get-DeviceAppManagement_MobileApps | Select-Object -First 1
-    $someValue = "Hello, world!"
-    if (-not $someValue) {
-        throw "Pipeline did not end gracefully"
-    }
 
+    # The script won't reach this line if the pipeline is not ended gracefully
     $success = $true
 } finally {
     if ($success) {
         Write-Host "Done"
     } else {
         Write-Host "Failed" -ForegroundColor Red
+        throw "Pipeline did not end gracefully"
     }
 }
