@@ -1164,7 +1164,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     {
                         Descriptions = new string[]
                         {
-                            $"The \"{parameter.Name}\" parameter, which is accepted by the \"{function.FullName}\" function.",
+                            $"The \"{parameter.Name}\" function parameter of type \"{parameter.Type.FullName}\".",
                             parameter.Description,
                         },
                     }
@@ -1212,7 +1212,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     {
                         Descriptions = new string[]
                         {
-                            $"The \"{parameter.Name}\" parameter, which is accepted by the \"{action.FullName}\" action.",
+                            $"The \"{parameter.Name}\" action parameter of type \"{parameter.Type.FullName}\".",
                             parameter.Description,
                         },
                     }
