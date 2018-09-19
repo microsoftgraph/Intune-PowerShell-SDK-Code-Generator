@@ -294,12 +294,8 @@ __pycache__/
 *.xsd.cs
 
 ### VisualStudioCode ###
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.history
+\.vscode/
+\.history
 
 ### VisualStudio ###
 ## Ignore Visual Studio temporary files, build results, and
