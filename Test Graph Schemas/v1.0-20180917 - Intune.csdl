@@ -1397,21 +1397,8 @@
                 <NavigationProperty Name="createdOnBehalfOf" Type="microsoft.graph.directoryObject" />
                 <NavigationProperty Name="owners" Type="Collection(microsoft.graph.directoryObject)" />
                 <NavigationProperty Name="settings" Type="Collection(microsoft.graph.groupSetting)" ContainsTarget="true" />
-                <NavigationProperty Name="extensions" Type="Collection(microsoft.graph.extension)" ContainsTarget="true" />
-                <NavigationProperty Name="threads" Type="Collection(microsoft.graph.conversationThread)" ContainsTarget="true" />
-                <NavigationProperty Name="calendar" Type="microsoft.graph.calendar" ContainsTarget="true" />
-                <NavigationProperty Name="calendarView" Type="Collection(microsoft.graph.event)" ContainsTarget="true" />
-                <NavigationProperty Name="events" Type="Collection(microsoft.graph.event)" ContainsTarget="true" />
-                <NavigationProperty Name="conversations" Type="Collection(microsoft.graph.conversation)" ContainsTarget="true" />
                 <NavigationProperty Name="photo" Type="microsoft.graph.profilePhoto" ContainsTarget="true" />
                 <NavigationProperty Name="photos" Type="Collection(microsoft.graph.profilePhoto)" ContainsTarget="true" />
-                <NavigationProperty Name="acceptedSenders" Type="Collection(microsoft.graph.directoryObject)" ContainsTarget="true" />
-                <NavigationProperty Name="rejectedSenders" Type="Collection(microsoft.graph.directoryObject)" ContainsTarget="true" />
-                <NavigationProperty Name="drive" Type="microsoft.graph.drive" ContainsTarget="true" />
-                <NavigationProperty Name="drives" Type="Collection(microsoft.graph.drive)" ContainsTarget="true" />
-                <NavigationProperty Name="sites" Type="Collection(microsoft.graph.site)" ContainsTarget="true" />
-                <NavigationProperty Name="planner" Type="microsoft.graph.plannerGroup" ContainsTarget="true" />
-                <NavigationProperty Name="onenote" Type="microsoft.graph.onenote" ContainsTarget="true" />
                 <NavigationProperty Name="groupLifecyclePolicies" Type="Collection(microsoft.graph.groupLifecyclePolicy)" ContainsTarget="true" />
             </EntityType>
             <ComplexType Name="onPremisesProvisioningError">
@@ -1579,7 +1566,6 @@
                 <Property Name="warning" Type="Edm.Int32" />
             </ComplexType>
             <EntityType Name="organization" BaseType="microsoft.graph.directoryObject" OpenType="true">
-                <Property Name="assignedPlans" Type="Collection(microsoft.graph.assignedPlan)" Nullable="false" />
                 <Property Name="businessPhones" Type="Collection(Edm.String)" Nullable="false" />
                 <Property Name="city" Type="Edm.String" />
                 <Property Name="country" Type="Edm.String" />
@@ -1591,15 +1577,12 @@
                 <Property Name="postalCode" Type="Edm.String" />
                 <Property Name="preferredLanguage" Type="Edm.String" />
                 <Property Name="privacyProfile" Type="microsoft.graph.privacyProfile" />
-                <Property Name="provisionedPlans" Type="Collection(microsoft.graph.provisionedPlan)" Nullable="false" />
                 <Property Name="securityComplianceNotificationMails" Type="Collection(Edm.String)" Nullable="false" />
                 <Property Name="securityComplianceNotificationPhones" Type="Collection(Edm.String)" Nullable="false" />
                 <Property Name="state" Type="Edm.String" />
                 <Property Name="street" Type="Edm.String" />
                 <Property Name="technicalNotificationMails" Type="Collection(Edm.String)" Nullable="false" />
-                <Property Name="verifiedDomains" Type="Collection(microsoft.graph.verifiedDomain)" Nullable="false" />
                 <Property Name="mobileDeviceManagementAuthority" Type="microsoft.graph.mdmAuthority" Nullable="false" />
-                <NavigationProperty Name="extensions" Type="Collection(microsoft.graph.extension)" ContainsTarget="true" />
             </EntityType>
             <ComplexType Name="assignedPlan">
                 <Property Name="assignedDateTime" Type="Edm.DateTimeOffset" />
@@ -1684,31 +1667,12 @@
                 <NavigationProperty Name="createdObjects" Type="Collection(microsoft.graph.directoryObject)" />
                 <NavigationProperty Name="ownedObjects" Type="Collection(microsoft.graph.directoryObject)" />
                 <NavigationProperty Name="licenseDetails" Type="Collection(microsoft.graph.licenseDetails)" ContainsTarget="true" />
-                <NavigationProperty Name="extensions" Type="Collection(microsoft.graph.extension)" ContainsTarget="true" />
-                <NavigationProperty Name="outlook" Type="microsoft.graph.outlookUser" ContainsTarget="true" />
-                <NavigationProperty Name="messages" Type="Collection(microsoft.graph.message)" ContainsTarget="true" />
-                <NavigationProperty Name="mailFolders" Type="Collection(microsoft.graph.mailFolder)" ContainsTarget="true" />
-                <NavigationProperty Name="calendar" Type="microsoft.graph.calendar" ContainsTarget="true" />
-                <NavigationProperty Name="calendars" Type="Collection(microsoft.graph.calendar)" ContainsTarget="true" />
-                <NavigationProperty Name="calendarGroups" Type="Collection(microsoft.graph.calendarGroup)" ContainsTarget="true" />
-                <NavigationProperty Name="calendarView" Type="Collection(microsoft.graph.event)" ContainsTarget="true" />
-                <NavigationProperty Name="events" Type="Collection(microsoft.graph.event)" ContainsTarget="true" />
-                <NavigationProperty Name="people" Type="Collection(microsoft.graph.person)" ContainsTarget="true" />
-                <NavigationProperty Name="contacts" Type="Collection(microsoft.graph.contact)" ContainsTarget="true" />
-                <NavigationProperty Name="contactFolders" Type="Collection(microsoft.graph.contactFolder)" ContainsTarget="true" />
                 <NavigationProperty Name="inferenceClassification" Type="microsoft.graph.inferenceClassification" ContainsTarget="true" />
                 <NavigationProperty Name="photo" Type="microsoft.graph.profilePhoto" ContainsTarget="true" />
                 <NavigationProperty Name="photos" Type="Collection(microsoft.graph.profilePhoto)" ContainsTarget="true" />
-                <NavigationProperty Name="drive" Type="microsoft.graph.drive" ContainsTarget="true" />
-                <NavigationProperty Name="drives" Type="Collection(microsoft.graph.drive)" ContainsTarget="true" />
-                <NavigationProperty Name="planner" Type="microsoft.graph.plannerUser" ContainsTarget="true" />
-                <NavigationProperty Name="onenote" Type="microsoft.graph.onenote" ContainsTarget="true" />
                 <NavigationProperty Name="managedDevices" Type="Collection(microsoft.graph.managedDevice)" ContainsTarget="true" />
                 <NavigationProperty Name="managedAppRegistrations" Type="Collection(microsoft.graph.managedAppRegistration)" />
                 <NavigationProperty Name="deviceManagementTroubleshootingEvents" Type="Collection(microsoft.graph.deviceManagementTroubleshootingEvent)" ContainsTarget="true" />
-                <NavigationProperty Name="activities" Type="Collection(microsoft.graph.userActivity)" ContainsTarget="true" />
-                <NavigationProperty Name="insights" Type="microsoft.graph.officeGraphInsights" ContainsTarget="true" />
-                <NavigationProperty Name="settings" Type="microsoft.graph.userSettings" ContainsTarget="true" />
             </EntityType>
             <ComplexType Name="assignedLicense">
                 <Property Name="disabledPlans" Type="Collection(Edm.Guid)" Nullable="false" />
@@ -9398,6 +9362,16 @@
             <Term Name="downloadUrl" Type="Edm.String" AppliesTo="microsoft.graph.driveItem" />
             <Term Name="sourceUrl" Type="Edm.String" AppliesTo="microsoft.graph.driveItem" />
             <EntityContainer Name="GraphService">
+                <EntitySet Name="directoryObjects" EntityType="microsoft.graph.directoryObject" />
+                <EntitySet Name="groups" EntityType="microsoft.graph.group" />
+                <EntitySet Name="organization" EntityType="microsoft.graph.organization" />
+                <Singleton Name="me" Type="microsoft.graph.user">
+                    <NavigationPropertyBinding Path="manager" Target="directoryObjects" />
+                    <NavigationPropertyBinding Path="directReports" Target="directoryObjects" />
+                    <NavigationPropertyBinding Path="memberOf" Target="directoryObjects" />
+                    <NavigationPropertyBinding Path="createdObjects" Target="directoryObjects" />
+                    <NavigationPropertyBinding Path="ownedObjects" Target="directoryObjects" />
+                </Singleton>
                 <Singleton Name="reports" Type="microsoft.graph.reportRoot" />
                 <Singleton Name="deviceAppManagement" Type="microsoft.graph.deviceAppManagement" />
                 <Singleton Name="deviceManagement" Type="microsoft.graph.deviceManagement" />
