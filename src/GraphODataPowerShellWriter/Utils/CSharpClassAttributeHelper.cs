@@ -50,16 +50,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             return CSharpPropertyAttributeHelper.CreateODataTypeAttribute(oDataTypeFullName, subTypeFullNames ?? Array.Empty<string>());
         }
 
-        public static CSharpAttribute CreateResourceIdPropertyNameAttribute(string idParameterName)
-        {
-            if (idParameterName == null)
-            {
-                throw new ArgumentNullException(nameof(idParameterName));
-            }
-
-            return new CSharpAttribute(nameof(ResourceIdPropertyNameAttribute), arguments: $"\"{idParameterName}\"");
-        }
-
         public static CSharpAttribute CreateResourceReferenceAttribute()
         {
             return new CSharpAttribute(nameof(ResourceReferenceAttribute));

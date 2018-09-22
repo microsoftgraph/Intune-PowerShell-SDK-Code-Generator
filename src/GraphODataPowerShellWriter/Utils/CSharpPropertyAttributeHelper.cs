@@ -94,6 +94,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             return result;
         }
 
+        // EntityIdParameter
+        public static CSharpAttribute CreateResourceIdParameterAttribute()
+        {
+            CSharpAttribute result = new CSharpAttribute(nameof(ResourceIdParameterAttribute));
+
+            return result;
+        }
+
         // TypeCastParameter
         public static CSharpAttribute CreateTypeCastParameterAttribute()
         {

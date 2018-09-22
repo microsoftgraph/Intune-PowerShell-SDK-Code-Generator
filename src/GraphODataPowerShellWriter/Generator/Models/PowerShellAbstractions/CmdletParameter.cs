@@ -80,6 +80,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         public bool IsIdParameter { get; set; } = false;
 
         /// <summary>
+        /// Whether or not to add the [<see cref="Microsoft.Intune.PowerShellGraphSDK.ResourceIdParameterAttribute"/>] to the parameter.
+        /// </summary>
+        public bool IsResourceIdParameter { get; set; } = false;
+
+        /// <summary>
         /// Whether or not to add the [<see cref="Microsoft.Intune.PowerShellGraphSDK.SelectableAttribute"/>] to the parameter.
         /// </summary>
         public bool IsSelectable { get; set; } = true;

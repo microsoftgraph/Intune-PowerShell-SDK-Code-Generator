@@ -205,6 +205,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 yield return CSharpPropertyAttributeHelper.CreateIdParameterAttribute();
             }
 
+            // Resource ID attribute
+            if (parameter.IsResourceIdParameter)
+            {
+                yield return CSharpPropertyAttributeHelper.CreateResourceIdParameterAttribute();
+            }
+
             // TypeCastParameter attribute
             if (parameter.IsTypeCastParameter)
             {

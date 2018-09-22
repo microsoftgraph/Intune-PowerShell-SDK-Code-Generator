@@ -72,7 +72,7 @@ Write-Host "Found $($allPagedApps.Count) apps"
 Write-Host "Testing the pipeline..." -NoNewline
 $success = $false
 try {
-    $firstApp = Get-DeviceAppManagement_MobileApps | Select-Object -First 1
+    Get-DeviceAppManagement_MobileApps | Select-Object -First 1 | Out-Null
 
     # The script won't reach this line if the pipeline is not ended gracefully
     $success = $true

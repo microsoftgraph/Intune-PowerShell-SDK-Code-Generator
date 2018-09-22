@@ -85,12 +85,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // ResourceTypePropertyName attribute
             yield return CSharpClassAttributeHelper.CreateResourceTypePropertyNameAttribute(cmdlet.ResourceTypePropertyName);
 
-            // ResourceId attribute
-            if (cmdlet.IdParameter != null)
-            {
-                yield return CSharpClassAttributeHelper.CreateResourceIdPropertyNameAttribute(cmdlet.IdParameter.Name);
-            }
-
             // ResourceReference attribute
             if (cmdlet.IsReferenceable)
             {

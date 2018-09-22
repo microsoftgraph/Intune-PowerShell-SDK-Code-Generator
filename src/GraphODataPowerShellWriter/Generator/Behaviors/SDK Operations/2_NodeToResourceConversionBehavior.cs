@@ -387,7 +387,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             cmdlet.SetupRouteParametersAndCallUrl(
                 oDataRoute,
                 addEntityId: false,
-                idValueFromPipeline: false,
                 cmdletReturnsReferenceableEntities: true);
 
             // Add properties of derived types as parameters to this cmdlet by traversing the tree of derived types
@@ -549,9 +548,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             };
 
             // Setup the parameters for the cmdlet
-            cmdlet.SetupRouteParametersAndCallUrl(
-                oDataRoute,
-                idValueFromPipeline: false);
+            cmdlet.SetupRouteParametersAndCallUrl(oDataRoute);
 
             // Add properties of derived types as parameters to this cmdlet by traversing the tree of derived types
             cmdlet.AddParametersForEntityProperties(
@@ -838,7 +835,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
         /// The name of the parameter set to add the entity ID parameter to - if this is null, it will be added to the default parameter set
         /// and will be mandatory
         /// </param>
-        /// <param name="idValueFromPipeline">Whether or not the ID parameter should be extracted from objects on the pipeline</param>
+        /// <param name="idValueFromPipeline">Whether or not the ID parameter can be provided as objects on the pipeline</param>
         /// <param name="cmdletReturnsReferenceableEntities">
         /// Whether or not this cmdlet may return objects that can be referenced by "$ref" requests
         /// </param>
@@ -849,7 +846,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             ODataRoute oDataRoute,
             bool addEntityId = true,
             string idParameterSetName = null,
-            bool idValueFromPipeline = true,
+            bool idValueFromPipeline = false,
             bool cmdletReturnsReferenceableEntities = false,
             params string[] postfixUrlSegments)
         {
@@ -943,12 +940,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 // Create the ID parameter
                 idParameter = new CmdletParameter(idParameterName, typeof(string))
                 {
-                    Aliases = RequestProperties.Id.SingleObjectAsEnumerable(),
                     Mandatory = true,
                     ValueFromPipeline = valueFromPipeline,
                     ValueFromPipelineByPropertyName = true,
                     ValidateNotNullOrEmpty = true,
                     IsIdParameter = true,
+                    IsResourceIdParameter = true,
                     Documentation = new CmdletParameterDocumentation()
                     {
                         Descriptions = new string[]

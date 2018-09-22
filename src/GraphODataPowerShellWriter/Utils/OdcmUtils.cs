@@ -142,7 +142,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             // If it's a collection, it needs an ID
             if (property.IsCollection)
             {
-                idParameterName = $"{property.Name.Singularize()}Id";
+                idParameterName = $"{property.Type.Name.Singularize()}Id";
                 return true;
             }
             else
