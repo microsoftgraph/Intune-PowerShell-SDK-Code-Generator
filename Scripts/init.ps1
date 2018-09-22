@@ -14,6 +14,7 @@ $env:testDir = "$($env:PowerShellSDKRepoRoot)\Tests"
 $env:moduleName = 'Microsoft.Graph.Intune'
 $env:moduleExtension = 'psd1'
 $env:sdkSubmoduleSrc = "$($env:PowerShellSDKRepoRoot)\submodules\Intune-PowerShell-SDK"
+$env:nugetExe = "nuget.exe"
 
 # Remember the settings that will change when launching a child PowerShell context
 $env:standardWindowTitle = (Get-Host).UI.RawUI.WindowTitle
@@ -137,10 +138,6 @@ function global:ReleaseSDK {
     Write-Host "REMINDER: Make sure to correctly commit this change to the 'Intune-PowerShell-SDK' git submodule" -f Yellow
 }
 
-function global:UpdateDotnetCoreInstaller {
-    Invoke-WebRequest -OutFile $env:dotnetInstallScript 'https://dot.net/v1/dotnet-install.ps1'
-}
-
 function global:InstallDotnetCore {
     Invoke-Expression "$env:dotnetInstallScript"
 }
@@ -154,17 +151,26 @@ function global:InstallDotnetFramework {
 ##########
 
 # Try to download the "dotnet" install script if it doesn't exist
-if (-Not (Test-Path $env:dotnetInstallScript)) {
+if (-Not (Test-Path $env:dotnetInstallScript -PathType Leaf)) {
     try {
-        UpdateDotnetCoreInstaller
+        Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile $env:dotnetInstallScript
     } catch {
         Write-Warning "Failed to download 'dotnet' command installer - builds will fail if you do not have 'dotnet' installed"
     }
 }
 
+# Try to download the "nuget" executable if it doesn't exist
+if (-Not (Test-Path $env:nugetExe -PathType Leaf)) {
+    try {
+        Invoke-WebRequest 'https://dist.nuget.org/win-x86-commandline/latest/nuget.exe' -OutFile $env:nugetExe
+    } catch {
+        Write-Warning "Failed to download 'nuget' executable - builds may fail if you do not have 'nuget' installed"
+    }
+}
+
 # Restore NuGet packages
 dotnet restore --verbosity quiet
-nuget restore -Verbosity Quiet
+Invoke-Expression "./$env:nugetExe restore -Verbosity Quiet"
 
 # Show the available functions
 Write-Host "Initialized repository." -f Green

@@ -440,3 +440,7 @@ __pycache__/
 
 # Ignore submodules
 submodules/
+
+# Ignore executables and dll's
+*.exe
+*.dll
