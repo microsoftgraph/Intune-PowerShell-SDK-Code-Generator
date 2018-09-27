@@ -22,7 +22,7 @@ $newApps | Update-DeviceAppManagement_MobileApps -displayName $newAppName
 
 # Batch GET apps (with PowerShell pipeline)
 Write-Host "Retrieving the updated apps with the PowerShell pipeline..."
-$updatedApps = $newApps | Get-DeviceAppManagement_MobileApps
+$updatedApps = $newApps | Get-DeviceAppManagement_MobileApps -Select id, displayName
 $updatedApps | ForEach-Object {
     if ($_.displayName -ne $newAppName) {
         throw "Failed to update some web apps"
