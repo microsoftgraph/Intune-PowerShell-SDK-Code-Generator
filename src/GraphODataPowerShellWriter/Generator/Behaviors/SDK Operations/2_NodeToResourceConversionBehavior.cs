@@ -191,6 +191,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                         resource.Description,
                         resource.LongDescription,
                     },
+                    Links = new CmdletDocumentationLink[]
+                    {
+                        new CmdletDocumentationLink("GitHub Repository", @"https://github.com/Microsoft/Intune-PowerShell-SDK"),
+                    },
                 },
             };
 
@@ -256,6 +260,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                             : $"Retrieves the \"{resource.Name}\" object reference (which is of type \"{resource.Type.FullName}\").",
                         resource.Description,
                         resource.LongDescription,
+                    },
+                    Links = new CmdletDocumentationLink[]
+                    {
+                        new CmdletDocumentationLink("GitHub Repository", @"https://github.com/Microsoft/Intune-PowerShell-SDK"),
                     },
                 },
             };
@@ -326,6 +334,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                         resource.Description,
                         resource.LongDescription,
                     },
+                    Links = new CmdletDocumentationLink[]
+                    {
+                        new CmdletDocumentationLink("GitHub Repository", @"https://github.com/Microsoft/Intune-PowerShell-SDK"),
+                    },
                 },
             };
 
@@ -380,6 +392,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                         resource.Description,
                         resource.LongDescription,
                     },
+                    Links = new CmdletDocumentationLink[]
+                    {
+                        new CmdletDocumentationLink("GitHub Repository", @"https://github.com/Microsoft/Intune-PowerShell-SDK"),
+                    },
                 },
             };
 
@@ -433,6 +449,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                             : $"Creates a reference from the \"{parentResource.Name.Singularize()}\" object to a \"{resource.Name.Singularize()}\".",
                         resource.Description,
                         resource.LongDescription,
+                    },
+                    Links = new CmdletDocumentationLink[]
+                    {
+                        new CmdletDocumentationLink("GitHub Repository", @"https://github.com/Microsoft/Intune-PowerShell-SDK"),
                     },
                 },
             };
@@ -495,6 +515,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                         resource.Description,
                         resource.LongDescription,
                     },
+                    Links = new CmdletDocumentationLink[]
+                    {
+                        new CmdletDocumentationLink("GitHub Repository", @"https://github.com/Microsoft/Intune-PowerShell-SDK"),
+                    },
                 },
             };
 
@@ -543,6 +567,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                             : $"Updates the \"{resource.Name}\" object (which is of type \"{resource.Type.FullName}\").",
                         resource.Description,
                         resource.LongDescription,
+                    },
+                    Links = new CmdletDocumentationLink[]
+                    {
+                        new CmdletDocumentationLink("GitHub Repository", @"https://github.com/Microsoft/Intune-PowerShell-SDK"),
                     },
                 },
             };
@@ -597,6 +625,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     resource.Description,
                     resource.LongDescription,
                 },
+                Links = new CmdletDocumentationLink[]
+                {
+                    new CmdletDocumentationLink("GitHub Repository", @"https://github.com/Microsoft/Intune-PowerShell-SDK"),
+                },
             };
 
             return cmdlet;
@@ -642,6 +674,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                         : $"Removes a reference from the \"{parentResource.Name.Singularize()}\" object to a \"{resource.Name.Singularize()}\".",
                     resource.Description,
                     resource.LongDescription,
+                },
+                Links = new CmdletDocumentationLink[]
+                {
+                    new CmdletDocumentationLink("GitHub Repository", @"https://github.com/Microsoft/Intune-PowerShell-SDK"),
                 },
             };
 
@@ -690,6 +726,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     $"Removes a reference from a \"{resource.Name.Singularize()}\" resource (which is of type \"{resource.Type.FullName}\").",
                     resource.Description,
                     resource.LongDescription,
+                },
+                Links = new CmdletDocumentationLink[]
+                {
+                    new CmdletDocumentationLink("GitHub Repository", @"https://github.com/Microsoft/Intune-PowerShell-SDK"),
                 },
             };
 
@@ -748,6 +788,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                                     : $"This {methodType} returns a \"{method.ReturnType.FullName}\" object." // single entity
                                 : $"This {methodType} does not return any objects.", // void return type
                             method.Description,
+                        },
+                        Links = new CmdletDocumentationLink[]
+                        {
+                            new CmdletDocumentationLink("GitHub Repository", @"https://github.com/Microsoft/Intune-PowerShell-SDK"),
                         },
                     };
 

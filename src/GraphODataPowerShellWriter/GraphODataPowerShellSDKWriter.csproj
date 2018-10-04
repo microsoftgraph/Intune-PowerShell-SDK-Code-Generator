@@ -12,7 +12,6 @@
     <Company>Microsoft Corporation</Company>
     <Product>Vipr Writer module for Microsoft Graph PowerShell Client SDK</Product>
     <Copyright>Copyright © Microsoft Corporation 2018</Copyright>
-    <Version>6.1808.20</Version>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />

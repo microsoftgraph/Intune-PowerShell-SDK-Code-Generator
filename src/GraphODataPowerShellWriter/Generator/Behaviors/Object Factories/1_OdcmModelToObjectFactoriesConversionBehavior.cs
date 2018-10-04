@@ -60,10 +60,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 ImpactLevel = ConfirmImpact.None,
                 Documentation = new CmdletDocumentation()
                 {
-                    Synopsis = $"Creates a new object which represents a \"{@class.FullName}\" (or one of it's derived types).",
+                    Synopsis = $"Creates a new object which represents a \"{@class.FullName}\" (or one of its derived types).",
                     Descriptions = new string[]
                     {
-                        $"Creates a new object which represents a \"{@class.FullName}\" (or one of it's derived types).",
+                        $"Creates a new object which represents a \"{@class.FullName}\" (or one of its derived types).",
                         @class.Description,
                         @class.LongDescription,
                     },

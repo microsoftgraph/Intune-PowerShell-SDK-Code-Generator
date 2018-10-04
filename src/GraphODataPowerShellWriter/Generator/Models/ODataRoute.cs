@@ -83,8 +83,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
                 segments.Push(property);
 
                 // Ignore this logic for the last segment in the route
-                bool isLastSegment = childNode != null;
-                if (isLastSegment)
+                bool isLastSegment = childNode == null;
+                if (!isLastSegment)
                 {
                     // If the property this node represents is an enumeration, track its ID as a parameter
                     if (property.TryGetIdParameterName(out string idParameterName))
