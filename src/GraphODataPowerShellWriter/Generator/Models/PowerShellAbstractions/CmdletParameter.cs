@@ -92,7 +92,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// <summary>
         /// Whether or not to add the [<see cref="Microsoft.Intune.PowerShellGraphSDK.ExpandableAttribute"/>] to the parameter.
         /// </summary>
-        public bool IsExpandable { get; set; } = false;
+        public bool IsExpandable { get; set; } = true;
 
         /// <summary>
         /// Whether or not to add the [<see cref="Microsoft.Intune.PowerShellGraphSDK.SortableAttribute"/>] to the parameter.

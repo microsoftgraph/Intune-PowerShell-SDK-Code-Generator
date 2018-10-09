@@ -110,12 +110,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 // top-level
                 isTopLevelProperty
                 // or expandable
-                || (
-                    // a complex type
-                    property.Type is OdcmClass
-                    // which is a navigation property
-                    && property.IsLink
-                )
+                || property.IsExpandable()
                 // or a data stream property
                 || property.IsStream();
 
@@ -347,6 +342,26 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             }
 
             return property.Type.HasStream();
+        }
+
+        /// <summary>
+        /// Determines whether or not the given property is an expandable property.
+        /// </summary>
+        /// <param name="property">The property</param>
+        /// <returns>True if the property is expandable, otherwise false.</returns>
+        public static bool IsExpandable(this OdcmProperty property)
+        {
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
+            if (property.Type == null)
+            {
+                throw new ArgumentNullException($"{nameof(property)}.{nameof(OdcmProperty.Type)}");
+            }
+
+            // TODO: Also use annotations in the schema to determine whether the property is expandable
+            return property.Type is OdcmClass && property.IsLink;
         }
 
         /// <summary>
@@ -737,7 +752,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 DerivedTypeName = markAsPowerShellParameter || isBaseType
                                 ? null
                                 : entityTypeFullName,
-                IsExpandable = !markAsPowerShellParameter && property.IsLink, // TODO: use the annotations in the schema to determine whether the property is expandable
+                IsExpandable = property.IsExpandable(),
                 IsSortable = !markAsPowerShellParameter && !property.IsCollection,
                 Documentation = new CmdletParameterDocumentation()
                 {

@@ -26,7 +26,7 @@ $policy = New-DeviceAppManagement_ManagedAppPolicies `
     -disableAppPinIfDevicePinIsSet $false
 
 # Get managed apps
-$apps = Get-DeviceAppManagement_MobileApps | Where-Object { $_.'@odata.type' -like '#microsoft.graph.managed*' }
+$apps = Get-DeviceAppManagement_MobileApps -Expand assignments, categories | Where-Object { $_.'@odata.type' -like '#microsoft.graph.managed*' }
 
 # Get app identifiers
 $appIdentifiers = $apps | ForEach-Object {
