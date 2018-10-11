@@ -749,7 +749,22 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             // We can only create action/function cmdlets if the resource type is a class with methods
             if (resource.Type is OdcmClass resourceType)
             {
-                foreach (OdcmMethod method in resourceType.Methods)
+                // Get the methods on all base types, since they also apply to the current type
+                IEnumerable<OdcmMethod> baseTypeMethods = resourceType.GetBaseTypes().SelectMany(baseType => baseType.Methods);
+
+                // Get the methods on the current type as well
+                IEnumerable<OdcmMethod> methods = resourceType.Methods.Concat(baseTypeMethods);
+
+                // Remove naming conflicts
+                methods = methods
+                    // Group by name
+                    .GroupBy(m => m.Name)
+                    // Select the first method from each group
+                    // (i.e. the method from the type that is closest to the current property's type in the inheritance chain)
+                    .Select(group => group.First());
+
+                // Create cmdlets for each method
+                foreach (OdcmMethod method in methods)
                 {
                     // Create the cmdlet
                     OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsLifecycle.Invoke, oDataRoute.ToCmdletNameNounString(postfixSegments: method.Name))
