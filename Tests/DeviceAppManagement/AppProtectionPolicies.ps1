@@ -44,14 +44,16 @@ Invoke-DeviceAppManagement_IosManagedAppProtections_TargetApps -iosManagedAppPro
 
 # Get an AAD group
 Write-Host "Get a group that the current user is a member of..."
-$group = (Get-Me_MemberOf)[0]
+$groups = Get-Groups
 
 # Assign policy to group
 Write-Host "Assign the policy to the group..."
-Invoke-DeviceAppManagement_IosManagedAppProtections_Assign -iosManagedAppProtectionId $policy.id -assignments @(
-    New-TargetedManagedAppPolicyAssignmentObject `
-        -target (New-DeviceAndAppManagementAssignmentTargetObject -groupAssignmentTarget -groupId $group.id)
-)
+$groups | ForEach-Object {
+    Invoke-DeviceAppManagement_IosManagedAppProtections_Assign -iosManagedAppProtectionId $policy.id -assignments @(
+        New-TargetedManagedAppPolicyAssignmentObject `
+            -target (New-DeviceAndAppManagementAssignmentTargetObject -groupAssignmentTarget -groupId $group.id)
+    )
+}
 
 # Remove policy
 Write-Host "Deleting the policy..."
