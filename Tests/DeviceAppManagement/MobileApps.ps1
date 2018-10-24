@@ -67,6 +67,9 @@ Write-Host "Testing paging..."
 $firstPage = Get-DeviceAppManagement_MobileApps -Top ($allApps.Count / 3)
 $firstPage | Get-MSGraphNextPage | Out-Null
 $allPagedApps = $firstPage | Get-MSGraphAllPages
+if ($allPagedApps.Count -eq 0) {
+    throw "Paging returned no apps"
+}
 Write-Host "Found $($allPagedApps.Count) apps"
 
 Write-Host "Testing the pipeline..." -NoNewline

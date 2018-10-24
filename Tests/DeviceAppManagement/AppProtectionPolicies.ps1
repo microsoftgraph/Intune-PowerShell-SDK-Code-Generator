@@ -43,15 +43,15 @@ Write-Host "Targeting the policy to the apps..."
 Invoke-DeviceAppManagement_IosManagedAppProtections_TargetApps -iosManagedAppProtectionId $policy.id -apps $appIdentifiers
 
 # Get an AAD group
-Write-Host "Get groups that the current user is a member of..."
-$groups = Get-Groups
+Write-Host "Get security groups..."
+$groups = Get-Groups | Where-Object { $_.securityEnabled -eq $true }
 
 # Assign policy to groups
-Write-Host "Assign the policy to the group..."
+Write-Host "Assign the policy to the groups..."
 $groups | ForEach-Object {
     Invoke-DeviceAppManagement_IosManagedAppProtections_Assign -iosManagedAppProtectionId $policy.id -assignments @(
         New-TargetedManagedAppPolicyAssignmentObject `
-            -target (New-DeviceAndAppManagementAssignmentTargetObject -groupAssignmentTarget -groupId $group.id)
+            -target (New-DeviceAndAppManagementAssignmentTargetObject -groupAssignmentTarget -groupId $_.id)
     )
 }
 
