@@ -1,6 +1,6 @@
 # Create a compliance policy
 Write-Host 'Creating a compliance policy'
-$compliancePolicy = New-DeviceManagement_DeviceCompliancePolicies `
+$compliancePolicy = New-DeviceManagementDeviceCompliancePolicies `
     -iosCompliancePolicy `
     -displayName "Chicago" `
     -scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject `
@@ -14,4 +14,4 @@ $compliancePolicy = New-DeviceManagement_DeviceCompliancePolicies `
 
 # Remove the compliance policy
 Write-Host 'Deleting compliance policy'
-$compliancePolicy | Remove-DeviceManagement_DeviceCompliancePolicies
+$compliancePolicy | Remove-DeviceManagementDeviceCompliancePolicies

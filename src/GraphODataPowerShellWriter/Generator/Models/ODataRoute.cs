@@ -206,7 +206,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
                 .Concat(postfixSegments.Select(segment => segment.Pascalize()));
 
             // Join the segments with underscores
-            string result = string.Join("_", segments);
+            string result = string.Concat(segments);
 
             return result;
         }
