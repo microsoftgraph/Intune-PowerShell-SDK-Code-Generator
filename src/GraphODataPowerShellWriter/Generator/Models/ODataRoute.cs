@@ -200,8 +200,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             // Get all the segments in order
             string lastSegment = this.Segments.Last().Name;
             IEnumerable<string> segments = this.Segments
-                // Convert name to pascal case
-                .Select(property => property.Name.Pascalize())
+                // Convert name to pascal case, and shorten it                
+                .Select(property => (property.Name.Pascalize()).Shorten())
                 // Convert the postfix segments to pascal case and append them
                 .Concat(postfixSegments.Select(segment => segment.Pascalize()));
 

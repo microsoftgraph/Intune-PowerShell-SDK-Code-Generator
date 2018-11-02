@@ -20,9 +20,18 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         private static Pluralizer Pluralizer = new Pluralizer();
 
         /// <summary>
+        /// Maps long noun names to short noun names. 
+        /// </summary>
+        private static readonly Dictionary<string, string> ShortNounName = new Dictionary<string, string>
+        {
+            { "DeviceAppManagement", "DeviceAppMgmt" },
+            { "DeviceManagement", "DeviceMgmt"}
+        };
+
+        /// <summary>
         /// The default indent string.
         /// </summary>
-        public const string DefaultIndentToken = "    ";
+        public const string DefaultIndentToken = "    ";        
 
         /// <summary>
         /// Indents a string by the desired amount.
@@ -114,6 +123,21 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             }
 
             return InflectorExtensions.Pascalize(identifier);
+        }
+
+        /// <summary>
+        /// Shortens the Noun names, otherwise they get too long.
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <returns></returns>
+        public static string Shorten(this string identifier)
+        {
+            if (identifier == null)
+            {
+                throw new ArgumentNullException(nameof(identifier));
+            }
+
+            return ShortNounName.FirstOrDefault(kv => kv.Key.Contains(identifier)).Value ?? identifier;            
         }
     }
 }
