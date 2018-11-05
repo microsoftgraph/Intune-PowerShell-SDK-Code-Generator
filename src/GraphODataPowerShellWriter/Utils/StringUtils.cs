@@ -24,8 +24,22 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         /// </summary>
         private static readonly Dictionary<string, string> ShortNounName = new Dictionary<string, string>
         {
-            { "DeviceAppManagement", "DeviceAppMgmt" },
-            { "DeviceManagement", "DeviceMgmt"}
+            { "DeviceAppManagement", "DeviceAM" },
+            { "DeviceConfiguration", "DC" },
+            { "DeviceConfigurations", "DCs" },
+            { "DeviceManagement", "DM"},
+            { "Configuration", "Config" },
+            { "Configurations", "Configs" },
+            { "Management", "Mgmt" },
+            { "Information", "Info" },
+            { "OperatingSystem", "OS" },
+            { "Object", "Obj" },
+            { "Operations", "OPS" },
+            { "Reference", "Ref" },
+            { "Notification", "Notif" },
+            { "Software", "SW" },
+            { "AndroidManagedAppProtections", "AndroidMgdAppProts" },
+            { "DefaultManagedAppProtections", "DefaultMAPs" }
         };
 
         /// <summary>
@@ -128,7 +142,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         /// <summary>
         /// Shortens the Noun names, otherwise they get too long.
         /// </summary>
-        /// <param name="identifier"></param>
+        /// <param name="identifier">Name of the noun to shorten.</param>
         /// <returns></returns>
         public static string Shorten(this string identifier)
         {
