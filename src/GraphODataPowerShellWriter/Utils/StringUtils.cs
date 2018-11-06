@@ -24,22 +24,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         /// </summary>
         private static readonly Dictionary<string, string> ShortNounName = new Dictionary<string, string>
         {
-            { "DeviceAppManagement", "DeviceAM" },
-            { "DeviceConfiguration", "DC" },
-            { "DeviceConfigurations", "DCs" },
-            { "DeviceManagement", "DM"},
-            { "Configuration", "Config" },
-            { "Configurations", "Configs" },
-            { "Management", "Mgmt" },
-            { "Information", "Info" },
-            { "OperatingSystem", "OS" },
-            { "Object", "Obj" },
-            { "Operations", "OPS" },
-            { "Reference", "Ref" },
-            { "Notification", "Notif" },
-            { "Software", "SW" },
-            { "AndroidManagedAppProtections", "AndroidMgdAppProts" },
-            { "DefaultManagedAppProtections", "DefaultMAPs" }
+            // Keep this list sorted
+            { "DeviceAppManagement", "DeviceAppMgmt"},
+            { "DeviceManagement", "DeviceMgmt"}
         };
 
         /// <summary>
