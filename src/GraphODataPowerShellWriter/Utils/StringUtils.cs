@@ -25,8 +25,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         private static readonly Dictionary<string, string> ShortNounName = new Dictionary<string, string>
         {
             // Keep this list sorted
-            { "DeviceAppManagement", "DeviceAppMgmt"},
-            { "DeviceManagement", "DeviceMgmt"}
+            { "DeviceAppManagement", "DeviceAppManagement"},
+            { "DeviceManagement", "DeviceManagement"}
         };
 
         /// <summary>

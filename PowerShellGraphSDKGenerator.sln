@@ -10,6 +10,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphODataPowerShellSDKWrit
 		{831E21CA-9580-4B96-A239-2F85190B5E6C} = {831E21CA-9580-4B96-A239-2F85190B5E6C}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9F6E2D2F-5688-4624-BB99-0FE1E0DC1313}"
+	ProjectSection(SolutionItems) = preProject
+		Tests\DeviceAppManagement\AppProtectionPolicies.ps1 = Tests\DeviceAppManagement\AppProtectionPolicies.ps1
+		Tests\DeviceManagement\DeviceCompliancePolicies.ps1 = Tests\DeviceManagement\DeviceCompliancePolicies.ps1
+		Tests\DeviceManagement.ps1 = Tests\DeviceManagement.ps1
+		Tests\DeviceAppManagement\MobileApps.ps1 = Tests\DeviceAppManagement\MobileApps.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
