@@ -1,6 +1,6 @@
 # Create a policy
 Write-Host "Creating an iOS app protection policy..."
-$policy = New-DeviceAppManagementManagedAppPolicies `
+$policy = New-DamMgtAppPols `
     -iosManagedAppProtection `
     -displayName "iOS MAM / APP Policy" `
     -periodOfflineBeforeAccessCheck (New-TimeSpan -Hours 12) `
@@ -28,7 +28,7 @@ $policy = New-DeviceAppManagementManagedAppPolicies `
 
 # Get managed apps
 Write-Host "Getting managed apps..."
-$apps = Get-DeviceAppManagementMobileApps -Expand assignments, categories | Where-Object { $_.'@odata.type' -like '#microsoft.graph.managed*' }
+$apps = Get-DamMobileApps -Expand assignments, categories | Where-Object { $_.'@odata.type' -like '#microsoft.graph.managed*' }
 
 # Get app identifiers
 Write-Host "Creating ManagedMobileApp objects from the retrieved iOS apps..."
@@ -40,7 +40,7 @@ $appIdentifiers = $apps | ForEach-Object {
 
 # Target apps
 Write-Host "Targeting the policy to the apps..."
-Invoke-DeviceAppManagementIosManagedAppProtectionsTargetApps -iosManagedAppProtectionId $policy.id -apps $appIdentifiers
+Invoke-DamIosManagedAppProtectionsTargetApps -iosManagedAppProtectionId $policy.id -apps $appIdentifiers
 
 # Get an AAD group
 Write-Host "Get security groups..."
@@ -49,7 +49,7 @@ $groups = Get-Groups | Where-Object { $_.securityEnabled -eq $true }
 # Assign policy to groups
 Write-Host "Assign the policy to the groups..."
 $groups | ForEach-Object {
-    Invoke-DeviceAppManagementIosManagedAppProtectionsAssign -iosManagedAppProtectionId $policy.id -assignments @(
+    Invoke-DamIosManagedAppProtectionsAssign -iosManagedAppProtectionId $policy.id -assignments @(
         New-TargetedManagedAppPolicyAssignmentObject `
             -target (New-DeviceAndAppManagementAssignmentTargetObject -groupAssignmentTarget -groupId $_.id)
     )
@@ -57,4 +57,4 @@ $groups | ForEach-Object {
 
 # Remove policy
 Write-Host "Deleting the policy..."
-$policy | Remove-DeviceAppManagementManagedAppPolicies
+$policy | Remove-DamMgtAppPols
