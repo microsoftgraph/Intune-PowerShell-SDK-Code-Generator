@@ -15,30 +15,6 @@ if ((Get-Module 'Microsoft.Graph.Intune') -eq $null)
 # TODO: Data drive the inputs
 # TODO: Auto-generate the list of cmdlets to test
 #
-
-$notImplTests = @(
-    {((Get-DeviceAppMgtAndroidMgdAppProts | Get-MSGraphAllPages)[0]) | Get-DeviceAppMgtAndroidMgdAppProtsAssignments}
-    {((Get-DeviceAppMgtAndroidMgdAppProts | Get-MSGraphAllPages)[0]) | Get-DeviceAppMgtAndroidMgdAppProtsDeploymentSummary}
-    {Get-DeviceAppMgtDefaultMgdAppProtsApps}
-    {Get-DeviceAppMgtDefaultMgdAppProtsDeploymentSummary}
-    {(Get-DeviceAppMgtIosMgdAppProts | Get-MSGraphAllPages)[0] | Get-DeviceAppMgtIosMgdAppProtsAssignments}
-    {(Get-DeviceAppMgtIosMgdAppProts | Get-MSGraphAllPages)[0] | Get-DeviceAppMgtIosMgdAppProtsDeploymentSummary}
-    {Get-DeviceAppMgtMgdAppPoliciesApps -managedAppPolicyId $env:managedAppPolicyId -managedAppPolicyODataType 'microsoft.graph.managedAppPolicy'}
-    {Get-DeviceAppMgtMgdAppPoliciesAssignments -managedAppPolicyId $env:managedAppPolicyId -managedAppPolicyODataType 'microsoft.graph.managedAppPolicy'}
-    {Get-DeviceAppMgtMgdAppPoliciesDeploymentSummary -managedAppPolicyId $env:managedAppPolicyId -managedAppPolicyODataType 'microsoft.graph.managedAppPolicy'}
-    {Get-DeviceAppMgtMgdAppPoliciesExemptAppLockerFiles -managedAppPolicyId $env:managedAppPolicyId -managedAppPolicyODataType 'microsoft.graph.managedAppPolicy'}
-    {Get-DeviceAppMgtMgdAppPoliciesProtectedAppLockerFiles -managedAppPolicyId $env:managedAppPolicyId -managedAppPolicyODataType 'microsoft.graph.managedAppPolicy'}
-    {Get-DeviceAppMgtMdmWindowsInformationProtectionPoliciesAssignments -mdmWindowsInformationProtectionPolicyId $env:mdmWindowsInformationProtectionPolicyId -mdmWindowsInformationProtectionPolicyODataType 'microsoft.graph.mdmWindowsInformationProtectionPolicy'}    
-    {Get-DeviceAppMgtMdmWindowsInformationProtectionPoliciesExemptAppLockerFiles -mdmWindowsInformationProtectionPolicyId $env:mdmWindowsInformationProtectionPolicyId -mdmWindowsInformationProtectionPolicyODataType 'microsoft.graph.mdmWindowsInformationProtectionPolicy'}
-    {Get-DeviceAppMgtMdmWindowsInformationProtectionPoliciesProtectedAppLockerFiles -mdmWindowsInformationProtectionPolicyId $env:mdmWindowsInformationProtectionPolicyId -mdmWindowsInformationProtectionPolicyODataType 'microsoft.graph.mdmWindowsInformationProtectionPolicy'}
-   
-    {((Get-DeviceAppMgtWinInfoProtPolicies | Get-MSGraphAllPages)[0]) | Get-DeviceAppMgtWinInfoProtPoliciesAssignments}
-    {((Get-DeviceAppMgtWinInfoProtPolicies | Get-MSGraphAllPages)[0]) | Get-DeviceAppMgtWinInfoProtPoliciesExemptAppLockerFiles}
-    {((Get-DeviceAppMgtWinInfoProtPolicies | Get-MSGraphAllPages)[0]) | Get-DeviceAppMgtWinInfoProtPoliciesProtectedAppLockerFiles}
-    {(Get-DeviceAppMgtMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-DeviceAppMgtMobileAppsCategoriesReferences}
-    {(Get-DeviceAppMgtMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-DeviceAppMgtMobileAppsContentVersions}
-)
-
 $tests = @(
 #
 # DeviceAppManagement Singleton
@@ -126,6 +102,29 @@ $tests = @(
 # windowsInformationProtectionPolicies
 #
     {(Get-DeviceAppMgtWinInfoProtPolicies | Get-MSGraphAllPages)}
+)
+
+$notImplTests = @(
+    {((Get-DeviceAppMgtAndroidMgdAppProts | Get-MSGraphAllPages)[0]) | Get-DeviceAppMgtAndroidMgdAppProtsAssignments}
+    {((Get-DeviceAppMgtAndroidMgdAppProts | Get-MSGraphAllPages)[0]) | Get-DeviceAppMgtAndroidMgdAppProtsDeploymentSummary}
+    {Get-DeviceAppMgtDefaultMgdAppProtsApps}
+    {Get-DeviceAppMgtDefaultMgdAppProtsDeploymentSummary}
+    {(Get-DeviceAppMgtIosMgdAppProts | Get-MSGraphAllPages)[0] | Get-DeviceAppMgtIosMgdAppProtsAssignments}
+    {(Get-DeviceAppMgtIosMgdAppProts | Get-MSGraphAllPages)[0] | Get-DeviceAppMgtIosMgdAppProtsDeploymentSummary}
+    {Get-DeviceAppMgtMgdAppPoliciesApps -managedAppPolicyId $env:managedAppPolicyId -managedAppPolicyODataType 'microsoft.graph.managedAppPolicy'}
+    {Get-DeviceAppMgtMgdAppPoliciesAssignments -managedAppPolicyId $env:managedAppPolicyId -managedAppPolicyODataType 'microsoft.graph.managedAppPolicy'}
+    {Get-DeviceAppMgtMgdAppPoliciesDeploymentSummary -managedAppPolicyId $env:managedAppPolicyId -managedAppPolicyODataType 'microsoft.graph.managedAppPolicy'}
+    {Get-DeviceAppMgtMgdAppPoliciesExemptAppLockerFiles -managedAppPolicyId $env:managedAppPolicyId -managedAppPolicyODataType 'microsoft.graph.managedAppPolicy'}
+    {Get-DeviceAppMgtMgdAppPoliciesProtectedAppLockerFiles -managedAppPolicyId $env:managedAppPolicyId -managedAppPolicyODataType 'microsoft.graph.managedAppPolicy'}
+    {Get-DeviceAppMgtMdmWindowsInformationProtectionPoliciesAssignments -mdmWindowsInformationProtectionPolicyId $env:mdmWindowsInformationProtectionPolicyId -mdmWindowsInformationProtectionPolicyODataType 'microsoft.graph.mdmWindowsInformationProtectionPolicy'}    
+    {Get-DeviceAppMgtMdmWindowsInformationProtectionPoliciesExemptAppLockerFiles -mdmWindowsInformationProtectionPolicyId $env:mdmWindowsInformationProtectionPolicyId -mdmWindowsInformationProtectionPolicyODataType 'microsoft.graph.mdmWindowsInformationProtectionPolicy'}
+    {Get-DeviceAppMgtMdmWindowsInformationProtectionPoliciesProtectedAppLockerFiles -mdmWindowsInformationProtectionPolicyId $env:mdmWindowsInformationProtectionPolicyId -mdmWindowsInformationProtectionPolicyODataType 'microsoft.graph.mdmWindowsInformationProtectionPolicy'}
+   
+    {((Get-DeviceAppMgtWinInfoProtPolicies | Get-MSGraphAllPages)[0]) | Get-DeviceAppMgtWinInfoProtPoliciesAssignments}
+    {((Get-DeviceAppMgtWinInfoProtPolicies | Get-MSGraphAllPages)[0]) | Get-DeviceAppMgtWinInfoProtPoliciesExemptAppLockerFiles}
+    {((Get-DeviceAppMgtWinInfoProtPolicies | Get-MSGraphAllPages)[0]) | Get-DeviceAppMgtWinInfoProtPoliciesProtectedAppLockerFiles}
+    {(Get-DeviceAppMgtMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-DeviceAppMgtMobileAppsCategoriesReferences}
+    {(Get-DeviceAppMgtMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-DeviceAppMgtMobileAppsContentVersions}
 )
 
 #
