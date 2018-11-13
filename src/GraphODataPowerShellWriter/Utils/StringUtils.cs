@@ -25,14 +25,27 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         private static readonly Dictionary<string, string> ShortNounName = new Dictionary<string, string>
         {
             // Keep this list sorted
-            { "DeviceAppManagement", "DeviceAppMgt"},
-            { "AndroidManagedAppProtections", "AndroidMgdAppProts"},
-            { "DefaultManagedAppProtections", "DefaultMgdAppProts" },
-            { "IosManagedAppProtections", "IosMgdAppProts" },
-            { "ManagedAppPolicies", "MgdAppPolicies" },
-            { "ManagedAppRegistrations", "MgdAppRegs" },
-            { "TargetedManagedAppConfigurations", "TgtdMgdAppConfigs" },
-            { "WindowsInformationProtectionPolicies", "WinInfoProtPolicies" }
+            { "DeviceAppManagement_AndroidManagedAppProtections", "AndroidManagedAppProtections" },
+            { "DeviceAppManagement_AndroidManagedAppProtections_Apps", "AppsWithAndroidManagedAppProtections" },
+            { "DeviceAppManagement_AndroidManagedAppProtections_Assignments", "AssignmentsOfAndroidManagedAppProtections" },
+            { "DeviceAppManagement_AndroidManagedAppProtections_DeploymentSummary", "DeploymentSummaryOfAndroidManagedAppProtections" },
+            { "DeviceAppManagement_AndroidManagedAppProtections_Assign", "AssignAndroidManagedAppProtections" },
+            { "DeviceAppManagement_AndroidManagedAppProtections_TargetApps", "TargetAppsToAndroidManagedAppProtections" },
+            { "DeviceAppManagement_DefaultManagedAppProtections", "DefaultManagedAppProtections" },
+            { "DeviceAppManagement_DefaultManagedAppProtections_Apps", "AppsWithDefaultManagedAppProtections" },
+            { "DeviceAppManagement_DefaultManagedAppProtections_DeploymentSummary", "DeploymentSummaryOfDefaultManagedAppProtections" },
+            { "DeviceAppManagement_DefaultManagedAppProtections_TargetApps", "TargetAppsToDefaultManagedAppProtections" },
+            { "DeviceAppManagement_IosManagedAppProtections", "IosManagedAppProtections" },
+            { "DeviceAppManagement_IosManagedAppProtections_Apps", "AppsWithIosManagedAppProtections" },
+            { "DeviceAppManagement_IosManagedAppProtections_Assignments", "AssignmentsOfIosManagedAppProtections" },
+            { "DeviceAppManagement_IosManagedAppProtections_DeploymentSummary", "DeploymentSummaryOfIosManagedAppProtections" },
+            { "DeviceAppManagement_IosManagedAppProtections_Assign", "AssignIosManagedAppProtections" },
+            { "DeviceAppManagement_ManagedAppPolicies", "ManagedAppPolicies" },
+            { "DeviceAppManagement_ManagedAppPolicies_Apps", "AppsWithManagedAppPolicies" },
+            { "DeviceAppManagement_ManagedAppPolicies_Assignments", "AssignmentsOfManagedAppPolicies" },
+            { "DeviceAppManagement_ManagedAppPolicies_DeploymentSummary", "DeploymentSummaryOfManagedAppPolicies" },
+            { "DeviceAppManagement_ManagedAppPolicies_ExemptAppLockerFiles", "ExemptAppLockerFilesForManagedAppPolicies" },
+            { "DeviceAppManagement_ManagedAppPolicies_ProtectedAppLockerFiles", "ProtectedAppLockerFilesForManagedAppPolicies" }
         };
 
         /// <summary>
@@ -144,7 +157,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
                 throw new ArgumentNullException(nameof(identifier));
             }
 
-            return ShortNounName.FirstOrDefault(kv => kv.Key.Contains(identifier)).Value ?? identifier;            
+            return ShortNounName.ContainsKey(identifier) ? ShortNounName[identifier] : identifier;
         }
     }
 }

@@ -19,112 +19,89 @@ $tests = @(
 #
 # DeviceAppManagement Singleton
 #
-    {Get-DeviceAppMgt}
+    {Get-DeviceAppManagement}
 #
 # AndroidManagedAppProtectionApps
 #    
-    {(Get-DeviceAppMgtAndroidMgdAppProts| Get-MSGraphAllPages)[0] | Get-DeviceAppMgtAndroidMgdAppProtsApps}
+    {(Get-AndroidManagedAppProtections| Get-MSGraphAllPages)[0] | Get-AppsWithAndroidManagedAppProtections}
 #
 # DefaultManagedAppProtections
 #
-    {Get-DeviceAppMgtDefaultMgdAppProts}
+    {Get-DefaultManagedAppProtections}
 #
 # IodManagedAppProtections
 #    
-    {(Get-DeviceAppMgtIosMgdAppProts | Get-MSGraphAllPages)[0] | Get-DeviceAppMgtIosMgdAppProtsApps}  
+    {(Get-IosManagedAppProtections | Get-MSGraphAllPages)[0] | Get-AppsWithIosManagedAppProtections}  
 #
 # ManagedAppStatuses
 #
-    {Get-DeviceAppMgtManagedAppStatuses}
+    {Get-DeviceAppManagement_ManagedAppStatuses}
 #
 # ManagedEBooks
 #
-    {$env:managedEBookId=(Get-DeviceAppMgtManagedEBooks)[0].id}
-    {Get-DeviceAppMgtManagedEBooksAssignments -managedEBookId $env:managedEBookId}
-    {Get-DeviceAppMgtManagedEBooksDeviceStates -managedEBookId $env:managedEBookId}
-    {Get-DeviceAppMgtManagedEBooksInstallSummary -managedEBookId $env:managedEBookId}
-    #{$env:userInstallStateSummaryId=Get-DeviceAppMgtManagedEBooksUserStateSummary -managedEBookId $env:managedEBookId)[0].id}
-    #{Get-DeviceAppMgtManagedEBooksUserStateSummaryDeviceStates -managedEBookId $env:managedEBookId -userInstallStateSummaryId $env:userInstallStateSummaryId}
+    {$env:managedEBookId=(Get-DeviceAppManagement_ManagedEBooks)[0].id}
+    {Get-DeviceAppManagement_ManagedEBooks_Assignments -managedEBookId $env:managedEBookId}
+    {Get-DeviceAppManagement_ManagedEBooks_DeviceStates -managedEBookId $env:managedEBookId}
+    {Get-DeviceAppManagement_ManagedEBooks_InstallSummary -managedEBookId $env:managedEBookId}
+    #{$env:userInstallStateSummaryId=Get-DeviceAppManagement_ManagedEBooks_UserStateSummary -managedEBookId $env:managedEBookId)[0].id}
+    #{Get-DeviceAppManagement_ManagedEBooks_UserStateSummaryDeviceStates -managedEBookId $env:managedEBookId -userInstallStateSummaryId $env:userInstallStateSummaryId}
 #
 # mdmWindowsInformationProtectionPolicy
 #
-    {(Get-DeviceAppMgtMdmWindowsInformationProtectionPolicies | Get-MSGraphAllPages)}
+    {(Get-DeviceAppManagement_MdmWindowsInformationProtectionPolicies | Get-MSGraphAllPages)}
 #
 # managedAppPolicies
 #
-    {(Get-DeviceAppMgtMgdAppPolicies | Get-MSGraphAllPages)[0]}
+    {(Get-ManagedAppPolicies | Get-MSGraphAllPages)[0]}
 #
 # managedAppRegistrations
 #    
-    {Get-DeviceAppMgtMgdAppRegs | Get-DeviceAppMgtMgdAppRegsAppliedPolicies}
-    {Get-DeviceAppMgtMgdAppRegs | Get-DeviceAppMgtMgdAppRegsAppliedPoliciesApps}
-    {Get-DeviceAppMgtMgdAppRegs | Get-DeviceAppMgtMgdAppRegsAppliedPoliciesAssignments}
-    {Get-DeviceAppMgtMgdAppRegs | Get-DeviceAppMgtMgdAppRegsAppliedPoliciesDeploymentSummary}
-    {Get-DeviceAppMgtMgdAppRegs | Get-DeviceAppMgtMgdAppRegsAppliedPoliciesExemptAppLockerFiles}
-    {Get-DeviceAppMgtMgdAppRegs | Get-DeviceAppMgtMgdAppRegsAppliedPoliciesProtectedAppLockerFiles}
-    {Get-DeviceAppMgtMgdAppRegs | Get-DeviceAppMgtMgdAppRegsIntendedPolicies}
-    {Get-DeviceAppMgtMgdAppRegs | Get-DeviceAppMgtMgdAppRegsIntendedPoliciesApps}
-    {Get-DeviceAppMgtMgdAppRegs | Get-DeviceAppMgtMgdAppRegsIntendedPoliciesAssignments}
-    {Get-DeviceAppMgtMgdAppRegs | Get-DeviceAppMgtMgdAppRegsIntendedPoliciesDeploymentSummary}
-    {Get-DeviceAppMgtMgdAppRegs | Get-DeviceAppMgtMgdAppRegsIntendedPoliciesExemptAppLockerFiles}
-    {Get-DeviceAppMgtMgdAppRegs | Get-DeviceAppMgtMgdAppRegsIntendedPoliciesProtectedAppLockerFiles}
-    {Get-DeviceAppMgtMgdAppRegs | Get-DeviceAppMgtMgdAppRegsOperations}
+    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies}
+    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_Apps}
+    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_Assignments}
+    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_DeploymentSummary}
+    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_ExemptAppLockerFiles}
+    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_ProtectedAppLockerFiles}
+    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies}
+    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_Apps}
+    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_Assignments}
+    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_DeploymentSummary}
+    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_ExemptAppLockerFiles}
+    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_ProtectedAppLockerFiles}
+    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_Operations}
 #
 # MobileAppCategories
 #
-    {Get-DeviceAppMgtMobileAppCategories}
+    {Get-DeviceAppManagement_MobileAppConfigurations}
 #
 # MobileAppConfigurations
 #    
-    {((Get-DeviceAppMgtMobileAppConfigurations | Get-MSGraphAllPages)[0]) | Get-DeviceAppMgtMobileAppConfigurationsAssignments}
-    {((Get-DeviceAppMgtMobileAppConfigurations | Get-MSGraphAllPages)[0]) | Get-DeviceAppMgtMobileAppConfigurationsDeviceStatuses}
-    {((Get-DeviceAppMgtMobileAppConfigurations | Get-MSGraphAllPages)[0]) | Get-DeviceAppMgtMobileAppConfigurationsDeviceStatusSummary}
-    {((Get-DeviceAppMgtMobileAppConfigurations | Get-MSGraphAllPages)[0]) | Get-DeviceAppMgtMobileAppConfigurationsUserStatuses}
-    {((Get-DeviceAppMgtMobileAppConfigurations | Get-MSGraphAllPages)[0]) | Get-DeviceAppMgtMobileAppConfigurationsUserStatusSummary}
+    {((Get-DeviceAppManagement_MobileAppConfigurations | Get-MSGraphAllPages)[0]) | Get-DeviceAppManagement_MobileAppConfigurations_Assignments}
+    {((Get-DeviceAppManagement_MobileAppConfigurations | Get-MSGraphAllPages)[0]) | Get-DeviceAppManagement_MobileAppConfigurations_DeviceStatuses}
+    {((Get-DeviceAppManagement_MobileAppConfigurations | Get-MSGraphAllPages)[0]) | Get-DeviceAppManagement_MobileAppConfigurations_DeviceStatusSummary}
+    {((Get-DeviceAppManagement_MobileAppConfigurations | Get-MSGraphAllPages)[0]) | Get-DeviceAppManagement_MobileAppConfigurations_UserStatuses}
+    {((Get-DeviceAppManagement_MobileAppConfigurations | Get-MSGraphAllPages)[0]) | Get-DeviceAppManagement_MobileAppConfigurations_UserStatusSummary}
 #
 # MobileApps
 #
-    {(Get-DeviceAppMgtMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-DeviceAppMgtMobileAppsAssignments}
-    {(Get-DeviceAppMgtMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-DeviceAppMgtMobileAppsCategories}        
-    #{(Get-DeviceAppMgtMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-DeviceAppMgtMobileAppsContentVersionsFiles}
+    {(Get-DeviceAppManagement_MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-DeviceAppManagement_MobileApps_Assignments}
+    {(Get-DeviceAppManagement_MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-DeviceAppManagement_MobileApps_Categories}        
+    #{(Get-DeviceAppManagement_MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-DeviceAppManagement_MobileApps_ContentVersionsFiles}
 #
 # TargetedManagedAppConfigurations
 #
 
-    {(Get-DeviceAppMgtTgtdMgdAppConfigs | Get-MSGraphAllPages) | Get-DeviceAppMgtTgtdMgdAppConfigsApps}
-    {(Get-DeviceAppMgtTgtdMgdAppConfigs | Get-MSGraphAllPages) | Get-DeviceAppMgtTgtdMgdAppConfigsAssignments}
-    {(Get-DeviceAppMgtTgtdMgdAppConfigs | Get-MSGraphAllPages) | Get-DeviceAppMgtTgtdMgdAppConfigsDeploymentSummary}
+    {(Get-DeviceAppManagement_TargetedManagedAppConfigurations | Get-MSGraphAllPages) | Get-DeviceAppManagement_TargetedManagedAppConfigurations_Apps}
+    {(Get-DeviceAppManagement_TargetedManagedAppConfigurations | Get-MSGraphAllPages) | Get-DeviceAppManagement_TargetedManagedAppConfigurations_Assignments}
+    {(Get-DeviceAppManagement_TargetedManagedAppConfigurations | Get-MSGraphAllPages) | Get-DeviceAppManagement_TargetedManagedAppConfigurations_DeploymentSummary}
 #
 # VppTokens
 #
-    {(Get-DeviceAppMgtVppTokens | Get-MSGraphAllPages)}
+    {(Get-DeviceAppManagement_VppTokens | Get-MSGraphAllPages)}
 #
 # windowsInformationProtectionPolicies
 #
-    {(Get-DeviceAppMgtWinInfoProtPolicies | Get-MSGraphAllPages)}
-)
-
-$notImplTests = @(
-    {((Get-DeviceAppMgtAndroidMgdAppProts | Get-MSGraphAllPages)[0]) | Get-DeviceAppMgtAndroidMgdAppProtsAssignments}
-    {((Get-DeviceAppMgtAndroidMgdAppProts | Get-MSGraphAllPages)[0]) | Get-DeviceAppMgtAndroidMgdAppProtsDeploymentSummary}
-    {Get-DeviceAppMgtDefaultMgdAppProtsApps}
-    {Get-DeviceAppMgtDefaultMgdAppProtsDeploymentSummary}
-    {(Get-DeviceAppMgtIosMgdAppProts | Get-MSGraphAllPages)[0] | Get-DeviceAppMgtIosMgdAppProtsAssignments}
-    {(Get-DeviceAppMgtIosMgdAppProts | Get-MSGraphAllPages)[0] | Get-DeviceAppMgtIosMgdAppProtsDeploymentSummary}
-    {Get-DeviceAppMgtMgdAppPoliciesApps -managedAppPolicyId $env:managedAppPolicyId -managedAppPolicyODataType 'microsoft.graph.managedAppPolicy'}
-    {Get-DeviceAppMgtMgdAppPoliciesAssignments -managedAppPolicyId $env:managedAppPolicyId -managedAppPolicyODataType 'microsoft.graph.managedAppPolicy'}
-    {Get-DeviceAppMgtMgdAppPoliciesDeploymentSummary -managedAppPolicyId $env:managedAppPolicyId -managedAppPolicyODataType 'microsoft.graph.managedAppPolicy'}
-    {Get-DeviceAppMgtMgdAppPoliciesExemptAppLockerFiles -managedAppPolicyId $env:managedAppPolicyId -managedAppPolicyODataType 'microsoft.graph.managedAppPolicy'}
-    {Get-DeviceAppMgtMgdAppPoliciesProtectedAppLockerFiles -managedAppPolicyId $env:managedAppPolicyId -managedAppPolicyODataType 'microsoft.graph.managedAppPolicy'}
-    {Get-DeviceAppMgtMdmWindowsInformationProtectionPoliciesAssignments -mdmWindowsInformationProtectionPolicyId $env:mdmWindowsInformationProtectionPolicyId -mdmWindowsInformationProtectionPolicyODataType 'microsoft.graph.mdmWindowsInformationProtectionPolicy'}    
-    {Get-DeviceAppMgtMdmWindowsInformationProtectionPoliciesExemptAppLockerFiles -mdmWindowsInformationProtectionPolicyId $env:mdmWindowsInformationProtectionPolicyId -mdmWindowsInformationProtectionPolicyODataType 'microsoft.graph.mdmWindowsInformationProtectionPolicy'}
-    {Get-DeviceAppMgtMdmWindowsInformationProtectionPoliciesProtectedAppLockerFiles -mdmWindowsInformationProtectionPolicyId $env:mdmWindowsInformationProtectionPolicyId -mdmWindowsInformationProtectionPolicyODataType 'microsoft.graph.mdmWindowsInformationProtectionPolicy'}
-   
-    {((Get-DeviceAppMgtWinInfoProtPolicies | Get-MSGraphAllPages)[0]) | Get-DeviceAppMgtWinInfoProtPoliciesAssignments}
-    {((Get-DeviceAppMgtWinInfoProtPolicies | Get-MSGraphAllPages)[0]) | Get-DeviceAppMgtWinInfoProtPoliciesExemptAppLockerFiles}
-    {((Get-DeviceAppMgtWinInfoProtPolicies | Get-MSGraphAllPages)[0]) | Get-DeviceAppMgtWinInfoProtPoliciesProtectedAppLockerFiles}
-    {(Get-DeviceAppMgtMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-DeviceAppMgtMobileAppsCategoriesReferences}
-    {(Get-DeviceAppMgtMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-DeviceAppMgtMobileAppsContentVersions}
+    {(Get-DeviceAppManagement_WindowsInformationProtectionPolicies | Get-MSGraphAllPages)}
 )
 
 #
