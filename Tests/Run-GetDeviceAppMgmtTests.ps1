@@ -35,12 +35,12 @@ $tests = @(
 #
 # ManagedEBooks
 #
-    {$env:managedEBookId=(Get-DeviceAppManagement_ManagedEBooks)[0].id}
-    {Get-DeviceAppManagement_ManagedEBooks_Assignments -managedEBookId $env:managedEBookId}
-    {Get-DeviceAppManagement_ManagedEBooks_DeviceStates -managedEBookId $env:managedEBookId}
-    {Get-DeviceAppManagement_ManagedEBooks_InstallSummary -managedEBookId $env:managedEBookId}
-    #{$env:userInstallStateSummaryId=Get-DeviceAppManagement_ManagedEBooks_UserStateSummary -managedEBookId $env:managedEBookId)[0].id}
-    #{Get-DeviceAppManagement_ManagedEBooks_UserStateSummaryDeviceStates -managedEBookId $env:managedEBookId -userInstallStateSummaryId $env:userInstallStateSummaryId}
+    {$managedEBook = (Get-ManagedEBooks| Get-MSGraphAllPages)[0]}
+    {$managedEBook | Get-ManagedEBookAssignments}
+    {$managedEBook | Get-ManagedEBooksDeviceStates}
+    {$managedEBook | Get-ManagedEBooksInstallSummary}
+    {$managedEBooksUserState = (Get-ManagedEBooks| Get-MSGraphAllPages)[0] | Get-ManagedEBooksUserStateSummary}
+    {if ($managedEBooksUserState -ne $null) {(Get-ManagedEBooks| Get-MSGraphAllPages)[0] | Get-ManagedEBooksUserStateSummaryDeviceStates}}
 #
 # mdmWindowsInformationProtectionPolicy
 #
@@ -127,7 +127,7 @@ foreach ($test in $tests)
     try
     {        
         $output = Invoke-Command -scriptblock $($test)
-        Write-Output "$test"
+        Write-Output "$test, $output"
     }
     catch
     {

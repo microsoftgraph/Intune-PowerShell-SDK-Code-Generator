@@ -74,7 +74,15 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceAppManagement_ManagedAppRegistrations_GetUserIdsWithFlaggedAppRegistration", "GetUserIdsWithFlaggedAppRegistration" },
             #endregion
 #region DeviceAppManagement_ManagedAppStatuses
-            { "DeviceAppManagement_ManagedAppStatuses", "ManagedAppStatuses" }
+            { "DeviceAppManagement_ManagedAppStatuses", "ManagedAppStatuses" },
+            #endregion
+#region DeviceAppManagement_ManagedEBooks
+            { "DeviceAppManagement_ManagedEBooks", "ManagedEBooks" },
+            { "DeviceAppManagement_ManagedEBooks_Assignments", "ManagedEBookAssignments"},
+            { "DeviceAppManagement_ManagedEBooks_DeviceStates", "ManagedEBooksDeviceStates" },
+            { "DeviceAppManagement_ManagedEBooks_InstallSummary", "ManagedEBooksInstallSummary" },
+            { "DeviceAppManagement_ManagedEBooks_UserStateSummary", "ManagedEBooksUserStateSummary" },
+            { "DeviceAppManagement_ManagedEBooks_UserStateSummary_DeviceStates", "ManagedEBooksUserStateSummaryDeviceStates" }
 #endregion
         };
 
