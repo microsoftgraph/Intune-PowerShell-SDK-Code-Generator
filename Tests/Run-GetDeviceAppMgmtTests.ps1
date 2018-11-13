@@ -23,19 +23,15 @@ $tests = @(
 #
 # AndroidManagedAppProtectionApps
 #    
-    {(Get-AndroidManagedAppProtections| Get-MSGraphAllPages)[0] | Get-AppsWithAndroidManagedAppProtections}
+    {(Get-AndroidAPP | Get-MSGraphAllPages)[0] | Get-AndroidAPPApps}
 #
 # DefaultManagedAppProtections
 #
-    {Get-DefaultManagedAppProtections}
+    {Get-DefaultAPP}
 #
 # IodManagedAppProtections
 #    
-    {(Get-IosManagedAppProtections | Get-MSGraphAllPages)[0] | Get-AppsWithIosManagedAppProtections}  
-#
-# ManagedAppStatuses
-#
-    {Get-DeviceAppManagement_ManagedAppStatuses}
+    {(Get-IosAPP | Get-MSGraphAllPages)[0] | Get-IosAPPApps}  
 #
 # ManagedEBooks
 #
@@ -56,19 +52,23 @@ $tests = @(
 #
 # managedAppRegistrations
 #    
-    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies}
-    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_Apps}
-    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_Assignments}
-    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_DeploymentSummary}
-    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_ExemptAppLockerFiles}
-    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_ProtectedAppLockerFiles}
-    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies}
-    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_Apps}
-    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_Assignments}
-    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_DeploymentSummary}
-    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_ExemptAppLockerFiles}
-    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_ProtectedAppLockerFiles}
-    {Get-DeviceAppManagement_ManagedAppRegistrations | Get-DeviceAppManagement_ManagedAppRegistrations_Operations}
+    {Get-AppRegistrations | Get-AppRegistrationPolicies}
+    {Get-AppRegistrations | Get-AppRegistrationApps}
+    {Get-AppRegistrations | Get-AppRegistrationAssignments}
+    {Get-AppRegistrations | Get-AppRegistrationDeploymentSummary}
+    {Get-AppRegistrations | Get-AppRegistrationExemptAppLockerFiles}
+    {Get-AppRegistrations | Get-AppRegistrationProtectedAppLockerFiles}
+    {Get-AppRegistrations | Get-IntendedPoliciesForAppRegistrations}
+    {Get-AppRegistrations | Get-AppsWithIntendedPoliciesForAppRegistrations}
+    {Get-AppRegistrations | Get-AssignmentsOfIntendedPoliciesForAppRegistrations}
+    {Get-AppRegistrations | Get-DeploymentSummaryOfIntendedPoliciesForAppRegistrations}
+    {Get-AppRegistrations | Get-ExemptAppLockerFilesOfIntendedPoliciesForAppRegistrations}
+    {Get-AppRegistrations | Get-ProtectedAppLockerFilesOfIntendedPoliciesForAppRegistrations}
+    {Get-AppRegistrations | Get-ManagedAppRegistrationsOperations}
+#
+# ManagedAppStatuses
+#
+    {(Get-ManagedAppStatuses | Get-MSGraphAllPages)[0]}
 #
 # MobileAppCategories
 #
@@ -109,7 +109,7 @@ $tests = @(
 #
 try
 {
-    Get-MSGraphMetadata
+    $msGraphMeta = Get-MSGraphMetadata
 }
 catch
 {    
@@ -131,6 +131,6 @@ foreach ($test in $tests)
     }
     catch
     {
-        Write-Warning "$test,$_"
+        Write-Error "$test,$_"
     }
 }
