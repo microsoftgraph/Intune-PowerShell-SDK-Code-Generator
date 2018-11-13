@@ -127,7 +127,7 @@ foreach ($test in $tests)
     try
     {        
         $output = Invoke-Command -scriptblock $($test)
-        Write-Output "$test,$output"
+        Write-Output "$test"
     }
     catch
     {
