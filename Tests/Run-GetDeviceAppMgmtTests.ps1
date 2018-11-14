@@ -75,15 +75,16 @@ $tests = @(
 #
 # MobileAppCategories
 #
-    {Get-DeviceAppManagement_MobileAppConfigurations}
+    {Get-MobileAppCategories}
 #
 # MobileAppConfigurations
 #    
-    {((Get-DeviceAppManagement_MobileAppConfigurations | Get-MSGraphAllPages)[0]) | Get-DeviceAppManagement_MobileAppConfigurations_Assignments}
-    {((Get-DeviceAppManagement_MobileAppConfigurations | Get-MSGraphAllPages)[0]) | Get-DeviceAppManagement_MobileAppConfigurations_DeviceStatuses}
-    {((Get-DeviceAppManagement_MobileAppConfigurations | Get-MSGraphAllPages)[0]) | Get-DeviceAppManagement_MobileAppConfigurations_DeviceStatusSummary}
-    {((Get-DeviceAppManagement_MobileAppConfigurations | Get-MSGraphAllPages)[0]) | Get-DeviceAppManagement_MobileAppConfigurations_UserStatuses}
-    {((Get-DeviceAppManagement_MobileAppConfigurations | Get-MSGraphAllPages)[0]) | Get-DeviceAppManagement_MobileAppConfigurations_UserStatusSummary}
+    {$mobileAppConfig = (Get-MobileAppConfigurations | Get-MSGraphAllPages)[0])}
+    {$mobileAppConfig | Get-MobileAppConfigurationAssignments}
+    {$mobileAppConfig | Get-MobileAppConfigurationDeviceStatuses}
+    {$mobileAppConfig | Get-MobileAppConfigurationDeviceStatusSummary}
+    {$mobileAppConfig | Get-MobileAppConfigurationsUserStatuses}
+    {$mobileAppConfig | Get-MobileAppConfigurationsUserStatusSummary}
 #
 # MobileApps
 #
@@ -100,7 +101,7 @@ $tests = @(
 #
 # VppTokens
 #
-    {(Get-DeviceAppManagement_VppTokens | Get-MSGraphAllPages)}
+    {(Get-VppTokens | Get-MSGraphAllPages)}
 #
 # windowsInformationProtectionPolicies
 #

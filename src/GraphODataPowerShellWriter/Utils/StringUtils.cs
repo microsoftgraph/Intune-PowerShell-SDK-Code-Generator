@@ -83,12 +83,27 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceAppManagement_ManagedEBooks_InstallSummary", "ManagedEBooksInstallSummary" },
             { "DeviceAppManagement_ManagedEBooks_UserStateSummary", "ManagedEBooksUserStateSummary" },
             { "DeviceAppManagement_ManagedEBooks_UserStateSummary_DeviceStates", "ManagedEBooksUserStateSummaryDeviceStates" },
+            { "DeviceAppManagement_ManagedEBooks_Assign", "ManagedEBooksAssign" },
             #endregion
 #region DeviceAppManagement_MdmWindowsInformationProtectionPolicies
             { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies", "MdmWindowsInformationProtectionPolicies" },
             { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_Assignments", "MdmWindowsInformationProtectionPoliciesAssignments" },
             { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_ExemptAppLockerFiles", "MdmWindowsInformationProtectionPoliciesExemptAppLockerFiles" },
-            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_ProtectedAppLockerFiles", "MdmWindowsInformationProtectionPoliciesProtectedAppLockerFiles" }
+            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_ProtectedAppLockerFiles", "MdmWindowsInformationProtectionPoliciesProtectedAppLockerFiles" },
+            #endregion
+#region DeviceAppManagement_MobileAppCategories
+            { "DeviceAppManagement_MobileAppCategories", "MobileAppCategories" },
+            #endregion
+            #region DeviceAppManagement_MobileAppConfigurations
+            { "DeviceAppManagement_MobileAppConfigurations", "MobileAppConfigurations" },
+            { "DeviceAppManagement_MobileAppConfigurations_Assignments", "MobileAppConfigurationAssignments" },
+            { "DeviceAppManagement_MobileAppConfigurations_DeviceStatuses", "MobileAppConfigurationDeviceStatuses" },
+            { "DeviceAppManagement_MobileAppConfigurations_DeviceStatusSummary", "MobileAppConfigurationDeviceStatusSummary" },
+            { "DeviceAppManagement_MobileAppConfigurations_UserStatuses", "MobileAppConfigurationsUserStatuses" },
+            { "DeviceAppManagement_MobileAppConfigurations_UserStatusSummary", "MobileAppConfigurationsUserStatusSummary" },
+            #endregion
+            #region DeviceAppManagement_VppTokens
+            { "DeviceAppManagement_VppTokens", "VppTokens"}
 #endregion
         };
 
