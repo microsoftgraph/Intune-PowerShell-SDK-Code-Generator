@@ -6,8 +6,8 @@ if ((Get-Module 'Microsoft.Graph.Intune') -eq $env:null)
     #
     # BUGBUG: Pass this as parameter on cmdline
     #
-    $env:moduleInstallFolderPath="..\src\GraphODataPowerShellWriter\bin\Release\output\bin\Release\net471"
-    Import-Module $env:moduleInstallFolderPath\Microsoft.Graph.Intune.psd1
+    $moduleInstallFolderPath="..\src\GraphODataPowerShellWriter\bin\Release\output\bin\Release\net471"
+    Import-Module $moduleInstallFolderPath\Microsoft.Graph.Intune.psd1
 }
 
 #
@@ -34,8 +34,7 @@ $tests = @(
     {(Get-IosAPP | Get-MSGraphAllPages)[0] | Get-IosAPPApps}  
 #
 # ManagedEBooks
-#
-    {$env:managedEBook = (Get-ManagedEBooks| Get-MSGraphAllPages)[0]}
+#    
     {(Get-ManagedEBooks| Get-MSGraphAllPages)[0] | Get-ManagedEBookAssignments}
     {(Get-ManagedEBooks| Get-MSGraphAllPages)[0] | Get-ManagedEBooksDeviceStates}
     {(Get-ManagedEBooks| Get-MSGraphAllPages)[0] | Get-ManagedEBooksInstallSummary}
@@ -88,9 +87,9 @@ $tests = @(
 #
 # MobileApps
 #
-    {(Get-DeviceAppManagement_MobileApps | Get-MSGraphAllPages).Where({$env:_.displayName -Match 'Intune Managed Browser'}) | Get-DeviceAppManagement_MobileApps_Assignments}
-    {(Get-DeviceAppManagement_MobileApps | Get-MSGraphAllPages).Where({$env:_.displayName -Match 'Intune Managed Browser'}) | Get-DeviceAppManagement_MobileApps_Categories}        
-    #{(Get-DeviceAppManagement_MobileApps | Get-MSGraphAllPages).Where({$env:_.displayName -Match 'Intune Managed Browser'}) | Get-DeviceAppManagement_MobileApps_ContentVersionsFiles}
+    {(Get-DeviceAppManagement_MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-DeviceAppManagement_MobileApps_Assignments}
+    {(Get-DeviceAppManagement_MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-DeviceAppManagement_MobileApps_Categories}        
+    #{(Get-DeviceAppManagement_MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-DeviceAppManagement_MobileApps_ContentVersionsFiles}
 #
 # TargetedManagedAppConfigurations
 #
