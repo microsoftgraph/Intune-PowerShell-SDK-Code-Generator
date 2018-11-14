@@ -89,16 +89,16 @@ $tests = @(
 #
     {(Get-MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-MobileAppsAssignments}
     {(Get-MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-MobileAppsCategories}
-    {(Get-MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-MobileAppsCategoriesReferences}
-    {(Get-MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-MobileAppsContentVersions}
-    {(Get-MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-MobileAppsContentVersionsFiles}
+    #BUGBUG: Missing Route {(Get-MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-MobileAppsCategoriesReferences}
+    #BUGBUG: Missing Route {(Get-MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-MobileAppsContentVersions}
+    #BUGBUG: Missing Route {(Get-MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-MobileAppsContentVersionsFiles}
 #
 # TargetedManagedAppConfigurations
 #
 
-    {(Get-DeviceAppManagement_TargetedManagedAppConfigurations | Get-MSGraphAllPages) | Get-DeviceAppManagement_TargetedManagedAppConfigurations_Apps}
-    {(Get-DeviceAppManagement_TargetedManagedAppConfigurations | Get-MSGraphAllPages) | Get-DeviceAppManagement_TargetedManagedAppConfigurations_Assignments}
-    {(Get-DeviceAppManagement_TargetedManagedAppConfigurations | Get-MSGraphAllPages) | Get-DeviceAppManagement_TargetedManagedAppConfigurations_DeploymentSummary}
+    {(Get-TargetedManagedAppConfigurations | Get-MSGraphAllPages) | Get-TargetedManagedAppConfigurationsApps}
+    {(Get-TargetedManagedAppConfigurations | Get-MSGraphAllPages) | Get-TargetedManagedAppConfigurationsAssignments}
+    {(Get-TargetedManagedAppConfigurations | Get-MSGraphAllPages) | Get-TargetedManagedAppConfigurationsDeploymentSummary}
 #
 # VppTokens
 #
