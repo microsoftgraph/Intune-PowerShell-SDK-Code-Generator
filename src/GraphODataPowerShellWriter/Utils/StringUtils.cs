@@ -103,8 +103,16 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceAppManagement_MobileAppConfigurations_UserStatusSummary", "MobileAppConfigurationsUserStatusSummary" },
             #endregion
             #region DeviceAppManagement_VppTokens
-            { "DeviceAppManagement_VppTokens", "VppTokens"}
-#endregion
+            { "DeviceAppManagement_VppTokens", "VppTokens"},
+            #endregion
+            #region DeviceAppManagement_MobileApps
+            { "DeviceAppManagement_MobileApps", "MobileApps" },            
+            { "DeviceAppManagement_MobileApps_Assignments", "MobileAppsAssignments" },
+            { "DeviceAppManagement_MobileApps_Categories", "MobileAppsCategories" },
+            { "DeviceAppManagement_MobileApps_CategoriesReferences", "MobileAppsCategoriesReferences" },
+            { "DeviceAppManagement_MobileApps_ContentVersions", "MobileAppsContentVersions" },
+            { "DeviceAppManagement_MobileApps_ContentVersions_Files", "MobileAppsContentVersionsFiles"}
+            #endregion           
         };
 
         /// <summary>
