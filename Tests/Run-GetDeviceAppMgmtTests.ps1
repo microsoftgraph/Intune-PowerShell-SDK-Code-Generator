@@ -106,7 +106,10 @@ $tests = @(
 #
 # windowsInformationProtectionPolicies
 #
-    {(Get-DeviceAppManagement_WindowsInformationProtectionPolicies | Get-MSGraphAllPages)}
+    {$env:WinPP = (Get-WindowsInformationProtectionPolicies | Get-MSGraphAllPages)}
+    #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-WindowsInformationProtectionPolicies | Get-MSGraphAllPages) | Get-WindowsInformationProtectionPoliciesAssignments}}
+    #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-WindowsInformationProtectionPolicies | Get-MSGraphAllPages) | Get-WindowsInformationProtectionPoliciesExemptAppLockerFiles}}
+    #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-WindowsInformationProtectionPolicies | Get-MSGraphAllPages) | Get-WindowsInformationProtectionPoliciesProtectedAppLockerFiles}}   
 )
 
 #

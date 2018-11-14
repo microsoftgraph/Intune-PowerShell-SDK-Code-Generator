@@ -45,6 +45,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceAppManagement_IosManagedAppProtections_Assignments", "IosAPPAppsAssignments" },
             { "DeviceAppManagement_IosManagedAppProtections_DeploymentSummary", "IosAPPAppsDeploymentSummary" },
             { "DeviceAppManagement_IosManagedAppProtections_Assign", "AssignIosAPPApps" },
+            { "DeviceAppManagement_IosManagedAppProtections_TargetApps", "IosAPPTargetApps" },
             #endregion      
             #region DeviceAppManagement_ManagedAppPolicies
             { "DeviceAppManagement_ManagedAppPolicies", "ManagedAppPolicies" },
@@ -53,6 +54,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceAppManagement_ManagedAppPolicies_DeploymentSummary", "ManagedAppPoliciesDeploymentSummary" },
             { "DeviceAppManagement_ManagedAppPolicies_ExemptAppLockerFiles", "ManagedAppPoliciesExemptAppLockerFiles" },
             { "DeviceAppManagement_ManagedAppPolicies_ProtectedAppLockerFiles", "ManagedAppPoliciesProtectedAppLockerFiles" },
+            { "DeviceAppManagement_ManagedAppPolicies_TargetApps", "ManagedAppPoliciesTargetApps" },
             #endregion
             #region DeviceAppManagement_ManagedAppRegistrations
             { "DeviceAppManagement_ManagedAppRegistrations", "AppRegistrations" },
@@ -90,6 +92,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_Assignments", "MdmWindowsInformationProtectionPoliciesAssignments" },
             { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_ExemptAppLockerFiles", "MdmWindowsInformationProtectionPoliciesExemptAppLockerFiles" },
             { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_ProtectedAppLockerFiles", "MdmWindowsInformationProtectionPoliciesProtectedAppLockerFiles" },
+            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_Assign", "MdmWindowsInformationProtectionPoliciesAssign" },
+            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_TargetApps", "MdmWindowsInformationProtectionPoliciesTargetApps" },
             #endregion
             #region DeviceAppManagement_MobileAppCategories
             { "DeviceAppManagement_MobileAppCategories", "MobileAppCategories" },
@@ -101,10 +105,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceAppManagement_MobileAppConfigurations_DeviceStatusSummary", "MobileAppConfigurationDeviceStatusSummary" },
             { "DeviceAppManagement_MobileAppConfigurations_UserStatuses", "MobileAppConfigurationsUserStatuses" },
             { "DeviceAppManagement_MobileAppConfigurations_UserStatusSummary", "MobileAppConfigurationsUserStatusSummary" },
-            #endregion
-            #region DeviceAppManagement_VppTokens
-            { "DeviceAppManagement_VppTokens", "VppTokens"},
-            #endregion
+            #endregion            
             #region DeviceAppManagement_MobileApps
             { "DeviceAppManagement_MobileApps", "MobileApps" },            
             { "DeviceAppManagement_MobileApps_Assignments", "MobileAppsAssignments" },
@@ -112,12 +113,32 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceAppManagement_MobileApps_CategoriesReferences", "MobileAppsCategoriesReferences" },
             { "DeviceAppManagement_MobileApps_ContentVersions", "MobileAppsContentVersions" },
             { "DeviceAppManagement_MobileApps_ContentVersions_Files", "MobileAppsContentVersionsFiles"},
+            { "DeviceAppManagement_MobileApps_Assign", "MobileAppsAssign" },
+            { "DeviceAppManagement_MobileApps_ContentVersions_Files_Commit", "MobileAppsContentVersionsFilesCommit" },
+            { "DeviceAppManagement_MobileApps_ContentVersions_Files_RenewUpload", "MobileAppsContentVersionsFilesRenewUpload" },
+            #endregion
+            #region DeviceAppManagement_SyncMicrosoftStoreForBusinessApps
+            { "DeviceAppManagement_SyncMicrosoftStoreForBusinessApps", "SyncMicrosoftStoreForBusinessApps" },
             #endregion
             #region DeviceAppManagement_TargetedManagedAppConfigurations
             { "DeviceAppManagement_TargetedManagedAppConfigurations", "TargetedManagedAppConfigurations" },
             { "DeviceAppManagement_TargetedManagedAppConfigurations_Apps", "TargetedManagedAppConfigurationsApps" },
             { "DeviceAppManagement_TargetedManagedAppConfigurations_Assignments", "TargetedManagedAppConfigurationsAssignments" },
-            { "DeviceAppManagement_TargetedManagedAppConfigurations_DeploymentSummary", "TargetedManagedAppConfigurationsDeploymentSummary" }
+            { "DeviceAppManagement_TargetedManagedAppConfigurations_DeploymentSummary", "TargetedManagedAppConfigurationsDeploymentSummary" },
+            { "DeviceAppManagement_TargetedManagedAppConfigurations_Assign", "TargetedManagedAppConfigurationsAssign" },
+            { "DeviceAppManagement_TargetedManagedAppConfigurations_TargetApps", "TargetedManagedAppConfigurationsTargetApps" },
+            #endregion
+            #region DeviceAppManagement_VppTokens
+            { "DeviceAppManagement_VppTokens", "VppTokens"},
+            { "DeviceAppManagement_VppTokens_SyncLicenses", "VppTokensSyncLicenses" },
+            #endregion
+            #region DeviceAppManagement_WindowsInformationProtectionPolicies
+            { "DeviceAppManagement_WindowsInformationProtectionPolicies", "WindowsInformationProtectionPolicies" },
+            { "DeviceAppManagement_WindowsInformationProtectionPolicies_Assignments", "WindowsInformationProtectionPoliciesAssignments" },
+            { "DeviceAppManagement_WindowsInformationProtectionPolicies_ExemptAppLockerFiles", "WindowsInformationProtectionPoliciesExemptAppLockerFiles" },
+            { "DeviceAppManagement_WindowsInformationProtectionPolicies_ProtectedAppLockerFiles", "WindowsInformationProtectionPoliciesProtectedAppLockerFiles" },
+            { "DeviceAppManagement_WindowsInformationProtectionPolicies_Assign", "WindowsInformationProtectionPoliciesAssign" },
+            { "DeviceAppManagement_WindowsInformationProtectionPolicies_TargetApps", "WindowsInformationProtectionPoliciesTargetApps"}
             #endregion
         };
 
