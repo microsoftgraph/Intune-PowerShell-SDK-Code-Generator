@@ -44,7 +44,10 @@ $tests = @(
 #
 # mdmWindowsInformationProtectionPolicy
 #
-    {(Get-DeviceAppManagement_MdmWindowsInformationProtectionPolicies | Get-MSGraphAllPages)}
+    {$mdmWindowsInfoProtPolicy = (Get-MdmWindowsInformationProtectionPolicies | Get-MSGraphAllPages)[0]}
+    {$mdmWindowsInfoProtPolicy | Get-MdmWindowsInformationProtectionPoliciesAssignments}
+    {$mdmWindowsInfoProtPolicy | Get-MdmWindowsInformationProtectionPoliciesExemptAppLockerFiles}
+    {$mdmWindowsInfoProtPolicy | Get-MdmWindowsInformationProtectionPoliciesProtectedAppLockerFiles}
 #
 # managedAppPolicies
 #

@@ -82,7 +82,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceAppManagement_ManagedEBooks_DeviceStates", "ManagedEBooksDeviceStates" },
             { "DeviceAppManagement_ManagedEBooks_InstallSummary", "ManagedEBooksInstallSummary" },
             { "DeviceAppManagement_ManagedEBooks_UserStateSummary", "ManagedEBooksUserStateSummary" },
-            { "DeviceAppManagement_ManagedEBooks_UserStateSummary_DeviceStates", "ManagedEBooksUserStateSummaryDeviceStates" }
+            { "DeviceAppManagement_ManagedEBooks_UserStateSummary_DeviceStates", "ManagedEBooksUserStateSummaryDeviceStates" },
+            #endregion
+#region DeviceAppManagement_MdmWindowsInformationProtectionPolicies
+            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies", "MdmWindowsInformationProtectionPolicies" },
+            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_Assignments", "MdmWindowsInformationProtectionPoliciesAssignments" },
+            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_ExemptAppLockerFiles", "MdmWindowsInformationProtectionPoliciesExemptAppLockerFiles" },
+            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_ProtectedAppLockerFiles", "MdmWindowsInformationProtectionPoliciesProtectedAppLockerFiles" }
 #endregion
         };
 
