@@ -146,6 +146,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceManagement_ApplePushNotificationCertificate", "DmAPNSCert" },
             { "DeviceManagement_ConditionalAccessSettings", "DmCASettings" },
             { "DeviceManagement_DeviceCategories", "DmDeviceCategories" },
+            { "DeviceManagement_DeviceCompliancePolicyDeviceStateSummary", "DmDeviceCompliancePolicyDeviceStateSummary" },
+            { "DeviceManagement_DeviceCompliancePolicySettingStateSummaries", "DmDeviceCompliancePolicySettingStateSummaries" },
+            { "DeviceManagement_DeviceConfigurationDeviceStateSummaries", "DmDeviceConfigurationDeviceStateSummaries" },
+            { "DeviceManagement_DeviceManagementPartners", "DmDeviceManagementPartners" },
+            { "DeviceManagement_ExchangeConnectors", "DmExchangeConnectors" },
+            { "DeviceManagement_IosUpdateStatuses", "DmIosUpdateStatuses" },
+            { "DeviceManagement_ManagedDeviceOverview", "DmManagedDeviceOverview" },
+            { "DeviceManagement_ManagedDeviceOverviewReference", "DmManagedDeviceOverviewReference" }, //BUGBUG: Missing Route 
             #region DeviceManagement_DetectedApps
             { "DeviceManagement_DetectedApps", "DmDetectedApps" },
             { "DeviceManagement_DetectedApps_ManagedDevices", "DmDetectedAppDevices" },
@@ -160,9 +168,25 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceManagement_DeviceCompliancePolicies_ScheduledActionsForRule", "DmDeviceCompliancePolicyScheduledActionsForRule" },
             { "DeviceManagement_DeviceCompliancePolicies_ScheduledActionsForRule_ScheduledActionConfigurations", "DmDeviceCompliancePolicyScheduledActionsForRuleConfigs" },
             { "DeviceManagement_DeviceCompliancePolicies_UserStatuses", "DmDeviceCompliancePolicyUserStatuses" },
-            { "DeviceManagement_DeviceCompliancePolicies_UserStatusOverview", "DmDeviceCompliancePolicyUserStatusOverview" }
+            { "DeviceManagement_DeviceCompliancePolicies_UserStatusOverview", "DmDeviceCompliancePolicyUserStatusOverview" },
             #endregion
-
+            #region DeviceManagement_DeviceConfigurations
+            { "DeviceManagement_DeviceConfigurations", "DmDeviceConfigurations" },
+            { "DeviceManagement_DeviceConfigurations_Assignments", "DmDCAssignments" },
+            { "DeviceManagement_DeviceConfigurations_DeviceStatusOverview", "DmDCDeviceStatusOverview" },
+            { "DeviceManagement_DeviceConfigurations_UserStatuses", "DmDCUserStatuses" },
+            { "DeviceManagement_DeviceConfigurations_UserStatusOverview", "DmDCUserStatusOverview" },
+            #endregion
+            #region DeviceManagement_DeviceEnrollmentConfigurations
+            { "DeviceManagement_DeviceEnrollmentConfigurations", "DmDeviceEnrollmentConfigs" },
+            { "DeviceManagement_DeviceEnrollmentConfigurations_Assignments", "DmDeviceEnrollmentConfigAssignments" },
+            #endregion
+            #region DeviceManagement_ManagedDevices
+            { "DeviceManagement_ManagedDevices", "DmManagedDevices" },
+            { "DeviceManagement_ManagedDevices_DeviceCategory", "DmDeviceCategory" },
+            { "DeviceManagement_ManagedDevices_DeviceCompliancePolicyStates", "DmDeviceCompliancePolicyStates" },
+            { "DeviceManagement_ManagedDevices_DeviceConfigurationStates", "DmDeviceConfigurationStates" }
+            #endregion 
             #endregion
         };
 

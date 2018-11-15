@@ -23,6 +23,13 @@ $tests = @(
     {Get-DmAPNSCert}
     #BUGBUG: Investigate 400 Bad Request {Get-DmCASettings}
     {Get-DmDeviceCategories}
+    {Get-DmDeviceCompliancePolicyDeviceStateSummary}
+    {Get-DmDeviceCompliancePolicySettingStateSummaries}
+    {Get-DmDeviceConfigurationDeviceStateSummaries}
+    {Get-DmDeviceManagementPartners}
+    {Get-DmExchangeConnectors}
+    {Get-DmIosUpdateStatuses}
+    {Get-DmManagedDeviceOverview}    
 #
 # DmDetectedApps
 #
@@ -41,6 +48,24 @@ $tests = @(
     #BUGBUG: Unable to figure -deviceComplianceScheduledActionForRuleId {(Get-DmDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DmDeviceCompliancePolicyScheduledActionsForRuleConfigs}
     {(Get-DmDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DmDeviceCompliancePolicyUserStatuses}
     {(Get-DmDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DmDeviceCompliancePolicyUserStatusOverview}
+#
+# DeviceManagement_DeviceConfigurations
+#
+    {(Get-DmDeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DmDCAssignments}
+    {(Get-DmDeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DmDCDeviceStatusOverview}
+    {(Get-DmDeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DmDCUserStatuses}
+    {(Get-DmDeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DmDCUserStatusOverview}
+#
+# DeviceManagement_DeviceEnrollmentConfigurations
+# 
+    {(Get-DmDeviceEnrollmentConfigs| Get-MSGraphAllPages)[0] | Get-DmDeviceEnrollmentConfigAssignments}
+#
+# DeviceManagement_ManagedDevices
+#  
+    {$env:mgdDevices=(Get-DmManagedDevices)}
+    {if ($env:mgdDevices -ne $null) {((Get-DmManagedDevices| Get-MSGraphAllPages)[0] | Get-DmDeviceCategory)}}
+    {if ($env:mgdDevices -ne $null) {((Get-DmManagedDevices| Get-MSGraphAllPages)[0] | Get-DmDeviceCompliancePolicyStates)}}
+    {if ($env:mgdDevices -ne $null) {((Get-DmManagedDevices| Get-MSGraphAllPages)[0] | Get-DmDeviceConfigurationStates)}}
 )
 
 #
