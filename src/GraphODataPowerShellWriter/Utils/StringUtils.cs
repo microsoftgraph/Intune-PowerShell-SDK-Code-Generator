@@ -25,6 +25,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         private static readonly Dictionary<string, string> ShortNounName = new Dictionary<string, string>
         {
             // Keep this list sorted
+            #region DeviceAppManagement
             #region DeviceAppManagement_AndroidManagedAppProtections
             { "DeviceAppManagement_AndroidManagedAppProtections", "AndroidAPP" },
             { "DeviceAppManagement_AndroidManagedAppProtections_Apps", "AndroidAPPApps" },
@@ -138,7 +139,17 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceAppManagement_WindowsInformationProtectionPolicies_ExemptAppLockerFiles", "WinInfoPPExemptAppLockerFiles" },
             { "DeviceAppManagement_WindowsInformationProtectionPolicies_ProtectedAppLockerFiles", "WinInfoPPProtectedAppLockerFiles" },
             { "DeviceAppManagement_WindowsInformationProtectionPolicies_Assign", "AssignWinInfoPP" },
-            { "DeviceAppManagement_WindowsInformationProtectionPolicies_TargetApps", "TargetWinInfoPP"}
+            { "DeviceAppManagement_WindowsInformationProtectionPolicies_TargetApps", "TargetWinInfoPP"},
+            #endregion
+            #endregion
+            #region DeviceManagement            
+            { "DeviceManagement_ApplePushNotificationCertificate", "APNSCert" },
+            { "DeviceManagement_ConditionalAccessSettings", "CASettings" },            
+            #region DeviceManagement_DetectedApps
+            { "DeviceManagement_DetectedApps", "DetectedApps" },
+            { "DeviceManagement_DetectedApps_ManagedDevices", "DetectedAppDevices" },
+            { "DeviceManagement_DetectedApps_ManagedDevicesReferences", "DetectedAppDeviceRefs" }
+            #endregion
             #endregion
         };
 
