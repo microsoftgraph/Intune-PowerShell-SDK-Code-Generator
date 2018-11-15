@@ -21,6 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9F6E2D2F
 		Tests\LobApps\POC_AllOS_Create_Cmdlets.ps1 = Tests\LobApps\POC_AllOS_Create_Cmdlets.ps1
 		Tests\LobApps\POC_AllOS_Reset_Cmdlets.ps1 = Tests\LobApps\POC_AllOS_Reset_Cmdlets.ps1
 		Tests\Run-GetDeviceAppMgmtTests.ps1 = Tests\Run-GetDeviceAppMgmtTests.ps1
+		Tests\Run-GetDeviceMgmtTests.ps1 = Tests\Run-GetDeviceMgmtTests.ps1
 		Tests\LobApps\UploadIOSLobApp.ps1 = Tests\LobApps\UploadIOSLobApp.ps1
 		Tests\LobApps\UploadLobApp.psm1 = Tests\LobApps\UploadLobApp.psm1
 		Tests\LobApps\VisualizeData.ps1 = Tests\LobApps\VisualizeData.ps1
