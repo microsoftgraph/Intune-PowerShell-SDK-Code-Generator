@@ -143,13 +143,26 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             #endregion
             #endregion
             #region DeviceManagement            
-            { "DeviceManagement_ApplePushNotificationCertificate", "APNSCert" },
-            { "DeviceManagement_ConditionalAccessSettings", "CASettings" },            
+            { "DeviceManagement_ApplePushNotificationCertificate", "DmAPNSCert" },
+            { "DeviceManagement_ConditionalAccessSettings", "DmCASettings" },
+            { "DeviceManagement_DeviceCategories", "DmDeviceCategories" },
             #region DeviceManagement_DetectedApps
-            { "DeviceManagement_DetectedApps", "DetectedApps" },
-            { "DeviceManagement_DetectedApps_ManagedDevices", "DetectedAppDevices" },
-            { "DeviceManagement_DetectedApps_ManagedDevicesReferences", "DetectedAppDeviceRefs" }
+            { "DeviceManagement_DetectedApps", "DmDetectedApps" },
+            { "DeviceManagement_DetectedApps_ManagedDevices", "DmDetectedAppDevices" },
+            { "DeviceManagement_DetectedApps_ManagedDevicesReferences", "DmDetectedAppDeviceRefs" },
             #endregion
+            #region DeviceManagement_DeviceCompliancePolicies
+            { "DeviceManagement_DeviceCompliancePolicies", "DmDeviceCompliancePolicies" },
+            { "DeviceManagement_DeviceCompliancePolicies_Assignments", "DmDeviceCompliancePolicyAssignments" },
+            { "DeviceManagement_DeviceCompliancePolicies_DeviceSettingStateSummaries", "DmDeviceCompliancePolicyDeviceSettingStateSummaries" },
+            { "DeviceManagement_DeviceCompliancePolicies_DeviceStatuses", "DmDeviceCompliancePolicyDeviceStatuses" },
+            { "DeviceManagement_DeviceCompliancePolicies_DeviceStatusOverview", "DmDeviceCompliancePolicyDeviceStatusOverview" },
+            { "DeviceManagement_DeviceCompliancePolicies_ScheduledActionsForRule", "DmDeviceCompliancePolicyScheduledActionsForRule" },
+            { "DeviceManagement_DeviceCompliancePolicies_ScheduledActionsForRule_ScheduledActionConfigurations", "DmDeviceCompliancePolicyScheduledActionsForRuleConfigs" },
+            { "DeviceManagement_DeviceCompliancePolicies_UserStatuses", "DmDeviceCompliancePolicyUserStatuses" },
+            { "DeviceManagement_DeviceCompliancePolicies_UserStatusOverview", "DmDeviceCompliancePolicyUserStatusOverview" }
+            #endregion
+
             #endregion
         };
 
