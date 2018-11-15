@@ -153,7 +153,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceManagement_ExchangeConnectors", "DmExchangeConnectors" },
             { "DeviceManagement_IosUpdateStatuses", "DmIosUpdateStatuses" },
             { "DeviceManagement_ManagedDeviceOverview", "DmManagedDeviceOverview" },
-            { "DeviceManagement_ManagedDeviceOverviewReference", "DmManagedDeviceOverviewReference" }, //BUGBUG: Missing Route 
+            { "DeviceManagement_ManagedDeviceOverviewReference", "DmManagedDeviceOverviewReference" }, //BUGBUG: Missing Route
+            { "DeviceManagement_TroubleshootingEvents", "DmTroubleshootingEvents"},
+            { "DeviceManagement_WindowsInformationProtectionAppLearningSummaries", "DmWIPAppLearningSummaries" },
+            { "DeviceManagement_WindowsInformationProtectionNetworkLearningSummaries", "DmWIPNetworkLearningSummaries" },
             #region DeviceManagement_DetectedApps
             { "DeviceManagement_DetectedApps", "DmDetectedApps" },
             { "DeviceManagement_DetectedApps_ManagedDevices", "DmDetectedAppDevices" },

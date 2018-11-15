@@ -29,7 +29,10 @@ $tests = @(
     {Get-DmDeviceManagementPartners}
     {Get-DmExchangeConnectors}
     {Get-DmIosUpdateStatuses}
-    {Get-DmManagedDeviceOverview}    
+    {Get-DmManagedDeviceOverview}
+    {Get-DmTroubleshootingEvents}
+    {Get-DmWIPAppLearningSummaries}
+    {Get-DmWIPNetworkLearningSummaries}
 #
 # DmDetectedApps
 #
