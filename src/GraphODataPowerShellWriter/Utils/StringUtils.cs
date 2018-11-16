@@ -144,19 +144,29 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             #endregion
             #region DeviceManagement            
             { "DeviceManagement_ApplePushNotificationCertificate", "DmAPNSCert" },
+            { "DeviceManagement_ApplePushNotificationCertificate_DownloadApplePushNotificationCertificateSigningRequest", "DmDownloadAPNSCertSigningRequest" },
             { "DeviceManagement_ConditionalAccessSettings", "DmCASettings" },
             { "DeviceManagement_DeviceCategories", "DmDeviceCategories" },
             { "DeviceManagement_DeviceCompliancePolicyDeviceStateSummary", "DmDeviceCompliancePolicyDeviceStateSummary" },
             { "DeviceManagement_DeviceCompliancePolicySettingStateSummaries", "DmDeviceCompliancePolicySettingStateSummaries" },
+            { "DeviceManagement_DeviceCompliancePolicySettingStateSummaries_DeviceComplianceSettingStates", "DmDeviceComplianceSettingStates" },
+            { "DeviceManagement_DeviceCompliancePolicies_Assign", "DmAssignDeviceCompliancePolicies" },
+            { "DeviceManagement_DeviceCompliancePolicies_ScheduleActionsForRules", "DmScheduleActionsForRulesOfDeviceCompliancePolicies" },
             { "DeviceManagement_DeviceConfigurationDeviceStateSummaries", "DmDeviceConfigurationDeviceStateSummaries" },
             { "DeviceManagement_DeviceManagementPartners", "DmDeviceManagementPartners" },
             { "DeviceManagement_ExchangeConnectors", "DmExchangeConnectors" },
             { "DeviceManagement_IosUpdateStatuses", "DmIosUpdateStatuses" },
             { "DeviceManagement_ManagedDeviceOverview", "DmManagedDeviceOverview" },
             { "DeviceManagement_ManagedDeviceOverviewReference", "DmManagedDeviceOverviewReference" }, //BUGBUG: Missing Route
+            { "DeviceManagement_MobileThreatDefenseConnectors", "DmMobileThreatDefenseConnectors" },
             { "DeviceManagement_TroubleshootingEvents", "DmTroubleshootingEvents"},
             { "DeviceManagement_WindowsInformationProtectionAppLearningSummaries", "DmWIPAppLearningSummaries" },
             { "DeviceManagement_WindowsInformationProtectionNetworkLearningSummaries", "DmWIPNetworkLearningSummaries" },
+            { "DeviceManagement_RemoteAssistancePartners", "DmRemoteAssistancePartners" },
+            { "DeviceManagement_ResourceOperations", "DmResourceOperations" },
+            { "DeviceManagement_SoftwareUpdateStatusSummary", "DmSoftwareUpdateStatusSummary" },
+            { "DeviceManagement_SoftwareUpdateStatusSummaryReference", "DmSoftwareUpdateStatusSummaryReference" }, //BUGBUG: Missing Route
+            { "DeviceManagement_TelecomExpenseManagementPartners", "DmTelecomExpenseManagementPartners" },
             #region DeviceManagement_DetectedApps
             { "DeviceManagement_DetectedApps", "DmDetectedApps" },
             { "DeviceManagement_DetectedApps_ManagedDevices", "DmDetectedAppDevices" },
@@ -179,6 +189,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceManagement_DeviceConfigurations_DeviceStatusOverview", "DmDCDeviceStatusOverview" },
             { "DeviceManagement_DeviceConfigurations_UserStatuses", "DmDCUserStatuses" },
             { "DeviceManagement_DeviceConfigurations_UserStatusOverview", "DmDCUserStatusOverview" },
+            { "DeviceManagement_DeviceConfigurations_DeviceSettingStateSummaries", "DmDCDeviceSettingStateSummaries" },
+            { "DeviceManagement_DeviceConfigurations_DeviceStatuses", "DmDCDeviceStatuses" },
             #endregion
             #region DeviceManagement_DeviceEnrollmentConfigurations
             { "DeviceManagement_DeviceEnrollmentConfigurations", "DmDeviceEnrollmentConfigs" },
@@ -188,8 +200,27 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceManagement_ManagedDevices", "DmManagedDevices" },
             { "DeviceManagement_ManagedDevices_DeviceCategory", "DmDeviceCategory" },
             { "DeviceManagement_ManagedDevices_DeviceCompliancePolicyStates", "DmDeviceCompliancePolicyStates" },
-            { "DeviceManagement_ManagedDevices_DeviceConfigurationStates", "DmDeviceConfigurationStates" }
-            #endregion 
+            { "DeviceManagement_ManagedDevices_DeviceConfigurationStates", "DmDeviceConfigurationStates" },
+            #endregion
+            #region DeviceManagement_NotificationMessageTemplates
+            { "DeviceManagement_NotificationMessageTemplates", "DmNotifMsgTemplates"},
+            { "DeviceManagement_NotificationMessageTemplates_LocalizedNotificationMessages", "DmNotifMsgTemplateLocMsgs" },
+            #endregion
+            #region DeviceManagement_RoleAssignments
+            { "DeviceManagement_RoleAssignments", "DmRoleAssignments" },
+            { "DeviceManagement_RoleAssignments_RoleDefinition", "DmRoleAssignmentDefinition" }, //BUGBUG: Missing Route
+            #endregion
+            #region DeviceManagement_RoleDefinitions
+            { "DeviceManagement_RoleDefinitions", "DmRoleDefinitions" },
+            { "DeviceManagement_RoleDefinitions_RoleAssignments", "DmRoleDefinitionAssignments" },  //BUGBUG: Missing Route
+            { "DeviceManagement_RoleDefinitions_RoleAssignments_RoleDefinition", "DmRoleAssignmentRoleDefinition" }, //BUGBUG: Missing route
+            { "DeviceManagement_RoleDefinitions_RoleAssignments_RoleDefinitionReference", "DmRoleAssignmentDefinitionRef" }, //BUGBUG: Missing route
+            #endregion
+            #region DeviceManagement_TermsAndConditions
+            { "DeviceManagement_TermsAndConditions", "DmTnCs" },
+            { "DeviceManagement_TermsAndConditions_AcceptanceStatuses", "DmTnCAcceptanceStatuses" },
+            { "DeviceManagement_TermsAndConditions_Assignments", "DmTnCAssignments" }
+            #endregion
             #endregion
         };
 

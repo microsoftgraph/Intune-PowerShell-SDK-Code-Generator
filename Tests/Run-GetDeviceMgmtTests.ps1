@@ -25,14 +25,22 @@ $tests = @(
     {Get-DmDeviceCategories}
     {Get-DmDeviceCompliancePolicyDeviceStateSummary}
     {Get-DmDeviceCompliancePolicySettingStateSummaries}
-    {Get-DmDeviceConfigurationDeviceStateSummaries}
+    {$env:DmDCStateSumm=Get-DmDeviceConfigurationDeviceStateSummaries}
+    {if ($env:DmDCStateSumm -ne $null) {((Get-DmDeviceConfigurationDeviceStateSummaries| Get-MSGraphAllPages)[0] |Get-DmDeviceComplianceSettingStates}}
     {Get-DmDeviceManagementPartners}
     {Get-DmExchangeConnectors}
     {Get-DmIosUpdateStatuses}
     {Get-DmManagedDeviceOverview}
+    {Get-DmMobileThreatDefenseConnectors}
+    {$env:DmNotifMsgTemplates=(Get-DmNotifMsgTemplates)}
+    {if ($env:DmNotifMsgTemplates -ne $null) {((Get-DmNotifMsgTemplates| Get-MSGraphAllPages)[0] |Get-DmNotifMsgTemplateLocMsgs}    
     {Get-DmTroubleshootingEvents}
     {Get-DmWIPAppLearningSummaries}
     {Get-DmWIPNetworkLearningSummaries}
+    {Get-DmRemoteAssistancePartners}
+    {Get-DmResourceOperations}
+    {Get-DmSoftwareUpdateStatusSummary}
+    {Get-DmTelecomExpenseManagementPartners}
 #
 # DmDetectedApps
 #
@@ -58,6 +66,8 @@ $tests = @(
     {(Get-DmDeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DmDCDeviceStatusOverview}
     {(Get-DmDeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DmDCUserStatuses}
     {(Get-DmDeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DmDCUserStatusOverview}
+    {(Get-DmDeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DmDCDeviceSettingStateSummaries}
+
 #
 # DeviceManagement_DeviceEnrollmentConfigurations
 # 
@@ -69,6 +79,20 @@ $tests = @(
     {if ($env:mgdDevices -ne $null) {((Get-DmManagedDevices| Get-MSGraphAllPages)[0] | Get-DmDeviceCategory)}}
     {if ($env:mgdDevices -ne $null) {((Get-DmManagedDevices| Get-MSGraphAllPages)[0] | Get-DmDeviceCompliancePolicyStates)}}
     {if ($env:mgdDevices -ne $null) {((Get-DmManagedDevices| Get-MSGraphAllPages)[0] | Get-DmDeviceConfigurationStates)}}
+#
+# DeviceManagement_RoleAssignments
+#
+    {$env:DmRoleAssignments = Get-DmRoleAssignments}    
+#
+# DeviceManagement_RoleDefinitions
+#
+    {$env:DmRoleDefinitions = Get-DmRoleDefinitions}    
+#
+# DeviceManagement_TermsAndConditions
+#
+    {$env:DmTnC=(Get-DmTermsAndConditions)}
+    {if ($env:DmTnC -ne $null) {((Get-DmTermsAndConditions| Get-MSGraphAllPages)[0] | Get-DmTermsAndConditionsAcceptanceStatuses)}}
+    {if ($env:DmTnC -ne $null) {((Get-DmTermsAndConditions| Get-MSGraphAllPages)[0] | Get-DmTermsAndConditionsAssignments)}}
 )
 
 #
