@@ -90,9 +90,9 @@ $tests = @(
 #
 # DeviceManagement_TermsAndConditions
 #
-    {$env:DmTnC=(Get-DmTermsAndConditions)}
-    {if ($env:DmTnC -ne $null) {((Get-DmTermsAndConditions| Get-MSGraphAllPages)[0] | Get-DmTermsAndConditionsAcceptanceStatuses)}}
-    {if ($env:DmTnC -ne $null) {((Get-DmTermsAndConditions| Get-MSGraphAllPages)[0] | Get-DmTermsAndConditionsAssignments)}}
+    {$env:DmTnC=(Get-DmTnCs)}
+    {if ($env:DmTnC -ne $null) {((Get-DmTnCs| Get-MSGraphAllPages)[0] | Get-DmTnCAcceptanceStatuses)}}
+    {if ($env:DmTnC -ne $null) {((Get-DmTnCs| Get-MSGraphAllPages)[0] | Get-DmTnCAssignments)}}
 )
 
 #
