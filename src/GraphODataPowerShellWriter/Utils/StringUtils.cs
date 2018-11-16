@@ -27,119 +27,119 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             // Keep this list sorted
             #region DeviceAppManagement
             #region DeviceAppManagement_AndroidManagedAppProtections
-            { "DeviceAppManagement_AndroidManagedAppProtections", "AndroidAPP" },
-            { "DeviceAppManagement_AndroidManagedAppProtections_Apps", "AndroidAPPApps" },
-            { "DeviceAppManagement_AndroidManagedAppProtections_Assignments", "AndroidAPPAssignments" },
-            { "DeviceAppManagement_AndroidManagedAppProtections_DeploymentSummary", "AndroidAPPDeploymentSummary" },
-            { "DeviceAppManagement_AndroidManagedAppProtections_Assign", "AssignAndroidAPP" },
-            { "DeviceAppManagement_AndroidManagedAppProtections_TargetApps", "TargetAndroidAPP" },
+            { "DeviceAppManagement_AndroidManagedAppProtections", "AmAndroidAPP" },
+            { "DeviceAppManagement_AndroidManagedAppProtections_Apps", "AmAndroidAPPApps" },
+            { "DeviceAppManagement_AndroidManagedAppProtections_Assignments", "AmAndroidAPPAssignments" },
+            { "DeviceAppManagement_AndroidManagedAppProtections_DeploymentSummary", "AmAndroidAPPDeploymentSummary" },
+            { "DeviceAppManagement_AndroidManagedAppProtections_Assign", "AmAssignAndroidAPP" },
+            { "DeviceAppManagement_AndroidManagedAppProtections_TargetApps", "AmTargetAndroidAPP" },
             #endregion
             #region DeviceAppManagement_DefaultManagedAppProtections
-            { "DeviceAppManagement_DefaultManagedAppProtections", "DefaultAPP" },
-            { "DeviceAppManagement_DefaultManagedAppProtections_Apps", "DefaultAPPApps" },
-            { "DeviceAppManagement_DefaultManagedAppProtections_DeploymentSummary", "DefaultAPPDeploymentSummary" },
-            { "DeviceAppManagement_DefaultManagedAppProtections_TargetApps", "TargetDefaultAPP" },
+            { "DeviceAppManagement_DefaultManagedAppProtections", "AmDefaultAPP" },
+            { "DeviceAppManagement_DefaultManagedAppProtections_Apps", "AmDefaultAPPApps" },
+            { "DeviceAppManagement_DefaultManagedAppProtections_DeploymentSummary", "AmDefaultAPPDeploymentSummary" },
+            { "DeviceAppManagement_DefaultManagedAppProtections_TargetApps", "AmTargetDefaultAPP" },
             #endregion
             #region DeviceAppManagement_IosManagedAppProtections
-            { "DeviceAppManagement_IosManagedAppProtections", "IosAPP" },
-            { "DeviceAppManagement_IosManagedAppProtections_Apps", "IosAPPApps" },
-            { "DeviceAppManagement_IosManagedAppProtections_Assignments", "IosAPPAppsAssignments" },
-            { "DeviceAppManagement_IosManagedAppProtections_DeploymentSummary", "IosAPPAppsDeploymentSummary" },
-            { "DeviceAppManagement_IosManagedAppProtections_Assign", "AssignIosAPPApps" },
-            { "DeviceAppManagement_IosManagedAppProtections_TargetApps", "TargetIosAPP" },
+            { "DeviceAppManagement_IosManagedAppProtections", "AmIosApp" },
+            { "DeviceAppManagement_IosManagedAppProtections_Apps", "AmIosAppApps" },
+            { "DeviceAppManagement_IosManagedAppProtections_Assignments", "AmIosAppAppsAssignments" },
+            { "DeviceAppManagement_IosManagedAppProtections_DeploymentSummary", "AmIosAppAppsDeploymentSummary" },
+            { "DeviceAppManagement_IosManagedAppProtections_Assign", "AmAssignIosAppApps" },
+            { "DeviceAppManagement_IosManagedAppProtections_TargetApps", "AmTargetIosApp" },
             #endregion      
             #region DeviceAppManagement_ManagedAppPolicies
-            { "DeviceAppManagement_ManagedAppPolicies", "ManagedAP" },
-            { "DeviceAppManagement_ManagedAppPolicies_Apps", "ManagedAPApps" },
-            { "DeviceAppManagement_ManagedAppPolicies_Assignments", "ManagedAPAssignments" },
-            { "DeviceAppManagement_ManagedAppPolicies_DeploymentSummary", "ManagedAPDeploymentSummary" },
-            { "DeviceAppManagement_ManagedAppPolicies_ExemptAppLockerFiles", "ManagedAPExemptAppLockerFiles" },
-            { "DeviceAppManagement_ManagedAppPolicies_ProtectedAppLockerFiles", "ManagedAPProtectedAppLockerFiles" },
-            { "DeviceAppManagement_ManagedAppPolicies_TargetApps", "TargetManagedAP" },
+            { "DeviceAppManagement_ManagedAppPolicies", "AmManagedAP" },
+            { "DeviceAppManagement_ManagedAppPolicies_Apps", "AmManagedAPApps" },
+            { "DeviceAppManagement_ManagedAppPolicies_Assignments", "AmManagedAPAssignments" },
+            { "DeviceAppManagement_ManagedAppPolicies_DeploymentSummary", "AmManagedAPDeploymentSummary" },
+            { "DeviceAppManagement_ManagedAppPolicies_ExemptAppLockerFiles", "AmManagedAPExemptAppLockerFiles" },
+            { "DeviceAppManagement_ManagedAppPolicies_ProtectedAppLockerFiles", "AmManagedAPProtectedAppLockerFiles" },
+            { "DeviceAppManagement_ManagedAppPolicies_TargetApps", "AmTargetManagedAP" },
             #endregion
             #region DeviceAppManagement_ManagedAppRegistrations
-            { "DeviceAppManagement_ManagedAppRegistrations", "AppRegns" },
-            { "DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies", "AppRegnPolicies" },
-            { "DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_Apps", "AppRegnApps" },
-            { "DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_Assignments", "AppRegnAssignments" },
-            { "DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_DeploymentSummary", "AppRegnDeploymentSummary" },
-            { "DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_ExemptAppLockerFiles", "AppRegnExemptAppLockerFiles" },
-            { "DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_ProtectedAppLockerFiles", "AppRegnProtectedAppLockerFiles" },
-            { "DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies", "AppRegnIntendedPolicies" },
-            { "DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_Apps", "AppRegnIntendedPoliciesApps" },
-            { "DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_Assignments", "AppRegnIntendedPoliciesAsignments" },
-            { "DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_DeploymentSummary", "AppRegnIntendedPoliciesDeploymentSummary"},
-            { "DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_ExemptAppLockerFiles", "AppRegnIntendedPoliciesExemptAppLockerFiles" },
-            { "DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_ProtectedAppLockerFiles", "AppRegnIntendedPoliciesProtectedAppLockerFiles" },            
-            { "DeviceAppManagement_ManagedAppRegistrations_Operations", "AppRegnOps" },
-            { "DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_TargetApps", "TargetAppRegnAppliedPolicies" },
-            { "DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_TargetApps", "TargetAppRegnIntendedPolicies" },
-            { "DeviceAppManagement_ManagedAppRegistrations_GetUserIdsWithFlaggedAppRegistration", "GetUserIdsWithFlaggedAppRegistration" },
+            { "DeviceAppManagement_ManagedAppRegistrations", "AmAppRegns" },
+            { "DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies", "AmAppRegnPolicies" },
+            { "DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_Apps", "AmAppRegnApps" },
+            { "DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_Assignments", "AmAppRegnAssignments" },
+            { "DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_DeploymentSummary", "AmAppRegnDeploymentSummary" },
+            { "DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_ExemptAppLockerFiles", "AmAppRegnExemptAppLockerFiles" },
+            { "DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_ProtectedAppLockerFiles", "AmAppRegnProtectedAppLockerFiles" },
+            { "DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies", "AmAppRegnIntendedPolicies" },
+            { "DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_Apps", "AmAppRegnIntendedPoliciesApps" },
+            { "DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_Assignments", "AmAppRegnIntendedPoliciesAsignments" },
+            { "DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_DeploymentSummary", "AmAppRegnIntendedPoliciesDeploymentSummary"},
+            { "DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_ExemptAppLockerFiles", "AmAppRegnIntendedPoliciesExemptAppLockerFiles" },
+            { "DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_ProtectedAppLockerFiles", "AmAppRegnIntendedPoliciesProtectedAppLockerFiles" },            
+            { "DeviceAppManagement_ManagedAppRegistrations_Operations", "AmAmAppRegnOps" },
+            { "DeviceAppManagement_ManagedAppRegistrations_AppliedPolicies_TargetApps", "AmTargetAppRegnAppliedPolicies" },
+            { "DeviceAppManagement_ManagedAppRegistrations_IntendedPolicies_TargetApps", "AmTargetAppRegnIntendedPolicies" },
+            { "DeviceAppManagement_ManagedAppRegistrations_GetUserIdsWithFlaggedAppRegistration", "AmGetUserIdsWithFlaggedAppRegistration" },
             #endregion
             #region DeviceAppManagement_ManagedAppStatuses
-            { "DeviceAppManagement_ManagedAppStatuses", "AppStatuses" },
+            { "DeviceAppManagement_ManagedAppStatuses", "AmAppStatuses" },
             #endregion
             #region DeviceAppManagement_ManagedEBooks
-            { "DeviceAppManagement_ManagedEBooks", "ManagedEBooks" },
-            { "DeviceAppManagement_ManagedEBooks_Assignments", "ManagedEBookAssignments"},
+            { "DeviceAppManagement_ManagedEBooks", "AmManagedEBooks" },
+            { "DeviceAppManagement_ManagedEBooks_Assignments", "AmManagedEBookAssignments"},
             { "DeviceAppManagement_ManagedEBooks_DeviceStates", "ManagedEBooksDeviceStates" },
-            { "DeviceAppManagement_ManagedEBooks_InstallSummary", "ManagedEBooksInstallSummary" },
-            { "DeviceAppManagement_ManagedEBooks_UserStateSummary", "ManagedEBooksUserStateSummary" },
-            { "DeviceAppManagement_ManagedEBooks_UserStateSummary_DeviceStates", "ManagedEBooksUserStateSummaryDeviceStates" },
+            { "DeviceAppManagement_ManagedEBooks_InstallSummary", "AmManagedEBooksInstallSummary" },
+            { "DeviceAppManagement_ManagedEBooks_UserStateSummary", "AmManagedEBooksUserStateSummary" },
+            { "DeviceAppManagement_ManagedEBooks_UserStateSummary_DeviceStates", "AmManagedEBooksUserStateSummaryDeviceStates" },
             { "DeviceAppManagement_ManagedEBooks_Assign", "AssignManagedEBooks" },
             #endregion
             #region DeviceAppManagement_MdmWindowsInformationProtectionPolicies
-            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies", "MdmWinInfoPP" },
-            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_Assignments", "MdmWinInfoPPAssignments" },
-            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_ExemptAppLockerFiles", "MdmWinInfoPPExemptAppLockerFiles" },
-            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_ProtectedAppLockerFiles", "MdmWinInfoPPProtectedAppLockerFiles" },
-            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_Assign", "AssignMdmWinInfoPP" },
-            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_TargetApps", "TargetMdmWinInfoPP" },
+            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies", "AmMdmWinInfoPP" },
+            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_Assignments", "AmMdmWinInfoPPAssignments" },
+            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_ExemptAppLockerFiles", "AmMdmWinInfoPPExemptAppLockerFiles" },
+            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_ProtectedAppLockerFiles", "AmMdmWinInfoPPProtectedAppLockerFiles" },
+            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_Assign", "AmAssignMdmWinInfoPP" },
+            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_TargetApps", "AmTargetMdmWinInfoPP" },
             #endregion
             #region DeviceAppManagement_MobileAppCategories
-            { "DeviceAppManagement_MobileAppCategories", "MobileAppCats" },
+            { "DeviceAppManagement_MobileAppCategories", "AmMobileAppCats" },
             #endregion
             #region DeviceAppManagement_MobileAppConfigurations
-            { "DeviceAppManagement_MobileAppConfigurations", "MobileAppConfigs" },
-            { "DeviceAppManagement_MobileAppConfigurations_Assignments", "MobileAppConfigAssignments" },
-            { "DeviceAppManagement_MobileAppConfigurations_DeviceStatuses", "MobileAppConfigDeviceStatuses" },
-            { "DeviceAppManagement_MobileAppConfigurations_DeviceStatusSummary", "MobileAppConfigDeviceStatusSummary" },
-            { "DeviceAppManagement_MobileAppConfigurations_UserStatuses", "MobileAppConfigUserStatuses" },
-            { "DeviceAppManagement_MobileAppConfigurations_UserStatusSummary", "MobileAppConfigUserStatusSummary" },
+            { "DeviceAppManagement_MobileAppConfigurations", "AmMobileAppConfigs" },
+            { "DeviceAppManagement_MobileAppConfigurations_Assignments", "AmMobileAppConfigAssignments" },
+            { "DeviceAppManagement_MobileAppConfigurations_DeviceStatuses", "AmMobileAppConfigDeviceStatuses" },
+            { "DeviceAppManagement_MobileAppConfigurations_DeviceStatusSummary", "AmMobileAppConfigDeviceStatusSummary" },
+            { "DeviceAppManagement_MobileAppConfigurations_UserStatuses", "AmMobileAppConfigUserStatuses" },
+            { "DeviceAppManagement_MobileAppConfigurations_UserStatusSummary", "AmMobileAppConfigUserStatusSummary" },
             #endregion            
             #region DeviceAppManagement_MobileApps
-            { "DeviceAppManagement_MobileApps", "MobileApps" },            
-            { "DeviceAppManagement_MobileApps_Assignments", "MobileAppsAssignments" },
-            { "DeviceAppManagement_MobileApps_Categories", "MobileAppsCategories" },
-            { "DeviceAppManagement_MobileApps_CategoriesReferences", "MobileAppsCategoriesReferences" },
-            { "DeviceAppManagement_MobileApps_ContentVersions", "MobileAppsContentVersions" },
-            { "DeviceAppManagement_MobileApps_ContentVersions_Files", "MobileAppsContentVersionsFiles"},
-            { "DeviceAppManagement_MobileApps_Assign", "AssignMobileApps" },
-            { "DeviceAppManagement_MobileApps_ContentVersions_Files_Commit", "CommitMobileAppCurrentFileVersion" },
-            { "DeviceAppManagement_MobileApps_ContentVersions_Files_RenewUpload", "RenewMobileAppCurrentFileVersionUpload" },
+            { "DeviceAppManagement_MobileApps", "AmMobileApps" },            
+            { "DeviceAppManagement_MobileApps_Assignments", "AmMobileAppsAssignments" },
+            { "DeviceAppManagement_MobileApps_Categories", "AmMobileAppsCategories" },
+            { "DeviceAppManagement_MobileApps_CategoriesReferences", "AmMobileAppsCategoriesReferences" },
+            { "DeviceAppManagement_MobileApps_ContentVersions", "AmMobileAppsContentVersions" },
+            { "DeviceAppManagement_MobileApps_ContentVersions_Files", "AmMobileAppsContentVersionsFiles"},
+            { "DeviceAppManagement_MobileApps_Assign", "AmAssignMobileApps" },
+            { "DeviceAppManagement_MobileApps_ContentVersions_Files_Commit", "AmCommitMobileAppCurrentFileVersion" },
+            { "DeviceAppManagement_MobileApps_ContentVersions_Files_RenewUpload", "AmRenewMobileAppCurrentFileVersionUpload" },
             #endregion
             #region DeviceAppManagement_SyncMicrosoftStoreForBusinessApps
-            { "DeviceAppManagement_SyncMicrosoftStoreForBusinessApps", "SyncMSFBApps" },
+            { "DeviceAppManagement_SyncMicrosoftStoreForBusinessApps", "AmSyncMSFBApps" },
             #endregion
             #region DeviceAppManagement_TargetedManagedAppConfigurations
-            { "DeviceAppManagement_TargetedManagedAppConfigurations", "TargetedAppConfigs" },
-            { "DeviceAppManagement_TargetedManagedAppConfigurations_Apps", "TargetedAppConfigApps" },
-            { "DeviceAppManagement_TargetedManagedAppConfigurations_Assignments", "TargetedAppConfigAssignments" },
-            { "DeviceAppManagement_TargetedManagedAppConfigurations_DeploymentSummary", "TargetedAppConfigDeploymentSummary" },
-            { "DeviceAppManagement_TargetedManagedAppConfigurations_Assign", "AssignTargetedAppConfig" },
-            { "DeviceAppManagement_TargetedManagedAppConfigurations_TargetApps", "TargetedAppConfigApps" },
+            { "DeviceAppManagement_TargetedManagedAppConfigurations", "AmTargetedAppConfigs" },
+            { "DeviceAppManagement_TargetedManagedAppConfigurations_Apps", "AmTargetedAppConfigApps" },
+            { "DeviceAppManagement_TargetedManagedAppConfigurations_Assignments", "AmTargetedAppConfigAssignments" },
+            { "DeviceAppManagement_TargetedManagedAppConfigurations_DeploymentSummary", "AmTargetedAppConfigDeploymentSummary" },
+            { "DeviceAppManagement_TargetedManagedAppConfigurations_Assign", "AmAssignTargetedAppConfig" },
+            { "DeviceAppManagement_TargetedManagedAppConfigurations_TargetApps", "AmTargetedAppConfigApps" },
             #endregion
             #region DeviceAppManagement_VppTokens
-            { "DeviceAppManagement_VppTokens", "VppTokens"},
+            { "DeviceAppManagement_VppTokens", "AmVppTokens"},
             { "DeviceAppManagement_VppTokens_SyncLicenses", "VppTokensSyncLicenses" },
             #endregion
             #region DeviceAppManagement_WindowsInformationProtectionPolicies
-            { "DeviceAppManagement_WindowsInformationProtectionPolicies", "WinInfoPP" },
-            { "DeviceAppManagement_WindowsInformationProtectionPolicies_Assignments", "WinInfoPPAssignments" },
-            { "DeviceAppManagement_WindowsInformationProtectionPolicies_ExemptAppLockerFiles", "WinInfoPPExemptAppLockerFiles" },
-            { "DeviceAppManagement_WindowsInformationProtectionPolicies_ProtectedAppLockerFiles", "WinInfoPPProtectedAppLockerFiles" },
-            { "DeviceAppManagement_WindowsInformationProtectionPolicies_Assign", "AssignWinInfoPP" },
-            { "DeviceAppManagement_WindowsInformationProtectionPolicies_TargetApps", "TargetWinInfoPP"},
+            { "DeviceAppManagement_WindowsInformationProtectionPolicies", "AmWinInfoPP" },
+            { "DeviceAppManagement_WindowsInformationProtectionPolicies_Assignments", "AmWinInfoPPAssignments" },
+            { "DeviceAppManagement_WindowsInformationProtectionPolicies_ExemptAppLockerFiles", "AmWinInfoPPExemptAppLockerFiles" },
+            { "DeviceAppManagement_WindowsInformationProtectionPolicies_ProtectedAppLockerFiles", "AmWinInfoPPProtectedAppLockerFiles" },
+            { "DeviceAppManagement_WindowsInformationProtectionPolicies_Assign", "AmAssignWinInfoPP" },
+            { "DeviceAppManagement_WindowsInformationProtectionPolicies_TargetApps", "AmTargetWinInfoPP"},
             #endregion
             #endregion
             #region DeviceManagement            
@@ -167,6 +167,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceManagement_SoftwareUpdateStatusSummary", "DmSoftwareUpdateStatusSummary" },
             { "DeviceManagement_SoftwareUpdateStatusSummaryReference", "DmSoftwareUpdateStatusSummaryReference" }, //BUGBUG: Missing Route
             { "DeviceManagement_TelecomExpenseManagementPartners", "DmTelecomExpenseManagementPartners" },
+            { "DeviceManagement_DeviceConfigurations_Assign", "DmAssignDCs" },
+            { "DeviceManagement_DeviceEnrollmentConfigurations_Assign", "DmAssignDeviceEnrollmentConfigs" },
+            { "DeviceManagement_DeviceEnrollmentConfigurations_SetPriority", "DmSetPriorityOfDeviceEnrollmentConfigs" },
+            { "DeviceManagement_ExchangeConnectors_Sync", "DmSyncExchangeConnectors" },
+            { "DeviceManagement_GetEffectivePermissions", "DmGetEffectivePermissions" },
+            { "DeviceManagement_VerifyWindowsEnrollmentAutoDiscovery", "DmVerifyWindowsEnrollmentAutoDiscovery" },
             #region DeviceManagement_DetectedApps
             { "DeviceManagement_DetectedApps", "DmDetectedApps" },
             { "DeviceManagement_DetectedApps_ManagedDevices", "DmDetectedAppDevices" },
@@ -201,10 +207,29 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceManagement_ManagedDevices_DeviceCategory", "DmDeviceCategory" },
             { "DeviceManagement_ManagedDevices_DeviceCompliancePolicyStates", "DmDeviceCompliancePolicyStates" },
             { "DeviceManagement_ManagedDevices_DeviceConfigurationStates", "DmDeviceConfigurationStates" },
+            { "DeviceManagement_ManagedDevices_BypassActivationLock", "DmBypassActivationLock" },
+            { "DeviceManagement_ManagedDevices_CleanWindowsDevice", "DmCleanWindowsDevice" },
+            { "DeviceManagement_ManagedDevices_DeleteUserFromSharedAppleDevice", "DmDeleteUserFromSharedAppleDevice" },
+            { "DeviceManagement_ManagedDevices_DisableLostMode", "DmDisableLostMode" },
+            { "DeviceManagement_ManagedDevices_LocateDevice", "DmLocateDevice" },
+            { "DeviceManagement_ManagedDevices_LogoutSharedAppleDeviceActiveUser", "DmLogoutSharedAppleDeviceActiveUser" },
+            { "DeviceManagement_ManagedDevices_RebootNow", "DmRebootDeviceNow" },
+            { "DeviceManagement_ManagedDevices_RecoverPasscode", "DmRecoverDevicePasscode" },
+            { "DeviceManagement_ManagedDevices_RemoteLock", "DmRemoteLockDevice" },
+            { "DeviceManagement_ManagedDevices_RequestRemoteAssistance", "DmRequestRA" },
+            { "DeviceManagement_ManagedDevices_Retire", "DmRetireDevice" },
+            { "DeviceManagement_ManagedDevices_ShutDown", "DmShutDownDevice"},
+            { "DeviceManagement_ManagedDevices_SyncDevice", "DmSyncDevice" },
+            { "DeviceManagement_ManagedDevices_UpdateWindowsDeviceAccount", "DmUpdateWindowsDeviceAccount"},
+            { "DeviceManagement_ManagedDevices_WindowsDefenderScan", "DmWindowsDefenderScan"},
+            { "DeviceManagement_ManagedDevices_WindowsDefenderUpdateSignatures", "DmWindowsDefenderUpdateSignatures" },
+            { "DeviceManagement_ManagedDevices_Wipe", "DmWipeDevice" },
+
             #endregion
             #region DeviceManagement_NotificationMessageTemplates
             { "DeviceManagement_NotificationMessageTemplates", "DmNotifMsgTemplates"},
             { "DeviceManagement_NotificationMessageTemplates_LocalizedNotificationMessages", "DmNotifMsgTemplateLocMsgs" },
+            { "DeviceManagement_NotificationMessageTemplates_SendTestMessage", "DmSendTestMessage" },
             #endregion
             #region DeviceManagement_RoleAssignments
             { "DeviceManagement_RoleAssignments", "DmRoleAssignments" },
@@ -215,6 +240,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceManagement_RoleDefinitions_RoleAssignments", "DmRoleDefinitionAssignments" },  //BUGBUG: Missing Route
             { "DeviceManagement_RoleDefinitions_RoleAssignments_RoleDefinition", "DmRoleAssignmentRoleDefinition" }, //BUGBUG: Missing route
             { "DeviceManagement_RoleDefinitions_RoleAssignments_RoleDefinitionReference", "DmRoleAssignmentDefinitionRef" }, //BUGBUG: Missing route
+            #endregion
+            #region DeviceManagement_RemoteAssistancePartners_BeginOnboarding
+            { "DeviceManagement_RemoteAssistancePartners_BeginOnboarding", "DmBeginRAOnboarding" },
+            { "DeviceManagement_RemoteAssistancePartners_Disconnect", "DmDisconnectRA" },
             #endregion
             #region DeviceManagement_TermsAndConditions
             { "DeviceManagement_TermsAndConditions", "DmTnCs" },

@@ -26,14 +26,14 @@ $tests = @(
     {Get-DmDeviceCompliancePolicyDeviceStateSummary}
     {Get-DmDeviceCompliancePolicySettingStateSummaries}
     {$env:DmDCStateSumm=Get-DmDeviceConfigurationDeviceStateSummaries}
-    {if ($env:DmDCStateSumm -ne $null) {((Get-DmDeviceConfigurationDeviceStateSummaries| Get-MSGraphAllPages)[0] |Get-DmDeviceComplianceSettingStates}}
+    {if ($env:DmDCStateSumm -ne $null) {(Get-DmDeviceConfigurationDeviceStateSummaries| Get-MSGraphAllPages) |Get-DmDeviceComplianceSettingStates}}
     {Get-DmDeviceManagementPartners}
     {Get-DmExchangeConnectors}
     {Get-DmIosUpdateStatuses}
     {Get-DmManagedDeviceOverview}
     {Get-DmMobileThreatDefenseConnectors}
     {$env:DmNotifMsgTemplates=(Get-DmNotifMsgTemplates)}
-    {if ($env:DmNotifMsgTemplates -ne $null) {((Get-DmNotifMsgTemplates| Get-MSGraphAllPages)[0] |Get-DmNotifMsgTemplateLocMsgs}    
+    {if ($env:DmNotifMsgTemplates -ne $null) {(Get-DmNotifMsgTemplates| Get-MSGraphAllPages)[0] |Get-DmNotifMsgTemplateLocMsgs}} 
     {Get-DmTroubleshootingEvents}
     {Get-DmWIPAppLearningSummaries}
     {Get-DmWIPNetworkLearningSummaries}
@@ -101,6 +101,7 @@ $tests = @(
 try
 {
     $env:msGraphMeta = Get-MSGraphMetadata
+    $connection = Connect-MSGraph    
 }
 catch
 {    
