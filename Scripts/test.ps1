@@ -32,8 +32,22 @@ try {
         (Get-Host).UI.RawUI.ForegroundColor = 'Cyan'
         (Get-Host).UI.RawUI.BackgroundColor = 'Black'
         $testScripts = Get-ChildItem -Path "$env:testDir" -Recurse -Filter '*.ps1'
+        #
+        # Import the Intune PowerShell SDK Module
+        #
+        Write-Output "Importing $module..."
+        Import-Module $module
+
+        #
+        # Setup the test context
+        #
         Import-Module $env:testDir\Set-IntuneContext.psm1
+        Write-Output "Setting IntuneContext..."
         Set-IntuneContext
+
+        #
+        # Run the Tests
+        #
         $testScripts | ForEach-Object {
             Write-Host -f Yellow "RUNNING: $($_.BaseName)"
             try {
