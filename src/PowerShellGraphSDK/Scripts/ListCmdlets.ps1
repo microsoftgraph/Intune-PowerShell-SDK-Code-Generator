@@ -1,11 +1,11 @@
 param(
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string]$ModuleName='Microsoft.Graph.Intune',
+    [string]$ModuleName="$env:moduleName",
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string]$OutputDirectory='.\src\GraphODataPowerShellWriter\bin\Release\output\bin\Release\net471'
+    [string]$OutputDirectory="$env:sdkDir"
 )
 
 $OutputDirectory = $OutputDirectory | Resolve-Path
@@ -27,34 +27,21 @@ for($cmdletCount=0; $cmdletCount -lt $sdkCmdlets.Count; $cmdletCount++)
     $helpTxt = (Get-Help $sdkCmdlets[$cmdletCount]).Description
     if ($helpTxt -ne $null)
     {   
-        if ($helpTxt.Count -eq 1)
-        {
-            $description = $helpTxt[0].Text
-            $sdkCmdletsList+= ("CMDLET: $name`n`t")
-        }
-        if ($helpTxt.Count -eq 2)
-        {
-            $route = $helpTxt[0].Text
-            $description = $helpTxt[1].Text
-            $sdkCmdletsList+= ("CMDLET: $name`n`tROUTE:$route`tDESCRIPTION:$description")
-        }
-        if ($helpTxt.Count -eq 3)
-        {
-            $route = $helpTxt[0].Text
-            $description = $helpTxt[1].Text
-            $returnValue = $helpTxt[2].Text
-            $sdkCmdletsList+= ("CMDLET: $name`n`tROUTE:$route`tDESCRIPTION:$description`tRETURNS:$returnValue")
-        }        
+        $route = $helpTxt[0].Text
+        $description = $helpTxt[1].Text
+        $returnValue = $helpTxt[2].Text
+        $sdkCmdletsList+= ("CMDLET: $name`n`tROUTE:$route`tDESCRIPTION:$description`tRETURNS:$returnValue")        
     }
     else
     {
         $route = $null
         $description = $null
         $returnValue = $null
+        $sdkCmdletsList+= ("CMDLET: " + $name)
     }
-    $sdkCmdletsList+= ("CMDLET: " + $name)
 }
 
 $sdkCmdletsList | Out-File "$OutputDirectory\$ModuleName.cmdlets.txt"
 Write-Debug "$sdkCmdletsList"
-Write-Host "Module cmdlets list generated."
+Write-Host "Module cmdlets list generated at: $OutputDirectory\$ModuleName.cmdlets.txt"
+popd

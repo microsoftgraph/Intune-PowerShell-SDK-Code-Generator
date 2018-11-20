@@ -2,7 +2,11 @@
 param(
     [Parameter(Mandatory=$true)]
     [ValidateNotNullOrEmpty()]
-    [string]$SdkDirectory
+    [string]$SdkDirectory,
+
+    [Parameter(Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [string]$AdminUPN="$env:adminUPN"
 )
 
 $moduleLocation = "$SdkDirectory\$($env:moduleName).$($env:moduleExtension)"
@@ -11,6 +15,29 @@ $moduleLocation = "$SdkDirectory\$($env:moduleName).$($env:moduleExtension)"
 if (-Not (Test-Path "$moduleLocation" -PathType Leaf))
 {
     throw "Cannot find '$moduleLocation'.  Run the 'build' command before running tests."
+}
+
+#
+# Import the Intune PowerShell SDK Module if necessary
+#
+if ((Get-Module $env:moduleName) -eq $null)
+{        
+    Import-Module $moduleLocation
+}
+
+#
+# Connect to MSGraph if necessary
+#
+try
+{
+    $env:msGraphMeta = Get-MSGraphMetadata
+    $connection = Connect-MSGraph
+}
+catch
+{    
+    $adminPwd=Read-Host -AsSecureString -Prompt "Enter pwd for $env:adminUPN"
+    $creds = New-Object System.Management.Automation.PSCredential ($AdminUPN, $adminPwd)
+    $connection = Connect-MSGraph -PSCredential $creds
 }
 
 Write-Host

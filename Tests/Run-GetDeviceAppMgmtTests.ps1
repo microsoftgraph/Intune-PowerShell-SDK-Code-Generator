@@ -1,13 +1,43 @@
+param(
+    [Parameter(Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [string]$ModuleName="$env:moduleName",
+
+    [Parameter(Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [string]$OutputDirectory="$env:sdkDir",
+
+    [Parameter(Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [string]$AdminUPN="$env:adminUPN"   
+)
+
+$OutputDirectory = $OutputDirectory | Resolve-Path
+$modulePath = "$OutputDirectory/$ModuleName.psd1"
+Write-Host "OutputDirectory: $OutputDirectory"
+Write-Host "ModulePath: $modulePath"
+
 #
 # Import the Intune PowerShell SDK Module if necessary
 #
-if ((Get-Module 'Microsoft.Graph.Intune') -eq $env:null)
+if ((Get-Module $ModuleName) -eq $null)
+{        
+    Import-Module $modulePath
+}
+
+#
+# Connect to MSGraph if necessary
+#
+try
 {
-    #
-    # BUGBUG: Pass this as parameter on cmdline
-    #
-    $moduleInstallFolderPath="..\src\GraphODataPowerShellWriter\bin\Release\output\bin\Release\net471"
-    Import-Module $moduleInstallFolderPath\Microsoft.Graph.Intune.psd1
+    $env:msGraphMeta = Get-MSGraphMetadata
+    $connection = Connect-MSGraph
+}
+catch
+{    
+    $adminPwd=Read-Host -AsSecureString -Prompt "Enter pwd for $env:adminUPN"
+    $creds = New-Object System.Management.Automation.PSCredential ($AdminUPN, $adminPwd)
+    $connection = Connect-MSGraph -PSCredential $creds
 }
 
 #
@@ -111,22 +141,6 @@ $tests = @(
     #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-AmWinInfoPP | Get-MSGraphAllPages) | Get-AmWinInfoPPExemptAppLockerFiles}}
     #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-AmWinInfoPP | Get-MSGraphAllPages) | Get-AmWinInfoPPProtectedAppLockerFiles}}   
 )
-
-#
-# Connect to MSGraph if necessary
-#
-try
-{
-    $env:msGraphMeta = Get-MSGraphMetadata
-    $connection = Connect-MSGraph
-}
-catch
-{    
-    $adminUPN = 'admin@roramutesta063.onmicrosoft.com'
-    $adminPwd = Read-Host -AsSecureString -Prompt "Enter pwd for $adminUPN"
-    $creds = New-Object System.Management.Automation.PSCredential ($adminUPN, $adminPwd)
-    $connection = Connect-MSGraph -PSCredential $creds
-}
 
 #
 # Run the tests
