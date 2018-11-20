@@ -28,6 +28,7 @@ $env:buildScriptPortable = "$($env:PowerShellSDKRepoRoot)\Scripts\build-portable
 $env:buildScriptFull = "$($env:PowerShellSDKRepoRoot)\Scripts\build-full.ps1"
 $env:runScript = "$($env:PowerShellSDKRepoRoot)\Scripts\run.ps1"
 $env:testScript = "$($env:PowerShellSDKRepoRoot)\Scripts\test.ps1"
+$env:ListCmdletsScript = "$($env:PowerShellSDKRepoRoot)\src\PowerShellGraphSDK\Scripts\ListCmdlets.ps1"
 
 ###############
 ## Functions ##
@@ -111,6 +112,7 @@ function global:GenerateSDK {
     global:BuildWriter
     global:RunWriter -GraphSchema $GraphSchema
     global:BuildSDK -WorkingDirectory "$env:generatedDir"
+    Invoke-Expression "$env:ListCmdletsScript -OutputDirectory $env:sdkDir"
 }
 
 function global:GenerateAndRunSDK {

@@ -30,19 +30,21 @@ for($cmdletCount=0; $cmdletCount -lt $sdkCmdlets.Count; $cmdletCount++)
         if ($helpTxt.Count -eq 1)
         {
             $description = $helpTxt[0].Text
+            $sdkCmdletsList+= ("CMDLET: $name`n`t")
         }
         if ($helpTxt.Count -eq 2)
         {
             $route = $helpTxt[0].Text
             $description = $helpTxt[1].Text
+            $sdkCmdletsList+= ("CMDLET: $name`n`tROUTE:$route`tDESCRIPTION:$description")
         }
         if ($helpTxt.Count -eq 3)
         {
             $route = $helpTxt[0].Text
             $description = $helpTxt[1].Text
             $returnValue = $helpTxt[2].Text
-        }
-        $sdkCmdletsList+= ("CMDLET: $name`n`tROUTE:$route`tDESCRIPTION:$description`tRETURNS:$returnValue")
+            $sdkCmdletsList+= ("CMDLET: $name`n`tROUTE:$route`tDESCRIPTION:$description`tRETURNS:$returnValue")
+        }        
     }
     else
     {
