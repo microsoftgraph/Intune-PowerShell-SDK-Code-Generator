@@ -14,8 +14,6 @@ param(
 
 $OutputDirectory = $OutputDirectory | Resolve-Path
 $modulePath = "$OutputDirectory/$ModuleName.psd1"
-Write-Host "OutputDirectory: $OutputDirectory"
-Write-Host "ModulePath: $modulePath"
 
 #
 # Import the Intune PowerShell SDK Module if necessary
