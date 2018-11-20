@@ -16,31 +16,22 @@ $OutputDirectory = $OutputDirectory | Resolve-Path
 $modulePath = "$OutputDirectory/$ModuleName.psd1"
 
 #
-# Import the Intune PowerShell SDK Module if necessary
+# Import the Intune PowerShell SDK Module
 #
-if ((Get-Module $ModuleName) -eq $null)
-{        
-    Import-Module $modulePath
-}
+Write-Output "Importing $ModuleName..."
+Import-Module $modulePath
 
 #
-# Connect to MSGraph if necessary
+# Setup the test context
 #
-try
-{
-    $env:msGraphMeta = Get-MSGraphMetadata
-    $connection = Connect-MSGraph
-}
-catch
-{    
-    $adminPwd=Read-Host -AsSecureString -Prompt "Enter pwd for $env:adminUPN"
-    $creds = New-Object System.Management.Automation.PSCredential ($AdminUPN, $adminPwd)
-    $connection = Connect-MSGraph -PSCredential $creds
-}
+Import-Module $env:testDir\Set-IntuneContext.psm1
+Write-Output "Setting IntuneContext..."
+Set-IntuneContext -AdminUPN $AdminUPN
 
 #
 # Create iosCompliancePolicy
 #
+Write-Output "Creating iOS Compliance Policy ..."
 $iosCompliancePolicy = New-DmDeviceCompliancePolicies -iosCompliancePolicy `
     -displayName "iOS Compliance Policy" -passcodeRequired $true -passcodeMinimumLength 6 `
     -passcodeMinutesOfInactivityBeforeLock 15 -securityBlockJailbrokenDevices $true `
@@ -51,7 +42,10 @@ $iosCompliancePolicy = New-DmDeviceCompliancePolicies -iosCompliancePolicy `
 # Assign iosCompliancePolicy to 'Intune POC Users' group
 #
 $IPU_Id = (Get-Groups -Filter "displayName eq 'Intune POC Users'").id
+Write-Output "Assigning $iosCompliancePolicy to 'Intune POC Users' group..."
 Invoke-DmAssignDeviceCompliancePolicies -deviceCompliancePolicyId $iosCompliancePolicy.id `
     -assignments (New-DeviceCompliancePolicyAssignmentObject `
     -target (New-DeviceAndAppManagementAssignmentTargetObject `
     -groupAssignmentTarget -groupId "$IPU_Id"))
+
+ Write-Output "Test complete."

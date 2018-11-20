@@ -16,27 +16,17 @@ $OutputDirectory = $OutputDirectory | Resolve-Path
 $modulePath = "$OutputDirectory/$ModuleName.psd1"
 
 #
-# Import the Intune PowerShell SDK Module if necessary
+# Import the Intune PowerShell SDK Module
 #
-if ((Get-Module $ModuleName) -eq $null)
-{        
-    Import-Module $modulePath
-}
+Write-Output "Importing $ModuleName..."
+Import-Module $modulePath
 
 #
-# Connect to MSGraph if necessary
+# Setup the test context
 #
-try
-{
-    $env:msGraphMeta = Get-MSGraphMetadata
-    $connection = Connect-MSGraph
-}
-catch
-{    
-    $adminPwd=Read-Host -AsSecureString -Prompt "Enter pwd for $env:adminUPN"
-    $creds = New-Object System.Management.Automation.PSCredential ($AdminUPN, $adminPwd)
-    $connection = Connect-MSGraph -PSCredential $creds
-}
+Import-Module $env:testDir\Set-IntuneContext.psm1
+Write-Output "Setting IntuneContext..."
+Set-IntuneContext -AdminUPN $AdminUPN
 
 #
 # Declare the cmdlets the test along with their inputs

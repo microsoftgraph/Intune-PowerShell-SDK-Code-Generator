@@ -17,29 +17,6 @@ if (-Not (Test-Path "$moduleLocation" -PathType Leaf))
     throw "Cannot find '$moduleLocation'.  Run the 'build' command before running tests."
 }
 
-#
-# Import the Intune PowerShell SDK Module if necessary
-#
-if ((Get-Module $env:moduleName) -eq $null)
-{        
-    Import-Module $moduleLocation
-}
-
-#
-# Connect to MSGraph if necessary
-#
-try
-{
-    $env:msGraphMeta = Get-MSGraphMetadata
-    $connection = Connect-MSGraph
-}
-catch
-{    
-    $adminPwd=Read-Host -AsSecureString -Prompt "Enter pwd for $env:adminUPN"
-    $creds = New-Object System.Management.Automation.PSCredential ($AdminUPN, $adminPwd)
-    $connection = Connect-MSGraph -PSCredential $creds
-}
-
 Write-Host
 Write-Host 'Starting the test PowerShell context...' -f Cyan
 Write-Host
@@ -54,9 +31,9 @@ try {
         (Get-Host).UI.RawUI.WindowTitle = "$module"
         (Get-Host).UI.RawUI.ForegroundColor = 'Cyan'
         (Get-Host).UI.RawUI.BackgroundColor = 'Black'
-        Import-Module "$module"
         $testScripts = Get-ChildItem -Path "$env:testDir" -Recurse -Filter '*.ps1'
-        Connect-MSGraph
+        Import-Module $env:testDir\Set-IntuneContext.psm1
+        Set-IntuneContext
         $testScripts | ForEach-Object {
             Write-Host -f Yellow "RUNNING: $($_.BaseName)"
             try {
