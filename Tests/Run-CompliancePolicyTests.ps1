@@ -38,36 +38,20 @@ catch
     $connection = Connect-MSGraph -PSCredential $creds
 }
 
-$tests = @(
-    {$env:scheduledActionConfigurations = (New-DeviceComplianceActionItemObject -gracePeriodHours 0 -actionType block -notificationTemplateId "")}
-    {$env:scheduledActionsForRule = (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired `
-        -scheduledActionConfigurations $env:scheduledActionConfigurations)}
-    {$env:iosCompliancePolicy = (New-DmDeviceCompliancePolicies -iosCompliancePolicy `
-        -displayName "iOS Compliance Policy" -passcodeRequired $true -passcodeMinimumLength 6 `
-        -passcodeMinutesOfInactivityBeforeLock 15 -securityBlockJailbrokenDevices $true `
-        -scheduledActionsForRule $env:scheduledActionsForRule)}
-    {$env:IPU_Id = (Get-Groups -Filter "displayName eq 'Intune POC Users'").id}
-    {$env:assignmentTarget = (New-DeviceAndAppManagementAssignmentTargetObject `
-        -groupAssignmentTarget -groupId "$env:IPU_Id")}
-    {$env:assignment = New-DeviceCompliancePolicyAssignmentObject `
-        -target $env:assignmentTarget}
-    #BUGBUG: A valid URL could not be constructed {Invoke-DmAssignDeviceCompliancePolicies -deviceCompliancePolicyId $env:iosCompliancePolicy `
-    #    -assignments $env:assignment}
-)
+#
+# Create iosCompliancePolicy
+#
+$iosCompliancePolicy = New-DmDeviceCompliancePolicies -iosCompliancePolicy `
+    -displayName "iOS Compliance Policy" -passcodeRequired $true -passcodeMinimumLength 6 `
+    -passcodeMinutesOfInactivityBeforeLock 15 -securityBlockJailbrokenDevices $true `
+    -scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired `
+    -scheduledActionConfigurations (New-DeviceComplianceActionItemObject -gracePeriodHours 0 -actionType block -notificationTemplateId ""))
 
 #
-# Run the tests
+# Assign iosCompliancePolicy to 'Intune POC Users' group
 #
-foreach ($test in $tests)
-{
-    try
-    {        
-        $output = Invoke-Command -scriptblock $test
-        Write-Output "$test, $output"
-    }
-    catch
-    {        
-        $debugInfo="$_"
-        Write-Error "$test,$debugInfo"
-    }
-}
+$IPU_Id = (Get-Groups -Filter "displayName eq 'Intune POC Users'").id
+Invoke-DmAssignDeviceCompliancePolicies -deviceCompliancePolicyId $iosCompliancePolicy.id `
+    -assignments (New-DeviceCompliancePolicyAssignmentObject `
+    -target (New-DeviceAndAppManagementAssignmentTargetObject `
+    -groupAssignmentTarget -groupId "$IPU_Id"))
