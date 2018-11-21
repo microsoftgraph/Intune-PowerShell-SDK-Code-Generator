@@ -12,15 +12,6 @@ param(
     [string]$AdminUPN="$env:adminUPN"   
 )
 
-$OutputDirectory = $OutputDirectory | Resolve-Path
-$modulePath = "$OutputDirectory/$ModuleName.psd1"
-
-#
-# Import the Intune PowerShell SDK Module
-#
-Write-Output "Importing $ModuleName..."
-Import-Module $modulePath
-
 #
 # Setup the test context
 #
@@ -39,7 +30,6 @@ $tests = @(
 #
     {Get-DeviceAppManagement}
     {Get-APNSCert}
-    #BUGBUG: Investigate 400 Bad Request {Get-CASettings}
     {Get-DeviceCategories}
     {Get-DeviceCompliancePolicyDeviceStateSummary}
     {Get-DeviceCompliancePolicySettingStateSummaries}

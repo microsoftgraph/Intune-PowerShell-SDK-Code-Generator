@@ -21,8 +21,10 @@ function Set-IntuneContext
     #
     # Import the Intune PowerShell SDK Module if necessary
     #
-    if ((Get-Module $ModuleName) -eq $null)
+    if (!(Get-Module $ModuleName))
     {        
+        $modulePath = "$env:sdkDir\$env:moduleName"
+        Write-Output "Importing $modulePath..."
         Import-Module $modulePath
     }
 

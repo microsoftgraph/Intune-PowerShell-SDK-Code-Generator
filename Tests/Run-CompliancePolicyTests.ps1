@@ -12,15 +12,6 @@ param(
     [string]$AdminUPN="$env:adminUPN"   
 )
 
-$OutputDirectory = $OutputDirectory | Resolve-Path
-$modulePath = "$OutputDirectory/$ModuleName.psd1"
-
-#
-# Import the Intune PowerShell SDK Module
-#
-Write-Output "Importing $ModuleName..."
-Import-Module $modulePath
-
 #
 # Setup the test context
 #

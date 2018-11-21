@@ -12,15 +12,6 @@ param(
     [string]$AdminUPN="$env:adminUPN"   
 )
 
-$OutputDirectory = $OutputDirectory | Resolve-Path
-$modulePath = "$OutputDirectory/$ModuleName.psd1"
-
-#
-# Import the Intune PowerShell SDK Module
-#
-Write-Output "Importing $ModuleName..."
-Import-Module $modulePath
-
 #
 # Setup the test context
 #
@@ -41,7 +32,7 @@ $tests = @(
 #
 # AndroidManagedAppProtectionApps
 #    
-    {(Get-AndroidAPP | Get-MSGraphAllPages)[0] | Get-AndroidAPPApps}
+    {(Get-AndroidAPP | Get-MSGraphAllPages) | Get-AndroidAPPApps}
 #
 # DefaultManagedAppProtections
 #
@@ -61,10 +52,7 @@ $tests = @(
 #
 # mdmWindowsInformationProtectionPolicy
 #
-    {$env:mdmWindowsInfoProtPolicy = (Get-MdmWinInfoPP | Get-MSGraphAllPages)[0]}
-    #BUGBUG: Missing Route {(Get-MdmWinInfoPP | Get-MSGraphAllPages)[0] | Get-MdmWinInfoPPAssignments}
-    #BUGBUG: Missing Route {(Get-MdmWinInfoPP | Get-MSGraphAllPages)[0] | Get-MdmWinInfoPPExemptAppLockerFiles}
-    #BUGBUG: Missing Route {(Get-MdmWinInfoPP | Get-MSGraphAllPages)[0] | Get-MdmWinInfoPPProtectedAppLockerFiles}
+    {$env:mdmWindowsInfoProtPolicy = (Get-MdmWinInfoPP | Get-MSGraphAllPages)}
 #
 # managedAppPolicies
 #
