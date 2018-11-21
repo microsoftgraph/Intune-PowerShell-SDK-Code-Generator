@@ -38,79 +38,79 @@ $tests = @(
 # DeviceManagement Singleton
 #
     {Get-DeviceAppManagement}
-    {Get-DmAPNSCert}
-    #BUGBUG: Investigate 400 Bad Request {Get-DmCASettings}
-    {Get-DmDeviceCategories}
-    {Get-DmDeviceCompliancePolicyDeviceStateSummary}
-    {Get-DmDeviceCompliancePolicySettingStateSummaries}
-    {$env:DmDCStateSumm=Get-DmDeviceConfigurationDeviceStateSummaries}
-    {if ($env:DmDCStateSumm -ne $null) {(Get-DmDeviceConfigurationDeviceStateSummaries| Get-MSGraphAllPages) |Get-DmDeviceComplianceSettingStates}}
-    {Get-DmDeviceManagementPartners}
-    {Get-DmExchangeConnectors}
-    {Get-DmIosUpdateStatuses}
-    {Get-DmManagedDeviceOverview}
-    {Get-DmMobileThreatDefenseConnectors}
-    {$env:DmNotifMsgTemplates=(Get-DmNotifMsgTemplates)}
-    {if ($env:DmNotifMsgTemplates -ne $null) {(Get-DmNotifMsgTemplates| Get-MSGraphAllPages)[0] |Get-DmNotifMsgTemplateLocMsgs}} 
-    {Get-DmTroubleshootingEvents}
-    {Get-DmWIPAppLearningSummaries}
-    {Get-DmWIPNetworkLearningSummaries}
-    {Get-DmRemoteAssistancePartners}
-    {Get-DmResourceOperations}
-    {Get-DmSoftwareUpdateStatusSummary}
-    {Get-DmTelecomExpenseManagementPartners}
+    {Get-APNSCert}
+    #BUGBUG: Investigate 400 Bad Request {Get-CASettings}
+    {Get-DeviceCategories}
+    {Get-DeviceCompliancePolicyDeviceStateSummary}
+    {Get-DeviceCompliancePolicySettingStateSummaries}
+    {$env:DmDCStateSumm=Get-DeviceConfigurationDeviceStateSummaries}
+    {if ($env:DmDCStateSumm -ne $null) {(Get-DeviceConfigurationDeviceStateSummaries| Get-MSGraphAllPages) |Get-DeviceComplianceSettingStates}}
+    {Get-DeviceManagementPartners}
+    {Get-ExchangeConnectors}
+    {Get-IosUpdateStatuses}
+    {Get-ManagedDeviceOverview}
+    {Get-MobileThreatDefenseConnectors}
+    {$env:DmNotifMsgTemplates=(Get-NotifMsgTemplates)}
+    {if ($env:DmNotifMsgTemplates -ne $null) {(Get-NotifMsgTemplates| Get-MSGraphAllPages)[0] |Get-NotifMsgTemplateLocMsgs}} 
+    {Get-TroubleshootingEvents}
+    {Get-WIPAppLearningSummaries}
+    {Get-WIPNetworkLearningSummaries}
+    {Get-RemoteAssistancePartners}
+    {Get-ResourceOperations}
+    {Get-SoftwareUpdateStatusSummary}
+    {Get-TelecomExpenseManagementPartners}
 #
 # DmDetectedApps
 #
-    {$env:DmDetectedApps=(Get-DmDetectedApps| Get-MSGraphAllPages)}
-    {if ($env:DmDetectedApps -ne $null) {((Get-DmDetectedApps| Get-MSGraphAllPages)[0] | Get-DmDetectedAppDevices)}}
-    {if ($env:DmDetectedApps -ne $null) {((Get-DmDetectedApps| Get-MSGraphAllPages)[0] | Get-DmDetectedAppDeviceRefs)}}
+    {$env:DmDetectedApps=(Get-DetectedApps| Get-MSGraphAllPages)}
+    {if ($env:DmDetectedApps -ne $null) {((Get-DetectedApps| Get-MSGraphAllPages)[0] | Get-DetectedAppDevices)}}
+    {if ($env:DmDetectedApps -ne $null) {((Get-DetectedApps| Get-MSGraphAllPages)[0] | Get-DetectedAppDeviceRefs)}}
 #
 # DmDeviceCompliancePolicies
 #
-    {Get-DmDeviceCompliancePolicies}
-    {(Get-DmDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DmDeviceCompliancePolicyAssignments}
-    {(Get-DmDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DmDeviceCompliancePolicyDeviceSettingStateSummaries}
-    {(Get-DmDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DmDeviceCompliancePolicyDeviceStatuses}
-    {(Get-DmDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DmDeviceCompliancePolicyDeviceStatusOverview}
-    #BUGBUG: Missing Route {(Get-DmDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DmDeviceCompliancePolicyScheduledActionsForRule}
-    #BUGBUG: Unable to figure -deviceComplianceScheduledActionForRuleId {(Get-DmDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DmDeviceCompliancePolicyScheduledActionsForRuleConfigs}
-    {(Get-DmDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DmDeviceCompliancePolicyUserStatuses}
-    {(Get-DmDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DmDeviceCompliancePolicyUserStatusOverview}
+    {Get-DeviceCompliancePolicies}
+    {(Get-DeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DeviceCompliancePolicyAssignments}
+    {(Get-DeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DeviceCompliancePolicyDeviceSettingStateSummaries}
+    {(Get-DeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DeviceCompliancePolicyDeviceStatuses}
+    {(Get-DeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DeviceCompliancePolicyDeviceStatusOverview}
+    #BUGBUG: Missing Route {(Get-DeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DeviceCompliancePolicyScheduledActionsForRule}
+    #BUGBUG: Unable to figure -deviceComplianceScheduledActionForRuleId {(Get-DeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DeviceCompliancePolicyScheduledActionsForRuleConfigs}
+    {(Get-DeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DeviceCompliancePolicyUserStatuses}
+    {(Get-DeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DeviceCompliancePolicyUserStatusOverview}
 #
 # DeviceManagement_DeviceConfigurations
 #
-    {(Get-DmDeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DmDCAssignments}
-    {(Get-DmDeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DmDCDeviceStatusOverview}
-    {(Get-DmDeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DmDCUserStatuses}
-    {(Get-DmDeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DmDCUserStatusOverview}
-    {(Get-DmDeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DmDCDeviceSettingStateSummaries}
+    {(Get-DeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DCAssignments}
+    {(Get-DeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DCDeviceStatusOverview}
+    {(Get-DeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DCUserStatuses}
+    {(Get-DeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DCUserStatusOverview}
+    {(Get-DeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DCDeviceSettingStateSummaries}
 
 #
 # DeviceManagement_DeviceEnrollmentConfigurations
 # 
-    {(Get-DmDeviceEnrollmentConfigs| Get-MSGraphAllPages)[0] | Get-DmDeviceEnrollmentConfigAssignments}
+    {(Get-DeviceEnrollmentConfigs| Get-MSGraphAllPages)[0] | Get-DeviceEnrollmentConfigAssignments}
 #
 # DeviceManagement_ManagedDevices
 #  
-    {$env:mgdDevices=(Get-DmManagedDevices)}
-    {if ($env:mgdDevices -ne $null) {((Get-DmManagedDevices| Get-MSGraphAllPages)[0] | Get-DmDeviceCategory)}}
-    {if ($env:mgdDevices -ne $null) {((Get-DmManagedDevices| Get-MSGraphAllPages)[0] | Get-DmDeviceCompliancePolicyStates)}}
-    {if ($env:mgdDevices -ne $null) {((Get-DmManagedDevices| Get-MSGraphAllPages)[0] | Get-DmDeviceConfigurationStates)}}
+    {$env:mgdDevices=(Get-ManagedDevices)}
+    {if ($env:mgdDevices -ne $null) {((Get-ManagedDevices| Get-MSGraphAllPages)[0] | Get-DeviceCategory)}}
+    {if ($env:mgdDevices -ne $null) {((Get-ManagedDevices| Get-MSGraphAllPages)[0] | Get-DeviceCompliancePolicyStates)}}
+    {if ($env:mgdDevices -ne $null) {((Get-ManagedDevices| Get-MSGraphAllPages)[0] | Get-DeviceConfigurationStates)}}
 #
 # DeviceManagement_RoleAssignments
 #
-    {$env:DmRoleAssignments = Get-DmRoleAssignments}    
+    {$env:DmRoleAssignments = Get-RoleAssignments}    
 #
 # DeviceManagement_RoleDefinitions
 #
-    {$env:DmRoleDefinitions = Get-DmRoleDefinitions}    
+    {$env:DmRoleDefinitions = Get-RoleDefinitions}    
 #
 # DeviceManagement_TermsAndConditions
 #
-    {$env:DmTnC=(Get-DmTnCs)}
-    {if ($env:DmTnC -ne $null) {((Get-DmTnCs| Get-MSGraphAllPages)[0] | Get-DmTnCAcceptanceStatuses)}}
-    {if ($env:DmTnC -ne $null) {((Get-DmTnCs| Get-MSGraphAllPages)[0] | Get-DmTnCAssignments)}}
+    {$env:DmTnC=(Get-TnCs)}
+    {if ($env:DmTnC -ne $null) {((Get-TnCs| Get-MSGraphAllPages)[0] | Get-TnCAcceptanceStatuses)}}
+    {if ($env:DmTnC -ne $null) {((Get-TnCs| Get-MSGraphAllPages)[0] | Get-TnCAssignments)}}
 )
 
 #

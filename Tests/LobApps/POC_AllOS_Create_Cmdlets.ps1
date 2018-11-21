@@ -12,7 +12,7 @@ Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT
 
 if(!(Get-Module Microsoft.Graph.Intune)){
 
-    Import-Module ".\SDK\Microsoft.Graph.Intune.psd1"
+    Import-Module "$env:sdkDir\$env:moduleName.psd1"
 
 }
 
@@ -151,7 +151,7 @@ Write-Host
 # Create iOS Compliance Policy
 Write-Host "Adding iOS Compliance Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-DeviceManagement_DeviceCompliancePolicies -iosCompliancePolicy `
+$CreateResult = New-DeviceCompliancePolicies -iosCompliancePolicy `
 -displayName "Chicago - iOS Compliance Policy" -passcodeRequired $true -passcodeMinimumLength 6 `
 -passcodeMinutesOfInactivityBeforeLock 15 -securityBlockJailbrokenDevices $true `
 -scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired -scheduledActionConfigurations (New-DeviceComplianceActionItemObject -gracePeriodHours 0 -actionType block -notificationTemplateId ""))
@@ -163,7 +163,7 @@ $AADGroup = (Get-Groups -groupId "$IPU_Id").displayName
 
 write-host "Assigning Device Compliance Policy to AAD Group '$AADGroup'" -f Yellow
 
-Invoke-DeviceManagement_DeviceCompliancePolicies_Assign -deviceCompliancePolicyId $CreateResult.id `
+Invoke-DeviceCompliancePolicies_Assign -deviceCompliancePolicyId $CreateResult.id `
 -assignments (New-DeviceCompliancePolicyAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -174,14 +174,14 @@ Write-Host
 # Create Android Compliance Policy
 Write-Host "Adding Android Compliance Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-DeviceManagement_DeviceCompliancePolicies -androidCompliancePolicy -displayName "Chicago - Android Compliance Policy" -passwordRequired $true -passwordMinimumLength 6 -securityBlockJailbrokenDevices $true -passwordMinutesOfInactivityBeforeLock 15 -scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired -scheduledActionConfigurations (New-DeviceComplianceActionItemObject -gracePeriodHours 0 -actionType block -notificationTemplateId ""))
+$CreateResult = New-DeviceCompliancePolicies -androidCompliancePolicy -displayName "Chicago - Android Compliance Policy" -passwordRequired $true -passwordMinimumLength 6 -securityBlockJailbrokenDevices $true -passwordMinutesOfInactivityBeforeLock 15 -scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired -scheduledActionConfigurations (New-DeviceComplianceActionItemObject -gracePeriodHours 0 -actionType block -notificationTemplateId ""))
 
 write-host "Policy created with id" $CreateResult.id
 Write-Host
 
 write-host "Assigning Device Compliance Policy to AAD Group '$AADGroup'" -f Yellow
 
-Invoke-DeviceManagement_DeviceCompliancePolicies_Assign -deviceCompliancePolicyId $CreateResult.id `
+Invoke-DeviceCompliancePolicies_Assign -deviceCompliancePolicyId $CreateResult.id `
 -assignments (New-DeviceCompliancePolicyAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -192,7 +192,7 @@ Write-Host
 # Create Windows 10 Compliance Policy
 Write-Host "Adding Windows 10 Compliance Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-DeviceManagement_DeviceCompliancePolicies -windows10CompliancePolicy `
+$CreateResult = New-DeviceCompliancePolicies -windows10CompliancePolicy `
 -displayName "Chicago - Windows 10 Compliance Policy" `
 -osMinimumVersion 10.0.16299 `
 -scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired -scheduledActionConfigurations (New-DeviceComplianceActionItemObject -gracePeriodHours 0 -actionType block -notificationTemplateId ""))
@@ -202,7 +202,7 @@ Write-Host
 
 write-host "Assigning Device Compliance Policy to AAD Group '$AADGroup'" -f Yellow
 
-Invoke-DeviceManagement_DeviceCompliancePolicies_Assign -deviceCompliancePolicyId $CreateResult.id `
+Invoke-DeviceCompliancePolicies_Assign -deviceCompliancePolicyId $CreateResult.id `
 -assignments (New-DeviceCompliancePolicyAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -213,7 +213,7 @@ Write-Host
 # Create MacOS Compliance Policy
 Write-Host "Adding MacOS Compliance Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-DeviceManagement_DeviceCompliancePolicies -macOSCompliancePolicy `
+$CreateResult = New-DeviceCompliancePolicies -macOSCompliancePolicy `
 -displayName "Chicago - MacOS Compliance Policy" `
 -passwordRequired $true -passwordBlockSimple $false -passwordRequiredType deviceDefault `
 -scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired -scheduledActionConfigurations (New-DeviceComplianceActionItemObject -gracePeriodHours 0 -actionType block -notificationTemplateId ""))
@@ -223,7 +223,7 @@ Write-Host
 
 write-host "Assigning Device Compliance Policy to AAD Group '$AADGroup'" -f Yellow
 
-Invoke-DeviceManagement_DeviceCompliancePolicies_Assign -deviceCompliancePolicyId $CreateResult.id `
+Invoke-DeviceCompliancePolicies_Assign -deviceCompliancePolicyId $CreateResult.id `
 -assignments (New-DeviceCompliancePolicyAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -245,12 +245,12 @@ Write-Host
 
 Write-Host "Adding iOS Restriction Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-DeviceManagement_DeviceConfigurations -iosGeneralDeviceConfiguration -displayName "Chicago - iOS Device Restriction Policy" -iCloudBlockBackup $true -iCloudBlockDocumentSync $true -iCloudBlockPhotoStreamSync $true
+$CreateResult = New-DeviceConfigurations -iosGeneralDeviceConfiguration -displayName "Chicago - iOS Device Restriction Policy" -iCloudBlockBackup $true -iCloudBlockDocumentSync $true -iCloudBlockPhotoStreamSync $true
 
 write-host "Policy created with id" $CreateResult.id
 Write-Host
 
-Invoke-DeviceManagement_DeviceConfigurations_Assign -deviceConfigurationId $CreateResult.id `
+Invoke-DeviceConfigurations_Assign -deviceConfigurationId $CreateResult.id `
 -assignments (New-DeviceConfigurationAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -260,12 +260,12 @@ Write-Host
 
 Write-Host "Adding Android Restriction Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-DeviceManagement_DeviceConfigurations -androidGeneralDeviceConfiguration -displayName "Chicago - Android Device Restriction Policy" -passwordRequired $true -passwordRequiredType deviceDefault -passwordMinimumLength 4
+$CreateResult = New-DeviceConfigurations -androidGeneralDeviceConfiguration -displayName "Chicago - Android Device Restriction Policy" -passwordRequired $true -passwordRequiredType deviceDefault -passwordMinimumLength 4
 
 write-host "Policy created with id" $CreateResult.id
 Write-Host
 
-Invoke-DeviceManagement_DeviceConfigurations_Assign -deviceConfigurationId $CreateResult.id `
+Invoke-DeviceConfigurations_Assign -deviceConfigurationId $CreateResult.id `
 -assignments (New-DeviceConfigurationAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -316,7 +316,7 @@ write-host "Policy created with id" $CreateResult.id
 Write-Host
 
 <#
-Invoke-DeviceManagement_DeviceConfigurations_Assign -deviceConfigurationId $CreateResult.id `
+Invoke-DeviceConfigurations_Assign -deviceConfigurationId $CreateResult.id `
 -assignments (New-DeviceConfigurationAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))

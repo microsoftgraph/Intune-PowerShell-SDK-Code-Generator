@@ -12,7 +12,7 @@ Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT
 
 if(!(Get-Module Intune)){
 
-    Import-Module ".\SDK\Microsoft.Graph.Intune.psd1"
+    Import-Module "$env:sdkDir\$env:moduleName.psd1"
 
 }
 
@@ -89,14 +89,14 @@ Write-Host
 Write-Host "Removing all Compliance Policies..." -f Cyan
 Write-Host
 
-$CPs = Get-DeviceManagement_DeviceCompliancePolicies
+$CPs = Get-DeviceCompliancePolicies
 
 foreach($CP in $CPs){
 
     write-host "Removing Compliance Policy..." -f Yellow
     $CP.displayname
 
-    Remove-DeviceManagement_DeviceCompliancePolicies -deviceCompliancePolicyId $CP.id
+    Remove-DeviceCompliancePolicies -deviceCompliancePolicyId $CP.id
     Write-Host
 
 }
@@ -114,14 +114,14 @@ Write-Host "Removing all Configuration Policies..." -f Cyan
 
 Write-Host
 
-$DCPs = Get-DeviceManagement_DeviceConfigurations
+$DCPs = Get-DeviceConfigurations
 
 foreach($DCP in $DCPs){
 
     write-host "Removing Configuration Policy..." -f Yellow
     $DCP.displayname
 
-    Remove-DeviceManagement_DeviceConfigurations -deviceConfigurationId $DCP.id
+    Remove-DeviceConfigurations -deviceConfigurationId $DCP.id
     Write-Host
 
 }

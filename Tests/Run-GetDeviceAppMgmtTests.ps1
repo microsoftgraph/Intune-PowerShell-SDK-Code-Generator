@@ -41,93 +41,93 @@ $tests = @(
 #
 # AndroidManagedAppProtectionApps
 #    
-    {(Get-AmAndroidAPP | Get-MSGraphAllPages)[0] | Get-AmAndroidAPPApps}
+    {(Get-AndroidAPP | Get-MSGraphAllPages)[0] | Get-AndroidAPPApps}
 #
 # DefaultManagedAppProtections
 #
-    {Get-AmDefaultAPP}
+    {Get-DefaultAPP}
 #
 # IodManagedAppProtections
 #    
-    {(Get-AmIosApp | Get-MSGraphAllPages)[0] | Get-AmIosAppApps}  
+    {(Get-IosApp | Get-MSGraphAllPages)[0] | Get-IosAppApps}  
 #
 # AmManagedEBooks
 #    
-    {(Get-AmManagedEBooks| Get-MSGraphAllPages)[0] | Get-AmManagedEBookAssignments}
-    {(Get-AmManagedEBooks| Get-MSGraphAllPages)[0] | Get-ManagedEBooksDeviceStates}
-    {(Get-AmManagedEBooks| Get-MSGraphAllPages)[0] | Get-AmManagedEBooksInstallSummary}
-    {$env:managedEBooksUserState = (Get-AmManagedEBooks| Get-MSGraphAllPages)[0] | Get-AmManagedEBooksUserStateSummary}
-    {if ($env:managedEBooksUserState -ne $env:null) {(Get-AmManagedEBooks| Get-MSGraphAllPages)[0] | Get-AmManagedEBooksUserStateSummaryDeviceStates}}
+    {(Get-ManagedEBooks| Get-MSGraphAllPages)[0] | Get-ManagedEBookAssignments}
+    {(Get-ManagedEBooks| Get-MSGraphAllPages)[0] | Get-ManagedEBooksDeviceStates}
+    {(Get-ManagedEBooks| Get-MSGraphAllPages)[0] | Get-ManagedEBooksInstallSummary}
+    {$env:managedEBooksUserState = (Get-ManagedEBooks| Get-MSGraphAllPages)[0] | Get-ManagedEBooksUserStateSummary}
+    {if ($env:managedEBooksUserState -ne $env:null) {(Get-ManagedEBooks| Get-MSGraphAllPages)[0] | Get-ManagedEBooksUserStateSummaryDeviceStates}}
 #
 # mdmWindowsInformationProtectionPolicy
 #
-    {$env:mdmWindowsInfoProtPolicy = (Get-AmMdmWinInfoPP | Get-MSGraphAllPages)[0]}
-    #BUGBUG: Missing Route {(Get-AmMdmWinInfoPP | Get-MSGraphAllPages)[0] | Get-AmMdmWinInfoPPAssignments}
-    #BUGBUG: Missing Route {(Get-AmMdmWinInfoPP | Get-MSGraphAllPages)[0] | Get-AmMdmWinInfoPPExemptAppLockerFiles}
-    #BUGBUG: Missing Route {(Get-AmMdmWinInfoPP | Get-MSGraphAllPages)[0] | Get-AmMdmWinInfoPPProtectedAppLockerFiles}
+    {$env:mdmWindowsInfoProtPolicy = (Get-MdmWinInfoPP | Get-MSGraphAllPages)[0]}
+    #BUGBUG: Missing Route {(Get-MdmWinInfoPP | Get-MSGraphAllPages)[0] | Get-MdmWinInfoPPAssignments}
+    #BUGBUG: Missing Route {(Get-MdmWinInfoPP | Get-MSGraphAllPages)[0] | Get-MdmWinInfoPPExemptAppLockerFiles}
+    #BUGBUG: Missing Route {(Get-MdmWinInfoPP | Get-MSGraphAllPages)[0] | Get-MdmWinInfoPPProtectedAppLockerFiles}
 #
 # managedAppPolicies
 #
-    {(Get-AmManagedAP | Get-MSGraphAllPages)[0]}
+    {(Get-ManagedAppPolicies | Get-MSGraphAllPages)[0]}
 #
 # managedAppRegistrations
 #    
-    {Get-AmAppRegns | Get-AmAppRegnPolicies}
-    {Get-AmAppRegns | Get-AmAppRegnApps}
-    {Get-AmAppRegns | Get-AmAppRegnAssignments}
-    {Get-AmAppRegns | Get-AmAppRegnDeploymentSummary}
-    {Get-AmAppRegns | Get-AmAppRegnExemptAppLockerFiles}
-    {Get-AmAppRegns | Get-AmAppRegnProtectedAppLockerFiles}
-    {Get-AmAppRegns | Get-AmAppRegnIntendedPolicies}
-    {Get-AmAppRegns | Get-AmAppRegnIntendedPoliciesApps}
-    {Get-AmAppRegns | Get-AmAppRegnIntendedPoliciesAsignments}
-    {Get-AmAppRegns | Get-AmAppRegnIntendedPoliciesDeploymentSummary}
-    {Get-AmAppRegns | Get-AmAppRegnIntendedPoliciesExemptAppLockerFiles}
-    {Get-AmAppRegns | Get-AmAppRegnIntendedPoliciesProtectedAppLockerFiles}
-    {Get-AmAppRegns | Get-AmAmAppRegnOps}
+    {Get-AppRegns | Get-AppRegnPolicies}
+    {Get-AppRegns | Get-AppRegnApps}
+    {Get-AppRegns | Get-AppRegnAssignments}
+    {Get-AppRegns | Get-AppRegnDeploymentSummary}
+    {Get-AppRegns | Get-AppRegnExemptAppLockerFiles}
+    {Get-AppRegns | Get-AppRegnProtectedAppLockerFiles}
+    {Get-AppRegns | Get-AppRegnIntendedPolicies}
+    {Get-AppRegns | Get-AppRegnIntendedPoliciesApps}
+    {Get-AppRegns | Get-AppRegnIntendedPoliciesAsignments}
+    {Get-AppRegns | Get-AppRegnIntendedPoliciesDeploymentSummary}
+    {Get-AppRegns | Get-AppRegnIntendedPoliciesExemptAppLockerFiles}
+    {Get-AppRegns | Get-AppRegnIntendedPoliciesProtectedAppLockerFiles}
+    {Get-AppRegns | Get-AmAppRegnOps}
 #
 # AmAppStatuses
 #
-    {(Get-AmAppStatuses | Get-MSGraphAllPages)[0]}
+    {(Get-AppStatuses | Get-MSGraphAllPages)[0]}
 #
 # AmMobileAppCats
 #
-    {Get-AmMobileAppCats}
+    {Get-MobileAppCats}
 #
 # AmMobileAppConfigs
 #    
-    {$env:mobileAppConfig = (Get-AmMobileAppConfigs | Get-MSGraphAllPages)[0]}
-    {(Get-AmMobileAppConfigs | Get-MSGraphAllPages)[0] | Get-AmMobileAppConfigAssignments}
-    {(Get-AmMobileAppConfigs | Get-MSGraphAllPages)[0] | Get-AmMobileAppConfigDeviceStatuses}
-    {(Get-AmMobileAppConfigs | Get-MSGraphAllPages)[0] | Get-AmMobileAppConfigDeviceStatusSummary}
-    {(Get-AmMobileAppConfigs | Get-MSGraphAllPages)[0] | Get-AmMobileAppConfigUserStatuses}
-    {(Get-AmMobileAppConfigs | Get-MSGraphAllPages)[0] | Get-AmMobileAppConfigUserStatusSummary}
+    {$env:mobileAppConfig = (Get-MobileAppConfigs | Get-MSGraphAllPages)[0]}
+    {(Get-MobileAppConfigs | Get-MSGraphAllPages)[0] | Get-MobileAppConfigAssignments}
+    {(Get-MobileAppConfigs | Get-MSGraphAllPages)[0] | Get-MobileAppConfigDeviceStatuses}
+    {(Get-MobileAppConfigs | Get-MSGraphAllPages)[0] | Get-MobileAppConfigDeviceStatusSummary}
+    {(Get-MobileAppConfigs | Get-MSGraphAllPages)[0] | Get-MobileAppConfigUserStatuses}
+    {(Get-MobileAppConfigs | Get-MSGraphAllPages)[0] | Get-MobileAppConfigUserStatusSummary}
 #
 # AmMobileApps
 #
-    {(Get-AmMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-AmMobileAppsAssignments}
-    {(Get-AmMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-AmMobileAppsCategories}
-    #BUGBUG: Missing Route {(Get-AmMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-AmMobileAppsCategoriesReferences}
-    #BUGBUG: Missing Route {(Get-AmMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-AmMobileAppsContentVersions}
-    #BUGBUG: Missing Route {(Get-AmMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-AmMobileAppsContentVersionsFiles}
+    {(Get-MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-MobileAppsAssignments}
+    {(Get-MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-MobileAppsCategories}
+    #BUGBUG: Missing Route {(Get-MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-MobileAppsCategoriesReferences}
+    #BUGBUG: Missing Route {(Get-MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-MobileAppsContentVersions}
+    #BUGBUG: Missing Route {(Get-MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-MobileAppsContentVersionsFiles}
 #
 # AmTargetedAppConfigs
 #
 
-    {(Get-AmTargetedAppConfigs | Get-MSGraphAllPages) | Get-AmTargetedAppConfigApps}
-    {(Get-AmTargetedAppConfigs | Get-MSGraphAllPages) | Get-AmTargetedAppConfigAssignments}
-    {(Get-AmTargetedAppConfigs | Get-MSGraphAllPages) | Get-AmTargetedAppConfigDeploymentSummary}
+    {(Get-TargetedAppConfigs | Get-MSGraphAllPages) | Get-TargetedAppConfigApps}
+    {(Get-TargetedAppConfigs | Get-MSGraphAllPages) | Get-TargetedAppConfigAssignments}
+    {(Get-TargetedAppConfigs | Get-MSGraphAllPages) | Get-TargetedAppConfigDeploymentSummary}
 #
 # AmVppTokens
 #
-    {(Get-AmVppTokens | Get-MSGraphAllPages)}
+    {(Get-VppTokens | Get-MSGraphAllPages)}
 #
 # AmWinInfoPP
 #
-    {$env:WinPP = (Get-AmWinInfoPP | Get-MSGraphAllPages)}
-    #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-AmWinInfoPP | Get-MSGraphAllPages) | Get-AmWinInfoPPAssignments}}
-    #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-AmWinInfoPP | Get-MSGraphAllPages) | Get-AmWinInfoPPExemptAppLockerFiles}}
-    #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-AmWinInfoPP | Get-MSGraphAllPages) | Get-AmWinInfoPPProtectedAppLockerFiles}}   
+    {$env:WinPP = (Get-WinInfoPP | Get-MSGraphAllPages)}
+    #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-WinInfoPP | Get-MSGraphAllPages) | Get-WinInfoPPAssignments}}
+    #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-WinInfoPP | Get-MSGraphAllPages) | Get-WinInfoPPExemptAppLockerFiles}}
+    #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-WinInfoPP | Get-MSGraphAllPages) | Get-WinInfoPPProtectedAppLockerFiles}}   
 )
 
 #
