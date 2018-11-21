@@ -163,7 +163,7 @@ $AADGroup = (Get-Groups -groupId "$IPU_Id").displayName
 
 write-host "Assigning Device Compliance Policy to AAD Group '$AADGroup'" -f Yellow
 
-Invoke-DeviceCompliancePolicies_Assign -deviceCompliancePolicyId $CreateResult.id `
+Invoke-AssignDeviceCompliancePolicies -deviceCompliancePolicyId $CreateResult.id `
 -assignments (New-DeviceCompliancePolicyAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -181,7 +181,7 @@ Write-Host
 
 write-host "Assigning Device Compliance Policy to AAD Group '$AADGroup'" -f Yellow
 
-Invoke-DeviceCompliancePolicies_Assign -deviceCompliancePolicyId $CreateResult.id `
+Invoke-AssignDeviceCompliancePolicies -deviceCompliancePolicyId $CreateResult.id `
 -assignments (New-DeviceCompliancePolicyAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -202,7 +202,7 @@ Write-Host
 
 write-host "Assigning Device Compliance Policy to AAD Group '$AADGroup'" -f Yellow
 
-Invoke-DeviceCompliancePolicies_Assign -deviceCompliancePolicyId $CreateResult.id `
+Invoke-AssignDeviceCompliancePolicies -deviceCompliancePolicyId $CreateResult.id `
 -assignments (New-DeviceCompliancePolicyAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -223,7 +223,7 @@ Write-Host
 
 write-host "Assigning Device Compliance Policy to AAD Group '$AADGroup'" -f Yellow
 
-Invoke-DeviceCompliancePolicies_Assign -deviceCompliancePolicyId $CreateResult.id `
+Invoke-AssignDeviceCompliancePolicies -deviceCompliancePolicyId $CreateResult.id `
 -assignments (New-DeviceCompliancePolicyAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -250,7 +250,7 @@ $CreateResult = New-DeviceConfigurations -iosGeneralDeviceConfiguration -display
 write-host "Policy created with id" $CreateResult.id
 Write-Host
 
-Invoke-DeviceConfigurations_Assign -deviceConfigurationId $CreateResult.id `
+Invoke-AssignDCs -deviceConfigurationId $CreateResult.id `
 -assignments (New-DeviceConfigurationAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -265,7 +265,7 @@ $CreateResult = New-DeviceConfigurations -androidGeneralDeviceConfiguration -dis
 write-host "Policy created with id" $CreateResult.id
 Write-Host
 
-Invoke-DeviceConfigurations_Assign -deviceConfigurationId $CreateResult.id `
+Invoke-AssignDCs -deviceConfigurationId $CreateResult.id `
 -assignments (New-DeviceConfigurationAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -290,7 +290,7 @@ Write-Host "Adding iOS Managed App Policy from PowerShell Module..." -Foreground
 
 $apps_iOS = @()
 
-$iOSAPP_apps = Get-DeviceAppManagement_MobileApps | ? { $_.appAvailability -eq "global" -and ($_.'@odata.type').contains("managedIOS") }
+$iOSAPP_apps = Get-MobileApps | ? { $_.appAvailability -eq "global" -and ($_.'@odata.type').contains("managedIOS") }
 
 foreach($app in $iOSAPP_apps){
 
@@ -299,7 +299,7 @@ foreach($app in $iOSAPP_apps){
 
 }
 
-$CreateResult = New-DeviceAppManagement_ManagedAppPolicies -iosManagedAppProtection -displayName "iOS MAM / APP Policy" `
+$CreateResult = New-ManagedAppPolicies -iosManagedAppProtection -displayName "iOS MAM / APP Policy" `
 -periodOfflineBeforeAccessCheck (New-TimeSpan -Hours 12) `
 -periodOnlineBeforeAccessCheck (New-TimeSpan -Minutes 30)`
 -allowedInboundDataTransferSources managedApps -allowedOutboundDataTransferDestinations managedApps `
@@ -316,7 +316,7 @@ write-host "Policy created with id" $CreateResult.id
 Write-Host
 
 <#
-Invoke-DeviceConfigurations_Assign -deviceConfigurationId $CreateResult.id `
+Invoke-AssignDCs -deviceConfigurationId $CreateResult.id `
 -assignments (New-DeviceConfigurationAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -327,7 +327,7 @@ Write-Host "Adding iOS Managed App Policy from PowerShell Module..." -Foreground
 
 $apps_Android = @()
 
-$AndroidAPP_apps = Get-DeviceAppManagement_MobileApps | ? { $_.appAvailability -eq "global" -and ($_.'@odata.type').contains("managedAndroid") }
+$AndroidAPP_apps = Get-MobileApps | ? { $_.appAvailability -eq "global" -and ($_.'@odata.type').contains("managedAndroid") }
 
 foreach($app in $AndroidAPP_apps){
 
@@ -336,7 +336,7 @@ foreach($app in $AndroidAPP_apps){
 
 }
 
-$CreateResult = New-DeviceAppManagement_ManagedAppPolicies -androidManagedAppProtection -displayName "Android MAM / APP Policy" `
+$CreateResult = New-ManagedAppPolicies -androidManagedAppProtection -displayName "Android MAM / APP Policy" `
 -periodOfflineBeforeAccessCheck (New-TimeSpan -Hours 12) `
 -periodOnlineBeforeAccessCheck (New-TimeSpan -Minutes 30)`
 -allowedInboundDataTransferSources managedApps -allowedOutboundDataTransferDestinations managedApps `

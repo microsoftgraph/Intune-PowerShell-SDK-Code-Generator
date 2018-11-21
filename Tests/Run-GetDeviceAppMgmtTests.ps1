@@ -49,7 +49,7 @@ $tests = @(
 #
 # IodManagedAppProtections
 #    
-    {(Get-IosApp | Get-MSGraphAllPages)[0] | Get-IosAppApps}  
+    {(Get-IosAPPs | Get-MSGraphAllPages)[0] | Get-IosAPPsApps}  
 #
 # AmManagedEBooks
 #    

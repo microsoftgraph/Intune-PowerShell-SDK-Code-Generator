@@ -15,7 +15,12 @@ function Set-IntuneContext
 
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
-        [string]$AdminUPN="$env:adminUPN"   
+        [string]$AdminUPN="$env:adminUPN",
+
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [string]$IsInitialized="$env:initialized"
+
     )
 
     $OutputDirectory = $OutputDirectory | Resolve-Path
@@ -30,11 +35,11 @@ function Set-IntuneContext
     #
     # Connect to MSGraph if necessary
     #
-    if ($env:connection -eq $null)
+    if ($IsInitialized -eq $false)
     {    
         $adminPwd=Read-Host -AsSecureString -Prompt "Enter pwd for $env:adminUPN"
         $creds = New-Object System.Management.Automation.PSCredential ($AdminUPN, $adminPwd)
-        $env:connection = Connect-MSGraph -PSCredential $creds
+        $env:connection = Connect-MSGraph -PSCredential $creds        
     }
 }
 Export-ModuleMember -Function Set-IntuneContext

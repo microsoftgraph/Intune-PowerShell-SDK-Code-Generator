@@ -7,8 +7,8 @@ function Get-MobileApp {
     )
 
     if ($PSCmdlet.ParameterSetName -eq 'GetSingleApp') {
-        Get-DeviceAppManagement_MobileApps -mobileAppId $mobileAppId
+        Get-MobileApps -mobileAppId $mobileAppId
     } else {
-        Get-DeviceAppManagement_MobileApps | Get-MSGraphAllPages
+        Get-MobileApps | Get-MSGraphAllPages
     }
 }

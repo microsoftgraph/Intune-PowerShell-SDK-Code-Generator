@@ -44,6 +44,7 @@ try {
         Import-Module $env:testDir\Set-IntuneContext.psm1
         Write-Output "Setting IntuneContext..."
         Set-IntuneContext
+        $env:initialized = $true
 
         #
         # Run the Tests

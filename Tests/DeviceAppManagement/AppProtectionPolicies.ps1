@@ -49,7 +49,7 @@ $groups = Get-Groups | Where-Object { $_.securityEnabled -eq $true }
 # Assign policy to groups
 Write-Host "Assign the policy to the groups..."
 $groups | ForEach-Object {
-    Invoke-IosManagedAppProtectionsAssign -iosManagedAppProtectionId $policy.id -assignments @(
+    Invoke-AssignIosAPPsApps -iosManagedAppProtectionId $policy.id -assignments @(
         New-TargetedManagedAppPolicyAssignmentObject `
             -target (New-DeviceAndAppManagementAssignmentTargetObject -groupAssignmentTarget -groupId $_.id)
     )
