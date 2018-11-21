@@ -16,7 +16,6 @@ $env:moduleExtension = 'psd1'
 $env:sdkSubmoduleSrc = "$($env:PowerShellSDKRepoRoot)\submodules\Intune-PowerShell-SDK"
 $env:nugetExe = "nuget.exe"
 $env:adminUPN = "admin@roramutesta063.onmicrosoft.com"
-$env:initialized = $false
 
 # Remember the settings that will change when launching a child PowerShell context
 $env:standardWindowTitle = (Get-Host).UI.RawUI.WindowTitle

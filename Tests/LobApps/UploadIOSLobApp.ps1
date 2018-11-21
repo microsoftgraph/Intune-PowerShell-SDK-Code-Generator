@@ -9,13 +9,14 @@ $appToUpload = New-MobileAppObject `
     -bundleId '' `
     -applicableDeviceType (New-IosDeviceTypeObject -iPad $true -iPhoneAndIPod $true) `
     -minimumSupportedOperatingSystem (New-IosMinimumOperatingSystemObject -v9_0 $true) `
-    -fileName '$env:testDir\LobApps\test.ipa' `
+    -fileName 'test.ipa' `
     -buildNumber 'v1' -versionNumber 'v1' -expirationDateTime ((Get-Date).AddDays(90))
 
+$filePath = "$env:testDir\LobApps\test.ipa"
 # Upload the app file with the app information
 # !! Replace 'test.ipa' with the path to your *.ipa file !!
 $createdApp = New-LobApp `
-    -filePath '$env:testDir\LobApps\test.ipa' `
+    -filePath $filePath `
     -mobileApp $appToUpload
 
 Write-Output $createdApp

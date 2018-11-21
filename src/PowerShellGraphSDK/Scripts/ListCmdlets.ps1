@@ -10,8 +10,6 @@ param(
 
 $OutputDirectory = $OutputDirectory | Resolve-Path
 $modulePath = "$OutputDirectory/$ModuleName.psd1"
-Write-Host "OutputDirectory: $OutputDirectory"
-Write-Host "ModulePath: $modulePath"
 
 Push-Location $OutputDirectory
 
@@ -43,5 +41,4 @@ for($cmdletCount=0; $cmdletCount -lt $sdkCmdlets.Count; $cmdletCount++)
 
 $sdkCmdletsList | Out-File "$OutputDirectory\$ModuleName.cmdlets.txt"
 Write-Debug "$sdkCmdletsList"
-Write-Host "Module cmdlets list generated at: $OutputDirectory\$ModuleName.cmdlets.txt"
 popd

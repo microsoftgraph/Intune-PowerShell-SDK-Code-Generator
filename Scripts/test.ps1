@@ -34,8 +34,7 @@ try {
         $testScripts = Get-ChildItem -Path "$env:testDir" -Recurse -Filter '*.ps1'
         #
         # Import the Intune PowerShell SDK Module
-        #
-        Write-Output "Importing $module..."
+        #        
         Import-Module $module
 
         #
@@ -44,7 +43,6 @@ try {
         Import-Module $env:testDir\Set-IntuneContext.psm1
         Write-Output "Setting IntuneContext..."
         Set-IntuneContext
-        $env:initialized = $true
 
         #
         # Run the Tests

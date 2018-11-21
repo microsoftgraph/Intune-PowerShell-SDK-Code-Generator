@@ -18,9 +18,6 @@ function Set-IntuneContext
         [string]$AdminUPN="$env:adminUPN"   
     )
 
-    $OutputDirectory = $OutputDirectory | Resolve-Path
-    $modulePath = "$OutputDirectory/$ModuleName.psd1"
-
     #
     # Import the Intune PowerShell SDK Module if necessary
     #
@@ -34,11 +31,11 @@ function Set-IntuneContext
     #
     try
     {
-        $env:msGraphMeta = Get-MSGraphMetadata
-        $connection = Connect-MSGraph
+        $msGraphMetaData = Get-MSGraphMetadata
     }
     catch
     {    
+        Write-Output "Connect with MSGraph first."
         $adminPwd=Read-Host -AsSecureString -Prompt "Enter pwd for $env:adminUPN"
         $creds = New-Object System.Management.Automation.PSCredential ($AdminUPN, $adminPwd)
         $connection = Connect-MSGraph -PSCredential $creds

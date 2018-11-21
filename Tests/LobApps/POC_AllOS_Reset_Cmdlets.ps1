@@ -53,34 +53,6 @@ Write-Host
 
 #endregion
 
-####################################################
-
-#region Check if you want to configure this tenant
-
-$TenantName = ((Connect-MSGraph).upn).split("@")[1]
-
-Write-Warning "Are you sure you want to reset this Intune Tenant: $TenantName ? Y or N?"
-$Confirm = read-host
-
-if($Confirm -eq "n" -or $Confirm -eq "N" -or $Confirm -eq "" -or $Confirm -eq $null){
-
-Write-Host      
-Write-Host "Intune Configuration was cancelled..." -ForegroundColor Yellow
-Write-Host
-break
-
-}
-
-else {
-
-Write-Host
-
-}
-
-#endregion
-
-####################################################
-
 #region Compliance Policies
 
 write-host "------------------------------------------------------------------"
@@ -139,7 +111,7 @@ Write-Host "Removing all App Protection Policies..." -f Cyan
 
 Write-Host
 
-$MAMs = Get-DeviceAppManagement_ManagedAppPolicies
+$MAMs = Get-ManagedAppPolicies
 
 foreach($MAM in $MAMs){
 
@@ -147,7 +119,7 @@ foreach($MAM in $MAMs){
     $MAM.displayname + ": " + $MAM.'@odata.type'
     $MAM.id
     
-    Remove-DeviceAppManagement_ManagedAppPolicies -managedAppPolicyId $MAM.id
+    Remove-ManagedAppPolicies -managedAppPolicyId $MAM.id
     Write-Host
 
 }
