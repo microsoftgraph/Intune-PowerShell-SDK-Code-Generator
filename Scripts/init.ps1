@@ -113,7 +113,7 @@ function global:GenerateSDK {
     global:BuildWriter
     global:RunWriter -GraphSchema $GraphSchema
     global:BuildSDK -WorkingDirectory "$env:generatedDir"
-    Invoke-Expression "$env:ListCmdletsScript -OutputDirectory $env:sdkDir"
+    Invoke-Expression "$env:ListCmdletsScript -OutputDirectory $env:sdkDir -IsFullOutput"
 }
 
 function global:GenerateAndRunSDK {
