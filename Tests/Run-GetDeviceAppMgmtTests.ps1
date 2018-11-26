@@ -81,18 +81,18 @@ $tests = @(
 #
 # AmMobileApps
 #
-    {(Get-MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-MobileAppsAssignments}
-    {(Get-MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-MobileAppsCategories}
-    #BUGBUG: Missing Route {(Get-MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-MobileAppsCategoriesReferences}
-    #BUGBUG: Missing Route {(Get-MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-MobileAppsContentVersions}
-    #BUGBUG: Missing Route {(Get-MobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-MobileAppsContentVersionsFiles}
+    {(Get-IntuneMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-IntuneMobileAppsAssignments}
+    {(Get-IntuneMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-IntuneMobileAppsCategories}
+    #BUGBUG: Missing Route {(Get-IntuneMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-IntuneMobileAppsCategoriesReferences}
+    #BUGBUG: Missing Route {(Get-IntuneMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-IntuneMobileAppsContentVersions}
+    #BUGBUG: Missing Route {(Get-IntuneMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-IntuneMobileAppsContentVersionsFiles}
 #
 # AmTargetedAppConfigs
 #
 
-    {(Get-TargetedAppConfigs | Get-MSGraphAllPages) | Get-TargetedAppConfigApps}
-    {(Get-TargetedAppConfigs | Get-MSGraphAllPages) | Get-TargetedAppConfigAssignments}
-    {(Get-TargetedAppConfigs | Get-MSGraphAllPages) | Get-TargetedAppConfigDeploymentSummary}
+    {(Get-IntuneTargetedManagedAppConfigurations | Get-MSGraphAllPages) | Get-IntuneTargetedManagedAppConfigurationsApps}
+    {(Get-IntuneTargetedManagedAppConfigurations | Get-MSGraphAllPages) | Get-IntuneTargetedManagedAppConfigurationsAssignments}
+    {(Get-IntuneTargetedManagedAppConfigurations | Get-MSGraphAllPages) | Get-IntuneTargetedManagedAppConfigurationsDeploymentSummary}
 #
 # AmVppTokens
 #

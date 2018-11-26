@@ -92,26 +92,26 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceAppManagement_MobileAppConfigurations_UserStatusSummary", "IntuneMobileAppConfigurationsUserStatusSummary" },
             #endregion            
             #region DeviceAppManagement_MobileApps
-            { "DeviceAppManagement_MobileApps", "MobileApps" },            
-            { "DeviceAppManagement_MobileApps_Assignments", "MobileAppsAssignments" },
-            { "DeviceAppManagement_MobileApps_Categories", "MobileAppsCategories" },
-            { "DeviceAppManagement_MobileApps_CategoriesReferences", "MobileAppsCategoriesReferences" },
-            { "DeviceAppManagement_MobileApps_ContentVersions", "MobileAppsContentVersions" },
-            { "DeviceAppManagement_MobileApps_ContentVersions_Files", "MobileAppsContentVersionsFiles"},
-            { "DeviceAppManagement_MobileApps_Assign", "AssignMobileApps" },
-            { "DeviceAppManagement_MobileApps_ContentVersions_Files_Commit", "CommitMobileAppCurrentFileVersion" },
-            { "DeviceAppManagement_MobileApps_ContentVersions_Files_RenewUpload", "RenewMobileAppCurrentFileVersionUpload" },
+            { "DeviceAppManagement_MobileApps", "IntuneMobileApps" },            
+            { "DeviceAppManagement_MobileApps_Assignments", "IntuneMobileAppsAssignments" },
+            { "DeviceAppManagement_MobileApps_Categories", "IntuneMobileAppsCategories" },
+            { "DeviceAppManagement_MobileApps_CategoriesReferences", "IntuneMobileAppsCategoriesReferences" },
+            { "DeviceAppManagement_MobileApps_ContentVersions", "IntuneMobileAppsContentVersions" },
+            { "DeviceAppManagement_MobileApps_ContentVersions_Files", "IntuneMobileAppsContentVersionsFiles"},
+            { "DeviceAppManagement_MobileApps_Assign", "IntuneMobileAppsAssign" },
+            { "DeviceAppManagement_MobileApps_ContentVersions_Files_Commit", "IntuneMobileAppsContentVersionsFileCommit" },
+            { "DeviceAppManagement_MobileApps_ContentVersions_Files_RenewUpload", "IntuneMobileAppsContentVersionsRenewUpload" },
             #endregion
             #region DeviceAppManagement_SyncMicrosoftStoreForBusinessApps
-            { "DeviceAppManagement_SyncMicrosoftStoreForBusinessApps", "SyncMSFBApps" },
+            { "DeviceAppManagement_SyncMicrosoftStoreForBusinessApps", "IntuneSyncMicrosoftStoreForBusinessApps" },
             #endregion
             #region DeviceAppManagement_TargetedManagedAppConfigurations
-            { "DeviceAppManagement_TargetedManagedAppConfigurations", "TargetedAppConfigs" },
-            { "DeviceAppManagement_TargetedManagedAppConfigurations_Apps", "TargetedAppConfigApps" },
-            { "DeviceAppManagement_TargetedManagedAppConfigurations_Assignments", "TargetedAppConfigAssignments" },
-            { "DeviceAppManagement_TargetedManagedAppConfigurations_DeploymentSummary", "TargetedAppConfigDeploymentSummary" },
-            { "DeviceAppManagement_TargetedManagedAppConfigurations_Assign", "AssignTargetedAppConfig" },
-            { "DeviceAppManagement_TargetedManagedAppConfigurations_TargetApps", "TargetedAppConfigApps" },
+            { "DeviceAppManagement_TargetedManagedAppConfigurations", "IntuneTargetedManagedAppConfigurations" },
+            { "DeviceAppManagement_TargetedManagedAppConfigurations_Apps", "IntuneTargetedManagedAppConfigurationsApps" },
+            { "DeviceAppManagement_TargetedManagedAppConfigurations_Assignments", "IntuneTargetedManagedAppConfigurationsAssignments" },
+            { "DeviceAppManagement_TargetedManagedAppConfigurations_DeploymentSummary", "IntuneTargetedManagedAppConfigurationsDeploymentSummary" },
+            { "DeviceAppManagement_TargetedManagedAppConfigurations_Assign", "IntuneTargetedManagedAppConfigurationsAssign" },
+            { "DeviceAppManagement_TargetedManagedAppConfigurations_TargetApps", "IntuneTargetedManagedAppConfigurationsTargetedApps" },
             #endregion
             #region DeviceAppManagement_VppTokens
             { "DeviceAppManagement_VppTokens", "VppTokens"},

@@ -28,7 +28,7 @@ $policy = New-IntuneAppProtectionPolicies `
 
 # Get managed apps
 Write-Host "Getting managed apps..."
-$apps = Get-MobileApps -Expand assignments, categories | Where-Object { $_.'@odata.type' -like '#microsoft.graph.managed*' }
+$apps = Get-IntuneMobileApps -Expand assignments, categories | Where-Object { $_.'@odata.type' -like '#microsoft.graph.managed*' }
 
 # Get app identifiers
 Write-Host "Creating ManagedMobileApp objects from the retrieved iOS apps..."

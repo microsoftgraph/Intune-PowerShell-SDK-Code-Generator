@@ -262,7 +262,7 @@ Write-Host "Adding iOS Managed App Policy from PowerShell Module..." -Foreground
 
 $apps_iOS = @()
 
-$iOSAPP_apps = Get-MobileApps | ? { $_.appAvailability -eq "global" -and ($_.'@odata.type').contains("managedIOS") }
+$iOSAPP_apps = Get-IntuneMobileApps | ? { $_.appAvailability -eq "global" -and ($_.'@odata.type').contains("managedIOS") }
 
 foreach($app in $iOSAPP_apps){
 
@@ -299,7 +299,7 @@ Write-Host "Adding iOS Managed App Policy from PowerShell Module..." -Foreground
 
 $apps_Android = @()
 
-$AndroidAPP_apps = Get-MobileApps | ? { $_.appAvailability -eq "global" -and ($_.'@odata.type').contains("managedAndroid") }
+$AndroidAPP_apps = Get-IntuneMobileApps | ? { $_.appAvailability -eq "global" -and ($_.'@odata.type').contains("managedAndroid") }
 
 foreach($app in $AndroidAPP_apps){
 
