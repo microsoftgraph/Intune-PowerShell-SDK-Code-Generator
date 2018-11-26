@@ -10662,7 +10662,7 @@
             <Annotations Target="microsoft.graph.managedAppStatus">
                 <Annotation Term="Org.OData.Core.V1.Description" String="Represents app protection and configuration status for the organization." />
             </Annotations>
-            <Annotations Target="microsoft.graph.deviceAppManagement/managedAppStatuses">
+            <Annotations Target="microsoft.graph.deviceAppManagement/managedAppStatus">
                 <Annotation Term="Org.OData.Core.V1.Description" String="The managed app statuses." />
             </Annotations>
             <Annotations Target="microsoft.graph.managedEBook">

@@ -35,11 +35,11 @@ $updatedApps | Remove-MobileApps
 
 # SEARCH all app categories
 Write-Host "Getting all app categories..."
-Get-MobileAppCats | Out-Null
+Get-IntuneMobileAppCategories | Out-Null
 
 # Create a custom category
 Write-Host "Creating a new app category..."
-$appCategory = New-MobileAppCats -displayName 'Test Category'
+$appCategory = New-IntuneMobileAppCategories -displayName 'Test Category'
 
 # SEARCH all apps
 Write-Host "Getting all apps..."
@@ -60,7 +60,7 @@ $appCategory | Remove-MobileAppsCategoriesReferences -mobileAppId $app.id
 
 # DELETE the category
 Write-Host "Deleting the category"
-$appCategory | Remove-MobileAppCats
+$appCategory | Remove-IntuneMobileAppCategories
 
 # Run some paging commands
 Write-Host "Testing paging..."

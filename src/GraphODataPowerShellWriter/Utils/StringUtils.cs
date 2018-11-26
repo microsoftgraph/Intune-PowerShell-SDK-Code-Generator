@@ -61,35 +61,35 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceAppManagement_ManagedAppRegistrations", "IntuneManagedAppRegistrations" },            
             #endregion
             #region DeviceAppManagement_ManagedAppStatuses
-            { "DeviceAppManagement_ManagedAppStatuses", "AppStatuses" },
+            { "DeviceAppManagement_ManagedAppStatuses", "IntuneManagedAppStatus" },
             #endregion
             #region DeviceAppManagement_ManagedEBooks
-            { "DeviceAppManagement_ManagedEBooks", "ManagedEBooks" },
-            { "DeviceAppManagement_ManagedEBooks_Assignments", "ManagedEBookAssignments"},
-            { "DeviceAppManagement_ManagedEBooks_DeviceStates", "ManagedEBooksDeviceStates" },
-            { "DeviceAppManagement_ManagedEBooks_InstallSummary", "ManagedEBooksInstallSummary" },
-            { "DeviceAppManagement_ManagedEBooks_UserStateSummary", "ManagedEBooksUserStateSummary" },
-            { "DeviceAppManagement_ManagedEBooks_UserStateSummary_DeviceStates", "ManagedEBooksUserStateSummaryDeviceStates" },
-            { "DeviceAppManagement_ManagedEBooks_Assign", "AssignManagedEBooks" },
+            { "DeviceAppManagement_ManagedEBooks", "IntuneManagedEBooks" },
+            { "DeviceAppManagement_ManagedEBooks_Assignments", "IntuneManagedEBooksAssignments"},
+            { "DeviceAppManagement_ManagedEBooks_DeviceStates", "IntuneManagedEBooksDeviceStates" },
+            { "DeviceAppManagement_ManagedEBooks_InstallSummary", "IntuneManagedEBooksInstallSummary" },
+            { "DeviceAppManagement_ManagedEBooks_UserStateSummary", "IntuneManagedEBooksUserStateSummary" },
+            { "DeviceAppManagement_ManagedEBooks_UserStateSummary_DeviceStates", "IntuneManagedEBooksUserStateSummaryDeviceStates" },
+            { "DeviceAppManagement_ManagedEBooks_Assign", "IntuneManagedEBooksAssign" },
             #endregion
             #region DeviceAppManagement_MdmWindowsInformationProtectionPolicies
-            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies", "MdmWinInfoPP" },
-            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_Assignments", "MdmWinInfoPPAssignments" },
-            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_ExemptAppLockerFiles", "MdmWinInfoPPExemptAppLockerFiles" },
-            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_ProtectedAppLockerFiles", "MdmWinInfoPPProtectedAppLockerFiles" },
-            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_Assign", "AssignMdmWinInfoPP" },
-            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_TargetApps", "TargetMdmWinInfoPP" },
+            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies", "IntuneMdmWindowsInformationProtectionPolicies" },
+            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_Assignments", "IntuneMdmWindowsInformationProtectionPoliciesAssignments" },
+            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_ExemptAppLockerFiles", "IntuneMdmWindowsInformationProtectionPoliciesExemptAppLockerFiles" },
+            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_ProtectedAppLockerFiles", "IntuneMdmWindowsInformationProtectionPoliciesProtectedAppLockerFiles" },
+            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_Assign", "IntuneMdmWindowsInformationProtectionPoliciesAssign" },
+            { "DeviceAppManagement_MdmWindowsInformationProtectionPolicies_TargetApps", "IntuneMdmWindowsInformationProtectionPoliciesTargetApps" },
             #endregion
             #region DeviceAppManagement_MobileAppCategories
-            { "DeviceAppManagement_MobileAppCategories", "MobileAppCats" },
+            { "DeviceAppManagement_MobileAppCategories", "IntuneMobileAppCategories" },
             #endregion
             #region DeviceAppManagement_MobileAppConfigurations
-            { "DeviceAppManagement_MobileAppConfigurations", "MobileAppConfigs" },
-            { "DeviceAppManagement_MobileAppConfigurations_Assignments", "MobileAppConfigAssignments" },
-            { "DeviceAppManagement_MobileAppConfigurations_DeviceStatuses", "MobileAppConfigDeviceStatuses" },
-            { "DeviceAppManagement_MobileAppConfigurations_DeviceStatusSummary", "MobileAppConfigDeviceStatusSummary" },
-            { "DeviceAppManagement_MobileAppConfigurations_UserStatuses", "MobileAppConfigUserStatuses" },
-            { "DeviceAppManagement_MobileAppConfigurations_UserStatusSummary", "MobileAppConfigUserStatusSummary" },
+            { "DeviceAppManagement_MobileAppConfigurations", "IntuneMobileAppConfigurations" },
+            { "DeviceAppManagement_MobileAppConfigurations_Assignments", "IntuneMobileAppConfigurationsAssignments" },
+            { "DeviceAppManagement_MobileAppConfigurations_DeviceStatuses", "IntuneMobileAppConfigurationsDeviceStatuses" },
+            { "DeviceAppManagement_MobileAppConfigurations_DeviceStatusSummary", "IntuneMobileAppConfigurationsDeviceStatusSummary" },
+            { "DeviceAppManagement_MobileAppConfigurations_UserStatuses", "IntuneMobileAppConfigurationsUserStatuses" },
+            { "DeviceAppManagement_MobileAppConfigurations_UserStatusSummary", "IntuneMobileAppConfigurationsUserStatusSummary" },
             #endregion            
             #region DeviceAppManagement_MobileApps
             { "DeviceAppManagement_MobileApps", "MobileApps" },            

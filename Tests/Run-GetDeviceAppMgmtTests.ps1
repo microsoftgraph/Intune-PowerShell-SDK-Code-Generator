@@ -44,15 +44,15 @@ $tests = @(
 #
 # AmManagedEBooks
 #    
-    {(Get-ManagedEBooks| Get-MSGraphAllPages)[0] | Get-ManagedEBookAssignments}
-    {(Get-ManagedEBooks| Get-MSGraphAllPages)[0] | Get-ManagedEBooksDeviceStates}
-    {(Get-ManagedEBooks| Get-MSGraphAllPages)[0] | Get-ManagedEBooksInstallSummary}
-    {$env:managedEBooksUserState = (Get-ManagedEBooks| Get-MSGraphAllPages)[0] | Get-ManagedEBooksUserStateSummary}
-    {if ($env:managedEBooksUserState -ne $env:null) {(Get-ManagedEBooks| Get-MSGraphAllPages)[0] | Get-ManagedEBooksUserStateSummaryDeviceStates}}
+    {(Get-IntuneManagedEBooks| Get-MSGraphAllPages)[0] | Get-IntuneManagedEBooksAssignments}
+    {(Get-IntuneManagedEBooks| Get-MSGraphAllPages)[0] | Get-IntuneManagedEBooksDeviceStates}
+    {(Get-IntuneManagedEBooks| Get-MSGraphAllPages)[0] | Get-IntuneManagedEBooksInstallSummary}
+    {$env:managedEBooksUserState = (Get-IntuneManagedEBooks| Get-MSGraphAllPages)[0] | Get-IntuneManagedEBooksUserStateSummary}
+    {if ($env:managedEBooksUserState -ne $env:null) {(Get-IntuneManagedEBooks| Get-MSGraphAllPages)[0] | Get-IntuneManagedEBooksUserStateSummaryDeviceStates}}
 #
 # mdmWindowsInformationProtectionPolicy
 #
-    {$env:mdmWindowsInfoProtPolicy = (Get-MdmWinInfoPP | Get-MSGraphAllPages)}
+    {$env:mdmWindowsInfoProtPolicy = (Get-IntuneMdmWindowsInformationProtectionPolicies | Get-MSGraphAllPages)}
 #
 # managedAppPolicies
 #
@@ -62,22 +62,22 @@ $tests = @(
 #    
     {(Get-IntuneManagedAppRegistrations | Get-MSGraphAllPages)}
 #
-# AmAppStatuses
+# AmIntuneManagedAppStatus
 #
-    {(Get-AppStatuses | Get-MSGraphAllPages)[0]}
+    {(Get-IntuneManagedAppStatus | Get-MSGraphAllPages)[0]}
 #
-# AmMobileAppCats
+# AmIntuneMobileAppCategories
 #
-    {Get-MobileAppCats}
+    {Get-IntuneMobileAppCategories}
 #
-# AmMobileAppConfigs
+# AmIntuneMobileAppConfigurations
 #    
-    {$env:mobileAppConfig = (Get-MobileAppConfigs | Get-MSGraphAllPages)[0]}
-    {(Get-MobileAppConfigs | Get-MSGraphAllPages)[0] | Get-MobileAppConfigAssignments}
-    {(Get-MobileAppConfigs | Get-MSGraphAllPages)[0] | Get-MobileAppConfigDeviceStatuses}
-    {(Get-MobileAppConfigs | Get-MSGraphAllPages)[0] | Get-MobileAppConfigDeviceStatusSummary}
-    {(Get-MobileAppConfigs | Get-MSGraphAllPages)[0] | Get-MobileAppConfigUserStatuses}
-    {(Get-MobileAppConfigs | Get-MSGraphAllPages)[0] | Get-MobileAppConfigUserStatusSummary}
+    {$env:mobileAppConfig = (Get-IntuneMobileAppConfigurations | Get-MSGraphAllPages)[0]}
+    {(Get-IntuneMobileAppConfigurations | Get-MSGraphAllPages)[0] | Get-IntuneMobileAppConfigurationsAssignments}
+    {(Get-IntuneMobileAppConfigurations | Get-MSGraphAllPages)[0] | Get-IntuneMobileAppConfigurationsDeviceStatuses}
+    {(Get-IntuneMobileAppConfigurations | Get-MSGraphAllPages)[0] | Get-IntuneMobileAppConfigurationsDeviceStatusSummary}
+    {(Get-IntuneMobileAppConfigurations | Get-MSGraphAllPages)[0] | Get-IntuneMobileAppConfigurationsUserStatuses}
+    {(Get-IntuneMobileAppConfigurations | Get-MSGraphAllPages)[0] | Get-IntuneMobileAppConfigurationsUserStatusSummary}
 #
 # AmMobileApps
 #
