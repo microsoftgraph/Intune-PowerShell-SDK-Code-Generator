@@ -40,7 +40,7 @@ $appIdentifiers = $apps | ForEach-Object {
 
 # Target apps
 Write-Host "Targeting the policy to the apps..."
-Invoke-TargetIosAPPs -iosManagedAppProtectionId $policy.id -apps $appIdentifiers
+Invoke-IntuneIosAppProtectionPoliciesTargetApps -iosManagedAppProtectionId $policy.id -apps $appIdentifiers
 
 # Get an AAD group
 Write-Host "Get security groups..."
@@ -49,7 +49,7 @@ $groups = Get-Groups | Where-Object { $_.securityEnabled -eq $true }
 # Assign policy to groups
 Write-Host "Assign the policy to the groups..."
 $groups | ForEach-Object {
-    Invoke-AssignIosAPPsApps -iosManagedAppProtectionId $policy.id -assignments @(
+    Invoke-IntuneIosAppProtectionPoliciesAssign -iosManagedAppProtectionId $policy.id -assignments @(
         New-TargetedManagedAppPolicyAssignmentObject `
             -target (New-DeviceAndAppManagementAssignmentTargetObject -groupAssignmentTarget -groupId $_.id)
     )

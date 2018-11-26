@@ -32,15 +32,15 @@ $tests = @(
 #
 # AndroidManagedAppProtectionApps
 #    
-    {(Get-AndroidAPP | Get-MSGraphAllPages) | Get-AndroidAPPApps}
+    {(Get-IntuneAndroidAppProtectionPolicies | Get-MSGraphAllPages) | Get-IntuneAndroidAppProtectionPoliciesApps}
 #
 # DefaultManagedAppProtections
 #
-    {Get-DefaultAPP}
+    {Get-IntuneDefaultAppProtectionPolicies}
 #
 # IodManagedAppProtections
 #    
-    {(Get-IosAPPs | Get-MSGraphAllPages)[0] | Get-IosAPPsApps}  
+    {(Get-IntuneIosAppProtectionPolicies | Get-MSGraphAllPages)[0] | Get-IntuneIosAppProtectionPoliciesApps}  
 #
 # AmManagedEBooks
 #    
