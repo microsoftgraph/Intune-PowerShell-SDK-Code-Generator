@@ -96,14 +96,14 @@ $tests = @(
 #
 # AmVppTokens
 #
-    {(Get-VppTokens | Get-MSGraphAllPages)}
+    {(Get-IntuneVppTokens | Get-MSGraphAllPages)}
 #
-# AmWinInfoPP
+# AmIntuneWindowsInformationProtectionPolicies
 #
-    {$env:WinPP = (Get-WinInfoPP | Get-MSGraphAllPages)}
-    #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-WinInfoPP | Get-MSGraphAllPages) | Get-WinInfoPPAssignments}}
-    #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-WinInfoPP | Get-MSGraphAllPages) | Get-WinInfoPPExemptAppLockerFiles}}
-    #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-WinInfoPP | Get-MSGraphAllPages) | Get-WinInfoPPProtectedAppLockerFiles}}   
+    {$env:WinPP = (Get-IntuneWindowsInformationProtectionPolicies | Get-MSGraphAllPages)}
+    #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-IntuneWindowsInformationProtectionPolicies | Get-MSGraphAllPages) | Get-IntuneWindowsInformationProtectionPoliciesAssignments}}
+    #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-IntuneWindowsInformationProtectionPolicies | Get-MSGraphAllPages) | Get-IntuneWindowsInformationProtectionPoliciesExemptAppLockerFiles}}
+    #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-IntuneWindowsInformationProtectionPolicies | Get-MSGraphAllPages) | Get-IntuneWindowsInformationProtectionPoliciesProtectedAppLockerFiles}}   
 )
 
 #

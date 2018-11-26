@@ -114,16 +114,16 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceAppManagement_TargetedManagedAppConfigurations_TargetApps", "IntuneTargetedManagedAppConfigurationsTargetedApps" },
             #endregion
             #region DeviceAppManagement_VppTokens
-            { "DeviceAppManagement_VppTokens", "VppTokens"},
-            { "DeviceAppManagement_VppTokens_SyncLicenses", "VppTokensSyncLicenses" },
+            { "DeviceAppManagement_VppTokens", "IntuneVppTokens"},
+            { "DeviceAppManagement_VppTokens_SyncLicenses", "IntuneVppTokensSyncLicenses" },
             #endregion
             #region DeviceAppManagement_WindowsInformationProtectionPolicies
-            { "DeviceAppManagement_WindowsInformationProtectionPolicies", "WinInfoPP" },
-            { "DeviceAppManagement_WindowsInformationProtectionPolicies_Assignments", "WinInfoPPAssignments" },
-            { "DeviceAppManagement_WindowsInformationProtectionPolicies_ExemptAppLockerFiles", "WinInfoPPExemptAppLockerFiles" },
-            { "DeviceAppManagement_WindowsInformationProtectionPolicies_ProtectedAppLockerFiles", "WinInfoPPProtectedAppLockerFiles" },
-            { "DeviceAppManagement_WindowsInformationProtectionPolicies_Assign", "AssignWinInfoPP" },
-            { "DeviceAppManagement_WindowsInformationProtectionPolicies_TargetApps", "TargetWinInfoPP"},
+            { "DeviceAppManagement_WindowsInformationProtectionPolicies", "IntuneWindowsInformationProtectionPolicies" },
+            { "DeviceAppManagement_WindowsInformationProtectionPolicies_Assignments", "IntuneWindowsInformationProtectionPoliciesAssignments" },
+            { "DeviceAppManagement_WindowsInformationProtectionPolicies_ExemptAppLockerFiles", "IntuneWindowsInformationProtectionPoliciesExemptAppLockerFiles" },
+            { "DeviceAppManagement_WindowsInformationProtectionPolicies_ProtectedAppLockerFiles", "IntuneWindowsInformationProtectionPoliciesProtectedAppLockerFiles" },
+            { "DeviceAppManagement_WindowsInformationProtectionPolicies_Assign", "IntuneWindowsInformationProtectionPoliciesAssign" },
+            { "DeviceAppManagement_WindowsInformationProtectionPolicies_TargetApps", "IntuneWindowsInformationProtectionPoliciesTargetApps"},
             #endregion
             #endregion
             #region DeviceManagement            
