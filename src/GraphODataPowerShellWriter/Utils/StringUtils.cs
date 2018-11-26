@@ -248,8 +248,38 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             #region DeviceManagement_TermsAndConditions
             { "DeviceManagement_TermsAndConditions", "TnCs" },
             { "DeviceManagement_TermsAndConditions_AcceptanceStatuses", "TnCAcceptanceStatuses" },
-            { "DeviceManagement_TermsAndConditions_Assignments", "TnCAssignments" }
+            { "DeviceManagement_TermsAndConditions_Assignments", "TnCAssignments" },
             #endregion
+            #endregion
+            #region Groups
+            { "Groups_CreatedOnBehalfOf", "GroupsCreatedOnBehalfOf" },
+            { "Groups_CreatedOnBehalfOfReference", "GroupsCreatedOnBehalfOfReference" },
+            { "Groups_GroupLifecyclePolicies", "GroupsGroupLifecyclePolicies" },
+            { "Groups_MemberOf", "GroupsMemberOf" },
+            { "Groups_MemberOfReferences", "GroupsMemberOfReferences" },
+            { "Groups_Members", "GroupsMembers" },
+            { "Groups_MembersReferences", "GroupsMembersReferences" },
+            { "Groups_Owners", "GroupsOwners" },
+            { "Groups_OwnersReferences", "GroupsOwnersReferences" },
+            { "Groups_Photo", "GroupsPhoto" },
+            { "Groups_PhotoData", "GroupsPhotoData" },
+            { "Groups_Photos", "GroupsPhotos" },
+            { "Groups_PhotosData", "GroupsPhotosData" },
+            { "Groups_Settings", "GroupsSettings" },
+            { "Groups_AddFavorite", "GroupsAddFavorite" },
+            { "Groups_CheckMemberGroups", "GroupsCheckMemberGroups" },
+            { "Groups_Delta", "GroupsDelta" },
+            { "Groups_GetByIds", "Groups_GetByIds" },
+            { "Groups_GetMemberGroups", "GroupsGetMemberGroups" },
+            { "Groups_GetMemberObjects", "GroupsGetMemberObjects" },
+            { "Groups_GroupLifecyclePolicies_AddGroup", "GroupsGroupLifecyclePoliciesAddGroup" },
+            { "Groups_GroupLifecyclePolicies_RemoveGroup", "GroupsGroupLifecyclePoliciesRemoveGroup" },
+            { "Groups_RemoveFavorite", "GroupsRemoveFavorite" },
+            { "Groups_Renew", "GroupsRenew" },
+            { "Groups_ResetUnseenCount", "GroupsResetUnseenCount" },
+            { "Groups_Restore", "GroupsRestore" },
+            { "Groups_SubscribeByMail", "GroupsSubscribeByMail" },
+            { "Groups_UnsubscribeByMail", "GroupsUnsubscribeByMail" }
             #endregion
         };
 

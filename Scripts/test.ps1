@@ -53,6 +53,7 @@ try {
                 Invoke-Expression "$($_.FullName)"
             } catch {
                 Write-Error "Error: $_"
+                throw
             }
             Write-Host -f Magenta "COMPLETED: $($_.BaseName)"
             Write-Host
