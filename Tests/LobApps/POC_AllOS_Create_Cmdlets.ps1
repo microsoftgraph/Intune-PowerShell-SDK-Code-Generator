@@ -271,7 +271,7 @@ foreach($app in $iOSAPP_apps){
 
 }
 
-$CreateResult = New-ManagedAppPolicies -iosManagedAppProtection -displayName "iOS MAM / APP Policy" `
+$CreateResult = New-IntuneAppProtectionPolicies -iosManagedAppProtection -displayName "iOS MAM / APP Policy" `
 -periodOfflineBeforeAccessCheck (New-TimeSpan -Hours 12) `
 -periodOnlineBeforeAccessCheck (New-TimeSpan -Minutes 30)`
 -allowedInboundDataTransferSources managedApps -allowedOutboundDataTransferDestinations managedApps `
@@ -308,7 +308,7 @@ foreach($app in $AndroidAPP_apps){
 
 }
 
-$CreateResult = New-ManagedAppPolicies -androidManagedAppProtection -displayName "Android MAM / APP Policy" `
+$CreateResult = New-IntuneAppProtectionPolicies -androidManagedAppProtection -displayName "Android MAM / APP Policy" `
 -periodOfflineBeforeAccessCheck (New-TimeSpan -Hours 12) `
 -periodOnlineBeforeAccessCheck (New-TimeSpan -Minutes 30)`
 -allowedInboundDataTransferSources managedApps -allowedOutboundDataTransferDestinations managedApps `

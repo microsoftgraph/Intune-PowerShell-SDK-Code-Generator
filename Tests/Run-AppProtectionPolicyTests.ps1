@@ -23,7 +23,7 @@ Set-IntuneContext -AdminUPN $AdminUPN
 # Create iosManagedAppProtection
 #
 Write-Output "Creating iOS MAM / APP Policy ..."
-$iosManagedAppProtection = New-ManagedAppPolicies -iosManagedAppProtection -displayName "iOS MAM / APP Policy" `
+$iosManagedAppProtection = New-IntuneAppProtectionPolicies -iosManagedAppProtection -displayName "iOS MAM / APP Policy" `
     -periodOfflineBeforeAccessCheck (New-TimeSpan -Hours 12) `
     -periodOnlineBeforeAccessCheck (New-TimeSpan -Minutes 30)`
     -allowedInboundDataTransferSources managedApps -allowedOutboundDataTransferDestinations managedApps `

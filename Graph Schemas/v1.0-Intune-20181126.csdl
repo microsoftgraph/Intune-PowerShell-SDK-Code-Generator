@@ -1922,9 +1922,6 @@
                 <Property Name="userId" Type="Edm.String" />
                 <Property Name="appIdentifier" Type="microsoft.graph.mobileAppIdentifier" />
                 <Property Name="version" Type="Edm.String" />
-                <NavigationProperty Name="appliedPolicies" Type="Collection(microsoft.graph.managedAppPolicy)" ContainsTarget="true" />
-                <NavigationProperty Name="intendedPolicies" Type="Collection(microsoft.graph.managedAppPolicy)" ContainsTarget="true" />
-                <NavigationProperty Name="operations" Type="Collection(microsoft.graph.managedAppOperation)" ContainsTarget="true" />
             </EntityType>
             <EntityType Name="deviceManagementTroubleshootingEvent" BaseType="microsoft.graph.entity">
                 <Property Name="eventDateTime" Type="Edm.DateTimeOffset" Nullable="false" />

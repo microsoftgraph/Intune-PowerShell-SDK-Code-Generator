@@ -1,6 +1,6 @@
 # Create a policy
 Write-Host "Creating an iOS app protection policy..."
-$policy = New-ManagedAppPolicies `
+$policy = New-IntuneAppProtectionPolicies `
     -iosManagedAppProtection `
     -displayName "iOS MAM / APP Policy" `
     -periodOfflineBeforeAccessCheck (New-TimeSpan -Hours 12) `
@@ -57,4 +57,4 @@ $groups | ForEach-Object {
 
 # Remove policy
 Write-Host "Deleting the policy..."
-$policy | Remove-ManagedAppPolicies
+$policy | Remove-IntuneAppProtectionPolicies

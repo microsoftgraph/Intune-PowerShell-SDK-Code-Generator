@@ -56,23 +56,11 @@ $tests = @(
 #
 # managedAppPolicies
 #
-    {(Get-ManagedAppPolicies | Get-MSGraphAllPages)[0]}
+    {(Get-IntuneAppProtectionPolicies | Get-MSGraphAllPages)[0]}
 #
 # managedAppRegistrations
 #    
-    {Get-AppRegns | Get-AppRegnPolicies}
-    {Get-AppRegns | Get-AppRegnApps}
-    {Get-AppRegns | Get-AppRegnAssignments}
-    {Get-AppRegns | Get-AppRegnDeploymentSummary}
-    {Get-AppRegns | Get-AppRegnExemptAppLockerFiles}
-    {Get-AppRegns | Get-AppRegnProtectedAppLockerFiles}
-    {Get-AppRegns | Get-AppRegnIntendedPolicies}
-    {Get-AppRegns | Get-AppRegnIntendedPoliciesApps}
-    {Get-AppRegns | Get-AppRegnIntendedPoliciesAsignments}
-    {Get-AppRegns | Get-AppRegnIntendedPoliciesDeploymentSummary}
-    {Get-AppRegns | Get-AppRegnIntendedPoliciesExemptAppLockerFiles}
-    {Get-AppRegns | Get-AppRegnIntendedPoliciesProtectedAppLockerFiles}
-    {Get-AppRegns | Get-AmAppRegnOps}
+    {(Get-IntuneManagedAppRegistrations | Get-MSGraphAllPages)}
 #
 # AmAppStatuses
 #
@@ -130,6 +118,6 @@ foreach ($test in $tests)
     }
     catch
     {
-        Write-Error "$test,$_"
+        Throw "$test,$_"
     }
 }

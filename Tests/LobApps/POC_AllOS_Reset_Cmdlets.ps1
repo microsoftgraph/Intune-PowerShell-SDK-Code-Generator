@@ -111,7 +111,7 @@ Write-Host "Removing all App Protection Policies..." -f Cyan
 
 Write-Host
 
-$MAMs = Get-ManagedAppPolicies
+$MAMs = Get-IntuneAppProtectionPolicies
 
 foreach($MAM in $MAMs){
 
@@ -119,7 +119,7 @@ foreach($MAM in $MAMs){
     $MAM.displayname + ": " + $MAM.'@odata.type'
     $MAM.id
     
-    Remove-ManagedAppPolicies -managedAppPolicyId $MAM.id
+    Remove-IntuneAppProtectionPolicies -managedAppPolicyId $MAM.id
     Write-Host
 
 }
