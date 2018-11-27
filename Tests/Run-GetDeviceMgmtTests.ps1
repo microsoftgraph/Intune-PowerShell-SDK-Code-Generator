@@ -28,27 +28,27 @@ $tests = @(
 #
 # DeviceManagement Singleton
 #
-    {Get-DeviceAppManagement}
-    {Get-APNSCert}
-    {Get-DeviceCategories}
-    {Get-DeviceCompliancePolicyDeviceStateSummary}
-    {Get-DeviceCompliancePolicySettingStateSummaries}
-    {$env:DmDCStateSumm=Get-DeviceConfigurationDeviceStateSummaries}
-    {if ($env:DmDCStateSumm -ne $null) {(Get-DeviceConfigurationDeviceStateSummaries| Get-MSGraphAllPages) |Get-DeviceComplianceSettingStates}}
-    {Get-DeviceManagementPartners}
-    {Get-ExchangeConnectors}
-    {Get-IosUpdateStatuses}
-    {Get-ManagedDeviceOverview}
-    {Get-MobileThreatDefenseConnectors}
+    {Get-IntuneDeviceAppManagement}
+    {Get-IntuneApplePushNotificationCertificate}
+    {Get-IntuneDeviceCategories}
+    {Get-IntuneDeviceCompliancePolicyDeviceStateSummary}
+    {Get-IntuneDeviceCompliancePolicySettingStateSummaries}
+    {$env:DmDCStateSumm=Get-IntuneDeviceConfigurationDeviceStateSummaries}
+    {if ($env:DmDCStateSumm -ne $null) {(Get-IntuneDeviceConfigurationDeviceStateSummaries| Get-MSGraphAllPages) |Get-IntuneDeviceComplianceSettingStates}}
+    {Get-IntuneDeviceManagementPartners}
+    {Get-IntuneExchangeConnectors}
+    {Get-IntuneIosUpdateStatuses}
+    {Get-IntuneManagedDeviceOverview}
+    {Get-IntuneMobileThreatDefenseConnectors}
     {$env:DmNotifMsgTemplates=(Get-NotifMsgTemplates)}
     {if ($env:DmNotifMsgTemplates -ne $null) {(Get-NotifMsgTemplates| Get-MSGraphAllPages)[0] |Get-NotifMsgTemplateLocMsgs}} 
-    {Get-TroubleshootingEvents}
-    {Get-WIPAppLearningSummaries}
-    {Get-WIPNetworkLearningSummaries}
-    {Get-RemoteAssistancePartners}
-    {Get-ResourceOperations}
-    {Get-SoftwareUpdateStatusSummary}
-    {Get-TelecomExpenseManagementPartners}
+    {Get-IntuneTroubleshootingEvents}
+    {Get-IntuneWindowsInformationProtectionAppLearningSummaries}
+    {Get-IntuneWindowsInformationProtectionNetworkLearningSummaries}
+    {Get-IntuneRemoteAssistancePartners}
+    {Get-IntuneResourceOperations}
+    {Get-IntuneSoftwareUpdateStatusSummary}
+    {Get-IntuneTelecomExpenseManagementPartners}
 #
 # DmDetectedApps
 #

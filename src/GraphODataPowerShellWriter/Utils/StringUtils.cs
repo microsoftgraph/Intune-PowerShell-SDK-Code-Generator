@@ -26,6 +26,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         {
             // Keep this list sorted
             #region DeviceAppManagement
+            { "DeviceAppManagement", "IntuneDeviceAppManagement" },
             #region DeviceAppManagement_AndroidManagedAppProtections
             { "DeviceAppManagement_AndroidManagedAppProtections", "IntuneAndroidAppProtectionPolicies" },
             { "DeviceAppManagement_AndroidManagedAppProtections_Apps", "IntuneAndroidAppProtectionPoliciesApps" },
@@ -126,37 +127,37 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceAppManagement_WindowsInformationProtectionPolicies_TargetApps", "IntuneWindowsInformationProtectionPoliciesTargetApps"},
             #endregion
             #endregion
-            #region DeviceManagement            
-            { "DeviceManagement_ApplePushNotificationCertificate", "APNSCert" },
-            { "DeviceManagement_ApplePushNotificationCertificate_DownloadApplePushNotificationCertificateSigningRequest", "DownloadAPNSCertSigningRequest" },
-            { "DeviceManagement_ConditionalAccessSettings", "CASettings" },
-            { "DeviceManagement_DeviceCategories", "DeviceCategories" },
-            { "DeviceManagement_DeviceCompliancePolicyDeviceStateSummary", "DeviceCompliancePolicyDeviceStateSummary" },
-            { "DeviceManagement_DeviceCompliancePolicySettingStateSummaries", "DeviceCompliancePolicySettingStateSummaries" },
-            { "DeviceManagement_DeviceCompliancePolicySettingStateSummaries_DeviceComplianceSettingStates", "DeviceComplianceSettingStates" },
-            { "DeviceManagement_DeviceCompliancePolicies_Assign", "AssignDeviceCompliancePolicies" },
-            { "DeviceManagement_DeviceCompliancePolicies_ScheduleActionsForRules", "ScheduleActionsForRulesOfDeviceCompliancePolicies" },
-            { "DeviceManagement_DeviceConfigurationDeviceStateSummaries", "DeviceConfigurationDeviceStateSummaries" },
-            { "DeviceManagement_DeviceManagementPartners", "DeviceManagementPartners" },
-            { "DeviceManagement_ExchangeConnectors", "ExchangeConnectors" },
-            { "DeviceManagement_IosUpdateStatuses", "IosUpdateStatuses" },
-            { "DeviceManagement_ManagedDeviceOverview", "ManagedDeviceOverview" },
-            { "DeviceManagement_ManagedDeviceOverviewReference", "ManagedDeviceOverviewReference" }, //BUGBUG: Missing Route
-            { "DeviceManagement_MobileThreatDefenseConnectors", "MobileThreatDefenseConnectors" },
-            { "DeviceManagement_TroubleshootingEvents", "TroubleshootingEvents"},
-            { "DeviceManagement_WindowsInformationProtectionAppLearningSummaries", "WIPAppLearningSummaries" },
-            { "DeviceManagement_WindowsInformationProtectionNetworkLearningSummaries", "WIPNetworkLearningSummaries" },
-            { "DeviceManagement_RemoteAssistancePartners", "RemoteAssistancePartners" },
-            { "DeviceManagement_ResourceOperations", "ResourceOperations" },
-            { "DeviceManagement_SoftwareUpdateStatusSummary", "SoftwareUpdateStatusSummary" },
-            { "DeviceManagement_SoftwareUpdateStatusSummaryReference", "SoftwareUpdateStatusSummaryReference" }, //BUGBUG: Missing Route
-            { "DeviceManagement_TelecomExpenseManagementPartners", "TelecomExpenseManagementPartners" },
-            { "DeviceManagement_DeviceConfigurations_Assign", "AssignDCs" },
-            { "DeviceManagement_DeviceEnrollmentConfigurations_Assign", "AssignDeviceEnrollmentConfigs" },
-            { "DeviceManagement_DeviceEnrollmentConfigurations_SetPriority", "SetPriorityOfDeviceEnrollmentConfigs" },
-            { "DeviceManagement_ExchangeConnectors_Sync", "SyncExchangeConnectors" },
-            { "DeviceManagement_GetEffectivePermissions", "GetEffectivePermissions" },
-            { "DeviceManagement_VerifyWindowsEnrollmentAutoDiscovery", "VerifyWindowsEnrollmentAutoDiscovery" },
+            #region DeviceManagement  
+            { "DeviceManagement", "IntuneDeviceManagement" },
+            { "DeviceManagement_ApplePushNotificationCertificate", "IntuneApplePushNotificationCertificate" },
+            { "DeviceManagement_ApplePushNotificationCertificate_DownloadApplePushNotificationCertificateSigningRequest", "IntuneDownloadApplePushNotificationCertificateSigningRequest" },
+            { "DeviceManagement_ConditionalAccessSettings", "IntuneConditionalAccessSettings" },
+            { "DeviceManagement_DeviceCategories", "IntuneDeviceCategories" },
+            { "DeviceManagement_DeviceCompliancePolicyDeviceStateSummary", "IntuneDeviceCompliancePolicyDeviceStateSummary" },
+            { "DeviceManagement_DeviceCompliancePolicySettingStateSummaries", "IntuneDeviceCompliancePolicySettingStateSummaries" },
+            { "DeviceManagement_DeviceCompliancePolicySettingStateSummaries_DeviceComplianceSettingStates", "IntuneDeviceComplianceSettingStates" },
+            { "DeviceManagement_DeviceCompliancePolicies_Assign", "IntuneDeviceCompliancePoliciesAssign" },
+            { "DeviceManagement_DeviceCompliancePolicies_ScheduleActionsForRules", "IntuneDeviceCompliancePoliciesScheduleActionsForRules" },
+            { "DeviceManagement_DeviceConfigurationDeviceStateSummaries", "IntuneDeviceConfigurationDeviceStateSummaries" },
+            { "DeviceManagement_DeviceManagementPartners", "IntuneDeviceManagementPartners" },
+            { "DeviceManagement_ExchangeConnectors", "IntuneExchangeConnectors" },
+            { "DeviceManagement_IosUpdateStatuses", "IntuneIosUpdateStatuses" },
+            { "DeviceManagement_ManagedDeviceOverview", "IntuneManagedDeviceOverview" },
+            { "DeviceManagement_ManagedDeviceOverviewReference", "IntuneManagedDeviceOverviewReference" }, //BUGBUG: Missing Route
+            { "DeviceManagement_MobileThreatDefenseConnectors", "IntuneMobileThreatDefenseConnectors" },
+            { "DeviceManagement_TroubleshootingEvents", "IntuneTroubleshootingEvents"},
+            { "DeviceManagement_WindowsInformationProtectionAppLearningSummaries", "IntuneWindowsInformationProtectionAppLearningSummaries" },
+            { "DeviceManagement_WindowsInformationProtectionNetworkLearningSummaries", "IntuneWindowsInformationProtectionNetworkLearningSummaries" },
+            { "DeviceManagement_RemoteAssistancePartners", "IntuneRemoteAssistancePartners" },
+            { "DeviceManagement_ResourceOperations", "IntuneResourceOperations" },
+            { "DeviceManagement_SoftwareUpdateStatusSummary", "IntuneSoftwareUpdateStatusSummary" },
+            { "DeviceManagement_SoftwareUpdateStatusSummaryReference", "IntuneSoftwareUpdateStatusSummaryReference" }, //BUGBUG: Missing Route
+            { "DeviceManagement_TelecomExpenseManagementPartners", "IntuneTelecomExpenseManagementPartners" },            
+            { "DeviceManagement_DeviceEnrollmentConfigurations_Assign", "IntuneDeviceEnrollmentConfigurationsAssign" },
+            { "DeviceManagement_DeviceEnrollmentConfigurations_SetPriority", "IntuneDeviceEnrollmentConfigurationsSetPriority" },
+            { "DeviceManagement_ExchangeConnectors_Sync", "IntuneExchangeConnectorsSync" },
+            { "DeviceManagement_GetEffectivePermissions", "IntuneGetEffectivePermissions" },
+            { "DeviceManagement_VerifyWindowsEnrollmentAutoDiscovery", "IntuneVerifyWindowsEnrollmentAutoDiscovery" },
             #region DeviceManagement_DetectedApps
             { "DeviceManagement_DetectedApps", "DetectedApps" },
             { "DeviceManagement_DetectedApps_ManagedDevices", "DetectedAppDevices" },
@@ -181,6 +182,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceManagement_DeviceConfigurations_UserStatusOverview", "DCUserStatusOverview" },
             { "DeviceManagement_DeviceConfigurations_DeviceSettingStateSummaries", "DCDeviceSettingStateSummaries" },
             { "DeviceManagement_DeviceConfigurations_DeviceStatuses", "DCDeviceStatuses" },
+            { "DeviceManagement_DeviceConfigurations_Assign", "IntuneDeviceConfigurationsAssign" },
             #endregion
             #region DeviceManagement_DeviceEnrollmentConfigurations
             { "DeviceManagement_DeviceEnrollmentConfigurations", "DeviceEnrollmentConfigs" },

@@ -28,7 +28,7 @@ $tests = @(
 #
 # DeviceAppManagement Singleton
 #
-    {Get-DeviceAppManagement}
+    {Get-IntuneDeviceAppManagement}
 #
 # AndroidManagedAppProtectionApps
 #    

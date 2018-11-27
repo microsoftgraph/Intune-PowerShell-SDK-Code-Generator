@@ -135,7 +135,7 @@ $AADGroup = (Get-Groups -groupId "$IPU_Id").displayName
 
 write-host "Assigning Device Compliance Policy to AAD Group '$AADGroup'" -f Yellow
 
-Invoke-AssignDeviceCompliancePolicies -deviceCompliancePolicyId $CreateResult.id `
+Invoke-IntuneDeviceCompliancePoliciesAssign -deviceCompliancePolicyId $CreateResult.id `
 -assignments (New-DeviceCompliancePolicyAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -153,7 +153,7 @@ Write-Host
 
 write-host "Assigning Device Compliance Policy to AAD Group '$AADGroup'" -f Yellow
 
-Invoke-AssignDeviceCompliancePolicies -deviceCompliancePolicyId $CreateResult.id `
+Invoke-IntuneDeviceCompliancePoliciesAssign -deviceCompliancePolicyId $CreateResult.id `
 -assignments (New-DeviceCompliancePolicyAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -174,7 +174,7 @@ Write-Host
 
 write-host "Assigning Device Compliance Policy to AAD Group '$AADGroup'" -f Yellow
 
-Invoke-AssignDeviceCompliancePolicies -deviceCompliancePolicyId $CreateResult.id `
+Invoke-IntuneDeviceCompliancePoliciesAssign -deviceCompliancePolicyId $CreateResult.id `
 -assignments (New-DeviceCompliancePolicyAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -195,7 +195,7 @@ Write-Host
 
 write-host "Assigning Device Compliance Policy to AAD Group '$AADGroup'" -f Yellow
 
-Invoke-AssignDeviceCompliancePolicies -deviceCompliancePolicyId $CreateResult.id `
+Invoke-IntuneDeviceCompliancePoliciesAssign -deviceCompliancePolicyId $CreateResult.id `
 -assignments (New-DeviceCompliancePolicyAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -222,7 +222,7 @@ $CreateResult = New-DeviceConfigurations -iosGeneralDeviceConfiguration -display
 write-host "Policy created with id" $CreateResult.id
 Write-Host
 
-Invoke-AssignDCs -deviceConfigurationId $CreateResult.id `
+Invoke-IntuneDeviceConfigurationsAssign -deviceConfigurationId $CreateResult.id `
 -assignments (New-DeviceConfigurationAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -237,7 +237,7 @@ $CreateResult = New-DeviceConfigurations -androidGeneralDeviceConfiguration -dis
 write-host "Policy created with id" $CreateResult.id
 Write-Host
 
-Invoke-AssignDCs -deviceConfigurationId $CreateResult.id `
+Invoke-IntuneDeviceConfigurationsAssign -deviceConfigurationId $CreateResult.id `
 -assignments (New-DeviceConfigurationAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -288,7 +288,7 @@ write-host "Policy created with id" $CreateResult.id
 Write-Host
 
 <#
-Invoke-AssignDCs -deviceConfigurationId $CreateResult.id `
+Invoke-IntuneDeviceConfigurationsAssign -deviceConfigurationId $CreateResult.id `
 -assignments (New-DeviceConfigurationAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
