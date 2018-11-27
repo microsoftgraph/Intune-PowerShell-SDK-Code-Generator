@@ -86,14 +86,14 @@ Write-Host "Removing all Configuration Policies..." -f Cyan
 
 Write-Host
 
-$IntuneDeviceConfigurationsPs = Get-IntuneDeviceConfigurations
+$IntuneDeviceConfigurationPolicyPs = Get-IntuneDeviceConfigurationPolicy
 
-foreach($IntuneDeviceConfigurationsP in $IntuneDeviceConfigurationsPs){
+foreach($IntuneDeviceConfigurationPolicyP in $IntuneDeviceConfigurationPolicyPs){
 
     write-host "Removing Configuration Policy..." -f Yellow
-    $IntuneDeviceConfigurationsP.displayname
+    $IntuneDeviceConfigurationPolicyP.displayname
 
-    Remove-IntuneDeviceConfigurations -deviceConfigurationId $IntuneDeviceConfigurationsP.id
+    Remove-IntuneDeviceConfigurationPolicy -deviceConfigurationId $IntuneDeviceConfigurationPolicyP.id
     Write-Host
 
 }

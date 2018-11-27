@@ -23,7 +23,7 @@ Set-IntuneContext -AdminUPN $AdminUPN
 # Create iosGeneralDeviceConfiguration
 #
 Write-Output "Creating iOS Compliance Policy ..."
-$iosGeneralDeviceConfiguration = New-IntuneDeviceConfigurations -iosGeneralDeviceConfiguration `
+$iosGeneralDeviceConfiguration = New-IntuneDeviceConfigurationPolicy -iosGeneralDeviceConfiguration `
     -displayName "Chicago - iOS Device Restriction Policy" `
     -iCloudBlockBackup $true -iCloudBlockDocumentSync $true -iCloudBlockPhotoStreamSync $true
 
@@ -32,7 +32,7 @@ $iosGeneralDeviceConfiguration = New-IntuneDeviceConfigurations -iosGeneralDevic
 #
 $IPU_Id = (Get-Groups -Filter "displayName eq 'Intune POC Users'").id
 Write-Output "Assigning $iosGeneralDeviceConfiguration to 'Intune POC Users' group..."
-Invoke-IntuneDeviceConfigurationsAssign -deviceConfigurationId $iosGeneralDeviceConfiguration.id `
+Invoke-IntuneDeviceConfigurationPolicyAssign -deviceConfigurationId $iosGeneralDeviceConfiguration.id `
     -assignments (New-DeviceConfigurationAssignmentObject `
     -target (New-DeviceAndAppManagementAssignmentTargetObject `
     -groupAssignmentTarget -groupId "$IPU_Id"))

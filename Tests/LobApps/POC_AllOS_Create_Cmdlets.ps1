@@ -217,12 +217,12 @@ Write-Host
 
 Write-Host "Adding iOS Restriction Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-IntuneDeviceConfigurations -iosGeneralDeviceConfiguration -displayName "Chicago - iOS Device Restriction Policy" -iCloudBlockBackup $true -iCloudBlockDocumentSync $true -iCloudBlockPhotoStreamSync $true
+$CreateResult = New-IntuneDeviceConfigurationPolicy -iosGeneralDeviceConfiguration -displayName "Chicago - iOS Device Restriction Policy" -iCloudBlockBackup $true -iCloudBlockDocumentSync $true -iCloudBlockPhotoStreamSync $true
 
 write-host "Policy created with id" $CreateResult.id
 Write-Host
 
-Invoke-IntuneDeviceConfigurationsAssign -deviceConfigurationId $CreateResult.id `
+Invoke-IntuneDeviceConfigurationPolicyAssign -deviceConfigurationId $CreateResult.id `
 -assignments (New-DeviceConfigurationAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -232,12 +232,12 @@ Write-Host
 
 Write-Host "Adding Android Restriction Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-IntuneDeviceConfigurations -androidGeneralDeviceConfiguration -displayName "Chicago - Android Device Restriction Policy" -passwordRequired $true -passwordRequiredType deviceDefault -passwordMinimumLength 4
+$CreateResult = New-IntuneDeviceConfigurationPolicy -androidGeneralDeviceConfiguration -displayName "Chicago - Android Device Restriction Policy" -passwordRequired $true -passwordRequiredType deviceDefault -passwordMinimumLength 4
 
 write-host "Policy created with id" $CreateResult.id
 Write-Host
 
-Invoke-IntuneDeviceConfigurationsAssign -deviceConfigurationId $CreateResult.id `
+Invoke-IntuneDeviceConfigurationPolicyAssign -deviceConfigurationId $CreateResult.id `
 -assignments (New-DeviceConfigurationAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -288,7 +288,7 @@ write-host "Policy created with id" $CreateResult.id
 Write-Host
 
 <#
-Invoke-IntuneDeviceConfigurationsAssign -deviceConfigurationId $CreateResult.id `
+Invoke-IntuneDeviceConfigurationPolicyAssign -deviceConfigurationId $CreateResult.id `
 -assignments (New-DeviceConfigurationAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
