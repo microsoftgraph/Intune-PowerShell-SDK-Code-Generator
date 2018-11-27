@@ -7,8 +7,8 @@ function Get-MobileApp {
     )
 
     if ($PSCmdlet.ParameterSetName -eq 'GetSingleApp') {
-        Get-IntuneMobileApps -mobileAppId $mobileAppId
+        Get-IntuneMobileApp -mobileAppId $mobileAppId
     } else {
-        Get-IntuneMobileApps | Get-MSGraphAllPages
+        Get-IntuneMobileApp | Get-MSGraphAllPages
     }
 }

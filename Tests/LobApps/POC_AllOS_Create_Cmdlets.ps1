@@ -123,7 +123,7 @@ Write-Host
 # Create iOS Compliance Policy
 Write-Host "Adding iOS Compliance Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-IntuneDeviceCompliancePolicies -iosCompliancePolicy `
+$CreateResult = New-IntuneDeviceCompliancePolicy -iosCompliancePolicy `
 -displayName "Chicago - iOS Compliance Policy" -passcodeRequired $true -passcodeMinimumLength 6 `
 -passcodeMinutesOfInactivityBeforeLock 15 -securityBlockJailbrokenDevices $true `
 -scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired -scheduledActionConfigurations (New-DeviceComplianceActionItemObject -gracePeriodHours 0 -actionType block -notificationTemplateId ""))
@@ -135,7 +135,7 @@ $AADGroup = (Get-Groups -groupId "$IPU_Id").displayName
 
 write-host "Assigning Device Compliance Policy to AAD Group '$AADGroup'" -f Yellow
 
-Invoke-IntuneDeviceCompliancePoliciesAssign -deviceCompliancePolicyId $CreateResult.id `
+Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $CreateResult.id `
 -assignments (New-DeviceCompliancePolicyAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -146,14 +146,14 @@ Write-Host
 # Create Android Compliance Policy
 Write-Host "Adding Android Compliance Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-IntuneDeviceCompliancePolicies -androidCompliancePolicy -displayName "Chicago - Android Compliance Policy" -passwordRequired $true -passwordMinimumLength 6 -securityBlockJailbrokenDevices $true -passwordMinutesOfInactivityBeforeLock 15 -scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired -scheduledActionConfigurations (New-DeviceComplianceActionItemObject -gracePeriodHours 0 -actionType block -notificationTemplateId ""))
+$CreateResult = New-IntuneDeviceCompliancePolicy -androidCompliancePolicy -displayName "Chicago - Android Compliance Policy" -passwordRequired $true -passwordMinimumLength 6 -securityBlockJailbrokenDevices $true -passwordMinutesOfInactivityBeforeLock 15 -scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired -scheduledActionConfigurations (New-DeviceComplianceActionItemObject -gracePeriodHours 0 -actionType block -notificationTemplateId ""))
 
 write-host "Policy created with id" $CreateResult.id
 Write-Host
 
 write-host "Assigning Device Compliance Policy to AAD Group '$AADGroup'" -f Yellow
 
-Invoke-IntuneDeviceCompliancePoliciesAssign -deviceCompliancePolicyId $CreateResult.id `
+Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $CreateResult.id `
 -assignments (New-DeviceCompliancePolicyAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -164,7 +164,7 @@ Write-Host
 # Create Windows 10 Compliance Policy
 Write-Host "Adding Windows 10 Compliance Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-IntuneDeviceCompliancePolicies -windows10CompliancePolicy `
+$CreateResult = New-IntuneDeviceCompliancePolicy -windows10CompliancePolicy `
 -displayName "Chicago - Windows 10 Compliance Policy" `
 -osMinimumVersion 10.0.16299 `
 -scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired -scheduledActionConfigurations (New-DeviceComplianceActionItemObject -gracePeriodHours 0 -actionType block -notificationTemplateId ""))
@@ -174,7 +174,7 @@ Write-Host
 
 write-host "Assigning Device Compliance Policy to AAD Group '$AADGroup'" -f Yellow
 
-Invoke-IntuneDeviceCompliancePoliciesAssign -deviceCompliancePolicyId $CreateResult.id `
+Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $CreateResult.id `
 -assignments (New-DeviceCompliancePolicyAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -185,7 +185,7 @@ Write-Host
 # Create MacOS Compliance Policy
 Write-Host "Adding MacOS Compliance Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-IntuneDeviceCompliancePolicies -macOSCompliancePolicy `
+$CreateResult = New-IntuneDeviceCompliancePolicy -macOSCompliancePolicy `
 -displayName "Chicago - MacOS Compliance Policy" `
 -passwordRequired $true -passwordBlockSimple $false -passwordRequiredType deviceDefault `
 -scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired -scheduledActionConfigurations (New-DeviceComplianceActionItemObject -gracePeriodHours 0 -actionType block -notificationTemplateId ""))
@@ -195,7 +195,7 @@ Write-Host
 
 write-host "Assigning Device Compliance Policy to AAD Group '$AADGroup'" -f Yellow
 
-Invoke-IntuneDeviceCompliancePoliciesAssign -deviceCompliancePolicyId $CreateResult.id `
+Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $CreateResult.id `
 -assignments (New-DeviceCompliancePolicyAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
 -groupAssignmentTarget -groupId "$IPU_Id"))
@@ -262,7 +262,7 @@ Write-Host "Adding iOS Managed App Policy from PowerShell Module..." -Foreground
 
 $apps_iOS = @()
 
-$iOSAPP_apps = Get-IntuneMobileApps | ? { $_.appAvailability -eq "global" -and ($_.'@odata.type').contains("managedIOS") }
+$iOSAPP_apps = Get-IntuneMobileApp | ? { $_.appAvailability -eq "global" -and ($_.'@odata.type').contains("managedIOS") }
 
 foreach($app in $iOSAPP_apps){
 
@@ -271,7 +271,7 @@ foreach($app in $iOSAPP_apps){
 
 }
 
-$CreateResult = New-IntuneAppProtectionPolicies -iosManagedAppProtection -displayName "iOS MAM / APP Policy" `
+$CreateResult = New-IntuneAppProtectionPolicy -iosManagedAppProtection -displayName "iOS MAM / APP Policy" `
 -periodOfflineBeforeAccessCheck (New-TimeSpan -Hours 12) `
 -periodOnlineBeforeAccessCheck (New-TimeSpan -Minutes 30)`
 -allowedInboundDataTransferSources managedApps -allowedOutboundDataTransferDestinations managedApps `
@@ -299,7 +299,7 @@ Write-Host "Adding iOS Managed App Policy from PowerShell Module..." -Foreground
 
 $apps_Android = @()
 
-$AndroidAPP_apps = Get-IntuneMobileApps | ? { $_.appAvailability -eq "global" -and ($_.'@odata.type').contains("managedAndroid") }
+$AndroidAPP_apps = Get-IntuneMobileApp | ? { $_.appAvailability -eq "global" -and ($_.'@odata.type').contains("managedAndroid") }
 
 foreach($app in $AndroidAPP_apps){
 
@@ -308,7 +308,7 @@ foreach($app in $AndroidAPP_apps){
 
 }
 
-$CreateResult = New-IntuneAppProtectionPolicies -androidManagedAppProtection -displayName "Android MAM / APP Policy" `
+$CreateResult = New-IntuneAppProtectionPolicy -androidManagedAppProtection -displayName "Android MAM / APP Policy" `
 -periodOfflineBeforeAccessCheck (New-TimeSpan -Hours 12) `
 -periodOnlineBeforeAccessCheck (New-TimeSpan -Minutes 30)`
 -allowedInboundDataTransferSources managedApps -allowedOutboundDataTransferDestinations managedApps `

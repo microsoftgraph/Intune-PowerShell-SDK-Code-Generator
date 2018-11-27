@@ -61,14 +61,14 @@ Write-Host
 Write-Host "Removing all Compliance Policies..." -f Cyan
 Write-Host
 
-$CPs = Get-IntuneDeviceCompliancePolicies
+$CPs = Get-IntuneDeviceCompliancePolicy
 
 foreach($CP in $CPs){
 
     write-host "Removing Compliance Policy..." -f Yellow
     $CP.displayname
 
-    Remove-IntuneDeviceCompliancePolicies -deviceCompliancePolicyId $CP.id
+    Remove-IntuneDeviceCompliancePolicy -deviceCompliancePolicyId $CP.id
     Write-Host
 
 }
@@ -111,7 +111,7 @@ Write-Host "Removing all App Protection Policies..." -f Cyan
 
 Write-Host
 
-$MAMs = Get-IntuneAppProtectionPolicies
+$MAMs = Get-IntuneAppProtectionPolicy
 
 foreach($MAM in $MAMs){
 
@@ -119,7 +119,7 @@ foreach($MAM in $MAMs){
     $MAM.displayname + ": " + $MAM.'@odata.type'
     $MAM.id
     
-    Remove-IntuneAppProtectionPolicies -managedAppPolicyId $MAM.id
+    Remove-IntuneAppProtectionPolicy -managedAppPolicyId $MAM.id
     Write-Host
 
 }

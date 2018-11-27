@@ -23,7 +23,7 @@ Set-IntuneContext -AdminUPN $AdminUPN
 # Create iosCompliancePolicy
 #
 Write-Output "Creating iOS Compliance Policy ..."
-$iosCompliancePolicy = New-IntuneDeviceCompliancePolicies -iosCompliancePolicy `
+$iosCompliancePolicy = New-IntuneDeviceCompliancePolicy -iosCompliancePolicy `
     -displayName "iOS Compliance Policy" -passcodeRequired $true -passcodeMinimumLength 6 `
     -passcodeMinutesOfInactivityBeforeLock 15 -securityBlockJailbrokenDevices $true `
     -scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired `
@@ -34,7 +34,7 @@ $iosCompliancePolicy = New-IntuneDeviceCompliancePolicies -iosCompliancePolicy `
 #
 $IPU_Id = (Get-Groups -Filter "displayName eq 'Intune POC Users'").id
 Write-Output "Assigning $iosCompliancePolicy to 'Intune POC Users' group..."
-Invoke-IntuneDeviceCompliancePoliciesAssign -deviceCompliancePolicyId $iosCompliancePolicy.id `
+Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $iosCompliancePolicy.id `
     -assignments (New-DeviceCompliancePolicyAssignmentObject `
     -target (New-DeviceAndAppManagementAssignmentTargetObject `
     -groupAssignmentTarget -groupId "$IPU_Id"))

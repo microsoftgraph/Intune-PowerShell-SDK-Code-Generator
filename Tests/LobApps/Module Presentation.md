@@ -30,25 +30,25 @@ Get-Command -Module Microsoft.Graph.Intune | measure
 Graph docs will help with discovering cmdlets: https://developer.microsoft.com/en-us/graph/docs/api-reference/v1.0/api/intune_apps_mobileapp_get
 Generated PowerShell documentation has information about types as well.
 ```PowerShell
-Get-Help Get-IntuneMobileApps
+Get-Help Get-IntuneMobileApp
 ```
 
 Basics.
 ```PowerShell
-Get-IntuneMobileApps
+Get-IntuneMobileApp
 
 # $select
-Get-IntuneMobileApps -Select displayName, publisher
+Get-IntuneMobileApp -Select displayName, publisher
 
 # $filter
-Get-IntuneMobileApps -Select displayName, publisher -Filter "contains(publisher, 'Microsoft')"
+Get-IntuneMobileApp -Select displayName, publisher -Filter "contains(publisher, 'Microsoft')"
 ```
 
 Bulk create multiple webApp objects (they should appear in the Azure Portal).
 ```PowerShell
 $createdApps = 'https://www.bing.com', 'https://developer.microsoft.com/graph', 'https://portal.azure.com' `
 | ForEach-Object { `
-    New-IntuneMobileApps `
+    New-IntuneMobileApp `
         -webApp `
         -displayName $_ `
         -publisher 'Rohit' `
@@ -58,7 +58,7 @@ $createdApps = 'https://www.bing.com', 'https://developer.microsoft.com/graph', 
 
 # Out-GridView
 1..15 | ForEach-Object { `
-    New-IntuneMobileApps `
+    New-IntuneMobileApp `
         -webApp `
         -displayName "Bing #$_" `
         -publisher 'Microsoft' `
@@ -117,7 +117,7 @@ $uploadedAppFile = New-LobApp -filePath 'test.ipa' -mobileApp $appToUpload
 Current state.
 ```PowerShell
 # Get all apps
-$apps = Get-IntuneMobileApps
+$apps = Get-IntuneMobileApp
 
 # Group the apps by type
 $appsGroupedByType = $apps | Group-Object -Property '@odata.type'
@@ -137,8 +137,8 @@ $appsGroupedByType = $apps | Group-Object -Property '@odata.type'
 Remove all webApps.
 ```PowerShell
 # Remove all web apps
-$appsToDelete = Get-IntuneMobileApps -Filter "isof('microsoft.graph.webApp')"
-$appsToDelete | Remove-IntuneMobileApps
+$appsToDelete = Get-IntuneMobileApp -Filter "isof('microsoft.graph.webApp')"
+$appsToDelete | Remove-IntuneMobileApp
 ```
 
 ## POC script

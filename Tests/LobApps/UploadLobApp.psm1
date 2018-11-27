@@ -86,7 +86,7 @@ function WaitForFileProcessing($file, $stage) {
 
     $result = $null
     while ($attempts -gt 0) {
-        $result = $file | Get-IntuneMobileAppsContentVersionsFiles
+        $result = $file | Get-IntuneMobileAppContentVersionFile
 
         if ($result.uploadState -like "$($stage)Success") {
             return $result
@@ -245,11 +245,11 @@ function New-LobApp {
         ValidateMobileAppWithFile -file $sourceFile -mobileApp $mobileApp
 
         # Post the app metadata to Intune
-        $createdApp = $mobileApp | New-IntuneMobileApps
+        $createdApp = $mobileApp | New-IntuneMobileApp
 
         # Create a new content version for this app
         Write-Host "Creating Content Version in Intune for the application..." -ForegroundColor Yellow
-        $contentVersion = $createdApp | New-IntuneMobileAppsContentVersions
+        $contentVersion = $createdApp | New-IntuneMobileAppContentVersion
 
         # Encrypt the file
         Write-Host "Encrypting the file '$($sourceFile.Name)'..." -ForegroundColor Yellow
@@ -257,7 +257,7 @@ function New-LobApp {
 
         # Upload the file manifest to Intune
         Write-Host "Uploading the file's information to Intune..." -ForegroundColor Yellow
-        $file = $contentVersion | New-IntuneMobileAppsContentVersionsFiles `
+        $file = $contentVersion | New-IntuneMobileAppContentVersionFile `
             -name $sourceFile.Name `
             -size $sourceFile.Length `
             -sizeEncrypted $encryptionResult.file.Length
@@ -272,7 +272,7 @@ function New-LobApp {
 
         # Commit file
         Write-Host "Asking Intune to commit the file that has been uploaded to Azure Storage..." -ForegroundColor Yellow
-        $file | Invoke-IntuneMobileAppsContentVersionsFileCommit -fileEncryptionInfo $encryptionResult.info
+        $file | Invoke-IntuneMobileAppContentVersionFileCommit -fileEncryptionInfo $encryptionResult.info
 
         # Wait for Azure Storage to aknowledge the commit
         Write-Host "Waiting for Intune to process the commit file request..." -ForegroundColor Yellow
@@ -280,7 +280,7 @@ function New-LobApp {
 
         # Tell Intune that this file is now the latest version of the app
         Write-Host "Telling Intune that the committed file is the latest version of this app..." -ForegroundColor Yellow
-        $createdApp | Update-IntuneMobileApps -committedContentVersion $contentVersion.id
+        $createdApp | Update-IntuneMobileApp -committedContentVersion $contentVersion.id
 
         # Return the file
         Write-Output $file

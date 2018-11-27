@@ -32,78 +32,75 @@ $tests = @(
 #
 # AndroidManagedAppProtectionApps
 #    
-    {(Get-IntuneAndroidAppProtectionPolicies | Get-MSGraphAllPages) | Get-IntuneAndroidAppProtectionPoliciesApps}
+    {(Get-IntuneAppProtectionPolicyAndroid | Get-MSGraphAllPages) | Get-IntuneAppProtectionPolicyAndroidApp}
 #
 # DefaultManagedAppProtections
 #
-    {Get-IntuneDefaultAppProtectionPolicies}
+    {Get-IntuneAppProtectionPolicyDefault}
 #
 # IodManagedAppProtections
 #    
-    {(Get-IntuneIosAppProtectionPolicies | Get-MSGraphAllPages)[0] | Get-IntuneIosAppProtectionPoliciesApps}  
+    {(Get-IntuneAppProtectionPolicyIos | Get-MSGraphAllPages)[0] | Get-IntuneAppProtectionPolicyIosApp}  
 #
 # AmManagedEBooks
 #    
-    {(Get-IntuneManagedEBooks| Get-MSGraphAllPages)[0] | Get-IntuneManagedEBooksAssignments}
-    {(Get-IntuneManagedEBooks| Get-MSGraphAllPages)[0] | Get-IntuneManagedEBooksDeviceStates}
-    {(Get-IntuneManagedEBooks| Get-MSGraphAllPages)[0] | Get-IntuneManagedEBooksInstallSummary}
-    {$env:managedEBooksUserState = (Get-IntuneManagedEBooks| Get-MSGraphAllPages)[0] | Get-IntuneManagedEBooksUserStateSummary}
-    {if ($env:managedEBooksUserState -ne $env:null) {(Get-IntuneManagedEBooks| Get-MSGraphAllPages)[0] | Get-IntuneManagedEBooksUserStateSummaryDeviceStates}}
+    {(Get-IntuneManagedEBook| Get-MSGraphAllPages)[0] | Get-IntuneManagedEBookAssignment}
+    {(Get-IntuneManagedEBook| Get-MSGraphAllPages)[0] | Get-IntuneManagedEBookDeviceState}
+    {(Get-IntuneManagedEBook| Get-MSGraphAllPages)[0] | Get-IntuneManagedEBookInstallSummary}
+    {$env:managedEBooksUserState = (Get-IntuneManagedEBook| Get-MSGraphAllPages)[0] | Get-IntuneManagedEBookUserStateSummary}
+    {if ($env:managedEBooksUserState -ne $env:null) {(Get-IntuneManagedEBook| Get-MSGraphAllPages)[0] | Get-IntuneManagedEBookUserStateSummaryDeviceState}}
 #
 # mdmWindowsInformationProtectionPolicy
 #
-    {$env:mdmWindowsInfoProtPolicy = (Get-IntuneMdmWindowsInformationProtectionPolicies | Get-MSGraphAllPages)}
+    {$env:mdmWindowsInfoProtPolicy = (Get-IntuneMdmWindowsInformationProtectionPolicy | Get-MSGraphAllPages)}
 #
 # managedAppPolicies
 #
-    {(Get-IntuneAppProtectionPolicies | Get-MSGraphAllPages)[0]}
+    {(Get-IntuneAppProtectionPolicy | Get-MSGraphAllPages)[0]}
 #
 # managedAppRegistrations
 #    
-    {(Get-IntuneManagedAppRegistrations | Get-MSGraphAllPages)}
+    {(Get-IntuneManagedAppRegistration | Get-MSGraphAllPages)}
 #
 # AmIntuneManagedAppStatus
 #
     {(Get-IntuneManagedAppStatus | Get-MSGraphAllPages)[0]}
 #
-# AmIntuneMobileAppCategories
+# AmIntuneMobileAppCategory
 #
-    {Get-IntuneMobileAppCategories}
+    {Get-IntuneMobileAppCategory}
 #
-# AmIntuneMobileAppConfigurations
+# AmIntuneMobileAppConfigurationPolicy
 #    
-    {$env:mobileAppConfig = (Get-IntuneMobileAppConfigurations | Get-MSGraphAllPages)[0]}
-    {(Get-IntuneMobileAppConfigurations | Get-MSGraphAllPages)[0] | Get-IntuneMobileAppConfigurationsAssignments}
-    {(Get-IntuneMobileAppConfigurations | Get-MSGraphAllPages)[0] | Get-IntuneMobileAppConfigurationsDeviceStatuses}
-    {(Get-IntuneMobileAppConfigurations | Get-MSGraphAllPages)[0] | Get-IntuneMobileAppConfigurationsDeviceStatusSummary}
-    {(Get-IntuneMobileAppConfigurations | Get-MSGraphAllPages)[0] | Get-IntuneMobileAppConfigurationsUserStatuses}
-    {(Get-IntuneMobileAppConfigurations | Get-MSGraphAllPages)[0] | Get-IntuneMobileAppConfigurationsUserStatusSummary}
+    {$env:mobileAppConfig = (Get-IntuneMobileAppConfigurationPolicy | Get-MSGraphAllPages)[0]}
+    {(Get-IntuneMobileAppConfigurationPolicy | Get-MSGraphAllPages)[0] | Get-IntuneMobileAppConfigurationPolicyAssignment}
+    {(Get-IntuneMobileAppConfigurationPolicy | Get-MSGraphAllPages)[0] | Get-IntuneMobileAppConfigurationPolicyDeviceStatus}
+    {(Get-IntuneMobileAppConfigurationPolicy | Get-MSGraphAllPages)[0] | Get-IntuneMobileAppConfigurationPolicyDeviceStatusSummary}
+    {(Get-IntuneMobileAppConfigurationPolicy | Get-MSGraphAllPages)[0] | Get-IntuneMobileAppConfigurationPolicyUserStatus}
+    {(Get-IntuneMobileAppConfigurationPolicy | Get-MSGraphAllPages)[0] | Get-IntuneMobileAppConfigurationPolicyUserStatusSummary}
 #
 # AmMobileApps
 #
-    {(Get-IntuneMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-IntuneMobileAppsAssignments}
-    {(Get-IntuneMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-IntuneMobileAppsCategories}
-    #BUGBUG: Missing Route {(Get-IntuneMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-IntuneMobileAppsCategoriesReferences}
-    #BUGBUG: Missing Route {(Get-IntuneMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-IntuneMobileAppsContentVersions}
-    #BUGBUG: Missing Route {(Get-IntuneMobileApps | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-IntuneMobileAppsContentVersionsFiles}
+    {(Get-IntuneMobileApp | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-IntuneMobileAppAssignment}
+    {(Get-IntuneMobileApp | Get-MSGraphAllPages).Where({$_.displayName -Match 'Intune Managed Browser'}) | Get-IntuneMobileAppCategorySet}   
 #
 # AmTargetedAppConfigs
 #
 
-    {(Get-IntuneTargetedManagedAppConfigurations | Get-MSGraphAllPages) | Get-IntuneTargetedManagedAppConfigurationsApps}
-    {(Get-IntuneTargetedManagedAppConfigurations | Get-MSGraphAllPages) | Get-IntuneTargetedManagedAppConfigurationsAssignments}
-    {(Get-IntuneTargetedManagedAppConfigurations | Get-MSGraphAllPages) | Get-IntuneTargetedManagedAppConfigurationsDeploymentSummary}
+    {(Get-IntuneAppConfigurationPolicyTargeted | Get-MSGraphAllPages) | Get-IntuneAppConfigurationPolicyTargetedApp}
+    {(Get-IntuneAppConfigurationPolicyTargeted | Get-MSGraphAllPages) | Get-IntuneAppConfigurationPolicyTargetedAssignment}
+    {(Get-IntuneAppConfigurationPolicyTargeted | Get-MSGraphAllPages) | Get-IntuneAppConfigurationPolicyTargetedDeploymentSummary}
 #
 # AmVppTokens
 #
-    {(Get-IntuneVppTokens | Get-MSGraphAllPages)}
+    {(Get-IntuneVppToken | Get-MSGraphAllPages)}
 #
-# AmIntuneWindowsInformationProtectionPolicies
+# AmIntuneWindowsInformationProtectionPolicy
 #
-    {$env:WinPP = (Get-IntuneWindowsInformationProtectionPolicies | Get-MSGraphAllPages)}
-    #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-IntuneWindowsInformationProtectionPolicies | Get-MSGraphAllPages) | Get-IntuneWindowsInformationProtectionPoliciesAssignments}}
-    #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-IntuneWindowsInformationProtectionPolicies | Get-MSGraphAllPages) | Get-IntuneWindowsInformationProtectionPoliciesExemptAppLockerFiles}}
-    #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-IntuneWindowsInformationProtectionPolicies | Get-MSGraphAllPages) | Get-IntuneWindowsInformationProtectionPoliciesProtectedAppLockerFiles}}   
+    {$env:WinPP = (Get-IntuneWindowsInformationProtectionPolicy | Get-MSGraphAllPages)}
+    #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-IntuneWindowsInformationProtectionPolicy | Get-MSGraphAllPages) | Get-IntuneWindowsInformationProtectionPolicyAssignment}}
+    #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-IntuneWindowsInformationProtectionPolicy | Get-MSGraphAllPages) | Get-IntuneWindowsInformationProtectionPolicyExemptAppLockerFile}}
+    #BUGBUG: Missing Route {if ($env:WinPP -ne $null) {(Get-IntuneWindowsInformationProtectionPolicy | Get-MSGraphAllPages) | Get-IntuneWindowsInformationProtectionPolicyProtectedAppLockerFile}}   
 )
 
 #

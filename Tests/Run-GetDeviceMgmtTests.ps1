@@ -30,43 +30,42 @@ $tests = @(
 #
     {Get-IntuneDeviceAppManagement}
     {Get-IntuneApplePushNotificationCertificate}
-    {Get-IntuneDeviceCategories}
-    {Get-IntuneDeviceCompliancePolicyDeviceStateSummary}
-    {Get-IntuneDeviceCompliancePolicySettingStateSummaries}
-    {$env:DmIntuneDeviceConfigurationsStateSumm=Get-IntuneDeviceConfigurationDeviceStateSummaries}
-    {if ($env:DmIntuneDeviceConfigurationsStateSumm -ne $null) {(Get-IntuneDeviceConfigurationDeviceStateSummaries| Get-MSGraphAllPages) |Get-IntuneDeviceComplianceSettingStates}}
-    {Get-IntuneDeviceManagementPartners}
-    {Get-IntuneExchangeConnectors}
-    {Get-IntuneIosUpdateStatuses}
+    {Get-IntuneDeviceCategory}
+    {Get-IntuneDeviceCompliancePolicyDeviceStateSummary}    
+    {$env:DmIntuneDeviceConfigurationsStateSumm=Get-IntuneDeviceConfigurationDeviceStateSummary}
+    {if ($env:DmIntuneDeviceConfigurationsStateSumm -ne $null) {(Get-IntuneDeviceConfigurationDeviceStateSummary| Get-MSGraphAllPages) |Get-IntuneDeviceComplianceSettingState}}
+    {Get-IntuneDeviceManagementPartner}
+    {Get-IntuneExchangeConnector}
+    {Get-IntuneIosUpdateStatus}
     {Get-IntuneManagedDeviceOverview}
-    {Get-IntuneMobileThreatDefenseConnectors}
+    {Get-IntuneMobileThreatDefenseConnector}
     {$env:DmNotifMsgTemplates=(Get-IntuneNotificationMessageTemplates)}
     {if ($env:DmNotifMsgTemplates -ne $null) {(Get-IntuneNotificationMessageTemplates| Get-MSGraphAllPages)[0] |Get-IntuneLocalizedNotificationMessages}} 
-    {Get-IntuneTroubleshootingEvents}
-    {Get-IntuneWindowsInformationProtectionAppLearningSummaries}
-    {Get-IntuneWindowsInformationProtectionNetworkLearningSummaries}
-    {Get-IntuneRemoteAssistancePartners}
-    {Get-IntuneResourceOperations}
+    {Get-IntuneTroubleshootingEvent}
+    {Get-IntuneWindowsInformationProtectionAppLearningSummary}
+    {Get-IntuneWindowsInformationProtectionNetworkLearningSummary}
+    {Get-IntuneRemoteAssistancePartner}
+    {Get-IntuneResourceOperation}
     {Get-IntuneSoftwareUpdateStatusSummary}
-    {Get-IntuneTelecomExpenseManagementPartners}
+    {Get-IntuneTelecomExpenseManagementPartner}
 #
 # DmDetectedApps
 #
-    {$env:DmDetectedApps=(Get-IntuneDetectedApps| Get-MSGraphAllPages)}
-    {if ($env:DmDetectedApps -ne $null) {((Get-IntuneDetectedApps| Get-MSGraphAllPages)[0] | Get-IntuneDetectedAppDevices)}}
-    {if ($env:DmDetectedApps -ne $null) {((Get-IntuneDetectedApps| Get-MSGraphAllPages)[0] | Get-IntuneManagedDevicesReferences)}}
+    {$env:DmDetectedApps=(Get-IntuneDetectedApp| Get-MSGraphAllPages)}
+    {if ($env:DmDetectedApps -ne $null) {((Get-IntuneDetectedApp| Get-MSGraphAllPages)[0] | Get-IntuneDetectedAppDevice)}}
+    {if ($env:DmDetectedApps -ne $null) {((Get-IntuneDetectedApp| Get-MSGraphAllPages)[0] | Get-IntuneManagedDevicesReference)}}
 #
 # DmDeviceCompliancePolicies
 #
-    {Get-IntuneDeviceCompliancePolicies}
-    {(Get-IntuneDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyAssignments}
-    {(Get-IntuneDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyDeviceSettingStateSummaries}
-    {(Get-IntuneDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyDeviceStatuses}
-    {(Get-IntuneDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyDeviceStatusOverview}
-    #BUGBUG: Missing Route {(Get-IntuneDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyScheduledActionsForRule}
-    #BUGBUG: Unable to figure -deviceComplianceScheduledActionForRuleId {(Get-IntuneDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyScheduledActionsForRuleConfigs}
-    {(Get-IntuneDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyUserStatuses}
-    {(Get-IntuneDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyUserStatusOverview}
+    {Get-IntuneDeviceCompliancePolicy}
+    {(Get-IntuneDeviceCompliancePolicy| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyAssignment}
+    {(Get-IntuneDeviceCompliancePolicy| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyDeviceSettingStateSummary}
+    {(Get-IntuneDeviceCompliancePolicy| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyDeviceStatus}
+    {(Get-IntuneDeviceCompliancePolicy| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyDeviceStatusOverview}
+    #BUGBUG: Missing Route {(Get-IntuneDeviceCompliancePolicy| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyScheduledActionsForRule}
+    #BUGBUG: Unable to figure -deviceComplianceScheduledActionForRuleId {(Get-IntuneDeviceCompliancePolicy| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyScheduledActionsForRuleConfiguration}
+    {(Get-IntuneDeviceCompliancePolicy| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyUserStatus}
+    {(Get-IntuneDeviceCompliancePolicy| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyUserStatusOverview}
 #
 # DeviceManagement_DeviceConfigurations
 #
@@ -98,9 +97,9 @@ $tests = @(
 #
 # DeviceManagement_TermsAndConditions
 #
-    {$env:DmIntuneTermsAndConditions=(Get-IntuneTermsAndConditionss)}
-    {if ($env:DmIntuneTermsAndConditions -ne $null) {((Get-IntuneTermsAndConditionss| Get-MSGraphAllPages)[0] | Get-IntuneTermsAndConditionsAcceptanceStatuses)}}
-    {if ($env:DmIntuneTermsAndConditions -ne $null) {((Get-IntuneTermsAndConditionss| Get-MSGraphAllPages)[0] | Get-IntuneTermsAndConditionsAssignments)}}
+    {$env:DmIntuneTermsAndConditions=(Get-IntuneTermsAndConditions)}
+    {if ($env:DmIntuneTermsAndConditions -ne $null) {((Get-IntuneTermsAndConditions| Get-MSGraphAllPages)[0] | Get-IntuneTermsAndConditionsAcceptanceStatuses)}}
+    {if ($env:DmIntuneTermsAndConditions -ne $null) {((Get-IntuneTermsAndConditions| Get-MSGraphAllPages)[0] | Get-IntuneTermsAndConditionsAssignments)}}
 )
 
 #

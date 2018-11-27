@@ -23,7 +23,7 @@ Set-IntuneContext -AdminUPN $AdminUPN
 # Create iosManagedAppProtection
 #
 Write-Output "Creating iOS MAM / APP Policy ..."
-$iosManagedAppProtection = New-IntuneAppProtectionPolicies -iosManagedAppProtection -displayName "iOS MAM / APP Policy" `
+$iosManagedAppProtection = New-IntuneAppProtectionPolicy -iosManagedAppProtection -displayName "iOS MAM / APP Policy" `
     -periodOfflineBeforeAccessCheck (New-TimeSpan -Hours 12) `
     -periodOnlineBeforeAccessCheck (New-TimeSpan -Minutes 30)`
     -allowedInboundDataTransferSources managedApps -allowedOutboundDataTransferDestinations managedApps `
@@ -40,7 +40,7 @@ $iosManagedAppProtection = New-IntuneAppProtectionPolicies -iosManagedAppProtect
 #
 $IPU_Id = (Get-Groups -Filter "displayName eq 'Intune POC Users'").id
 Write-Output "Assigning $iosGeneralDeviceConfiguration to 'Intune POC Users' group..."
-Invoke-IntuneIosAppProtectionPoliciesAssign -iosManagedAppProtectionId $iosManagedAppProtection.id `
+Invoke-IntuneAppProtectionPolicyIosAssign -iosManagedAppProtectionId $iosManagedAppProtection.id `
     -assignments (New-TargetedManagedAppPolicyAssignmentObject `
     -target (New-DeviceAndAppManagementAssignmentTargetObject `
     -groupAssignmentTarget -groupId "$IPU_Id"))
