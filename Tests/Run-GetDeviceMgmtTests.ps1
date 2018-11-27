@@ -79,14 +79,14 @@ $tests = @(
 #
 # DeviceManagement_DeviceEnrollmentConfigurations
 # 
-    {(Get-DeviceEnrollmentConfigs| Get-MSGraphAllPages)[0] | Get-DeviceEnrollmentConfigAssignments}
+    {(Get-IntuneDeviceEnrollmentConfigurations| Get-MSGraphAllPages)[0] | Get-IntuneDeviceEnrollmentConfigurationsAssignments}
 #
 # DeviceManagement_ManagedDevices
 #  
-    {$env:mgdDevices=(Get-ManagedDevices)}
-    {if ($env:mgdDevices -ne $null) {((Get-ManagedDevices| Get-MSGraphAllPages)[0] | Get-DeviceCategory)}}
-    {if ($env:mgdDevices -ne $null) {((Get-ManagedDevices| Get-MSGraphAllPages)[0] | Get-DeviceCompliancePolicyStates)}}
-    {if ($env:mgdDevices -ne $null) {((Get-ManagedDevices| Get-MSGraphAllPages)[0] | Get-DeviceConfigurationStates)}}
+    {$env:mgdDevices=(Get-IntuneManagedDevices)}
+    {if ($env:mgdDevices -ne $null) {((Get-IntuneManagedDevices| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCategory)}}
+    {if ($env:mgdDevices -ne $null) {((Get-IntuneManagedDevices| Get-MSGraphAllPages)[0] | Get-DeviceCompliancePolicyStates)}}
+    {if ($env:mgdDevices -ne $null) {((Get-IntuneManagedDevices| Get-MSGraphAllPages)[0] | Get-DeviceConfigurationStates)}}
 #
 # DeviceManagement_RoleAssignments
 #
