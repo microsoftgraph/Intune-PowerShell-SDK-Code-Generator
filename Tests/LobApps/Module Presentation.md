@@ -7,7 +7,7 @@
 Load the SDK.
 ```PowerShell
 # Load SDK module
-Import-Module '.\SDK\Microsoft.Graph.Intune.psd1'
+Import-Module "$env:sdkDir\Microsoft.Graph.Intune.psd1"
 ```
 
 Log in.
@@ -30,25 +30,25 @@ Get-Command -Module Microsoft.Graph.Intune | measure
 Graph docs will help with discovering cmdlets: https://developer.microsoft.com/en-us/graph/docs/api-reference/v1.0/api/intune_apps_mobileapp_get
 Generated PowerShell documentation has information about types as well.
 ```PowerShell
-Get-Help Get-DeviceAppManagement_MobileApps
+Get-Help Get-IntuneMobileApps
 ```
 
 Basics.
 ```PowerShell
-Get-DeviceAppManagement_MobileApps
+Get-IntuneMobileApps
 
 # $select
-Get-DeviceAppManagement_MobileApps -Select displayName, publisher
+Get-IntuneMobileApps -Select displayName, publisher
 
 # $filter
-Get-DeviceAppManagement_MobileApps -Select displayName, publisher -Filter "contains(publisher, 'Microsoft')"
+Get-IntuneMobileApps -Select displayName, publisher -Filter "contains(publisher, 'Microsoft')"
 ```
 
 Bulk create multiple webApp objects (they should appear in the Azure Portal).
 ```PowerShell
 $createdApps = 'https://www.bing.com', 'https://developer.microsoft.com/graph', 'https://portal.azure.com' `
 | ForEach-Object { `
-    New-DeviceAppManagement_MobileApps `
+    New-IntuneMobileApps `
         -webApp `
         -displayName $_ `
         -publisher 'Rohit' `
@@ -58,7 +58,7 @@ $createdApps = 'https://www.bing.com', 'https://developer.microsoft.com/graph', 
 
 # Out-GridView
 1..15 | ForEach-Object { `
-    New-DeviceAppManagement_MobileApps `
+    New-IntuneMobileApps `
         -webApp `
         -displayName "Bing #$_" `
         -publisher 'Microsoft' `
@@ -92,7 +92,7 @@ Update-MSGraphEnvironment -SchemaVersion 'v1.0'
 ## Upload an iOS LOB app and assign it to a few groups
 Load the Apps scenario module **(link to scenario module repo is available in SDK repo)**.
 ```PowerShell
-Import-Module '.\Scenario Modules\Apps\Microsoft.Graph.Intune.Apps.psd1'
+Import-Module '.\Microsoft.Graph.Intune.Apps.psd1'
 ```
 
 Upload the iOS LOB app.
@@ -117,7 +117,7 @@ $uploadedAppFile = New-LobApp -filePath 'test.ipa' -mobileApp $appToUpload
 Current state.
 ```PowerShell
 # Get all apps
-$apps = Get-DeviceAppManagement_MobileApps
+$apps = Get-IntuneMobileApps
 
 # Group the apps by type
 $appsGroupedByType = $apps | Group-Object -Property '@odata.type'
@@ -137,8 +137,8 @@ $appsGroupedByType = $apps | Group-Object -Property '@odata.type'
 Remove all webApps.
 ```PowerShell
 # Remove all web apps
-$appsToDelete = Get-DeviceAppManagement_MobileApps -Filter "isof('microsoft.graph.webApp')"
-$appsToDelete | Remove-DeviceAppManagement_MobileApps
+$appsToDelete = Get-IntuneMobileApps -Filter "isof('microsoft.graph.webApp')"
+$appsToDelete | Remove-IntuneMobileApps
 ```
 
 ## POC script

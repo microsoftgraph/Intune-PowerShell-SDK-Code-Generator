@@ -18,6 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9F6E2D2F
 		Tests\DeviceManagement.ps1 = Tests\DeviceManagement.ps1
 		Tests\LobApps\Microsoft.Graph.Intune.Apps.psd1 = Tests\LobApps\Microsoft.Graph.Intune.Apps.psd1
 		Tests\DeviceAppManagement\MobileApps.ps1 = Tests\DeviceAppManagement\MobileApps.ps1
+		Tests\LobApps\Module Presentation.md = Tests\LobApps\Module Presentation.md
 		Tests\LobApps\POC_AllOS_Create_Cmdlets.ps1 = Tests\LobApps\POC_AllOS_Create_Cmdlets.ps1
 		Tests\LobApps\POC_AllOS_Reset_Cmdlets.ps1 = Tests\LobApps\POC_AllOS_Reset_Cmdlets.ps1
 		Tests\Run-AppProtectionPolicyTests.ps1 = Tests\Run-AppProtectionPolicyTests.ps1
