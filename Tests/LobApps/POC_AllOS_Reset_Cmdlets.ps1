@@ -61,14 +61,14 @@ Write-Host
 Write-Host "Removing all Compliance Policies..." -f Cyan
 Write-Host
 
-$CPs = Get-DeviceCompliancePolicies
+$CPs = Get-IntuneDeviceCompliancePolicies
 
 foreach($CP in $CPs){
 
     write-host "Removing Compliance Policy..." -f Yellow
     $CP.displayname
 
-    Remove-DeviceCompliancePolicies -deviceCompliancePolicyId $CP.id
+    Remove-IntuneDeviceCompliancePolicies -deviceCompliancePolicyId $CP.id
     Write-Host
 
 }
@@ -86,14 +86,14 @@ Write-Host "Removing all Configuration Policies..." -f Cyan
 
 Write-Host
 
-$DCPs = Get-DeviceConfigurations
+$IntuneDeviceConfigurationsPs = Get-IntuneDeviceConfigurations
 
-foreach($DCP in $DCPs){
+foreach($IntuneDeviceConfigurationsP in $IntuneDeviceConfigurationsPs){
 
     write-host "Removing Configuration Policy..." -f Yellow
-    $DCP.displayname
+    $IntuneDeviceConfigurationsP.displayname
 
-    Remove-DeviceConfigurations -deviceConfigurationId $DCP.id
+    Remove-IntuneDeviceConfigurations -deviceConfigurationId $IntuneDeviceConfigurationsP.id
     Write-Host
 
 }

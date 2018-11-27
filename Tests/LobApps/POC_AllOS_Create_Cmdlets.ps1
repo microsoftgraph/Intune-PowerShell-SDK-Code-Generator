@@ -123,7 +123,7 @@ Write-Host
 # Create iOS Compliance Policy
 Write-Host "Adding iOS Compliance Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-DeviceCompliancePolicies -iosCompliancePolicy `
+$CreateResult = New-IntuneDeviceCompliancePolicies -iosCompliancePolicy `
 -displayName "Chicago - iOS Compliance Policy" -passcodeRequired $true -passcodeMinimumLength 6 `
 -passcodeMinutesOfInactivityBeforeLock 15 -securityBlockJailbrokenDevices $true `
 -scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired -scheduledActionConfigurations (New-DeviceComplianceActionItemObject -gracePeriodHours 0 -actionType block -notificationTemplateId ""))
@@ -146,7 +146,7 @@ Write-Host
 # Create Android Compliance Policy
 Write-Host "Adding Android Compliance Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-DeviceCompliancePolicies -androidCompliancePolicy -displayName "Chicago - Android Compliance Policy" -passwordRequired $true -passwordMinimumLength 6 -securityBlockJailbrokenDevices $true -passwordMinutesOfInactivityBeforeLock 15 -scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired -scheduledActionConfigurations (New-DeviceComplianceActionItemObject -gracePeriodHours 0 -actionType block -notificationTemplateId ""))
+$CreateResult = New-IntuneDeviceCompliancePolicies -androidCompliancePolicy -displayName "Chicago - Android Compliance Policy" -passwordRequired $true -passwordMinimumLength 6 -securityBlockJailbrokenDevices $true -passwordMinutesOfInactivityBeforeLock 15 -scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired -scheduledActionConfigurations (New-DeviceComplianceActionItemObject -gracePeriodHours 0 -actionType block -notificationTemplateId ""))
 
 write-host "Policy created with id" $CreateResult.id
 Write-Host
@@ -164,7 +164,7 @@ Write-Host
 # Create Windows 10 Compliance Policy
 Write-Host "Adding Windows 10 Compliance Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-DeviceCompliancePolicies -windows10CompliancePolicy `
+$CreateResult = New-IntuneDeviceCompliancePolicies -windows10CompliancePolicy `
 -displayName "Chicago - Windows 10 Compliance Policy" `
 -osMinimumVersion 10.0.16299 `
 -scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired -scheduledActionConfigurations (New-DeviceComplianceActionItemObject -gracePeriodHours 0 -actionType block -notificationTemplateId ""))
@@ -185,7 +185,7 @@ Write-Host
 # Create MacOS Compliance Policy
 Write-Host "Adding MacOS Compliance Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-DeviceCompliancePolicies -macOSCompliancePolicy `
+$CreateResult = New-IntuneDeviceCompliancePolicies -macOSCompliancePolicy `
 -displayName "Chicago - MacOS Compliance Policy" `
 -passwordRequired $true -passwordBlockSimple $false -passwordRequiredType deviceDefault `
 -scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired -scheduledActionConfigurations (New-DeviceComplianceActionItemObject -gracePeriodHours 0 -actionType block -notificationTemplateId ""))
@@ -217,7 +217,7 @@ Write-Host
 
 Write-Host "Adding iOS Restriction Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-DeviceConfigurations -iosGeneralDeviceConfiguration -displayName "Chicago - iOS Device Restriction Policy" -iCloudBlockBackup $true -iCloudBlockDocumentSync $true -iCloudBlockPhotoStreamSync $true
+$CreateResult = New-IntuneDeviceConfigurations -iosGeneralDeviceConfiguration -displayName "Chicago - iOS Device Restriction Policy" -iCloudBlockBackup $true -iCloudBlockDocumentSync $true -iCloudBlockPhotoStreamSync $true
 
 write-host "Policy created with id" $CreateResult.id
 Write-Host
@@ -232,7 +232,7 @@ Write-Host
 
 Write-Host "Adding Android Restriction Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-DeviceConfigurations -androidGeneralDeviceConfiguration -displayName "Chicago - Android Device Restriction Policy" -passwordRequired $true -passwordRequiredType deviceDefault -passwordMinimumLength 4
+$CreateResult = New-IntuneDeviceConfigurations -androidGeneralDeviceConfiguration -displayName "Chicago - Android Device Restriction Policy" -passwordRequired $true -passwordRequiredType deviceDefault -passwordMinimumLength 4
 
 write-host "Policy created with id" $CreateResult.id
 Write-Host

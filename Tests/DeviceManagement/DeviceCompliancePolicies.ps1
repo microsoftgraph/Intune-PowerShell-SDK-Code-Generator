@@ -1,6 +1,6 @@
 # Create a compliance policy
 Write-Host 'Creating a compliance policy'
-$compliancePolicy = New-DeviceCompliancePolicies `
+$compliancePolicy = New-IntuneDeviceCompliancePolicies `
     -iosCompliancePolicy `
     -displayName "Chicago" `
     -scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject `
@@ -14,4 +14,4 @@ $compliancePolicy = New-DeviceCompliancePolicies `
 
 # Remove the compliance policy
 Write-Host 'Deleting compliance policy'
-$compliancePolicy | Remove-DeviceCompliancePolicies
+$compliancePolicy | Remove-IntuneDeviceCompliancePolicies

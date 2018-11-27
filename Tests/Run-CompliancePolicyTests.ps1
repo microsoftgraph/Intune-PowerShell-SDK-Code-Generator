@@ -23,7 +23,7 @@ Set-IntuneContext -AdminUPN $AdminUPN
 # Create iosCompliancePolicy
 #
 Write-Output "Creating iOS Compliance Policy ..."
-$iosCompliancePolicy = New-DeviceCompliancePolicies -iosCompliancePolicy `
+$iosCompliancePolicy = New-IntuneDeviceCompliancePolicies -iosCompliancePolicy `
     -displayName "iOS Compliance Policy" -passcodeRequired $true -passcodeMinimumLength 6 `
     -passcodeMinutesOfInactivityBeforeLock 15 -securityBlockJailbrokenDevices $true `
     -scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired `

@@ -23,7 +23,7 @@ Set-IntuneContext -AdminUPN $AdminUPN
 # Create iosGeneralDeviceConfiguration
 #
 Write-Output "Creating iOS Compliance Policy ..."
-$iosGeneralDeviceConfiguration = New-DeviceConfigurations -iosGeneralDeviceConfiguration `
+$iosGeneralDeviceConfiguration = New-IntuneDeviceConfigurations -iosGeneralDeviceConfiguration `
     -displayName "Chicago - iOS Device Restriction Policy" `
     -iCloudBlockBackup $true -iCloudBlockDocumentSync $true -iCloudBlockPhotoStreamSync $true
 

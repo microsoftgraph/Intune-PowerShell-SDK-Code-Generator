@@ -33,8 +33,8 @@ $tests = @(
     {Get-IntuneDeviceCategories}
     {Get-IntuneDeviceCompliancePolicyDeviceStateSummary}
     {Get-IntuneDeviceCompliancePolicySettingStateSummaries}
-    {$env:DmDCStateSumm=Get-IntuneDeviceConfigurationDeviceStateSummaries}
-    {if ($env:DmDCStateSumm -ne $null) {(Get-IntuneDeviceConfigurationDeviceStateSummaries| Get-MSGraphAllPages) |Get-IntuneDeviceComplianceSettingStates}}
+    {$env:DmIntuneDeviceConfigurationsStateSumm=Get-IntuneDeviceConfigurationDeviceStateSummaries}
+    {if ($env:DmIntuneDeviceConfigurationsStateSumm -ne $null) {(Get-IntuneDeviceConfigurationDeviceStateSummaries| Get-MSGraphAllPages) |Get-IntuneDeviceComplianceSettingStates}}
     {Get-IntuneDeviceManagementPartners}
     {Get-IntuneExchangeConnectors}
     {Get-IntuneIosUpdateStatuses}
@@ -52,29 +52,29 @@ $tests = @(
 #
 # DmDetectedApps
 #
-    {$env:DmDetectedApps=(Get-DetectedApps| Get-MSGraphAllPages)}
-    {if ($env:DmDetectedApps -ne $null) {((Get-DetectedApps| Get-MSGraphAllPages)[0] | Get-DetectedAppDevices)}}
-    {if ($env:DmDetectedApps -ne $null) {((Get-DetectedApps| Get-MSGraphAllPages)[0] | Get-DetectedAppDeviceRefs)}}
+    {$env:DmDetectedApps=(Get-IntuneDetectedApps| Get-MSGraphAllPages)}
+    {if ($env:DmDetectedApps -ne $null) {((Get-IntuneDetectedApps| Get-MSGraphAllPages)[0] | Get-IntuneDetectedAppDevices)}}
+    {if ($env:DmDetectedApps -ne $null) {((Get-IntuneDetectedApps| Get-MSGraphAllPages)[0] | Get-IntuneManagedDevicesReferences)}}
 #
 # DmDeviceCompliancePolicies
 #
-    {Get-DeviceCompliancePolicies}
-    {(Get-DeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DeviceCompliancePolicyAssignments}
-    {(Get-DeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DeviceCompliancePolicyDeviceSettingStateSummaries}
-    {(Get-DeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DeviceCompliancePolicyDeviceStatuses}
-    {(Get-DeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DeviceCompliancePolicyDeviceStatusOverview}
-    #BUGBUG: Missing Route {(Get-DeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DeviceCompliancePolicyScheduledActionsForRule}
-    #BUGBUG: Unable to figure -deviceComplianceScheduledActionForRuleId {(Get-DeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DeviceCompliancePolicyScheduledActionsForRuleConfigs}
-    {(Get-DeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DeviceCompliancePolicyUserStatuses}
-    {(Get-DeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-DeviceCompliancePolicyUserStatusOverview}
+    {Get-IntuneDeviceCompliancePolicies}
+    {(Get-IntuneDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyAssignments}
+    {(Get-IntuneDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyDeviceSettingStateSummaries}
+    {(Get-IntuneDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyDeviceStatuses}
+    {(Get-IntuneDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyDeviceStatusOverview}
+    #BUGBUG: Missing Route {(Get-IntuneDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyScheduledActionsForRule}
+    #BUGBUG: Unable to figure -deviceComplianceScheduledActionForRuleId {(Get-IntuneDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyScheduledActionsForRuleConfigs}
+    {(Get-IntuneDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyUserStatuses}
+    {(Get-IntuneDeviceCompliancePolicies| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCompliancePolicyUserStatusOverview}
 #
 # DeviceManagement_DeviceConfigurations
 #
-    {(Get-DeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DCAssignments}
-    {(Get-DeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DCDeviceStatusOverview}
-    {(Get-DeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DCUserStatuses}
-    {(Get-DeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DCUserStatusOverview}
-    {(Get-DeviceConfigurations| Get-MSGraphAllPages)[0] | Get-DCDeviceSettingStateSummaries}
+    {(Get-IntuneDeviceConfigurations| Get-MSGraphAllPages)[0] | Get-IntuneDeviceConfigurationsAssignments}
+    {(Get-IntuneDeviceConfigurations| Get-MSGraphAllPages)[0] | Get-IntuneDeviceConfigurationsDeviceStatusOverview}
+    {(Get-IntuneDeviceConfigurations| Get-MSGraphAllPages)[0] | Get-IntuneDeviceConfigurationsUserStatuses}
+    {(Get-IntuneDeviceConfigurations| Get-MSGraphAllPages)[0] | Get-IntuneDeviceConfigurationsUserStatusOverview}
+    {(Get-IntuneDeviceConfigurations| Get-MSGraphAllPages)[0] | Get-IntuneDeviceConfigurationsDeviceSettingStateSummaries}
 
 #
 # DeviceManagement_DeviceEnrollmentConfigurations
