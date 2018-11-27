@@ -3969,14 +3969,12 @@
                 <Property Name="displayName" Type="Edm.String" />
                 <Property Name="description" Type="Edm.String" />
                 <Property Name="rolePermissions" Type="Collection(microsoft.graph.rolePermission)" />
-                <Property Name="isBuiltIn" Type="Edm.Boolean" Nullable="false" />
-                <NavigationProperty Name="roleAssignments" Type="Collection(microsoft.graph.roleAssignment)" ContainsTarget="true" />
+                <Property Name="isBuiltIn" Type="Edm.Boolean" Nullable="false" />                
             </EntityType>
             <EntityType Name="roleAssignment" BaseType="microsoft.graph.entity">
                 <Property Name="displayName" Type="Edm.String" />
                 <Property Name="description" Type="Edm.String" />
-                <Property Name="resourceScopes" Type="Collection(Edm.String)" />
-                <NavigationProperty Name="roleDefinition" Type="microsoft.graph.roleDefinition" />
+                <Property Name="resourceScopes" Type="Collection(Edm.String)" />                
             </EntityType>
             <EntityType Name="deviceAndAppManagementRoleAssignment" BaseType="microsoft.graph.roleAssignment">
                 <Property Name="members" Type="Collection(Edm.String)" />

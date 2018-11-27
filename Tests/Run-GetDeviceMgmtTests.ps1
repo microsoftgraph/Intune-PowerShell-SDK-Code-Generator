@@ -40,8 +40,8 @@ $tests = @(
     {Get-IntuneIosUpdateStatuses}
     {Get-IntuneManagedDeviceOverview}
     {Get-IntuneMobileThreatDefenseConnectors}
-    {$env:DmNotifMsgTemplates=(Get-NotifMsgTemplates)}
-    {if ($env:DmNotifMsgTemplates -ne $null) {(Get-NotifMsgTemplates| Get-MSGraphAllPages)[0] |Get-NotifMsgTemplateLocMsgs}} 
+    {$env:DmNotifMsgTemplates=(Get-IntuneNotificationMessageTemplates)}
+    {if ($env:DmNotifMsgTemplates -ne $null) {(Get-IntuneNotificationMessageTemplates| Get-MSGraphAllPages)[0] |Get-IntuneLocalizedNotificationMessages}} 
     {Get-IntuneTroubleshootingEvents}
     {Get-IntuneWindowsInformationProtectionAppLearningSummaries}
     {Get-IntuneWindowsInformationProtectionNetworkLearningSummaries}
@@ -84,23 +84,23 @@ $tests = @(
 # DeviceManagement_ManagedDevices
 #  
     {$env:mgdDevices=(Get-IntuneManagedDevices)}
-    {if ($env:mgdDevices -ne $null) {((Get-IntuneManagedDevices| Get-MSGraphAllPages)[0] | Get-IntuneDeviceCategory)}}
-    {if ($env:mgdDevices -ne $null) {((Get-IntuneManagedDevices| Get-MSGraphAllPages)[0] | Get-DeviceCompliancePolicyStates)}}
-    {if ($env:mgdDevices -ne $null) {((Get-IntuneManagedDevices| Get-MSGraphAllPages)[0] | Get-DeviceConfigurationStates)}}
+    {if ($env:mgdDevices -ne $null) {((Get-IntuneManagedDevices| Get-MSGraphAllPages)[0] | Get-IntuneManagedDevicesDeviceCategory)}}
+    {if ($env:mgdDevices -ne $null) {((Get-IntuneManagedDevices| Get-MSGraphAllPages)[0] | Get-IntuneManagedDevicesDeviceCompliancePolicyStates)}}
+    {if ($env:mgdDevices -ne $null) {((Get-IntuneManagedDevices| Get-MSGraphAllPages)[0] | Get-IntuneManagedDevicesDeviceConfigurationStates)}}
 #
 # DeviceManagement_RoleAssignments
 #
-    {$env:DmRoleAssignments = Get-RoleAssignments}    
+    {$env:DmRoleAssignments = Get-IntuneRoleAssignments}    
 #
 # DeviceManagement_RoleDefinitions
 #
-    {$env:DmRoleDefinitions = Get-RoleDefinitions}    
+    {$env:DmRoleDefinitions = Get-IntuneRoleDefinitions}    
 #
 # DeviceManagement_TermsAndConditions
 #
-    {$env:DmTnC=(Get-TnCs)}
-    {if ($env:DmTnC -ne $null) {((Get-TnCs| Get-MSGraphAllPages)[0] | Get-TnCAcceptanceStatuses)}}
-    {if ($env:DmTnC -ne $null) {((Get-TnCs| Get-MSGraphAllPages)[0] | Get-TnCAssignments)}}
+    {$env:DmIntuneTermsAndConditions=(Get-IntuneTermsAndConditionss)}
+    {if ($env:DmIntuneTermsAndConditions -ne $null) {((Get-IntuneTermsAndConditionss| Get-MSGraphAllPages)[0] | Get-IntuneTermsAndConditionsAcceptanceStatuses)}}
+    {if ($env:DmIntuneTermsAndConditions -ne $null) {((Get-IntuneTermsAndConditionss| Get-MSGraphAllPages)[0] | Get-IntuneTermsAndConditionsAssignments)}}
 )
 
 #
@@ -116,6 +116,6 @@ foreach ($test in $tests)
     catch
     {        
         $debugInfo="$_"
-        Write-Error "$test,$debugInfo"
+       Throw "$test,$debugInfo"
     }
 }

@@ -213,28 +213,24 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 
             #endregion
             #region DeviceManagement_NotificationMessageTemplates
-            { "DeviceManagement_NotificationMessageTemplates", "NotifMsgTemplates"},
-            { "DeviceManagement_NotificationMessageTemplates_LocalizedNotificationMessages", "NotifMsgTemplateLocMsgs" },
-            { "DeviceManagement_NotificationMessageTemplates_SendTestMessage", "SendTestMessage" },
+            { "DeviceManagement_NotificationMessageTemplates", "IntuneNotificationMessageTemplates"},
+            { "DeviceManagement_NotificationMessageTemplates_LocalizedNotificationMessages", "IntuneLocalizedNotificationMessages" },
+            { "DeviceManagement_NotificationMessageTemplates_SendTestMessage", "IntuneSendTestMessage" },
             #endregion
             #region DeviceManagement_RoleAssignments
-            { "DeviceManagement_RoleAssignments", "RoleAssignments" },
-            { "DeviceManagement_RoleAssignments_RoleDefinition", "RoleAssignmentDefinition" }, //BUGBUG: Missing Route
+            { "DeviceManagement_RoleAssignments", "IntuneRoleAssignments" },            
             #endregion
             #region DeviceManagement_RoleDefinitions
-            { "DeviceManagement_RoleDefinitions", "RoleDefinitions" },
-            { "DeviceManagement_RoleDefinitions_RoleAssignments", "RoleDefinitionAssignments" },  //BUGBUG: Missing Route
-            { "DeviceManagement_RoleDefinitions_RoleAssignments_RoleDefinition", "RoleAssignmentRoleDefinition" }, //BUGBUG: Missing route
-            { "DeviceManagement_RoleDefinitions_RoleAssignments_RoleDefinitionReference", "RoleAssignmentDefinitionRef" }, //BUGBUG: Missing route
+            { "DeviceManagement_RoleDefinitions", "IntuneRoleDefinitions" },
             #endregion
             #region DeviceManagement_RemoteAssistancePartners_BeginOnboarding
-            { "DeviceManagement_RemoteAssistancePartners_BeginOnboarding", "BeginRAOnboarding" },
-            { "DeviceManagement_RemoteAssistancePartners_Disconnect", "DisconnectRA" },
+            { "DeviceManagement_RemoteAssistancePartners_BeginOnboarding", "IntuneRemoteAssistancePartnersBeginOnboarding" },
+            { "DeviceManagement_RemoteAssistancePartners_Disconnect", "IntuneRemoteAssistancePartnersDisconnect" },
             #endregion
             #region DeviceManagement_TermsAndConditions
-            { "DeviceManagement_TermsAndConditions", "TnCs" },
-            { "DeviceManagement_TermsAndConditions_AcceptanceStatuses", "TnCAcceptanceStatuses" },
-            { "DeviceManagement_TermsAndConditions_Assignments", "TnCAssignments" },
+            { "DeviceManagement_TermsAndConditions", "IntuneTermsAndConditionss" },
+            { "DeviceManagement_TermsAndConditions_AcceptanceStatuses", "IntuneTermsAndConditionsAcceptanceStatuses" },
+            { "DeviceManagement_TermsAndConditions_Assignments", "IntuneTermsAndConditionsAssignments" },
             #endregion
             #endregion
             #region Groups
