@@ -15,6 +15,7 @@
 - [Scenario Samples](#scenario-samples)
     - [Publish iOS LOB Application](#publish-ios-lob-application)
     - [Create Compliance Policies and Assign it to an AAD Group](#create-compliance-policies-and-assign-it-to-an-AAD-Group)
+        - [Create an iOS Compliance Policy](#create-an-iOS-compliance-policy)
     - [Create Configuration Policies and Assign it to an AAD Group](#create-configuration-policies-and-assign-it-to-an-AAD-Group)
     - [Visualize summary of apps by type](#visualize-summary-of-apps-by-type)
 
@@ -228,7 +229,7 @@ $uploadedAppFile = New-LobApp -filePath '.\Apps\test.ipa' -mobileApp $appToUploa
 # Search the AAD Group
 $AADGroupId = (Get-Groups -Filter "displayName eq 'Intune POC Users'").id
 
-# Create an iOS Compliance Policy
+### Create an iOS Compliance Policy
 $iOSCompliancePolicy = New-IntuneDeviceCompliancePolicy `
     -iosCompliancePolicy `
     -displayName "Chicago - iOS Compliance Policy" `
