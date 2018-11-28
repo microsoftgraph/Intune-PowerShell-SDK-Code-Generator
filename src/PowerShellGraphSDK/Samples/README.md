@@ -14,7 +14,8 @@
     - [Getting Extended Debug information](#getting-extended-debug-information)
 - [Scenario Samples](#scenario-samples)
     - [Publish iOS LOB Application](#publish-ios-lob-application)
-    - [Create a Compliance Policies and Assign it to an AAD Group](#create-a-compliance-policies-and-assign-it-to-an-AAD-Group)
+    - [Create Compliance Policies and Assign it to an AAD Group](#create-compliance-policies-and-assign-it-to-an-AAD-Group)
+    - [Create Configuration Policies and Assign it to an AAD Group](#create-configuration-policies-and-assign-it-to-an-AAD-Group)
     - [Visualize summary of apps by type](#visualize-summary-of-apps-by-type)
 
 # Intune-PowerShell-SDK
@@ -222,13 +223,14 @@ $appToUpload = New-MobileAppObject `
 # Upload the app file with the app information
 $uploadedAppFile = New-LobApp -filePath '.\Apps\test.ipa' -mobileApp $appToUpload
 ```
-## Create a Compliance Policies and Assign it to an AAD Group
+## Create Compliance Policies and Assign it to an AAD Group
 ```PowerShell
 # Search the AAD Group
 $AADGroupId = (Get-Groups -Filter "displayName eq 'Intune POC Users'").id
 
 # Create an iOS Compliance Policy
-$iOSCompliancePolicy = New-IntuneDeviceCompliancePolicy -iosCompliancePolicy `
+$iOSCompliancePolicy = New-IntuneDeviceCompliancePolicy `
+    -iosCompliancePolicy `
     -displayName "Chicago - iOS Compliance Policy" `
     -passcodeRequired $true `
     -passcodeMinimumLength 6 `
@@ -255,7 +257,8 @@ Invoke-IntuneDeviceCompliancePolicyAssign  -deviceCompliancePolicyId $iOSComplia
         )
 
 # Create Android Compliance Policy
-$androidCompliancePolicy = New-IntuneDeviceCompliancePolicy -androidCompliancePolicy `
+$androidCompliancePolicy = New-IntuneDeviceCompliancePolicy `
+    -androidCompliancePolicy `
     -displayName "Chicago - Android Compliance Policy"  `
     -passwordRequired $true `
     -passwordMinimumLength 6 `
@@ -284,7 +287,8 @@ Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $androidComp
     )
 
 # Create Windows 10 Compliance Policy
-$windows10CompliancePolicy = New-IntuneDeviceCompliancePolicy -windows10CompliancePolicy `
+$windows10CompliancePolicy = New-IntuneDeviceCompliancePolicy `
+    -windows10CompliancePolicy `
     -displayName "Chicago - Windows 10 Compliance Policy" `
     -osMinimumVersion 10.0.16299 `
     -scheduledActionsForRule `
@@ -310,7 +314,8 @@ Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $windows10Co
         )
 
 # Create MacOS Compliance Policy
-$macOSCompliancePolicy = New-IntuneDeviceCompliancePolicy -macOSCompliancePolicy `
+$macOSCompliancePolicy = New-IntuneDeviceCompliancePolicy `
+    -macOSCompliancePolicy `
     -displayName "Chicago - MacOS Compliance Policy" `
     -passwordRequired $true `
     -passwordBlockSimple $false `
@@ -337,9 +342,52 @@ Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $macOSCompli
         )`
     )
 ```
+## Create Configuration Policies and Assign it to an AAD Group
+```PowerShell
+# Search the AAD Group
+$AADGroupId = (Get-Groups -Filter "displayName eq 'Intune POC Users'").id
+
+# Create iOS Restriction Policy
+$iosGeneralDeviceConfiguration = New-IntuneDeviceConfigurationPolicy `
+    -iosGeneralDeviceConfiguration `
+    -displayName "Chicago - iOS Device Restriction Policy" `
+    -iCloudBlockBackup $true `
+    -iCloudBlockDocumentSync $true `
+    -iCloudBlockPhotoStreamSync $true
+
+# Assign the newly created configuration policy to the AAD Group
+Invoke-IntuneDeviceConfigurationPolicyAssign -deviceConfigurationId $iosGeneralDeviceConfiguration.id `
+    -assignments `
+    (New-DeviceConfigurationAssignmentObject `
+        -target `
+        (New-DeviceAndAppManagementAssignmentTargetObject `
+            -groupAssignmentTarget `
+            -groupId "$AADGroupId" `
+        ) `
+    )
+
+# Create Android Restriction Policy
+$androidGeneralDeviceConfiguration = New-IntuneDeviceConfigurationPolicy `
+    -androidGeneralDeviceConfiguration `
+    -displayName "Chicago - Android Device Restriction Policy" `
+    -passwordRequired $true `
+    -passwordRequiredType deviceDefault `
+    -passwordMinimumLength 4
+
+# Assign the newly created configuration policy to the AAD Group
+Invoke-IntuneDeviceConfigurationPolicyAssign -deviceConfigurationId $androidGeneralDeviceConfiguration.id `
+    -assignments `
+        (New-DeviceConfigurationAssignmentObject `
+        -target `
+            (New-DeviceAndAppManagementAssignmentTargetObject `
+                -groupAssignmentTarget -groupId "$AADGroupId" `
+            ) `
+        )
+
+```
 
 ## Visualize summary of apps by type
-Current state.
+
 ```PowerShell
 # Get all apps
 $apps = Get-IntuneMobileApp

@@ -282,32 +282,51 @@ Write-Host
 
 Write-Host "Adding iOS Restriction Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-IntuneDeviceConfigurationPolicy -iosGeneralDeviceConfiguration -displayName "Chicago - iOS Device Restriction Policy" -iCloudBlockBackup $true -iCloudBlockDocumentSync $true -iCloudBlockPhotoStreamSync $true
+$iosGeneralDeviceConfiguration = New-IntuneDeviceConfigurationPolicy `
+    -iosGeneralDeviceConfiguration `
+    -displayName "Chicago - iOS Device Restriction Policy" `
+    -iCloudBlockBackup $true `
+    -iCloudBlockDocumentSync $true `
+    -iCloudBlockPhotoStreamSync $true
 
-write-host "Policy created with id" $CreateResult.id
+write-host "Policy created with id" $iosGeneralDeviceConfiguration.id
 Write-Host
 
-Invoke-IntuneDeviceConfigurationPolicyAssign -deviceConfigurationId $CreateResult.id `
--assignments (New-DeviceConfigurationAssignmentObject `
--target (New-DeviceAndAppManagementAssignmentTargetObject `
--groupAssignmentTarget -groupId "$AADGroupId"))
+Invoke-IntuneDeviceConfigurationPolicyAssign -deviceConfigurationId $iosGeneralDeviceConfiguration.id `
+    -assignments `
+    (New-DeviceConfigurationAssignmentObject `
+        -target `
+        (New-DeviceAndAppManagementAssignmentTargetObject `
+            -groupAssignmentTarget `
+            -groupId "$AADGroupId" `
+        ) `
+    )
 
-Write-Host "Assigned '$AADGroup' to $($CreateResult.displayName)/$($CreateResult.id)"
+Write-Host "Assigned '$AADGroup' to $($iosGeneralDeviceConfiguration.displayName)/$($iosGeneralDeviceConfiguration.id)"
 Write-Host
 
 Write-Host "Adding Android Restriction Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-IntuneDeviceConfigurationPolicy -androidGeneralDeviceConfiguration -displayName "Chicago - Android Device Restriction Policy" -passwordRequired $true -passwordRequiredType deviceDefault -passwordMinimumLength 4
+$androidGeneralDeviceConfiguration = New-IntuneDeviceConfigurationPolicy `
+    -androidGeneralDeviceConfiguration `
+    -displayName "Chicago - Android Device Restriction Policy" `
+    -passwordRequired $true `
+    -passwordRequiredType deviceDefault `
+    -passwordMinimumLength 4
 
-write-host "Policy created with id" $CreateResult.id
+write-host "Policy created with id" $androidGeneralDeviceConfiguration.id
 Write-Host
 
-Invoke-IntuneDeviceConfigurationPolicyAssign -deviceConfigurationId $CreateResult.id `
--assignments (New-DeviceConfigurationAssignmentObject `
--target (New-DeviceAndAppManagementAssignmentTargetObject `
--groupAssignmentTarget -groupId "$AADGroupId"))
+Invoke-IntuneDeviceConfigurationPolicyAssign -deviceConfigurationId $androidGeneralDeviceConfiguration.id `
+    -assignments `
+        (New-DeviceConfigurationAssignmentObject `
+        -target `
+            (New-DeviceAndAppManagementAssignmentTargetObject `
+                -groupAssignmentTarget -groupId "$AADGroupId" `
+            ) `
+        )
 
-Write-Host "Assigned '$AADGroup' to $($CreateResult.displayName)/$($CreateResult.id)"
+Write-Host "Assigned '$AADGroup' to $($androidGeneralDeviceConfiguration.displayName)/$($androidGeneralDeviceConfiguration.id)"
 Write-Host
 
 #endregion
