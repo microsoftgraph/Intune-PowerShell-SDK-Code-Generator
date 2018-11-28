@@ -16,7 +16,12 @@
     - [Publish iOS LOB Application](#publish-ios-lob-application)
     - [Create Compliance Policies and Assign it to an AAD Group](#create-compliance-policies-and-assign-it-to-an-AAD-Group)
         - [Create an iOS Compliance Policy](#create-an-iOS-compliance-policy)
+        - [Create Android Compliance Policy](#create-android-compliance-policy)
+        - [Create Windows 10 Compliance Policy](#create-windows-10-compliance-policy)
+        - [Create MacOS Compliance Policy](#create-macos-compliance-policy)
     - [Create Configuration Policies and Assign it to an AAD Group](#create-configuration-policies-and-assign-it-to-an-AAD-Group)
+        - [Create iOS Restriction Policy](#create-ios-restriction-policy)
+        - [Create Android Restriction Policy](#create-android-restriction-policy)
     - [Visualize summary of apps by type](#visualize-summary-of-apps-by-type)
 
 # Intune-PowerShell-SDK
@@ -228,8 +233,10 @@ $uploadedAppFile = New-LobApp -filePath '.\Apps\test.ipa' -mobileApp $appToUploa
 ```PowerShell
 # Search the AAD Group
 $AADGroupId = (Get-Groups -Filter "displayName eq 'Intune POC Users'").id
+```
 
-## Create an iOS Compliance Policy
+### Create an iOS Compliance Policy
+```PowerShell
 $iOSCompliancePolicy = New-IntuneDeviceCompliancePolicy `
     -iosCompliancePolicy `
     -displayName "Chicago - iOS Compliance Policy" `
@@ -256,8 +263,10 @@ Invoke-IntuneDeviceCompliancePolicyAssign  -deviceCompliancePolicyId $iOSComplia
                     -groupId "$AADGroupId" `
                 ) `
         )
+```
 
-# Create Android Compliance Policy
+### Create Android Compliance Policy
+```PowerShell
 $androidCompliancePolicy = New-IntuneDeviceCompliancePolicy `
     -androidCompliancePolicy `
     -displayName "Chicago - Android Compliance Policy"  `
@@ -286,8 +295,10 @@ Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $androidComp
             -groupId "$AADGroupId" `
         ) `
     )
+```
 
-# Create Windows 10 Compliance Policy
+### Create Windows 10 Compliance Policy
+```PowerShell
 $windows10CompliancePolicy = New-IntuneDeviceCompliancePolicy `
     -windows10CompliancePolicy `
     -displayName "Chicago - Windows 10 Compliance Policy" `
@@ -313,8 +324,10 @@ Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $windows10Co
                 -groupId "$AADGroupId" `
             ) `
         )
+```
 
-# Create MacOS Compliance Policy
+### Create MacOS Compliance Policy
+```PowerShell
 $macOSCompliancePolicy = New-IntuneDeviceCompliancePolicy `
     -macOSCompliancePolicy `
     -displayName "Chicago - MacOS Compliance Policy" `
@@ -347,8 +360,10 @@ Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $macOSCompli
 ```PowerShell
 # Search the AAD Group
 $AADGroupId = (Get-Groups -Filter "displayName eq 'Intune POC Users'").id
+```
 
-# Create iOS Restriction Policy
+### Create iOS Restriction Policy
+```PowerShell
 $iosGeneralDeviceConfiguration = New-IntuneDeviceConfigurationPolicy `
     -iosGeneralDeviceConfiguration `
     -displayName "Chicago - iOS Device Restriction Policy" `
@@ -366,8 +381,10 @@ Invoke-IntuneDeviceConfigurationPolicyAssign -deviceConfigurationId $iosGeneralD
             -groupId "$AADGroupId" `
         ) `
     )
+```
 
-# Create Android Restriction Policy
+### Create Android Restriction Policy
+```PowerShell
 $androidGeneralDeviceConfiguration = New-IntuneDeviceConfigurationPolicy `
     -androidGeneralDeviceConfiguration `
     -displayName "Chicago - Android Device Restriction Policy" `
