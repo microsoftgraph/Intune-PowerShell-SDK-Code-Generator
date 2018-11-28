@@ -138,8 +138,8 @@ $auditEvents = Invoke-MSGraphRequest -HttpMethod GET -Url 'deviceManagement/audi
 Update-MSGraphEnvironment -SchemaVersion 'v1.0'
 ```
 
-#Scenario Samples
-##Upload iOS LOB Application
+# Scenario Samples
+## Upload iOS LOB Application
 Load the Apps scenario module
 ```PowerShell
 Import-Module '.\Apps\Microsoft.Graph.Intune.Apps.psd1'
