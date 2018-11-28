@@ -93,7 +93,7 @@ if(Get-Groups -Filter "displayName eq 'Intune POC Users'"){
     Write-Host "AAD Group already exists..." -f Red
     Write-Host
 
-    $IPU_Id = (Get-Groups -Filter "displayName eq 'Intune POC Users'").id
+    $AADGroupId = (Get-Groups -Filter "displayName eq 'Intune POC Users'").id
 
 }
 
@@ -104,7 +104,7 @@ else {
 
     write-host "AAD Group created with id" $CreateResult.id
 
-    $IPU_Id = $CreateResult.id
+    $AADGroupId = $CreateResult.id
 
 }
 
@@ -123,84 +123,149 @@ Write-Host
 # Create iOS Compliance Policy
 Write-Host "Adding iOS Compliance Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-IntuneDeviceCompliancePolicy -iosCompliancePolicy `
--displayName "Chicago - iOS Compliance Policy" -passcodeRequired $true -passcodeMinimumLength 6 `
--passcodeMinutesOfInactivityBeforeLock 15 -securityBlockJailbrokenDevices $true `
--scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired -scheduledActionConfigurations (New-DeviceComplianceActionItemObject -gracePeriodHours 0 -actionType block -notificationTemplateId ""))
+$iOSCompliancePolicy = New-IntuneDeviceCompliancePolicy -iosCompliancePolicy `
+    -displayName "Chicago - iOS Compliance Policy" `
+    -passcodeRequired $true `
+    -passcodeMinimumLength 6 `
+    -passcodeMinutesOfInactivityBeforeLock 15 `
+    -securityBlockJailbrokenDevices $true `
+    -scheduledActionsForRule `
+        (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired `
+            -scheduledActionConfigurations `
+                (New-DeviceComplianceActionItemObject -gracePeriodHours 0 `
+                -actionType block `
+                -notificationTemplateId "" `
+                )`
+        )
 
-write-host "Policy created with id" $CreateResult.id
+write-host "Policy created with id" $iOSCompliancePolicy.id
 Write-Host
 
-$AADGroup = (Get-Groups -groupId "$IPU_Id").displayName
+$AADGroup = (Get-Groups -groupId "$AADGroupId").displayName
 
 write-host "Assigning Device Compliance Policy to AAD Group '$AADGroup'" -f Yellow
 
-Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $CreateResult.id `
--assignments (New-DeviceCompliancePolicyAssignmentObject `
--target (New-DeviceAndAppManagementAssignmentTargetObject `
--groupAssignmentTarget -groupId "$IPU_Id"))
+Invoke-IntuneDeviceCompliancePolicyAssign   -deviceCompliancePolicyId $iOSCompliancePolicy.id `
+                                            -assignments `
+                                                (New-DeviceCompliancePolicyAssignmentObject `
+                                                    -target `
+                                                        (New-DeviceAndAppManagementAssignmentTargetObject `
+                                                            -groupAssignmentTarget `
+                                                            -groupId "$AADGroupId" `
+                                                        ) `
+                                                )
 
-Write-Host "Assigned '$AADGroup' to $($CreateResult.displayName)/$($CreateResult.id)"
+Write-Host "Assigned '$AADGroup' to $($iOSCompliancePolicy.displayName)/$($iOSCompliancePolicy.id)"
 Write-Host
 
 # Create Android Compliance Policy
 Write-Host "Adding Android Compliance Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-IntuneDeviceCompliancePolicy -androidCompliancePolicy -displayName "Chicago - Android Compliance Policy" -passwordRequired $true -passwordMinimumLength 6 -securityBlockJailbrokenDevices $true -passwordMinutesOfInactivityBeforeLock 15 -scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired -scheduledActionConfigurations (New-DeviceComplianceActionItemObject -gracePeriodHours 0 -actionType block -notificationTemplateId ""))
+$androidCompliancePolicy = New-IntuneDeviceCompliancePolicy -androidCompliancePolicy `
+                                                            -displayName "Chicago - Android Compliance Policy"  `
+                                                            -passwordRequired $true `
+                                                            -passwordMinimumLength 6 `
+                                                            -securityBlockJailbrokenDevices $true `
+                                                            -passwordMinutesOfInactivityBeforeLock 15 `
+                                                            -scheduledActionsForRule `
+                                                                (New-DeviceComplianceScheduledActionForRuleObject `
+                                                                    -ruleName PasswordRequired `
+                                                                    -scheduledActionConfigurations `
+                                                                    (New-DeviceComplianceActionItemObject `
+                                                                        -gracePeriodHours 0 `
+                                                                        -actionType block `
+                                                                        -notificationTemplateId "" `
+                                                                    )`
+                                                                )
 
-write-host "Policy created with id" $CreateResult.id
+write-host "Policy created with id" $androidCompliancePolicy.id
 Write-Host
 
 write-host "Assigning Device Compliance Policy to AAD Group '$AADGroup'" -f Yellow
 
-Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $CreateResult.id `
--assignments (New-DeviceCompliancePolicyAssignmentObject `
--target (New-DeviceAndAppManagementAssignmentTargetObject `
--groupAssignmentTarget -groupId "$IPU_Id"))
+Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $androidCompliancePolicy.id `
+    -assignments `
+        (New-DeviceCompliancePolicyAssignmentObject `
+        -target `
+            (New-DeviceAndAppManagementAssignmentTargetObject `
+                -groupAssignmentTarget `
+                -groupId "$AADGroupId" `
+            ) `
+        )
 
-Write-Host "Assigned '$AADGroup' to $($CreateResult.displayName)/$($CreateResult.id)"
+Write-Host "Assigned '$AADGroup' to $($androidCompliancePolicy.displayName)/$($androidCompliancePolicy.id)"
 Write-Host
 
 # Create Windows 10 Compliance Policy
 Write-Host "Adding Windows 10 Compliance Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-IntuneDeviceCompliancePolicy -windows10CompliancePolicy `
--displayName "Chicago - Windows 10 Compliance Policy" `
--osMinimumVersion 10.0.16299 `
--scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired -scheduledActionConfigurations (New-DeviceComplianceActionItemObject -gracePeriodHours 0 -actionType block -notificationTemplateId ""))
+$windows10CompliancePolicy = New-IntuneDeviceCompliancePolicy -windows10CompliancePolicy `
+    -displayName "Chicago - Windows 10 Compliance Policy" `
+    -osMinimumVersion 10.0.16299 `
+    -scheduledActionsForRule `
+    (New-DeviceComplianceScheduledActionForRuleObject `
+        -ruleName PasswordRequired `
+        -scheduledActionConfigurations `
+        (New-DeviceComplianceActionItemObject `
+            -gracePeriodHours 0 `
+            -actionType block `
+            -notificationTemplateId "" `
+        ) `
+    )
 
-write-host "Policy created with id" $CreateResult.id
+write-host "Policy created with id" $windows10CompliancePolicy.id
 Write-Host
 
 write-host "Assigning Device Compliance Policy to AAD Group '$AADGroup'" -f Yellow
 
-Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $CreateResult.id `
--assignments (New-DeviceCompliancePolicyAssignmentObject `
--target (New-DeviceAndAppManagementAssignmentTargetObject `
--groupAssignmentTarget -groupId "$IPU_Id"))
+Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $windows10CompliancePolicy.id `
+    -assignments `
+        (New-DeviceCompliancePolicyAssignmentObject `
+            -target `
+            (New-DeviceAndAppManagementAssignmentTargetObject `
+                -groupAssignmentTarget `
+                -groupId "$AADGroupId" `
+            ) `
+        )
 
-Write-Host "Assigned '$AADGroup' to $($CreateResult.displayName)/$($CreateResult.id)"
+Write-Host "Assigned '$AADGroup' to $($windows10CompliancePolicy.displayName)/$($windows10CompliancePolicy.id)"
 Write-Host
 
 # Create MacOS Compliance Policy
 Write-Host "Adding MacOS Compliance Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$CreateResult = New-IntuneDeviceCompliancePolicy -macOSCompliancePolicy `
--displayName "Chicago - MacOS Compliance Policy" `
--passwordRequired $true -passwordBlockSimple $false -passwordRequiredType deviceDefault `
--scheduledActionsForRule (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired -scheduledActionConfigurations (New-DeviceComplianceActionItemObject -gracePeriodHours 0 -actionType block -notificationTemplateId ""))
+$macOSCompliancePolicy = New-IntuneDeviceCompliancePolicy -macOSCompliancePolicy `
+    -displayName "Chicago - MacOS Compliance Policy" `
+    -passwordRequired $true `
+    -passwordBlockSimple $false `
+    -passwordRequiredType deviceDefault `
+    -scheduledActionsForRule `
+    (New-DeviceComplianceScheduledActionForRuleObject `
+        -ruleName PasswordRequired `
+        -scheduledActionConfigurations `
+        (New-DeviceComplianceActionItemObject `
+            -gracePeriodHours 0 `
+            -actionType block `
+            -notificationTemplateId "" `
+        ) `
+    )
 
-write-host "Policy created with id" $CreateResult.id
+write-host "Policy created with id" $macOSCompliancePolicy.id
 Write-Host
 
 write-host "Assigning Device Compliance Policy to AAD Group '$AADGroup'" -f Yellow
 
-Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $CreateResult.id `
--assignments (New-DeviceCompliancePolicyAssignmentObject `
--target (New-DeviceAndAppManagementAssignmentTargetObject `
--groupAssignmentTarget -groupId "$IPU_Id"))
+Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $macOSCompliancePolicy.id `
+    -assignments `
+    (New-DeviceCompliancePolicyAssignmentObject `
+    -target `
+        (New-DeviceAndAppManagementAssignmentTargetObject `
+            -groupAssignmentTarget `
+            -groupId "$AADGroupId" `
+        )`
+    )
 
-Write-Host "Assigned '$AADGroup' to $($CreateResult.displayName)/$($CreateResult.id)"
+Write-Host "Assigned '$AADGroup' to $($macOSCompliancePolicy.displayName)/$($macOSCompliancePolicy.id)"
 Write-Host
 
 #endregion
@@ -225,7 +290,7 @@ Write-Host
 Invoke-IntuneDeviceConfigurationPolicyAssign -deviceConfigurationId $CreateResult.id `
 -assignments (New-DeviceConfigurationAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
--groupAssignmentTarget -groupId "$IPU_Id"))
+-groupAssignmentTarget -groupId "$AADGroupId"))
 
 Write-Host "Assigned '$AADGroup' to $($CreateResult.displayName)/$($CreateResult.id)"
 Write-Host
@@ -240,7 +305,7 @@ Write-Host
 Invoke-IntuneDeviceConfigurationPolicyAssign -deviceConfigurationId $CreateResult.id `
 -assignments (New-DeviceConfigurationAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
--groupAssignmentTarget -groupId "$IPU_Id"))
+-groupAssignmentTarget -groupId "$AADGroupId"))
 
 Write-Host "Assigned '$AADGroup' to $($CreateResult.displayName)/$($CreateResult.id)"
 Write-Host
@@ -291,7 +356,7 @@ Write-Host
 Invoke-IntuneDeviceConfigurationPolicyAssign -deviceConfigurationId $CreateResult.id `
 -assignments (New-DeviceConfigurationAssignmentObject `
 -target (New-DeviceAndAppManagementAssignmentTargetObject `
--groupAssignmentTarget -groupId "$IPU_Id"))
+-groupAssignmentTarget -groupId "$AADGroupId"))
 #>
 
 # iOS MAM / APP Policy Creation

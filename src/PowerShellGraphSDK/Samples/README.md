@@ -11,8 +11,10 @@
     - [Bulk create objects](#bulk-create-objects)
     - [Filter objects](#filter-objects)
     - [Paging](#paging)
+    - [Getting Extended Debug information](#getting-extended-debug-information)
 - [Scenario Samples](#scenario-samples)
     - [Publish iOS LOB Application](#publish-ios-lob-application)
+    - [Create a Compliance Policies and Assign it to an AAD Group](#create-a-compliance-policies-and-assign-it-to-an-AAD-Group)
     - [Visualize summary of apps by type](#visualize-summary-of-apps-by-type)
 
 # Intune-PowerShell-SDK
@@ -137,6 +139,64 @@ $auditEvents = Invoke-MSGraphRequest -HttpMethod GET -Url 'deviceManagement/audi
 # Switch back to v1.0
 Update-MSGraphEnvironment -SchemaVersion 'v1.0'
 ```
+## Getting Extended Debug information
+If for some reason, a cmdlet fails. Use Get-MSGraphInfo to get extended information. 
+A sample failure is listed below:
+```PowerShell
+# Call that failed
+Invoke-IntuneDeviceCompliancePolicyAssign : 500 Internal Server Error
+{
+  "error": {
+    "code": "InternalError",
+    "message": "{\r\n  \"_version\": 3,\r\n  \"Message\": \"An internal server error has occurred - Operation ID (for customer support): 00000000-0000-0000-0000-000000000000 - Activity ID: a02e4ad2-efdb-4ae0-8b36-7c990a228f21 -
+Url: https://fef.msua06.manage.microsoft.com/StatelessDeviceConfigurationFEService/deviceManagement/deviceCompliancePolicies%28%27bc4c48a9-4120-4531-8870-f57767d43da4%27%29/microsoft.management.services.api.assign?api-version=2018
+-06-29\",\r\n  \"CustomApiErrorPhrase\": \"\",\r\n  \"RetryAfter\": null,\r\n  \"ErrorSourceService\": \"\",\r\n  \"HttpHeaders\": \"{}\"\r\n}",
+    "innerError": {
+      "request-id": "a02e4ad2-efdb-4ae0-8b36-7c990a228f21",
+      "date": "2018-11-28T21:44:56"
+    }
+  }
+}
+At line:1 char:1
++ Invoke-IntuneDeviceCompliancePolicyAssign   -deviceCompliancePolicyId ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ConnectionError: (@{Request=; Response=}:PSObject) [Invoke-IntuneDe...ncePolicyAssign], HttpRequestException
+    + FullyQualifiedErrorId : PowerShellGraphSDK_HttpRequestError,Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets.Invoke_IntuneDeviceCompliancePolicyAssign
+
+# Get Debug information
+Get-MSGraphDebugInfo
+
+Request
+-------
+@{HttpMethod=POST; URL=https://graph.microsoft.com/v1.0/deviceManagement/deviceCompliancePolicies/bc4c48a9-4120-4531-8870-f57767d43da4/assign; Headers=; Content={...
+
+# Look into the Request
+(Get-MSGraphDebugInfo).Request
+
+HttpMethod URL                                                                                                                    Headers
+---------- ---                                                                                                                    -------
+POST       https://graph.microsoft.com/v1.0/deviceManagement/deviceCompliancePolicies/bc4c48a9-4120-4531-8870-f57767d43da4/assign @{Authorization=Bearer eyJ0eXAiOiJKV1QiLCJub25jZSI6IkFRQUJBQUFBQUFDNXVuYTBFVUZnVElGOEVsYXh0V2pUam...
+
+# Look into the Response
+(Get-MSGraphDebugInfo).Response
+
+HttpStatusCode HttpStatusPhrase      Headers
+-------------- ----------------      -------
+           500 Internal Server Error @{Transfer-Encoding=chunked; request-id=a02e4ad2-efdb-4ae0-8b36-7c990a228f21; client-request-id=a02e4ad2-efdb-4ae0-8b36-7c990a228f21; x-ms-ags-diagnostic={"ServerInfo":{"DataCenter":"West Ce...
+
+# Inspect the Response headers
+(Get-MSGraphDebugInfo).Response.Headers
+
+Transfer-Encoding         : chunked
+request-id                : a02e4ad2-efdb-4ae0-8b36-7c990a228f21
+client-request-id         : a02e4ad2-efdb-4ae0-8b36-7c990a228f21
+x-ms-ags-diagnostic       : {"ServerInfo":{"DataCenter":"West Central US","Slice":"SliceC","Ring":"1","ScaleUnit":"001","Host":"AGSFE_IN_4","ADSiteName":"WCU"}}
+Duration                  : 496.4757
+Strict-Transport-Security : max-age=31536000
+Cache-Control             : private
+Date                      : Wed, 28 Nov 2018 21:44:55 GMT
+
+```
 
 # Scenario Samples
 ## Upload iOS LOB Application
@@ -161,6 +221,121 @@ $appToUpload = New-MobileAppObject `
 
 # Upload the app file with the app information
 $uploadedAppFile = New-LobApp -filePath '.\Apps\test.ipa' -mobileApp $appToUpload
+```
+## Create a Compliance Policies and Assign it to an AAD Group
+```PowerShell
+# Search the AAD Group
+$AADGroupId = (Get-Groups -Filter "displayName eq 'Intune POC Users'").id
+
+# Create an iOS Compliance Policy
+$iOSCompliancePolicy = New-IntuneDeviceCompliancePolicy -iosCompliancePolicy `
+    -displayName "Chicago - iOS Compliance Policy" `
+    -passcodeRequired $true `
+    -passcodeMinimumLength 6 `
+    -passcodeMinutesOfInactivityBeforeLock 15 `
+    -securityBlockJailbrokenDevices $true `
+    -scheduledActionsForRule `
+        (New-DeviceComplianceScheduledActionForRuleObject -ruleName PasswordRequired `
+            -scheduledActionConfigurations `
+                (New-DeviceComplianceActionItemObject -gracePeriodHours 0 `
+                -actionType block `
+                -notificationTemplateId "" `
+                )`
+        )
+
+# Assign the newly created compliance policy to the AAD Group
+Invoke-IntuneDeviceCompliancePolicyAssign  -deviceCompliancePolicyId $iOSCompliancePolicy.id `
+    -assignments `
+        (New-DeviceCompliancePolicyAssignmentObject `
+            -target `
+                (New-DeviceAndAppManagementAssignmentTargetObject `
+                    -groupAssignmentTarget `
+                    -groupId "$AADGroupId" `
+                ) `
+        )
+
+# Create Android Compliance Policy
+$androidCompliancePolicy = New-IntuneDeviceCompliancePolicy -androidCompliancePolicy `
+    -displayName "Chicago - Android Compliance Policy"  `
+    -passwordRequired $true `
+    -passwordMinimumLength 6 `
+    -securityBlockJailbrokenDevices $true `
+    -passwordMinutesOfInactivityBeforeLock 15 `
+    -scheduledActionsForRule `
+    (New-DeviceComplianceScheduledActionForRuleObject `
+        -ruleName PasswordRequired `
+        -scheduledActionConfigurations `
+        (New-DeviceComplianceActionItemObject `
+            -gracePeriodHours 0 `
+            -actionType block `
+            -notificationTemplateId "" `
+        )`
+    )
+
+# Assign the newly created compliance policy to the AAD Group
+Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $androidCompliancePolicy.id `
+    -assignments `
+    (New-DeviceCompliancePolicyAssignmentObject `
+        -target `
+        (New-DeviceAndAppManagementAssignmentTargetObject `
+            -groupAssignmentTarget `
+            -groupId "$AADGroupId" `
+        ) `
+    )
+
+# Create Windows 10 Compliance Policy
+$windows10CompliancePolicy = New-IntuneDeviceCompliancePolicy -windows10CompliancePolicy `
+    -displayName "Chicago - Windows 10 Compliance Policy" `
+    -osMinimumVersion 10.0.16299 `
+    -scheduledActionsForRule `
+    (New-DeviceComplianceScheduledActionForRuleObject `
+        -ruleName PasswordRequired `
+        -scheduledActionConfigurations `
+        (New-DeviceComplianceActionItemObject `
+            -gracePeriodHours 0 `
+            -actionType block `
+            -notificationTemplateId "" `
+        ) `
+    )
+
+# Assign the newly created compliance policy to the AAD Group
+Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $windows10CompliancePolicy.id `
+    -assignments `
+        (New-DeviceCompliancePolicyAssignmentObject `
+            -target `
+            (New-DeviceAndAppManagementAssignmentTargetObject `
+                -groupAssignmentTarget `
+                -groupId "$AADGroupId" `
+            ) `
+        )
+
+# Create MacOS Compliance Policy
+$macOSCompliancePolicy = New-IntuneDeviceCompliancePolicy -macOSCompliancePolicy `
+    -displayName "Chicago - MacOS Compliance Policy" `
+    -passwordRequired $true `
+    -passwordBlockSimple $false `
+    -passwordRequiredType deviceDefault `
+    -scheduledActionsForRule `
+    (New-DeviceComplianceScheduledActionForRuleObject `
+        -ruleName PasswordRequired `
+        -scheduledActionConfigurations `
+        (New-DeviceComplianceActionItemObject `
+            -gracePeriodHours 0 `
+            -actionType block `
+            -notificationTemplateId "" `
+        ) `
+    )
+
+# Assign the newly created compliance policy to the AAD Group
+Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $macOSCompliancePolicy.id `
+    -assignments `
+    (New-DeviceCompliancePolicyAssignmentObject `
+    -target `
+        (New-DeviceAndAppManagementAssignmentTargetObject `
+            -groupAssignmentTarget `
+            -groupId "$AADGroupId" `
+        )`
+    )
 ```
 
 ## Visualize summary of apps by type
