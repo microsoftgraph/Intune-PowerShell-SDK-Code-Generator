@@ -22,6 +22,8 @@
     - [Create Configuration Policies and Assign it to an AAD Group](#create-configuration-policies-and-assign-it-to-an-AAD-Group)
         - [Create iOS Restriction Policy](#create-ios-restriction-policy)
         - [Create Android Restriction Policy](#create-android-restriction-policy)
+    - [Create App Protection Polies and assign it to an AAD Group](#create-app-protection-policies-and-assign-it-to-an-AAD-Group)
+        - [iOS App Protection Policy Creation](#ios-app-protection-policy-creation)
     - [Visualize summary of apps by type](#visualize-summary-of-apps-by-type)
 
 # Intune-PowerShell-SDK
@@ -402,6 +404,56 @@ Invoke-IntuneDeviceConfigurationPolicyAssign -deviceConfigurationId $androidGene
             ) `
         )
 
+```
+## Create App Protection Polies and assign it to an AAD Group
+### iOS App Protection Policy Creation
+```PowerShell
+# Get the list of managed mobileapp objects
+$appsiOS = @()
+$iosManagedAppProtectionApps = Get-IntuneMobileApp | ? { $_.appAvailability -eq "global" -and ($_.'@odata.type').contains("managedIOS") }
+foreach($app in $iosManagedAppProtectionApps)
+{
+    $bundleId = $app.bundleId
+    $appsiOS += (New-ManagedMobileAppObject -mobileAppIdentifier (New-MobileAppIdentifierObject -iosMobileAppIdentifier -bundleId "$bundleId"))
+}
+
+# Create the ios App Protection Policy
+$iosManagedAppProtection = New-IntuneAppProtectionPolicy `
+    -iosManagedAppProtection `
+    -displayName "iOS MAM / APP Policy" `
+    -periodOfflineBeforeAccessCheck (New-TimeSpan -Hours 12) `
+    -periodOnlineBeforeAccessCheck (New-TimeSpan -Minutes 30)`
+    -allowedInboundDataTransferSources managedApps `
+    -allowedOutboundDataTransferDestinations managedApps `
+    -allowedOutboundClipboardSharingLevel managedAppsWithPasteIn `
+    -organizationalCredentialsRequired $false `
+    -dataBackupBlocked $true `
+    -managedBrowserToOpenLinksRequired $false `
+    -deviceComplianceRequired $false `
+    -saveAsBlocked $true `
+    -periodOfflineBeforeWipeIsEnforced (New-TimeSpan -Days 30) `
+    -pinRequired $true `
+    -maximumPinRetries 5 `
+    -simplePinBlocked $false `
+    -minimumPinLength 4 `
+    -pinCharacterSet numeric `
+    -periodBeforePinReset (New-TimeSpan -Days 30) `
+    -allowedDataStorageLocations @("oneDriveForBusiness","sharePoint") `
+    -contactSyncBlocked $false `
+    -printBlocked $true `
+    -fingerprintBlocked $false `
+    -disableAppPinIfDevicePinIsSet $false `
+    -apps $appsiOS
+
+# Assign ios App Protection Policy to the AAD Group
+Invoke-IntuneAppProtectionPolicyIosAssign -iosManagedAppProtectionId $iosManagedAppProtection.id `
+    -assignments `
+    (New-TargetedManagedAppPolicyAssignmentObject `
+            -target `
+            (New-DeviceAndAppManagementAssignmentTargetObject `
+            -groupAssignmentTarget -groupId "$AADGroupId" `
+            ) `
+    )
 ```
 
 ## Visualize summary of apps by type

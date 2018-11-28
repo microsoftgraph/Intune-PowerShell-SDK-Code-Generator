@@ -344,39 +344,55 @@ Write-Host
 # iOS MAM / APP Policy Creation
 Write-Host "Adding iOS Managed App Policy from PowerShell Module..." -ForegroundColor Yellow
 
-$apps_iOS = @()
-
-$iOSAPP_apps = Get-IntuneMobileApp | ? { $_.appAvailability -eq "global" -and ($_.'@odata.type').contains("managedIOS") }
-
-foreach($app in $iOSAPP_apps){
-
-    $BundleId = $app.bundleId
-    $apps_iOS += (New-ManagedMobileAppObject -mobileAppIdentifier (New-MobileAppIdentifierObject -iosMobileAppIdentifier -bundleId "$BundleId"))
-
+# Get the list of managed mobileapp objects
+$appsiOS = @()
+$iosManagedAppProtectionApps = Get-IntuneMobileApp | ? { $_.appAvailability -eq "global" -and ($_.'@odata.type').contains("managedIOS") }
+foreach($app in $iosManagedAppProtectionApps)
+{
+    $bundleId = $app.bundleId
+    $appsiOS += (New-ManagedMobileAppObject -mobileAppIdentifier (New-MobileAppIdentifierObject -iosMobileAppIdentifier -bundleId "$bundleId"))
 }
 
-$CreateResult = New-IntuneAppProtectionPolicy -iosManagedAppProtection -displayName "iOS MAM / APP Policy" `
--periodOfflineBeforeAccessCheck (New-TimeSpan -Hours 12) `
--periodOnlineBeforeAccessCheck (New-TimeSpan -Minutes 30)`
--allowedInboundDataTransferSources managedApps -allowedOutboundDataTransferDestinations managedApps `
--allowedOutboundClipboardSharingLevel managedAppsWithPasteIn -organizationalCredentialsRequired $false `
--dataBackupBlocked $true -managedBrowserToOpenLinksRequired $false -deviceComplianceRequired $false `
--saveAsBlocked $true -periodOfflineBeforeWipeIsEnforced (New-TimeSpan -Days 30) `
--pinRequired $true -maximumPinRetries 5 -simplePinBlocked $false -minimumPinLength 4 `
--pinCharacterSet numeric -periodBeforePinReset (New-TimeSpan -Days 30) -allowedDataStorageLocations @("oneDriveForBusiness","sharePoint") `
--contactSyncBlocked $false -printBlocked $true -fingerprintBlocked $false `
--disableAppPinIfDevicePinIsSet $false `
--apps $apps_iOS
+# Create the ios App Protection Policy
+$iosManagedAppProtection = New-IntuneAppProtectionPolicy `
+    -iosManagedAppProtection `
+    -displayName "iOS MAM / APP Policy" `
+    -periodOfflineBeforeAccessCheck (New-TimeSpan -Hours 12) `
+    -periodOnlineBeforeAccessCheck (New-TimeSpan -Minutes 30)`
+    -allowedInboundDataTransferSources managedApps `
+    -allowedOutboundDataTransferDestinations managedApps `
+    -allowedOutboundClipboardSharingLevel managedAppsWithPasteIn `
+    -organizationalCredentialsRequired $false `
+    -dataBackupBlocked $true `
+    -managedBrowserToOpenLinksRequired $false `
+    -deviceComplianceRequired $false `
+    -saveAsBlocked $true `
+    -periodOfflineBeforeWipeIsEnforced (New-TimeSpan -Days 30) `
+    -pinRequired $true `
+    -maximumPinRetries 5 `
+    -simplePinBlocked $false `
+    -minimumPinLength 4 `
+    -pinCharacterSet numeric `
+    -periodBeforePinReset (New-TimeSpan -Days 30) `
+    -allowedDataStorageLocations @("oneDriveForBusiness","sharePoint") `
+    -contactSyncBlocked $false `
+    -printBlocked $true `
+    -fingerprintBlocked $false `
+    -disableAppPinIfDevicePinIsSet $false `
+    -apps $appsiOS
 
-write-host "Policy created with id" $CreateResult.id 
+write-host "Policy created with id" $iosManagedAppProtection.id 
 Write-Host
 
-<#
-Invoke-IntuneDeviceConfigurationPolicyAssign -deviceConfigurationId $CreateResult.id `
--assignments (New-DeviceConfigurationAssignmentObject `
--target (New-DeviceAndAppManagementAssignmentTargetObject `
--groupAssignmentTarget -groupId "$AADGroupId"))
-#>
+# Assign ios App Protection Policy to the AAD Group
+Invoke-IntuneAppProtectionPolicyIosAssign -iosManagedAppProtectionId $iosManagedAppProtection.id `
+    -assignments `
+    (New-TargetedManagedAppPolicyAssignmentObject `
+            -target `
+            (New-DeviceAndAppManagementAssignmentTargetObject `
+            -groupAssignmentTarget -groupId "$AADGroupId" `
+            ) `
+    )
 
 # iOS MAM / APP Policy Creation
 Write-Host "Adding iOS Managed App Policy from PowerShell Module..." -ForegroundColor Yellow
