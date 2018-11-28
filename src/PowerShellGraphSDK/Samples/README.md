@@ -137,6 +137,7 @@ $auditEvents = Invoke-MSGraphRequest -HttpMethod GET -Url 'deviceManagement/audi
 # Switch back to v1.0
 Update-MSGraphEnvironment -SchemaVersion 'v1.0'
 ```
+
 #Scenario Samples
 ##Upload iOS LOB Application
 Load the Apps scenario module
