@@ -229,7 +229,7 @@ $uploadedAppFile = New-LobApp -filePath '.\Apps\test.ipa' -mobileApp $appToUploa
 # Search the AAD Group
 $AADGroupId = (Get-Groups -Filter "displayName eq 'Intune POC Users'").id
 
-### Create an iOS Compliance Policy
+## Create an iOS Compliance Policy
 $iOSCompliancePolicy = New-IntuneDeviceCompliancePolicy `
     -iosCompliancePolicy `
     -displayName "Chicago - iOS Compliance Policy" `
