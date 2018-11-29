@@ -24,6 +24,7 @@
         - [Create Android Restriction Policy](#create-android-restriction-policy)
     - [Create App Protection Polies and assign it to an AAD Group](#create-app-protection-policies-and-assign-it-to-an-AAD-Group)
         - [iOS App Protection Policy Creation](#ios-app-protection-policy-creation)
+        - [Android App Protection Policy Creation](#android-app-protection-policy-creation)
     - [Visualize summary of apps by type](#visualize-summary-of-apps-by-type)
 
 # Intune-PowerShell-SDK
