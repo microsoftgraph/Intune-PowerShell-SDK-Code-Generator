@@ -48,6 +48,7 @@ $tests = @(
     {Get-IntuneResourceOperation}
     {Get-IntuneSoftwareUpdateStatusSummary}
     {Get-IntuneTelecomExpenseManagementPartner}
+    {Get-IntuneDeviceCompliancePolicySettingSummary}
 #
 # DmDetectedApps
 #

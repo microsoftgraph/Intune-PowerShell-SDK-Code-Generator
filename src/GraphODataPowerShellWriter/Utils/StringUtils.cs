@@ -59,7 +59,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceAppManagement_ManagedAppPolicies_TargetApps", "IntuneAppProtectionPolicyTargetApp" },
             #endregion
             #region DeviceAppManagement_ManagedAppRegistrations
-            { "DeviceAppManagement_ManagedAppRegistrations", "IntuneManagedAppRegistration" },            
+            { "DeviceAppManagement_ManagedAppRegistrations", "IntuneManagedAppRegistration" },
+            { "DeviceAppManagement_ManagedAppRegistrations_GetUserIdsWithFlaggedAppRegistration", "IntuneGetUserIdsWithFlaggedAppRegistration" },
             #endregion
             #region DeviceAppManagement_ManagedAppStatuses
             { "DeviceAppManagement_ManagedAppStatuses", "IntuneManagedAppStatus" },
@@ -157,6 +158,8 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceManagement_ExchangeConnectors_Sync", "IntuneExchangeConnectorSync" },
             { "DeviceManagement_GetEffectivePermissions", "IntuneGetEffectivePermission" },
             { "DeviceManagement_VerifyWindowsEnrollmentAutoDiscovery", "IntuneVerifyWindowsEnrollmentAutoDiscovery" },
+            { "DeviceManagement_DeviceCompliancePolicySettingStateSummaries", "IntuneDeviceCompliancePolicySettingSummary" },
+            { "DeviceManagement_ManagedDevices_ResetPasscode", "IntuneManagedDeviceResetPasscode" },
             #region DeviceManagement_DetectedApps
             { "DeviceManagement_DetectedApps", "IntuneDetectedApp" },
             { "DeviceManagement_DetectedApps_ManagedDevices", "IntuneDetectedAppDevice" },
@@ -233,34 +236,34 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             #endregion
             #endregion
             #region Groups
-            { "Groups_CreatedOnBehalfOf", "GroupsCreatedOnBehalfOf" },
-            { "Groups_CreatedOnBehalfOfReference", "GroupsCreatedOnBehalfOfReference" },
-            { "Groups_GroupLifecyclePolicies", "GroupsGroupLifecyclePolicy" },
-            { "Groups_MemberOf", "GroupsMemberOf" },
-            { "Groups_MemberOfReferences", "GroupsMemberOfReference" },
-            { "Groups_Members", "GroupsMember" },
-            { "Groups_MembersReferences", "GroupsMemberReference" },
-            { "Groups_Owners", "GroupsOwners" },
-            { "Groups_OwnersReferences", "GroupsOwnersReference" },
-            { "Groups_Photo", "GroupsPhoto" },
-            { "Groups_PhotoData", "GroupsPhotoData" },
-            { "Groups_Photos", "GroupsPhotos" },
-            { "Groups_PhotosData", "GroupsPhotosData" },
-            { "Groups_Settings", "GroupsSettings" },
-            { "Groups_AddFavorite", "GroupsAddFavorite" },
-            { "Groups_CheckMemberGroups", "GroupsCheckMemberGroup" },
-            { "Groups_Delta", "GroupsDelta" },
-            { "Groups_GetById", "Groups_GetById" },
-            { "Groups_GetMemberGroups", "GroupsGetMemberGroup" },
-            { "Groups_GetMemberObjects", "GroupsGetMemberObject" },
-            { "Groups_GroupLifecyclePolicies_AddGroup", "GroupsGroupLifecyclePolicyAddGroup" },
-            { "Groups_GroupLifecyclePolicies_RemoveGroup", "GroupsGroupLifecyclePolicyRemoveGroup" },
-            { "Groups_RemoveFavorite", "GroupsRemoveFavorite" },
-            { "Groups_Renew", "GroupsRenew" },
-            { "Groups_ResetUnseenCount", "GroupsResetUnseenCount" },
-            { "Groups_Restore", "GroupsRestore" },
-            { "Groups_SubscribeByMail", "GroupsSubscribeByMail" },
-            { "Groups_UnsubscribeByMail", "GroupsUnsubscribeByMail" }
+            { "Groups_CreatedOnBehalfOf", "GroupCreatedOnBehalfOf" },
+            { "Groups_CreatedOnBehalfOfReference", "GroupCreatedOnBehalfOfReference" },
+            { "Groups_GroupLifecyclePolicies", "GroupGroupLifecyclePolicy" },
+            { "Groups_MemberOf", "GroupMemberOf" },
+            { "Groups_MemberOfReferences", "GroupMemberOfReference" },
+            { "Groups_Members", "GroupMember" },
+            { "Groups_MembersReferences", "GroupMemberReference" },
+            { "Groups_Owners", "GroupOwners" },
+            { "Groups_OwnersReferences", "GroupOwnersReference" },
+            { "Groups_Photo", "GroupPhoto" },
+            { "Groups_PhotoData", "GroupPhotoData" },
+            { "Groups_Photos", "GroupPhotos" },
+            { "Groups_PhotosData", "GroupPhotosData" },
+            { "Groups_Settings", "GroupSettings" },
+            { "Groups_AddFavorite", "GroupAddFavorite" },
+            { "Groups_CheckMemberGroups", "GroupCheckMemberGroup" },
+            { "Groups_Delta", "GroupDelta" },            
+            { "Groups_GetMemberGroups", "GroupGetMemberGroup" },
+            { "Groups_GetMemberObjects", "GroupGetMemberObject" },
+            { "Groups_GroupLifecyclePolicies_AddGroup", "GroupGroupLifecyclePolicyAddGroup" },
+            { "Groups_GroupLifecyclePolicies_RemoveGroup", "GroupGroupLifecyclePolicyRemoveGroup" },
+            { "Groups_RemoveFavorite", "GroupRemoveFavorite" },
+            { "Groups_Renew", "GroupRenew" },
+            { "Groups_ResetUnseenCount", "GroupResetUnseenCount" },
+            { "Groups_Restore", "GroupRestore" },
+            { "Groups_SubscribeByMail", "GroupSubscribeByMail" },
+            { "Groups_UnsubscribeByMail", "GroupUnsubscribeByMail" },
+            { "Groups_GetByIds", "GroupGetByIds" }
             #endregion           
         };
 

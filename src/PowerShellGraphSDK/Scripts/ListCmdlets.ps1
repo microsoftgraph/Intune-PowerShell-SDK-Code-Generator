@@ -18,38 +18,27 @@ $modulePath = "$OutputDirectory\$ModuleName.psd1"
 Push-Location $OutputDirectory
 
 Import-Module $modulePath
-$sdkCmdlets = ((Get-Command -Module Microsoft.Graph.Intune) | Sort-Object)
+$sdkCmdlets = ((Get-Command -Module Microsoft.Graph.Intune).Name | Sort-Object)
 $cmdletCount = $sdkCmdlets.Count
-Write-Host "$cmdletCount cmdlets exported by $modulePath"
+Write-Host "$cmdletCount Intune specific cmdlets exported by $modulePath"
 
 $sdkCmdletsList = @()
-for($cmdletCount=0; $cmdletCount -lt $sdkCmdlets.Count; $cmdletCount++)
-{
-    $name = $sdkCmdlets[$cmdletCount]
-    if ($IsFullOutput)
-    {
-        $helpTxt = (Get-Help $sdkCmdlets[$cmdletCount]).Description
-        if ($helpTxt -ne $null)
-        {   
-            if ($helpTxt[0] -ne $null) {$route = ($helpTxt[0].Text).Replace('`r`nE','')}
-            if ($helpTxt[1] -ne $null) {$description = ($helpTxt[1].Text).Replace('`r`nE','')}
-            if ($helpTxt[2] -ne $null) {$returnValue = ($helpTxt[2].Text).Replace('`r`nE','')}
-            $sdkCmdletsList+= ("$name`t$description`t$route`t$returnValue")        
-        }
-        else
-        {
-            $route = $null
-            $description = $null
-            $returnValue = $null
-            $sdkCmdletsList+= ("$name")
-        }
+foreach ($sdkCmdlet in $sdkCmdlets)
+{    
+    $sdkCmdletHelp = (Get-Help $sdkCmdlet)
+    $sdkCmdletInfo = new-object PSObject
+    $sdkCmdletInfo | add-member -membertype NoteProperty -name "Name" -value $sdkCmdletHelp.Name
+    $sdkCmdletInfo | add-member -membertype NoteProperty -name "Synopsis" -value $sdkCmdletHelp.Synopsis    
+    if ($sdkCmdletHelp.Description)
+    {        
+        $sdkCmdletInfo | add-member -membertype NoteProperty -name "Graph-route" -value $sdkCmdletHelp.Description[0].Text.replace("`n","").replace("`r","") 
     }
     else
     {
-        $sdkCmdletsList+=("$name")
-    }
+        $sdkCmdletInfo | add-member -membertype NoteProperty -name "Graph-route" -value ""
+    }    
+    $sdkCmdletsList+=$sdkCmdletInfo
 }
 
-$sdkCmdletsList | Out-File "$OutputDirectory\$ModuleName.cmdlets.txt"
-Write-Debug "$sdkCmdletsList"
+$sdkCmdletsList | Export-Csv -Path "$OutputDirectory\$ModuleName.cmdlets.csv" -NoTypeInformation
 popd
