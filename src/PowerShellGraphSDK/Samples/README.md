@@ -408,7 +408,7 @@ Invoke-IntuneDeviceConfigurationPolicyAssign -deviceConfigurationId $androidGene
 ## Create App Protection Polies and assign it to an AAD Group
 ### iOS App Protection Policy Creation
 ```PowerShell
-# Get the list of managed mobileapp objects
+# Get the list of iOS managed mobileapp objects
 $appsiOS = @()
 $iosManagedAppProtectionApps = Get-IntuneMobileApp | ? { $_.appAvailability -eq "global" -and ($_.'@odata.type').contains("managedIOS") }
 foreach($app in $iosManagedAppProtectionApps)
@@ -447,6 +447,55 @@ $iosManagedAppProtection = New-IntuneAppProtectionPolicy `
 
 # Assign ios App Protection Policy to the AAD Group
 Invoke-IntuneAppProtectionPolicyIosAssign -iosManagedAppProtectionId $iosManagedAppProtection.id `
+    -assignments `
+    (New-TargetedManagedAppPolicyAssignmentObject `
+            -target `
+            (New-DeviceAndAppManagementAssignmentTargetObject `
+            -groupAssignmentTarget -groupId "$AADGroupId" `
+            ) `
+    )
+```
+### Android App Protection Policy Creation
+```PowerShell
+
+# Get the list of Android managed mobileapp objects
+$appsAndroid = @()
+$AndroidAPPapps = Get-IntuneMobileApp | ? { $_.appAvailability -eq "global" -and ($_.'@odata.type').contains("managedAndroid") }
+foreach($app in $AndroidAPPapps)
+{
+    $PackageId = $app.packageId
+    $appsAndroid += (New-ManagedMobileAppObject -mobileAppIdentifier (New-MobileAppIdentifierObject -androidMobileAppIdentifier -packageId "$PackageId"))
+}
+
+# Create the Android App Protection Policy
+$androidManagedAppProtectionPolicy = New-IntuneAppProtectionPolicy `
+    -androidManagedAppProtection -displayName "Android MAM / APP Policy" `
+    -periodOfflineBeforeAccessCheck (New-TimeSpan -Hours 12) `
+    -periodOnlineBeforeAccessCheck (New-TimeSpan -Minutes 30)`
+    -allowedInboundDataTransferSources managedApps `
+    -allowedOutboundDataTransferDestinations managedApps `
+    -allowedOutboundClipboardSharingLevel managedAppsWithPasteIn `
+    -organizationalCredentialsRequired $false `
+    -dataBackupBlocked $true `
+    -managedBrowserToOpenLinksRequired $false `
+    -deviceComplianceRequired $false `
+    -saveAsBlocked $true `
+    -periodOfflineBeforeWipeIsEnforced (New-TimeSpan -Days 30) `
+    -pinRequired $true `
+    -maximumPinRetries 5 `
+    -simplePinBlocked $false `
+    -minimumPinLength 4 `
+    -pinCharacterSet numeric `
+    -periodBeforePinReset (New-TimeSpan -Days 30) `
+    -allowedDataStorageLocations @("oneDriveForBusiness","sharePoint") `
+    -contactSyncBlocked $false `
+    -printBlocked $true `
+    -disableAppPinIfDevicePinIsSet $false `
+    -screenCaptureBlocked $true `
+    -apps $appsAndroid
+
+# Assign Android App Protection Policy to the AAD Group
+Invoke-IntuneAppProtectionPolicyAndroidAssign -androidManagedAppProtectionId $androidManagedAppProtectionPolicy.id `
     -assignments `
     (New-TargetedManagedAppPolicyAssignmentObject `
             -target `
