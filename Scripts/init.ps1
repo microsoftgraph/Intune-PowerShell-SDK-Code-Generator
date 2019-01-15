@@ -15,6 +15,7 @@ $env:moduleName = 'Microsoft.Graph.Intune'
 $env:moduleExtension = 'psd1'
 $env:sdkSubmoduleSrc = "$($env:PowerShellSDKRepoRoot)\submodules\Intune-PowerShell-SDK"
 $env:nugetExe = "nuget.exe"
+$env:adminUPN = "admin@roramutesta063.onmicrosoft.com"
 
 # Remember the settings that will change when launching a child PowerShell context
 $env:standardWindowTitle = (Get-Host).UI.RawUI.WindowTitle
@@ -28,6 +29,7 @@ $env:buildScriptPortable = "$($env:PowerShellSDKRepoRoot)\Scripts\build-portable
 $env:buildScriptFull = "$($env:PowerShellSDKRepoRoot)\Scripts\build-full.ps1"
 $env:runScript = "$($env:PowerShellSDKRepoRoot)\Scripts\run.ps1"
 $env:testScript = "$($env:PowerShellSDKRepoRoot)\Scripts\test.ps1"
+$env:ListCmdletsScript = "$($env:PowerShellSDKRepoRoot)\src\PowerShellGraphSDK\Scripts\ListCmdlets.ps1"
 
 ###############
 ## Functions ##
@@ -111,6 +113,7 @@ function global:GenerateSDK {
     global:BuildWriter
     global:RunWriter -GraphSchema $GraphSchema
     global:BuildSDK -WorkingDirectory "$env:generatedDir"
+    Invoke-Expression "$env:ListCmdletsScript -OutputDirectory $env:sdkDir -IsFullOutput"
 }
 
 function global:GenerateAndRunSDK {

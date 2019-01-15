@@ -16,7 +16,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
     <OutputPath Condition=" '$(OutputPath)' == ''">$(MSBuildProjectDirectory)\bin\$(Configuration)</OutputPath>
-    <GraphSchemaPath Condition=" '$(GraphSchemaPath)' == ''">$(MSBuildProjectDirectory)\..\..\Test Graph Schemas\v1.0-20180917 - Intune.csdl</GraphSchemaPath>
+    <GraphSchemaPath Condition=" '$(GraphSchemaPath)' == ''">$(MSBuildProjectDirectory)\..\..\Graph Schemas\v1.0-Intune-20181126.csdl</GraphSchemaPath>
     <PowerShellGraphSDKProjectLocation>$(MSBuildProjectDirectory)\..\PowerShellGraphSDK</PowerShellGraphSDKProjectLocation>
     <StartAction>Program</StartAction>
     <StartProgram>$(OutputPath)\Vipr.exe</StartProgram>

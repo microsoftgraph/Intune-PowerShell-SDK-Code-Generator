@@ -2,7 +2,11 @@
 param(
     [Parameter(Mandatory=$true)]
     [ValidateNotNullOrEmpty()]
-    [string]$SdkDirectory
+    [string]$SdkDirectory,
+
+    [Parameter(Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [string]$AdminUPN="$env:adminUPN"
 )
 
 $moduleLocation = "$SdkDirectory\$($env:moduleName).$($env:moduleExtension)"
@@ -27,15 +31,28 @@ try {
         (Get-Host).UI.RawUI.WindowTitle = "$module"
         (Get-Host).UI.RawUI.ForegroundColor = 'Cyan'
         (Get-Host).UI.RawUI.BackgroundColor = 'Black'
-        Import-Module "$module"
         $testScripts = Get-ChildItem -Path "$env:testDir" -Recurse -Filter '*.ps1'
-        Connect-MSGraph
+        #
+        # Import the Intune PowerShell SDK Module
+        #        
+        Import-Module $module
+
+        #
+        # Setup the test context
+        #
+        Import-Module $env:testDir\Set-IntuneContext.psm1
+        Write-Output "Setting IntuneContext..."
+        Set-IntuneContext
+
+        #
+        # Run the Tests
+        #
         $testScripts | ForEach-Object {
             Write-Host -f Yellow "RUNNING: $($_.BaseName)"
             try {
                 Invoke-Expression "$($_.FullName)"
-            } catch {
-                Write-Error "Error: $_"
+            } catch {                
+                throw "Error: $_"
             }
             Write-Host -f Magenta "COMPLETED: $($_.BaseName)"
             Write-Host

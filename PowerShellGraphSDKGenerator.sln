@@ -10,6 +10,28 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphODataPowerShellSDKWrit
 		{831E21CA-9580-4B96-A239-2F85190B5E6C} = {831E21CA-9580-4B96-A239-2F85190B5E6C}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9F6E2D2F-5688-4624-BB99-0FE1E0DC1313}"
+	ProjectSection(SolutionItems) = preProject
+		Tests\DeviceAppManagement\AppProtectionPolicies.ps1 = Tests\DeviceAppManagement\AppProtectionPolicies.ps1
+		Tests\LobApps\Apps.psm1 = Tests\LobApps\Apps.psm1
+		Tests\DeviceManagement\DeviceCompliancePolicies.ps1 = Tests\DeviceManagement\DeviceCompliancePolicies.ps1
+		Tests\DeviceManagement.ps1 = Tests\DeviceManagement.ps1
+		Tests\LobApps\Microsoft.Graph.Intune.Apps.psd1 = Tests\LobApps\Microsoft.Graph.Intune.Apps.psd1
+		Tests\DeviceAppManagement\MobileApps.ps1 = Tests\DeviceAppManagement\MobileApps.ps1
+		Tests\LobApps\Module Presentation.md = Tests\LobApps\Module Presentation.md
+		Tests\LobApps\POC_AllOS_Create_Cmdlets.ps1 = Tests\LobApps\POC_AllOS_Create_Cmdlets.ps1
+		Tests\LobApps\POC_AllOS_Reset_Cmdlets.ps1 = Tests\LobApps\POC_AllOS_Reset_Cmdlets.ps1
+		Tests\Run-AppProtectionPolicyTests.ps1 = Tests\Run-AppProtectionPolicyTests.ps1
+		Tests\Run-CompliancePolicyTests.ps1 = Tests\Run-CompliancePolicyTests.ps1
+		Tests\Run-ConfigurationPolicyTests.ps1 = Tests\Run-ConfigurationPolicyTests.ps1
+		Tests\Run-GetDeviceAppMgmtTests.ps1 = Tests\Run-GetDeviceAppMgmtTests.ps1
+		Tests\Run-GetDeviceMgmtTests.ps1 = Tests\Run-GetDeviceMgmtTests.ps1
+		Tests\Set-IntuneContext.psm1 = Tests\Set-IntuneContext.psm1
+		Tests\LobApps\UploadIOSLobApp.ps1 = Tests\LobApps\UploadIOSLobApp.ps1
+		Tests\LobApps\UploadLobApp.psm1 = Tests\LobApps\UploadLobApp.psm1
+		Tests\LobApps\VisualizeData.ps1 = Tests\LobApps\VisualizeData.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
