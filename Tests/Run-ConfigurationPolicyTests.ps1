@@ -30,7 +30,7 @@ $iosGeneralDeviceConfiguration = New-IntuneDeviceConfigurationPolicy -iosGeneral
 #
 # Assign iosGeneralDeviceConfiguration to 'Intune POC Users' group
 #
-$IPU_Id = (Get-Groups -Filter "displayName eq 'Intune POC Users'").id
+$IPU_Id = (Get-AADGroup -Filter "displayName eq 'Intune POC Users'").id
 Write-Output "Assigning $iosGeneralDeviceConfiguration to 'Intune POC Users' group..."
 Invoke-IntuneDeviceConfigurationPolicyAssign -deviceConfigurationId $iosGeneralDeviceConfiguration.id `
     -assignments (New-DeviceConfigurationAssignmentObject `

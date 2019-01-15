@@ -32,7 +32,7 @@ $iosCompliancePolicy = New-IntuneDeviceCompliancePolicy -iosCompliancePolicy `
 #
 # Assign iosCompliancePolicy to 'Intune POC Users' group
 #
-$IPU_Id = (Get-Groups -Filter "displayName eq 'Intune POC Users'").id
+$IPU_Id = (Get-AADGroup -Filter "displayName eq 'Intune POC Users'").id
 Write-Output "Assigning $iosCompliancePolicy to 'Intune POC Users' group..."
 Invoke-IntuneDeviceCompliancePolicyAssign -deviceCompliancePolicyId $iosCompliancePolicy.id `
     -assignments (New-DeviceCompliancePolicyAssignmentObject `

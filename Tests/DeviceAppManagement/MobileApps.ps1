@@ -48,7 +48,7 @@ $allApps = Get-IntuneMobileApp
 # Create a reference between an app and the custom category
 Write-Host "Creating a reference between an app and the new category..."
 $app = $allApps[0]
-$appCategory | New-IntuneMobileAppCategorySetReferences -mobileAppId $app.id
+$appCategory | New-IntuneMobileAppCategorySetReferenceSet -mobileAppId $app.id
 
 # Get the referenced categories on this app
 Write-Host "Getting the app with categories and assignments expanded..."
@@ -56,7 +56,7 @@ $app = $app | Get-IntuneMobileApp -Expand assignments, categories
 
 # DELETE the reference
 Write-Host "Removing the reference between the app and the category"
-$appCategory | Remove-IntuneMobileAppCategorySetReferences -mobileAppId $app.id
+$appCategory | Remove-IntuneMobileAppCategorySetReferenceSet -mobileAppId $app.id
 
 # DELETE the category
 Write-Host "Deleting the category"
