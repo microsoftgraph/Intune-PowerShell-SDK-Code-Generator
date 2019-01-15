@@ -44,7 +44,7 @@ Invoke-IntuneAppProtectionPolicyIosTargetApp -iosManagedAppProtectionId $policy.
 
 # Get an AAD group
 Write-Host "Get security groups..."
-$groups = Get-Groups | Where-Object { $_.securityEnabled -eq $true }
+$groups = Get-AADGroup | Where-Object { $_.securityEnabled -eq $true }
 
 # Assign policy to groups
 Write-Host "Assign the policy to the groups..."

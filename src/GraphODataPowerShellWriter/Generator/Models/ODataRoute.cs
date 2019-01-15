@@ -220,7 +220,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
             string result = this.ToCmdletNameNounString(postfixSegments);
             if (this.Segments.Last().IsCollection)
             {
-                result += "References";
+                result += "ReferenceSet";
             }
             else
             {

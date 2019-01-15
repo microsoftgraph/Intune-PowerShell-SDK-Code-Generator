@@ -183,13 +183,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                         ? $"Retrieves \"{resource.Type.FullName}\" objects."
                         : $"Retrieves the \"{resource.Name}\" object.",
                     Descriptions = new string[]
-                    {
-                        $"GET ~/{oDataRoute.ToODataRouteString()}",
+                    {                                                
                         resource.IsCollection
                             ? $"Retrieves \"{resource.Type.FullName}\" objects in the \"{resource.Name}\" collection."
                             : $"Retrieves the \"{resource.Name}\" object (which is of type \"{resource.Type.FullName}\").",
                         resource.Description,
                         resource.LongDescription,
+                        $"Graph call: GET ~/{oDataRoute.ToODataRouteString()}",
                     },
                     Links = new CmdletDocumentationLink[]
                     {
@@ -253,13 +253,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                         ? $"Retrieves \"{resource.Type.FullName}\" object references."
                         : $"Retrieves the \"{resource.Name}\" object reference.",
                     Descriptions = new string[]
-                    {
-                        $"GET ~/{oDataRoute.ToODataRouteString()}/$ref",
+                    {                        
                         resource.IsCollection
                             ? $"Retrieves \"{resource.Type.FullName}\" object references in the \"{resource.Name}\" collection."
                             : $"Retrieves the \"{resource.Name}\" object reference (which is of type \"{resource.Type.FullName}\").",
                         resource.Description,
                         resource.LongDescription,
+                        $"Graph call: GET ~/{oDataRoute.ToODataRouteString()}/$ref",
                     },
                     Links = new CmdletDocumentationLink[]
                     {
@@ -323,16 +323,16 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 {
                     Synopsis = $"Retrieves a \"{resource.Name}\" object's data stream.",
                     Descriptions = new string[]
-                    {
-                        $"GET ~/{oDataRoute.ToODataRouteString()}"
-                            + (addValueSegment
-                                ? "/$value"
-                                : string.Empty),
+                    {                        
                         resource.IsCollection
                             ? $"Retrieves the data streams from the \"{resource.Name}\" collection."
                             : $"Retrieves the data stream from the \"{resource.Name}\" object.",
                         resource.Description,
                         resource.LongDescription,
+                        $"Graph call: GET ~/{oDataRoute.ToODataRouteString()}"
+                            + (addValueSegment
+                                ? "/$value"
+                                : string.Empty),
                     },
                     Links = new CmdletDocumentationLink[]
                     {
@@ -384,13 +384,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 {
                     Synopsis = $"Creates a \"{resource.Type.FullName}\" object.",
                     Descriptions = new string[]
-                    {
-                        $"POST ~/{oDataRoute.ToODataRouteString()}",
+                    {                        
                         resource.IsCollection
                             ? $"Adds a \"{resource.Type.FullName}\" object to the \"{resource.Name}\" collection."
                             : $"Creates the \"{resource.Name}\" object (which is of type \"{resource.Type.FullName}\").",
                         resource.Description,
                         resource.LongDescription,
+                        $"Graph call: POST ~/{oDataRoute.ToODataRouteString()}",
                     },
                     Links = new CmdletDocumentationLink[]
                     {
@@ -442,13 +442,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 {
                     Synopsis = $"Creates a reference from a \"{parentResource.Name.Singularize()}\" to a \"{resource.Type.FullName}\" object.",
                     Descriptions = new string[]
-                    {
-                        $"{(resource.IsCollection ? "POST" : "PUT")} ~/{oDataRoute.ToODataRouteString(includeEntityIdAndTypeCast: false)}/$ref",
+                    {                        
                         resource.IsCollection
                             ? $"Creates a reference from the specified \"{parentResource.Name.Singularize()}\" object to a \"{resource.Name.Singularize()}\"."
                             : $"Creates a reference from the \"{parentResource.Name.Singularize()}\" object to a \"{resource.Name.Singularize()}\".",
                         resource.Description,
                         resource.LongDescription,
+                        $"Graph Call: {(resource.IsCollection ? "POST" : "PUT")} ~/{oDataRoute.ToODataRouteString(includeEntityIdAndTypeCast: false)}/$ref",
                     },
                     Links = new CmdletDocumentationLink[]
                     {
@@ -503,17 +503,17 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                             ? "."
                             : $" on a \"{parentResource.Type.FullName}\" object."),
                     Descriptions = new string[]
-                    {
-                        $"PUT ~/{oDataRoute.ToODataRouteString(includeEntityIdAndTypeCast: false)}"
-                            + (addValueSegment
-                                ? "/$value"
-                                : string.Empty),
+                    {                        
                         $"Sets the data for the \"{resource.Name.Singularize()}\" property"
                             + (parentResource == null
                                 ? "."
                                 : $" on a \"{parentResource.Type.FullName}\" object."),
                         resource.Description,
                         resource.LongDescription,
+                        $"Graph Call: PUT ~/{oDataRoute.ToODataRouteString(includeEntityIdAndTypeCast: false)}"
+                            + (addValueSegment
+                                ? "/$value"
+                                : string.Empty),
                     },
                     Links = new CmdletDocumentationLink[]
                     {
@@ -560,13 +560,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 {
                     Synopsis = $"Updates a \"{resource.Type.FullName}\".",
                     Descriptions = new string[]
-                    {
-                        $"PATCH ~/{oDataRoute.ToODataRouteString()}",
+                    {                       
                         resource.IsCollection
                             ? $"Updates a \"{resource.Type.FullName}\" object in the \"{resource.Name}\" collection."
                             : $"Updates the \"{resource.Name}\" object (which is of type \"{resource.Type.FullName}\").",
                         resource.Description,
                         resource.LongDescription,
+                        $"Graph Call: PATCH ~/{oDataRoute.ToODataRouteString()}",
                     },
                     Links = new CmdletDocumentationLink[]
                     {
@@ -617,13 +617,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             {
                 Synopsis = $"Removes a \"{resource.Type.FullName}\" object.",
                 Descriptions = new string[]
-                {
-                    $"DELETE ~/{oDataRoute.ToODataRouteString()}{idParameterSegment}",
+                {                    
                     resource.IsCollection
                         ? $"Removes a \"{resource.Type.FullName}\" object from the \"{resource.Name}\" collection."
                         : $"Removes the \"{resource.Name}\" object (which is of type \"{resource.Type.FullName}\").",
                     resource.Description,
                     resource.LongDescription,
+                    $"Graph Call: DELETE ~/{oDataRoute.ToODataRouteString()}{idParameterSegment}",
                 },
                 Links = new CmdletDocumentationLink[]
                 {
@@ -667,13 +667,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             {
                 Synopsis = $"Removes a reference from a \"{parentResource.Name.Singularize()}\" to a \"{resource.Type.FullName}\" object.",
                 Descriptions = new string[]
-                {
-                    $"DELETE ~/{oDataRoute.ToODataRouteString()}{idParameterSegment}/$ref",
+                {                    
                     resource.IsCollection
                         ? $"Removes a reference from the specified \"{parentResource.Name.Singularize()}\" object to a \"{resource.Name.Singularize()}\"."
                         : $"Removes a reference from the \"{parentResource.Name.Singularize()}\" object to a \"{resource.Name.Singularize()}\".",
                     resource.Description,
                     resource.LongDescription,
+                    $"Graph Call: DELETE ~/{oDataRoute.ToODataRouteString()}{idParameterSegment}/$ref",
                 },
                 Links = new CmdletDocumentationLink[]
                 {
@@ -719,13 +719,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             {
                 Synopsis = $"Removes the data stream from a \"{resource.Name.Singularize()}\" object.",
                 Descriptions = new string[]
-                {
-                    $"DELETE ~/{oDataRoute.ToODataRouteString()}{idParameterSegment}" + (addValueSegment
-                        ? "/$value"
-                        : string.Empty),
+                {                    
                     $"Removes a reference from a \"{resource.Name.Singularize()}\" resource (which is of type \"{resource.Type.FullName}\").",
                     resource.Description,
                     resource.LongDescription,
+                    $"Graph Call: DELETE ~/{oDataRoute.ToODataRouteString()}{idParameterSegment}" + (addValueSegment
+                        ? "/$value"
+                        : string.Empty),
                 },
                 Links = new CmdletDocumentationLink[]
                 {
@@ -792,10 +792,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     cmdlet.Documentation = new CmdletDocumentation()
                     {
                         Descriptions = new string[]
-                        {
-                            method.IsFunction
-                                ? $"GET ~/{oDataRouteString}" // function
-                                : $"POST ~/{oDataRouteString}", // action
+                        {                            
                             $"The {methodType} \"{method.FullName}\", which exists on the type \"{resourceType.FullName}\".",
                             method.ReturnType != null
                                 ? method.IsCollection
@@ -803,6 +800,9 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                                     : $"This {methodType} returns a \"{method.ReturnType.FullName}\" object." // single entity
                                 : $"This {methodType} does not return any objects.", // void return type
                             method.Description,
+                            method.IsFunction
+                                ? $"Graph Call: GET ~/{oDataRouteString}" // function
+                                : $"Graph Call: POST ~/{oDataRouteString}", // action
                         },
                         Links = new CmdletDocumentationLink[]
                         {

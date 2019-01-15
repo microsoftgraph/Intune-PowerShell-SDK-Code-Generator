@@ -38,7 +38,7 @@ $iosManagedAppProtection = New-IntuneAppProtectionPolicy -iosManagedAppProtectio
 #
 # Assign iosManagedAppProtection to 'Intune POC Users' group
 #
-$IPU_Id = (Get-Groups -Filter "displayName eq 'Intune POC Users'").id
+$IPU_Id = (Get-AADGroup -Filter "displayName eq 'Intune POC Users'").id
 Write-Output "Assigning $iosGeneralDeviceConfiguration to 'Intune POC Users' group..."
 Invoke-IntuneAppProtectionPolicyIosAssign -iosManagedAppProtectionId $iosManagedAppProtection.id `
     -assignments (New-TargetedManagedAppPolicyAssignmentObject `
