@@ -12,7 +12,17 @@ Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT
 
 if(!(Get-Module Microsoft.Graph.Intune)){
 
-    Import-Module "$env:sdkDir\$env:moduleName.psd1"
+    $modulePath = "$env:sdkDir\$env:moduleName.psd1"    
+    if (-Not (Test-Path "$modulePath" -PathType Leaf))
+    {
+        Write-Host "Install-Module $env:moduleName from PSGallery"
+        Install-Module $env:moduleName -Force
+    }
+    else
+    {
+        Write-Host "Import-Module from $modulePath"
+        Import-Module $modulePath
+    }
 
 }
 

@@ -10,11 +10,13 @@ param(
 )
 
 $moduleLocation = "$SdkDirectory\$($env:moduleName).$($env:moduleExtension)"
+$installFromPSGallery = $false
 
 # Check that a build of the SDK exists
 if (-Not (Test-Path "$moduleLocation" -PathType Leaf))
 {
-    throw "Cannot find '$moduleLocation'.  Run the 'build' command before running tests."
+    Write-Host "Cannot find '$moduleLocation'. Installing Module from PowerShell Gallery"
+    $installFromPSGallery = $true
 }
 
 # Run the tests
@@ -23,10 +25,20 @@ try {
     (Get-Host).UI.RawUI.ForegroundColor = 'Cyan'
     (Get-Host).UI.RawUI.BackgroundColor = 'Black'
     $testScripts = Get-ChildItem -Path "$env:testDir" -Recurse -Filter '*.ps1'
+    
     #
-    # Import the Intune PowerShell SDK Module
+    # Import or install the Intune PowerShell SDK Module
     #        
-    Import-Module $moduleLocation
+    if ($installFromPSGallery)
+    {
+        Write-Host "Install-Module $env:moduleName from PSGallery"
+        Install-Module $env:moduleName -Force
+    }
+    else
+    {
+        Write-Host "Import-Module from $moduleLocation"
+        Import-Module $moduleLocation
+    }
 
     #
     # Setup the test context
