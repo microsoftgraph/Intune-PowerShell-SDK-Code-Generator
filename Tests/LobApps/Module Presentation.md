@@ -51,7 +51,7 @@ $createdApps = 'https://www.bing.com', 'https://developer.microsoft.com/graph', 
     New-IntuneMobileApp `
         -webApp `
         -displayName $_ `
-        -publisher 'Rohit' `
+        -publisher 'ITPro' `
         -appUrl $_ `
         -useManagedBrowser $false `
 }
@@ -100,9 +100,9 @@ Upload the iOS LOB app.
 # Upload an iOS Line-Of-Business app
 $appToUpload = New-MobileAppObject `
     -iosLobApp `
-    -displayName "Rohit's App" `
+    -displayName "ITPro's App" `
     -description 'This is a test iOS LOB app' `
-    -publisher 'Rohit' `
+    -publisher 'ITPro' `
     -bundleId '' `
     -applicableDeviceType (New-IosDeviceTypeObject -iPad $true -iPhoneAndIPod $true) `
     -minimumSupportedOperatingSystem (New-IosMinimumOperatingSystemObject -v9_0 $true) `

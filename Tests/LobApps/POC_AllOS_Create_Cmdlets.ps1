@@ -12,7 +12,17 @@ Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT
 
 if(!(Get-Module Microsoft.Graph.Intune)){
 
-    Import-Module "$env:sdkDir\$env:moduleName.psd1"
+    $modulePath = "$env:sdkDir\$env:moduleName.psd1"    
+    if (-Not (Test-Path "$modulePath" -PathType Leaf))
+    {
+        Write-Host "Install-Module $env:moduleName from PSGallery"
+        Install-Module $env:moduleName -Force
+    }
+    else
+    {
+        Write-Host "Import-Module from $modulePath"
+        Import-Module $modulePath
+    }
 
 }
 
@@ -65,12 +75,12 @@ Write-Host
 # AAD Group Helpdesk Team
 Write-Host "Adding AAD Group Helpdesk Team" -ForegroundColor Yellow
 
-if(Get-Groups -Filter "displayName eq 'Helpdesk Team'"){
+if(Get-AADGroup -Filter "displayName eq 'Helpdesk Team'"){
 
     Write-Host "AAD Group already exists..." -f Red
     Write-Host
 
-    $HDT_Id = (Get-Groups -Filter "displayName eq 'Helpdesk Team'").id
+    $HDT_Id = (Get-AADGroup -Filter "displayName eq 'Helpdesk Team'").id
 
 }
 
@@ -88,12 +98,12 @@ else {
 # AAD Groups Intune POC Users
 Write-Host "Adding AAD Group 'Intune POC Users'" -ForegroundColor Yellow
 
-if(Get-Groups -Filter "displayName eq 'Intune POC Users'"){
+if(Get-AADGroup -Filter "displayName eq 'Intune POC Users'"){
 
     Write-Host "AAD Group already exists..." -f Red
     Write-Host
 
-    $AADGroupId = (Get-Groups -Filter "displayName eq 'Intune POC Users'").id
+    $AADGroupId = (Get-AADGroup -Filter "displayName eq 'Intune POC Users'").id
 
 }
 
@@ -141,7 +151,7 @@ $iOSCompliancePolicy = New-IntuneDeviceCompliancePolicy -iosCompliancePolicy `
 write-host "Policy created with id" $iOSCompliancePolicy.id
 Write-Host
 
-$AADGroup = (Get-Groups -groupId "$AADGroupId").displayName
+$AADGroup = (Get-AADGroup -groupId "$AADGroupId").displayName
 
 write-host "Assigning Device Compliance Policy to AAD Group '$AADGroup'" -f Yellow
 

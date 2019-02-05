@@ -10,55 +10,55 @@ param(
 )
 
 $moduleLocation = "$SdkDirectory\$($env:moduleName).$($env:moduleExtension)"
+$installFromPSGallery = $false
 
 # Check that a build of the SDK exists
 if (-Not (Test-Path "$moduleLocation" -PathType Leaf))
 {
-    throw "Cannot find '$moduleLocation'.  Run the 'build' command before running tests."
+    Write-Host "Cannot find '$moduleLocation'. Installing Module from PowerShell Gallery"
+    $installFromPSGallery = $true
 }
 
-Write-Host
-Write-Host 'Starting the test PowerShell context...' -f Cyan
-Write-Host
+# Run the tests
+try {    
+    (Get-Host).UI.RawUI.WindowTitle = "$module"
+    (Get-Host).UI.RawUI.ForegroundColor = 'Cyan'
+    (Get-Host).UI.RawUI.BackgroundColor = 'Black'
+    $testScripts = Get-ChildItem -Path "$env:testDir" -Recurse -Filter '*.ps1'
+    
+    #
+    # Import or install the Intune PowerShell SDK Module
+    #        
+    if ($installFromPSGallery)
+    {
+        Write-Host "Install-Module $env:moduleName from PSGallery"
+        Install-Module $env:moduleName -Force
+    }
+    else
+    {
+        Write-Host "Import-Module from $moduleLocation"
+        Import-Module $moduleLocation
+    }
 
-# Run the tests in a new PowerShell context
-try {
-    powershell -NoExit -Command {
-        param(
-            $module
-        )
+    #
+    # Setup the test context
+    #
+    Import-Module $env:testDir\Set-IntuneContext.psm1    
+    Set-IntuneContext
 
-        (Get-Host).UI.RawUI.WindowTitle = "$module"
-        (Get-Host).UI.RawUI.ForegroundColor = 'Cyan'
-        (Get-Host).UI.RawUI.BackgroundColor = 'Black'
-        $testScripts = Get-ChildItem -Path "$env:testDir" -Recurse -Filter '*.ps1'
-        #
-        # Import the Intune PowerShell SDK Module
-        #        
-        Import-Module $module
-
-        #
-        # Setup the test context
-        #
-        Import-Module $env:testDir\Set-IntuneContext.psm1
-        Write-Output "Setting IntuneContext..."
-        Set-IntuneContext
-
-        #
-        # Run the Tests
-        #
-        $testScripts | ForEach-Object {
-            Write-Host -f Yellow "RUNNING: $($_.BaseName)"
-            try {
-                Invoke-Expression "$($_.FullName)"
-            } catch {                
-                throw "Error: $_"
-            }
-            Write-Host -f Magenta "COMPLETED: $($_.BaseName)"
-            Write-Host
+    #
+    # Run the Tests
+    #
+    $testScripts | ForEach-Object {
+        Write-Host -f Yellow "RUNNING: $($_.BaseName)"
+        try {
+            Invoke-Expression "$($_.FullName)"
+        } catch {                
+            throw "Error: $_"
         }
-        exit
-    } -args $moduleLocation
+        Write-Host -f Magenta "COMPLETED: $($_.BaseName)"
+        Write-Host
+    }            
 
     if (-Not $?)
     {

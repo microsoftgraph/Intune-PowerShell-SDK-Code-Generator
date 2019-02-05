@@ -24,8 +24,16 @@ function Set-IntuneContext
     if (!(Get-Module $ModuleName))
     {        
         $modulePath = "$env:sdkDir\$env:moduleName"
-        Write-Output "Importing $modulePath..."
-        Import-Module $modulePath
+        if (-Not (Test-Path "$modulePath" -PathType Leaf))
+        {
+            Write-Host "Install-Module $env:moduleName from PSGallery"
+            Install-Module $env:moduleName -Force
+        }
+        else
+        {
+            Write-Host "Import-Module from $modulePath"
+            Import-Module $modulePath
+        }
     }
 
     #
