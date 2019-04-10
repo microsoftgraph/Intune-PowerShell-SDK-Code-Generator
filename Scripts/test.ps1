@@ -20,30 +20,22 @@ if (-Not (Test-Path "$moduleLocation" -PathType Leaf))
 }
 
 # Run the tests
-try {    
+try {
     (Get-Host).UI.RawUI.WindowTitle = "$module"
     (Get-Host).UI.RawUI.ForegroundColor = 'Cyan'
     (Get-Host).UI.RawUI.BackgroundColor = 'Black'
     $testScripts = Get-ChildItem -Path "$env:testDir" -Recurse -Filter '*.ps1'
-    
+
     #
-    # Import or install the Intune PowerShell SDK Module
-    #        
-    if ($installFromPSGallery)
-    {
-        Write-Host "Install-Module $env:moduleName from PSGallery"
-        Install-Module $env:moduleName -Force
-    }
-    else
-    {
-        Write-Host "Import-Module from $moduleLocation"
-        Import-Module $moduleLocation
-    }
+    # Import the Intune PowerShell SDK Module
+    #
+    Write-Host "Import-Module from $moduleLocation"
+    Import-Module $moduleLocation
 
     #
     # Setup the test context
     #
-    Import-Module $env:testDir\Set-IntuneContext.psm1    
+    Import-Module $env:testDir\Set-IntuneContext.psm1
     Set-IntuneContext
 
     #
@@ -53,12 +45,12 @@ try {
         Write-Host -f Yellow "RUNNING: $($_.BaseName)"
         try {
             Invoke-Expression "$($_.FullName)"
-        } catch {                
+        } catch {
             throw "Error: $_"
         }
         Write-Host -f Magenta "COMPLETED: $($_.BaseName)"
         Write-Host
-    }            
+    }
 
     if (-Not $?)
     {

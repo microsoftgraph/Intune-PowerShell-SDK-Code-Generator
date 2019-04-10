@@ -4,6 +4,7 @@ Write-Host "Creating $numApps web apps..."
 $newApps = (1..$numApps | ForEach-Object {
     New-IntuneMobileApp -webApp -displayName 'My new app' -publisher 'Test web app' -appUrl 'https://www.bing.com'
 })
+Start-Sleep 5 # Wait for 5 seconds for objects to be created in Intune
 
 # SEARCH all web apps and make sure these all exist
 Write-Host "Searching for all web apps and validating that the ones we created exist..."
