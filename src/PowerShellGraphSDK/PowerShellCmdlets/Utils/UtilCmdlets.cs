@@ -7,6 +7,7 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
     using System.Management.Automation;
     using System.Net.Http;
     using System.Net.Http.Headers;
+    using System.Linq;
 
     /// <summary>
     /// <para type="description">Authenticates with Graph.</para>
@@ -474,6 +475,11 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
         [ValidateType(typeof(string), typeof(PSObject), typeof(Hashtable), typeof(HttpContent))]
         public object Content { get; set; }
 
+        /// <summary>
+        /// Tracks the custom content type if one is provided by the user.
+        /// </summary>
+        private string customContentType = null;
+
         internal override string GetHttpMethod()
         {
             return this.HttpMethod;
@@ -550,8 +556,26 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
                     }
                 }
 
+                // Add each header to the "headers" object
                 foreach (KeyValuePair<string, IEnumerable<string>> entry in headerPairs)
                 {
+                    // Don't allow Content-Type in the regular headers (C# limitation - Content-Type must be in the HttpContent object)
+                    if (entry.Key.Equals("Content-Type", System.StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        if (entry.Value.Any())
+                        {
+                            customContentType = entry.Value.SingleOrDefault();
+
+                            // If the custom content type is null, then more than 1 content-type was provided
+                            if (customContentType == default(string))
+                            {
+                                throw new PSArgumentException($"Only 1 'Content-Type' header may be sent in a request - there were {entry.Value.Count()} 'Content-Type' headers provided");
+                            }
+
+                            continue;
+                        }
+                    }
+
                     headers.Add(entry.Key, entry.Value);
                 }
             }
@@ -581,7 +605,15 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
             // String
             if (content is string contentString)
             {
-                return new StringContent(contentString);
+                // Use the custom content type if any
+                if (string.IsNullOrWhiteSpace(customContentType))
+                {
+                    return new StringContent(contentString, System.Text.Encoding.UTF8, customContentType);
+                }
+                else
+                {
+                    return new StringContent(contentString);
+                }
             }
 
             // Hashtable or PSObject
@@ -591,7 +623,7 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
                 string contentJson = JsonUtils.WriteJson(content);
 
                 // Return the string as HttpContent
-                return new StringContent(contentJson);
+                return new StringContent(contentJson, System.Text.Encoding.UTF8, "application/json");
             }
 
             // We should have returned before here
