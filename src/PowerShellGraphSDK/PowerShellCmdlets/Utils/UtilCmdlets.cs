@@ -42,7 +42,7 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
 
         private const string ParameterSetForceInteractive = "ForceInteractive";
         private const string ParameterSetForceNonInteractive = "ForceNonInteractive";
-        private const string ParameterSetPSCredential = "PSCredential";
+        private const string ParameterSetPSCredential = "Credential";
         private const string ParameterSetCertificate = "Certificate";
 
         /// <summary>
@@ -68,9 +68,10 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
         /// The PSCredential object to use when specifying the username and password while authenticating.
         /// </para>
         /// </summary>
+        [Alias("PSCredential")]
         [Parameter(ParameterSetName = ParameterSetPSCredential, Mandatory = true)]
         [ValidateNotNull]
-        public PSCredential PSCredential { get; set; }
+        public PSCredential Credential { get; set; }
 
         //[Parameter(ParameterSetName = ParameterSetCertificate, Mandatory = true)]
         //[ValidateNotNull]
@@ -131,7 +132,7 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
                 switch (this.ParameterSetName)
                 {
                     case ParameterSetPSCredential:
-                        System.Net.NetworkCredential networkCreds = this.PSCredential.GetNetworkCredential();
+                        System.Net.NetworkCredential networkCreds = this.Credential.GetNetworkCredential();
                         authResult = AuthUtils.AuthWithUserCredentials(networkCreds.UserName, networkCreds.Password);
                         break;
                     case ParameterSetCertificate:
