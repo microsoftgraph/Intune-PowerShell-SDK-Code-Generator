@@ -32,6 +32,11 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
         /// </summary>
         private const string ParameterSetAdminConsent = "AdminConsent";
 
+        /// <summary>
+        /// Parameter set for triggering app-only authentication.
+        /// </summary>
+        private const string ParameterSetAppOnly = "AppOnly";
+
 #if NETFRAMEWORK
 
         private const string ParameterSetForceInteractive = "ForceInteractive";
@@ -58,7 +63,9 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
         public SwitchParameter ForceNonInteractive { get; set; }
 
         /// <summary>
-        /// <para type="description">The PSCredential object to use when specifying the username and password while authenticating.</para>
+        /// <para type="description">
+        /// The PSCredential object to use when specifying the username and password while authenticating.
+        /// </para>
         /// </summary>
         [Parameter(ParameterSetName = ParameterSetPSCredential, Mandatory = true)]
         [ValidateNotNull]
@@ -72,6 +79,14 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
 
         /// <summary>
         /// <para type="description">
+        /// If the client secret is set, app-only authentication will be performed using the client ID specified by the AppId environment parameter.
+        /// </para>
+        /// </summary>
+        [Parameter(ParameterSetName = ParameterSetAppOnly)]
+        public string ClientSecret { get; set; }
+
+        /// <summary>
+        /// <para type="description">
         /// If the AdminConsent flag is set, admin consent can be granted for the currently selected AppId
         /// (this can be seen with the "Get-MSGraphEnvironment" cmdlet) during authentication.
         /// </para>
@@ -80,7 +95,9 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
         public SwitchParameter AdminConsent { get; set; }
 
         /// <summary>
-        /// <para type="description">If the Quet flag is set, this cmdlet will suppress output upon successfully logging in.</para>
+        /// <para type="description">
+        /// If the '-Quiet' flag is set, this cmdlet will suppress output upon successfully logging in.
+        /// </para>
         /// </summary>
         [Parameter]
         public SwitchParameter Quiet { get; set; }
@@ -88,7 +105,7 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
         /// <summary>
         /// <para type="description">
         /// If the PassThru flag is set, this cmdlet will return the access token that was obtained.
-        /// This flag is ignored if the '-Quet' flag is set.
+        /// This flag is ignored if the '-Quiet' flag is set.
         /// </para>
         /// </summary>
         [Parameter]
@@ -101,38 +118,47 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
         {
             // Auth
             SdkAuthResult authResult;
-#if NETFRAMEWORK
-            switch (this.ParameterSetName)
+            if (this.ParameterSetName == ParameterSetAppOnly)
             {
-                case ParameterSetPSCredential:
-                    System.Net.NetworkCredential networkCreds = this.PSCredential.GetNetworkCredential();
-                    authResult = AuthUtils.AuthWithCredentials(networkCreds.UserName, networkCreds.Password);
-                    break;
-                case ParameterSetCertificate:
-                    // TODO: Implement Certificate auth
-                    throw new PSNotImplementedException();
-                case ParameterSetForceInteractive:
-                    authResult = AuthUtils.Auth(Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior.SelectAccount);
-                    break;
-                case ParameterSetForceNonInteractive:
-                    authResult = AuthUtils.Auth(Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior.Never);
-                    break;
-                case ParameterSetAdminConsent:
-                    authResult = AuthUtils.GrantAdminConsent();
-                    break;
-                default:
-                    authResult = AuthUtils.Auth();
-                    break;
+                // App-only auth
+                authResult = AuthUtils.AuthWithClientCredentials(this.ClientSecret);
             }
-#else
-            authResult = AuthUtils.AuthWithDeviceCode(
-                displayDeviceCodeMessageToUser: (deviceCodeMessage) =>
+            else
+            {
+                // User auth
+#if NETFRAMEWORK
+                switch (this.ParameterSetName)
                 {
-                    this.WriteWarning(deviceCodeMessage);
-                },
-                useAdminConsentFlow: this.AdminConsent
-            );
+                    case ParameterSetPSCredential:
+                        System.Net.NetworkCredential networkCreds = this.PSCredential.GetNetworkCredential();
+                        authResult = AuthUtils.AuthWithUserCredentials(networkCreds.UserName, networkCreds.Password);
+                        break;
+                    case ParameterSetCertificate:
+                        // TODO: Implement Certificate auth
+                        throw new PSNotImplementedException();
+                    case ParameterSetForceInteractive:
+                        authResult = AuthUtils.Auth(Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior.SelectAccount);
+                        break;
+                    case ParameterSetForceNonInteractive:
+                        authResult = AuthUtils.Auth(Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior.Never);
+                        break;
+                    case ParameterSetAdminConsent:
+                        authResult = AuthUtils.GrantAdminConsent();
+                        break;
+                    default:
+                        authResult = AuthUtils.Auth();
+                        break;
+                }
+#else
+                authResult = AuthUtils.AuthWithDeviceCode(
+                    displayDeviceCodeMessageToUser: (deviceCodeMessage) =>
+                    {
+                        this.WriteWarning(deviceCodeMessage);
+                    },
+                    useAdminConsentFlow: this.AdminConsent
+                );
 #endif
+            }
 
             // Decide what to return
             if (!this.Quiet)
@@ -211,6 +237,13 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
         public string AppId { get; set; }
 
         /// <summary>
+        /// <para type="description">The Redirect URL to use when authenticating.</para>
+        /// </summary>
+        [Parameter]
+        [ValidateNotNullOrEmpty]
+        public string RedirectLink { get; set; }
+
+        /// <summary>
         /// <para type="description">The AAD endpoint to call when authenticating.</para>
         /// </summary>
         [Parameter]
@@ -257,6 +290,13 @@ namespace Microsoft.Intune.PowerShellGraphSDK.PowerShellCmdlets
             if (!string.IsNullOrEmpty(this.AppId))
             {
                 AuthUtils.CurrentEnvironmentParameters.AppId = this.AppId;
+                modified = true;
+            }
+
+            // Redirect Link
+            if (!string.IsNullOrEmpty(this.RedirectLink))
+            {
+                AuthUtils.CurrentEnvironmentParameters.RedirectLink = this.RedirectLink;
                 modified = true;
             }
 
