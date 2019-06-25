@@ -15,25 +15,16 @@ function Set-IntuneContext
 
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
-        [string]$AdminUPN="$env:adminUPN"   
+        [string]$AdminUPN="$env:adminUPN"
     )
 
     #
     # Import the Intune PowerShell SDK Module if necessary
     #
     if (!(Get-Module $ModuleName))
-    {        
-        $modulePath = "$env:sdkDir\$env:moduleName"
-        if (-Not (Test-Path "$modulePath" -PathType Leaf))
-        {
-            Write-Host "Install-Module $env:moduleName from PSGallery"
-            Install-Module $env:moduleName -Force
-        }
-        else
-        {
-            Write-Host "Import-Module from $modulePath"
-            Import-Module $modulePath
-        }
+    {
+        Write-Host "Import-Module from $modulePath"
+        Import-Module $modulePath
     }
 
     #
@@ -44,7 +35,7 @@ function Set-IntuneContext
         $msGraphMetaData = Get-MSGraphMetadata
     }
     catch
-    {    
+    {
         Write-Output "Connect with MSGraph first."
         $adminPwd=Read-Host -AsSecureString -Prompt "Enter pwd for $env:adminUPN"
         $creds = New-Object System.Management.Automation.PSCredential ($AdminUPN, $adminPwd)

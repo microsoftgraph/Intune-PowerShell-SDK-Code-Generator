@@ -7,10 +7,12 @@ $global:allowedDotnetFrameworkVersions = @('net471', 'netstandard2.0')
 $env:dotnetFrameworkVersion = ($global:allowedDotnetFrameworkVersions)[0] # use "netstandard2.0" for cross-platform build, or "net471" for a Windows build
 $env:repoRootSlnFile = "$($env:PowerShellSDKRepoRoot)\PowerShellGraphSDKGenerator.sln"
 $env:writerDir = "$($env:PowerShellSDKRepoRoot)\src\GraphODataPowerShellWriter"
+$env:outputStructureDir = "$($env:PowerShellSDKRepoRoot)\src\PowerShellGraphSDK"
 $env:writerBuildDir = "$($env:writerDir)\bin\$($env:buildConfiguration)"
 $env:generatedDir = "$($env:writerBuildDir)\output"
 $env:sdkDir = "$($env:generatedDir)\bin\$($env:buildConfiguration)\$($env:dotnetFrameworkVersion)"
 $env:testDir = "$($env:PowerShellSDKRepoRoot)\Tests"
+$env:samplesDir = "$($env:outputStructureDir)\Samples"
 $env:moduleName = 'Microsoft.Graph.Intune'
 $env:moduleExtension = 'psd1'
 $env:sdkSubmoduleSrc = "$($env:PowerShellSDKRepoRoot)\submodules\Intune-PowerShell-SDK"
@@ -29,7 +31,7 @@ $env:buildScriptPortable = "$($env:PowerShellSDKRepoRoot)\Scripts\build-portable
 $env:buildScriptFull = "$($env:PowerShellSDKRepoRoot)\Scripts\build-full.ps1"
 $env:runScript = "$($env:PowerShellSDKRepoRoot)\Scripts\run.ps1"
 $env:testScript = "$($env:PowerShellSDKRepoRoot)\Scripts\test.ps1"
-$env:ListCmdletsScript = "$($env:PowerShellSDKRepoRoot)\src\PowerShellGraphSDK\Scripts\ListCmdlets.ps1"
+$env:ListCmdletsScript = "$($env:outputStructureDir)\Scripts\ListCmdlets.ps1"
 
 ###############
 ## Functions ##
