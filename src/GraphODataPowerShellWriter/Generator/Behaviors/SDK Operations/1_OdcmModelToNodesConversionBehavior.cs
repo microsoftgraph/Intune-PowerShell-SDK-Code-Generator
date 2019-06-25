@@ -42,7 +42,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 // Mark the EntityContainer's properties as "to be expanded" if it is not a "$ref" property
                 unvisited.Push(new OdcmNode(prop));
             }
-            
+
             // Continue adding to the tree until there are no more nodes to expand
             while (unvisited.Any())
             {
@@ -126,7 +126,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             IEnumerable<OdcmProperty> properties = type.EvaluateProperties().Where(prop => prop.IsODataRouteSegment(prop.Class == model.EntityContainer));
             IEnumerable<OdcmProperty> derivedTypeProperties = type.EvaluatePropertiesOnDerivedTypes().Where(prop => prop.IsODataRouteSegment(prop.Class == model.EntityContainer));
 
-            return properties.Concat(derivedTypeProperties);
+            return properties.Concat(derivedTypeProperties).Distinct();
         }
     }
 }
