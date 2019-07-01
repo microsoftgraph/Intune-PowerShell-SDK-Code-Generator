@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -16,7 +16,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
     <OutputPath Condition=" '$(OutputPath)' == ''">$(MSBuildProjectDirectory)\bin\$(Configuration)</OutputPath>
-    <GraphSchemaPath Condition=" '$(GraphSchemaPath)' == ''">$(MSBuildProjectDirectory)\..\..\Graph Schemas\v1.0-Intune-20181126.csdl</GraphSchemaPath>
+    <GraphSchemaPath Condition=" '$(GraphSchemaPath)' == ''">$(MSBuildProjectDirectory)\..\..\Graph Schemas\v1.0 - 20190629.csdl</GraphSchemaPath>
     <PowerShellGraphSDKProjectLocation>$(MSBuildProjectDirectory)\..\PowerShellGraphSDK</PowerShellGraphSDKProjectLocation>
     <StartAction>Program</StartAction>
     <StartProgram>$(OutputPath)\Vipr.exe</StartProgram>
