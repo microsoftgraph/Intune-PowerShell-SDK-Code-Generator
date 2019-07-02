@@ -9,7 +9,7 @@ param(
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string]$AdminUPN="$env:adminUPN"   
+    [string]$AdminUPN="$env:adminUPN"
 )
 
 #
@@ -31,7 +31,7 @@ $tests = @(
     {Get-IntuneDeviceAppManagement}
     {Get-IntuneApplePushNotificationCertificate}
     {Get-IntuneDeviceCategory}
-    {Get-IntuneDeviceCompliancePolicyDeviceStateSummary}    
+    {Get-IntuneDeviceCompliancePolicyDeviceStateSummary}
     {$env:DmIntuneDeviceConfigurationPolicyStateSumm=Get-IntuneDeviceConfigurationDeviceStateSummary}
     {if ($env:DmIntuneDeviceConfigurationPolicyStateSumm -ne $null) {(Get-IntuneDeviceConfigurationDeviceStateSummary| Get-MSGraphAllPages) |Get-IntuneDeviceComplianceSettingState}}
     {Get-IntuneDeviceManagementPartner}
@@ -40,7 +40,7 @@ $tests = @(
     {Get-IntuneManagedDeviceOverview}
     {Get-IntuneMobileThreatDefenseConnector}
     {$env:DmNotifMsgTemplates=(Get-IntuneNotificationMessageTemplate)}
-    {if ($env:DmNotifMsgTemplates -ne $null) {(Get-IntuneNotificationMessageTemplate| Get-MSGraphAllPages)[0] |Get-IntuneLocalizedNotificationMessage}} 
+    {if ($env:DmNotifMsgTemplates -ne $null) {(Get-IntuneNotificationMessageTemplate| Get-MSGraphAllPages)[0] |Get-IntuneLocalizedNotificationMessage}}
     {Get-IntuneTroubleshootingEvent}
     {Get-IntuneWindowsInformationProtectionAppLearningSummary}
     {Get-IntuneWindowsInformationProtectionNetworkLearningSummary}
@@ -54,7 +54,7 @@ $tests = @(
 #
     {$env:DmDetectedApps=(Get-IntuneDetectedApp| Get-MSGraphAllPages)}
     {if ($env:DmDetectedApps -ne $null) {((Get-IntuneDetectedApp| Get-MSGraphAllPages)[0] | Get-IntuneDetectedAppDevice)}}
-    {if ($env:DmDetectedApps -ne $null) {((Get-IntuneDetectedApp| Get-MSGraphAllPages)[0] | Get-IntuneManagedDeviceReference)}}
+    #{if ($env:DmDetectedApps -ne $null) {((Get-IntuneDetectedApp| Get-MSGraphAllPages)[0] | Get-IntuneManagedDeviceReference)}}
 #
 # DmDeviceCompliancePolicies
 #
@@ -78,11 +78,11 @@ $tests = @(
 
 #
 # DeviceManagement_DeviceEnrollmentConfigurations
-# 
+#
     {(Get-IntuneDeviceEnrollmentConfiguration| Get-MSGraphAllPages)[0] | Get-IntuneDeviceEnrollmentConfigurationAssignment}
 #
 # DeviceManagement_ManagedDevices
-#  
+#
     {$env:mgdDevices=(Get-IntuneManagedDevice)}
     {if ($env:mgdDevices -ne $null) {((Get-IntuneManagedDevice| Get-MSGraphAllPages)[0] | Get-IntuneManagedDeviceDeviceCategory)}}
     {if ($env:mgdDevices -ne $null) {((Get-IntuneManagedDevice| Get-MSGraphAllPages)[0] | Get-IntuneManagedDeviceDeviceCompliancePolicyState)}}
@@ -90,11 +90,11 @@ $tests = @(
 #
 # DeviceManagement_RoleAssignments
 #
-    {$env:DmRoleAssignments = Get-IntuneRoleAssignment}    
+    {$env:DmRoleAssignments = Get-IntuneRoleAssignment}
 #
 # DeviceManagement_RoleDefinitions
 #
-    {$env:DmRoleDefinitions = Get-IntuneRoleDefinition}    
+    {$env:DmRoleDefinitions = Get-IntuneRoleDefinition}
 #
 # DeviceManagement_TermsAndConditions
 #
@@ -109,12 +109,12 @@ $tests = @(
 foreach ($test in $tests)
 {
     try
-    {        
+    {
         $output = Invoke-Command -scriptblock $test
         Write-Output "$test, $output"
     }
     catch
-    {        
+    {
         $debugInfo="$_"
        Throw "$test,$debugInfo"
     }

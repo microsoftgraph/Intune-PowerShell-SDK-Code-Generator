@@ -39,6 +39,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
             // Create file system path
             string fileSystemPath = $"{pathPrefix.TrimEnd('\\')}\\{oDataRoute.ToRelativeFilePathString()}";
+            Console.WriteLine(fileSystemPath);
 
             // Create a resource
             Resource resource = new Resource(fileSystemPath);
@@ -183,7 +184,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                         ? $"Retrieves \"{resource.Type.FullName}\" objects."
                         : $"Retrieves the \"{resource.Name}\" object.",
                     Descriptions = new string[]
-                    {                                                
+                    {
                         resource.IsCollection
                             ? $"Retrieves \"{resource.Type.FullName}\" objects in the \"{resource.Name}\" collection."
                             : $"Retrieves the \"{resource.Name}\" object (which is of type \"{resource.Type.FullName}\").",
@@ -253,7 +254,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                         ? $"Retrieves \"{resource.Type.FullName}\" object references."
                         : $"Retrieves the \"{resource.Name}\" object reference.",
                     Descriptions = new string[]
-                    {                        
+                    {
                         resource.IsCollection
                             ? $"Retrieves \"{resource.Type.FullName}\" object references in the \"{resource.Name}\" collection."
                             : $"Retrieves the \"{resource.Name}\" object reference (which is of type \"{resource.Type.FullName}\").",
@@ -323,7 +324,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 {
                     Synopsis = $"Retrieves a \"{resource.Name}\" object's data stream.",
                     Descriptions = new string[]
-                    {                        
+                    {
                         resource.IsCollection
                             ? $"Retrieves the data streams from the \"{resource.Name}\" collection."
                             : $"Retrieves the data stream from the \"{resource.Name}\" object.",
@@ -384,7 +385,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 {
                     Synopsis = $"Creates a \"{resource.Type.FullName}\" object.",
                     Descriptions = new string[]
-                    {                        
+                    {
                         resource.IsCollection
                             ? $"Adds a \"{resource.Type.FullName}\" object to the \"{resource.Name}\" collection."
                             : $"Creates the \"{resource.Name}\" object (which is of type \"{resource.Type.FullName}\").",
@@ -442,7 +443,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 {
                     Synopsis = $"Creates a reference from a \"{parentResource.Name.Singularize()}\" to a \"{resource.Type.FullName}\" object.",
                     Descriptions = new string[]
-                    {                        
+                    {
                         resource.IsCollection
                             ? $"Creates a reference from the specified \"{parentResource.Name.Singularize()}\" object to a \"{resource.Name.Singularize()}\"."
                             : $"Creates a reference from the \"{parentResource.Name.Singularize()}\" object to a \"{resource.Name.Singularize()}\".",
@@ -503,7 +504,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                             ? "."
                             : $" on a \"{parentResource.Type.FullName}\" object."),
                     Descriptions = new string[]
-                    {                        
+                    {
                         $"Sets the data for the \"{resource.Name.Singularize()}\" property"
                             + (parentResource == null
                                 ? "."
@@ -560,7 +561,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 {
                     Synopsis = $"Updates a \"{resource.Type.FullName}\".",
                     Descriptions = new string[]
-                    {                       
+                    {
                         resource.IsCollection
                             ? $"Updates a \"{resource.Type.FullName}\" object in the \"{resource.Name}\" collection."
                             : $"Updates the \"{resource.Name}\" object (which is of type \"{resource.Type.FullName}\").",
@@ -617,7 +618,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             {
                 Synopsis = $"Removes a \"{resource.Type.FullName}\" object.",
                 Descriptions = new string[]
-                {                    
+                {
                     resource.IsCollection
                         ? $"Removes a \"{resource.Type.FullName}\" object from the \"{resource.Name}\" collection."
                         : $"Removes the \"{resource.Name}\" object (which is of type \"{resource.Type.FullName}\").",
@@ -667,7 +668,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             {
                 Synopsis = $"Removes a reference from a \"{parentResource.Name.Singularize()}\" to a \"{resource.Type.FullName}\" object.",
                 Descriptions = new string[]
-                {                    
+                {
                     resource.IsCollection
                         ? $"Removes a reference from the specified \"{parentResource.Name.Singularize()}\" object to a \"{resource.Name.Singularize()}\"."
                         : $"Removes a reference from the \"{parentResource.Name.Singularize()}\" object to a \"{resource.Name.Singularize()}\".",
@@ -719,7 +720,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             {
                 Synopsis = $"Removes the data stream from a \"{resource.Name.Singularize()}\" object.",
                 Descriptions = new string[]
-                {                    
+                {
                     $"Removes a reference from a \"{resource.Name.Singularize()}\" resource (which is of type \"{resource.Type.FullName}\").",
                     resource.Description,
                     resource.LongDescription,
@@ -792,7 +793,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     cmdlet.Documentation = new CmdletDocumentation()
                     {
                         Descriptions = new string[]
-                        {                            
+                        {
                             $"The {methodType} \"{method.FullName}\", which exists on the type \"{resourceType.FullName}\".",
                             method.ReturnType != null
                                 ? method.IsCollection
@@ -884,7 +885,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 
         /// <summary>
         /// Sets up the ID parameters for a cmdlet based on the resource.
-        /// 
+        ///
         /// If an ID parameter is required for the ID, a reference will be provided in the cmdlet's <see cref="OperationCmdlet.IdParameter"/> property.
         /// </summary>
         /// <param name="cmdlet">The cmdlet</param>
@@ -965,7 +966,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             cmdlet.AddParametersForRoutePlaceholders(oDataRoute);
 
             // Check whether we should mark this as a resource that can be referenced from a "$ref" cmdlet
-            cmdlet.IsReferenceable = 
+            cmdlet.IsReferenceable =
                 !hasPostfixUrlSegments
                 && oDataRoute.Property.ContainsTarget
                 && cmdletReturnsReferenceableEntities;
