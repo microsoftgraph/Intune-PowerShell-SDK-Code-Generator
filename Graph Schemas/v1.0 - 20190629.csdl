@@ -1529,6 +1529,14 @@
                 <NavigationProperty Name="members" Type="Collection(microsoft.graph.directoryObject)" />
                 <NavigationProperty Name="memberOf" Type="Collection(microsoft.graph.directoryObject)" />
                 <NavigationProperty Name="membersWithLicenseErrors" Type="Collection(microsoft.graph.directoryObject)" />
+                <NavigationProperty Name="transitiveMembers" Type="Collection(microsoft.graph.directoryObject)" />
+                <NavigationProperty Name="transitiveMemberOf" Type="Collection(microsoft.graph.directoryObject)" />
+                <NavigationProperty Name="createdOnBehalfOf" Type="microsoft.graph.directoryObject" />
+                <NavigationProperty Name="owners" Type="Collection(microsoft.graph.directoryObject)" />
+                <NavigationProperty Name="settings" Type="Collection(microsoft.graph.groupSetting)" ContainsTarget="true" />
+                <NavigationProperty Name="photo" Type="microsoft.graph.profilePhoto" ContainsTarget="true" />
+                <NavigationProperty Name="photos" Type="Collection(microsoft.graph.profilePhoto)" ContainsTarget="true" />
+                <NavigationProperty Name="groupLifecyclePolicies" Type="Collection(microsoft.graph.groupLifecyclePolicy)" ContainsTarget="true" />
             </EntityType>
             <ComplexType Name="assignedLicense">
                 <Property Name="disabledPlans" Type="Collection(Edm.Guid)" Nullable="false" />
