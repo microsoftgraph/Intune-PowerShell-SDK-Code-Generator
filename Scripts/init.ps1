@@ -136,8 +136,10 @@ function global:ReleaseSDK {
     }
 
     Write-Host "Copying generated SDK" -f Cyan
-    Remove-Item "$env:sdkSubmoduleSrc" -Recurse -ErrorAction SilentlyContinue
-    New-Item "$env:sdkSubmoduleSrc" -ItemType directory -ErrorAction SilentlyContinue | Out-Null
+    if (Test-Path "$env:sdkSubmoduleSrc") {
+        Remove-Item "$env:sdkSubmoduleSrc\*" -Recurse -Force
+    }
+
     Copy-Item "$env:generatedDir\*" -Destination "$env:sdkSubmoduleSrc" -Recurse -Force -Container
 
     Write-Host "REMINDER: Make sure to correctly commit this change to the 'Intune-PowerShell-SDK' git submodule" -f Yellow
