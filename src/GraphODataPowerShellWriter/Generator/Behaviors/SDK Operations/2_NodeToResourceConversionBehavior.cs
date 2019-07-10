@@ -1261,7 +1261,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 // Create the equivalent CmdletParameter object
                 CmdletParameter cmdletParameter = new CmdletParameter(parameter.Name, parameter.Type.ToPowerShellType(parameter.IsCollection))
                 {
-                    Mandatory = true,
+                    Mandatory = false,
                     ValidateNotNull = !parameter.IsNullable,
                     ODataTypeFullName = parameter.Type.FullName,
                     ODataSubTypeFullNames = parameter.Type.GetAllDerivedTypes().Select(type => type.FullName),
