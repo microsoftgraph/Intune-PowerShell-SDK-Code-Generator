@@ -206,38 +206,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
                 .Concat(postfixSegments.Select(segment => segment.Pascalize()));
 
             // Join the segments with underscores
-            string result = (string.Join("_", segments)).Shorten();
-
-            return result;
-        }
-
-        /// <summary>
-        /// Generates a cmdlet name's noun for the referenced resource that can be found at the given ODataRoute.
-        /// </summary>
-        /// <returns>The cmdlet name.</returns>
-        public string ToCmdletNameNounStringForReference(params string[] postfixSegments)
-        {
-            string result = this.ToCmdletNameNounString(postfixSegments);
-            if (this.Segments.Last().IsCollection)
-            {
-                result += "ReferenceSet";
-            }
-            else
-            {
-                result += "Reference";
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Generates a cmdlet name's noun for the referenced resource that can be found at the given ODataRoute.
-        /// </summary>
-        /// <returns>The cmdlet name.</returns>
-        public string ToCmdletNameNounStringForStream(params string[] postfixSegments)
-        {
-            string result = this.ToCmdletNameNounString(postfixSegments);
-            result += "Data";
+            string result = string.Join("_", segments);
 
             return result;
         }

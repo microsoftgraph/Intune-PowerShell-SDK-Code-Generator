@@ -4,6 +4,7 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models;
     using Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils;
 
@@ -89,6 +90,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             if (cmdlet.IsReferenceable)
             {
                 yield return CSharpClassAttributeHelper.CreateResourceReferenceAttribute();
+            }
+
+            // Alias attribute
+            if (cmdlet.Aliases != null && cmdlet.Aliases.Any())
+            {
+                yield return CSharpClassAttributeHelper.CreateAliasAttribute(cmdlet.Aliases);
             }
         }
 

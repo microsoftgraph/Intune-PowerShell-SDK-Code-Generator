@@ -97,7 +97,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceAppManagement_MobileApps", "IntuneMobileApp" },            
             { "DeviceAppManagement_MobileApps_Assignments", "IntuneMobileAppAssignment" },
             { "DeviceAppManagement_MobileApps_Categories", "IntuneMobileAppCategorySet" },
-            { "DeviceAppManagement_MobileApps_CategoriesReferences", "IntuneMobileAppCategoryReference" },
             { "DeviceAppManagement_MobileApps_ContentVersions", "IntuneMobileAppContentVersion" },
             { "DeviceAppManagement_MobileApps_ContentVersions_Files", "IntuneMobileAppContentVersionFile"},
             { "DeviceAppManagement_MobileApps_Assign", "IntuneMobileAppAssign" },
@@ -143,7 +142,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceManagement_ExchangeConnectors", "IntuneExchangeConnector" },
             { "DeviceManagement_IosUpdateStatuses", "IntuneIosUpdateStatus" },
             { "DeviceManagement_ManagedDeviceOverview", "IntuneManagedDeviceOverview" },
-            { "DeviceManagement_ManagedDeviceOverviewReference", "IntuneManagedDeviceOverviewReference" }, //BUGBUG: Missing Route
             { "DeviceManagement_MobileThreatDefenseConnectors", "IntuneMobileThreatDefenseConnector" },
             { "DeviceManagement_TroubleshootingEvents", "IntuneTroubleshootingEvent"},
             { "DeviceManagement_WindowsInformationProtectionAppLearningSummaries", "IntuneWindowsInformationProtectionAppLearningSummary" },
@@ -151,7 +149,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             { "DeviceManagement_RemoteAssistancePartners", "IntuneRemoteAssistancePartner" },
             { "DeviceManagement_ResourceOperations", "IntuneResourceOperation" },
             { "DeviceManagement_SoftwareUpdateStatusSummary", "IntuneSoftwareUpdateStatusSummary" },
-            { "DeviceManagement_SoftwareUpdateStatusSummaryReference", "IntuneSoftwareUpdateStatusSummaryReference" }, //BUGBUG: Missing Route
             { "DeviceManagement_TelecomExpenseManagementPartners", "IntuneTelecomExpenseManagementPartner" },            
             { "DeviceManagement_DeviceEnrollmentConfigurations_Assign", "IntuneDeviceEnrollmentConfigurationAssign" },
             { "DeviceManagement_DeviceEnrollmentConfigurations_SetPriority", "IntuneDeviceEnrollmentConfigurationSetPriority" },
@@ -163,7 +160,6 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             #region DeviceManagement_DetectedApps
             { "DeviceManagement_DetectedApps", "IntuneDetectedApp" },
             { "DeviceManagement_DetectedApps_ManagedDevices", "IntuneDetectedAppDevice" },
-            { "DeviceManagement_DetectedApps_ManagedDevicesReferences", "IntuneManagedDeviceReference" },
             #endregion
             #region DeviceManagement_DeviceCompliancePolicies
             { "DeviceManagement_DeviceCompliancePolicies", "IntuneDeviceCompliancePolicy" },
@@ -237,14 +233,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
             #endregion
             #region Groups
             { "Groups_CreatedOnBehalfOf", "AADGroupCreatedOnBehalfOf" },
-            { "Groups_CreatedOnBehalfOfReference", "AADGroupCreatedOnBehalfOfReference" },
             { "Groups_GroupLifecyclePolicies", "AADGroupGroupLifecyclePolicy" },
             { "Groups_MemberOf", "AADGroupMemberOf" },
-            { "Groups_MemberOfReferences", "AADGroupMemberOfReference" },
             { "Groups_Members", "AADGroupMember" },
-            { "Groups_MembersReferences", "AADGroupMemberReference" },
             { "Groups_Owners", "AADGroupOwner" },
-            { "Groups_OwnersReferences", "AADGroupOwnerReference" },
             { "Groups_Photo", "AADGroupPhoto" },
             { "Groups_PhotoData", "AADGroupPhotoData" },
             { "Groups_Photos", "AADGroupPhotoSet" },
@@ -369,15 +361,47 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
         /// Shortens the Noun names, otherwise they get too long.
         /// </summary>
         /// <param name="identifier">Name of the noun to shorten.</param>
-        /// <returns></returns>
-        public static string Shorten(this string identifier)
+        /// <returns>True if a short name was found, otherwise false</returns>
+        public static bool TryShortenCmdletNoun(this string identifier, out string shortName)
         {
             if (identifier == null)
             {
                 throw new ArgumentNullException(nameof(identifier));
             }
 
-            return ShortNounName.ContainsKey(identifier) ? ShortNounName[identifier] : identifier;
+            return ShortNounName.TryGetValue(identifier, out shortName);
+        }
+
+        /// <summary>
+        /// Generates a cmdlet name's noun for the referenced resource that can be found at the given ODataRoute.
+        /// </summary>
+        /// <returns>The cmdlet name.</returns>
+        public static string ToCmdletNameNounStringForReference(this string cmdletNoun, bool isCollection, bool isAlias = false)
+        {
+            string result = cmdletNoun;
+            if (isCollection)
+            {
+                result += isAlias
+                    ? "ReferenceSet"
+                    : "References";
+            }
+            else
+            {
+                result += "Reference";
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Generates a cmdlet name's noun for the referenced resource that can be found at the given ODataRoute.
+        /// </summary>
+        /// <returns>The cmdlet name.</returns>
+        public static string ToCmdletNameNounStringForStream(this string cmdletNoun)
+        {
+            string result = $"{cmdletNoun}Data";
+
+            return result;
         }
     }
 }

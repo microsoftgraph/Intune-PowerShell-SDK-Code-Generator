@@ -3,6 +3,7 @@
 namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
 {
     using System;
+    using System.Collections.Generic;
     using PS = System.Management.Automation;
 
     /// <summary>
@@ -14,6 +15,11 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Models
         /// The name of this cmdlet.
         /// </summary>
         public CmdletName Name { get; }
+
+        /// <summary>
+        /// Aliases for the cmdlet.
+        /// </summary>
+        public IList<string> Aliases { get; } = new List<string>();
 
         /// <summary>
         /// The name of the default parameter set.  If this is null, PowerShell's default will be used.

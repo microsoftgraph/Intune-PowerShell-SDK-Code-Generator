@@ -64,5 +64,19 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Utils
 
             return new CSharpAttribute(nameof(ResourceTypePropertyNameAttribute), $"\"{resourceTypePropertyName}\"");
         }
+
+        public static CSharpAttribute CreateAliasAttribute(IEnumerable<string> aliases)
+        {
+            if (aliases == null)
+            {
+                throw new ArgumentNullException(nameof(aliases));
+            }
+            if (!aliases.Any())
+            {
+                throw new ArgumentException("There must be 1 or more aliases to create an [Alias()] class attribute", nameof(aliases));
+            }
+            
+            return new CSharpAttribute(nameof(PS.AliasAttribute), aliases.Select(alias => $"\"{alias}\""));
+        }
     }
 }

@@ -172,7 +172,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
-            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.Get, oDataRoute.ToCmdletNameNounString())
+            var cmdletBaseNoun = oDataRoute.ToCmdletNameNounString();
+            OperationCmdlet cmdlet = new OperationCmdlet(
+                PS.VerbsCommon.Get,
+                cmdletBaseNoun)
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
@@ -198,6 +201,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     },
                 },
             };
+
+            // Add alias if required
+            if (cmdletBaseNoun.TryShortenCmdletNoun(out string shortName))
+            {
+                string alias = $"{cmdlet.Name.Verb}-{shortName}";
+                cmdlet.Aliases.Add(alias);
+            }
 
             // Setup the parameters for the cmdlet
             cmdlet.SetupRouteParametersAndCallUrl(
@@ -242,7 +252,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
-            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.Get, oDataRoute.ToCmdletNameNounStringForReference())
+            var cmdletBaseNoun = oDataRoute.ToCmdletNameNounString();
+            OperationCmdlet cmdlet = new OperationCmdlet(
+                PS.VerbsCommon.Get,
+                cmdletBaseNoun.ToCmdletNameNounStringForReference(resource.IsCollection))
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
@@ -268,6 +281,15 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     },
                 },
             };
+
+            // Add alias if required
+            if (cmdletBaseNoun.TryShortenCmdletNoun(out string shortName))
+            {
+                string alias = $"{cmdlet.Name.Verb}-{shortName}";
+                // Match the cmdlet name's suffix
+                alias = alias.ToCmdletNameNounStringForReference(resource.IsCollection, isAlias: true);
+                cmdlet.Aliases.Add(alias);
+            }
 
             // Setup the parameters for the cmdlet
             cmdlet.SetupRouteParametersAndCallUrl(
@@ -309,11 +331,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
+            var cmdletBaseNoun = oDataRoute.ToCmdletNameNounString();
             OperationCmdlet cmdlet = new OperationCmdlet(
                 PS.VerbsCommon.Get,
                 addValueSegment
-                    ? oDataRoute.ToCmdletNameNounStringForStream()
-                    : oDataRoute.ToCmdletNameNounString())
+                    ? cmdletBaseNoun.ToCmdletNameNounStringForStream()
+                    : cmdletBaseNoun)
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
@@ -341,6 +364,18 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     },
                 },
             };
+
+            // Add alias if required
+            if (cmdlet.Name.Noun.TryShortenCmdletNoun(out string shortName))
+            {
+                string alias = $"{cmdlet.Name.Verb}-{shortName}";
+                // Match the cmdlet name's suffix
+                if (addValueSegment)
+                {
+                    alias = alias.ToCmdletNameNounStringForStream();
+                }
+                cmdlet.Aliases.Add(alias);
+            }
 
             // Setup the parameters for the cmdlet
             cmdlet.SetupRouteParametersAndCallUrl(
@@ -374,7 +409,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
-            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.New, oDataRoute.ToCmdletNameNounString())
+            var cmdletBaseNoun = oDataRoute.ToCmdletNameNounString();
+            OperationCmdlet cmdlet = new OperationCmdlet(
+                PS.VerbsCommon.New,
+                cmdletBaseNoun)
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
@@ -399,6 +437,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     },
                 },
             };
+
+            // Add alias if required
+            if (cmdletBaseNoun.TryShortenCmdletNoun(out string shortName))
+            {
+                string alias = $"{cmdlet.Name.Verb}-{shortName}";
+                cmdlet.Aliases.Add(alias);
+            }
 
             // Setup the parameters for the cmdlet
             cmdlet.SetupRouteParametersAndCallUrl(
@@ -430,7 +475,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
-            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.New, oDataRoute.ToCmdletNameNounStringForReference())
+            var cmdletBaseNoun = oDataRoute.ToCmdletNameNounString();
+            OperationCmdlet cmdlet = new OperationCmdlet(
+                PS.VerbsCommon.New,
+                cmdletBaseNoun.ToCmdletNameNounStringForReference(resource.IsCollection))
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
@@ -457,6 +505,15 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                     },
                 },
             };
+
+            // Add alias if required
+            if (cmdletBaseNoun.TryShortenCmdletNoun(out string shortName))
+            {
+                string alias = $"{cmdlet.Name.Verb}-{shortName}";
+                // Match the cmdlet name's suffix
+                alias = alias.ToCmdletNameNounStringForReference(resource.IsCollection, isAlias: true);
+                cmdlet.Aliases.Add(alias);
+            }
 
             // Create the URL and setup ID parameters
             cmdlet.SetupRouteParametersAndCallUrl(
@@ -486,11 +543,12 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
+            var cmdletBaseNoun = oDataRoute.ToCmdletNameNounString();
             OperationCmdlet cmdlet = new OperationCmdlet(
                 cmdletVerb,
                 addValueSegment
-                    ? oDataRoute.ToCmdletNameNounStringForStream()
-                    : oDataRoute.ToCmdletNameNounString())
+                    ? cmdletBaseNoun.ToCmdletNameNounStringForStream()
+                    : cmdletBaseNoun)
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
@@ -523,6 +581,18 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 },
             };
 
+            // Add alias if required
+            if (cmdletBaseNoun.TryShortenCmdletNoun(out string shortName))
+            {
+                string alias = $"{cmdlet.Name.Verb}-{shortName}";
+                // Match the cmdlet name's suffix
+                if (addValueSegment)
+                {
+                    alias = alias.ToCmdletNameNounStringForStream();
+                }
+                cmdlet.Aliases.Add(alias);
+            }
+
             // Set the HTTP method if required
             if (httpMethod != null)
             {
@@ -550,7 +620,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
-            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsData.Update, oDataRoute.ToCmdletNameNounString())
+            var cmdletBaseNoun = oDataRoute.ToCmdletNameNounString();
+            OperationCmdlet cmdlet = new OperationCmdlet(
+                PS.VerbsData.Update,
+                cmdletBaseNoun)
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
@@ -576,6 +649,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 },
             };
 
+            // Add alias if required
+            if (cmdletBaseNoun.TryShortenCmdletNoun(out string shortName))
+            {
+                string alias = $"{cmdlet.Name.Verb}-{shortName}";
+                cmdlet.Aliases.Add(alias);
+            }
+
             // Setup the parameters for the cmdlet
             cmdlet.SetupRouteParametersAndCallUrl(oDataRoute);
 
@@ -600,7 +680,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
-            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.Remove, oDataRoute.ToCmdletNameNounString())
+            var cmdletBaseNoun = oDataRoute.ToCmdletNameNounString();
+            OperationCmdlet cmdlet = new OperationCmdlet(
+                PS.VerbsCommon.Remove,
+                cmdletBaseNoun)
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
@@ -608,6 +691,13 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 OperationType = CmdletOperationType.Delete,
                 ImpactLevel = PS.ConfirmImpact.High,
             };
+
+            // Add alias if required
+            if (cmdletBaseNoun.TryShortenCmdletNoun(out string shortName))
+            {
+                string alias = $"{cmdlet.Name.Verb}-{shortName}";
+                cmdlet.Aliases.Add(alias);
+            }
 
             // Setup the parameters for the cmdlet
             CmdletParameter idParameter = cmdlet.SetupRouteParametersAndCallUrl(oDataRoute);
@@ -650,7 +740,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
-            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.Remove, oDataRoute.ToCmdletNameNounStringForReference())
+            var cmdletBaseNoun = oDataRoute.ToCmdletNameNounString();
+            OperationCmdlet cmdlet = new OperationCmdlet(
+                PS.VerbsCommon.Remove,
+                cmdletBaseNoun.ToCmdletNameNounStringForReference(resource.IsCollection))
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
@@ -658,6 +751,14 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 OperationType = CmdletOperationType.Delete,
                 ImpactLevel = PS.ConfirmImpact.High,
             };
+
+            // Add alias if required
+            if (cmdletBaseNoun.TryShortenCmdletNoun(out string shortName))
+            {
+                string alias = $"{cmdlet.Name.Verb}-{shortName}";
+                alias = alias.ToCmdletNameNounStringForReference(resource.IsCollection, isAlias: true);
+                cmdlet.Aliases.Add(alias);
+            }
 
             // Setup the parameters for the cmdlet
             CmdletParameter idParameter = cmdlet.SetupRouteParametersAndCallUrl(oDataRoute, postfixUrlSegments: "$ref");
@@ -698,7 +799,10 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
             OdcmProperty resource = oDataRoute.Property;
 
             // Create the cmdlet
-            OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsCommon.Remove, oDataRoute.ToCmdletNameNounStringForStream())
+            var cmdletBaseNoun = oDataRoute.ToCmdletNameNounString();
+            OperationCmdlet cmdlet = new OperationCmdlet(
+                PS.VerbsCommon.Remove,
+                cmdletBaseNoun.ToCmdletNameNounStringForStream())
             {
                 ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                 ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
@@ -706,6 +810,18 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 OperationType = CmdletOperationType.Delete,
                 ImpactLevel = PS.ConfirmImpact.High,
             };
+
+            // Add alias if required
+            if (cmdletBaseNoun.TryShortenCmdletNoun(out string shortName))
+            {
+                string alias = $"{cmdlet.Name.Verb}-{shortName}";
+                // Match the cmdlet name's suffix
+                if (addValueSegment)
+                {
+                    alias = alias.ToCmdletNameNounStringForStream();
+                }
+                cmdlet.Aliases.Add(alias);
+            }
 
             // Setup the parameters for the cmdlet
             CmdletParameter idParameter = cmdlet.SetupRouteParametersAndCallUrl(
@@ -768,12 +884,22 @@ namespace Microsoft.Graph.GraphODataPowerShellSDKWriter.Generator.Behaviors
                 foreach (OdcmMethod method in methods)
                 {
                     // Create the cmdlet
-                    OperationCmdlet cmdlet = new OperationCmdlet(PS.VerbsLifecycle.Invoke, oDataRoute.ToCmdletNameNounString(postfixSegments: method.Name))
+                    string cmdletBaseNoun = oDataRoute.ToCmdletNameNounString(postfixSegments: method.Name);
+                    OperationCmdlet cmdlet = new OperationCmdlet(
+                        PS.VerbsLifecycle.Invoke,
+                        cmdletBaseNoun)
                     {
                         ResourceTypeFullName = oDataRoute.Property.Type.FullName,
                         ResourceSubTypeFullNames = oDataRoute.Property.Type.GetAllDerivedTypes().Select(type => type.FullName),
                         ResourceTypePropertyName = oDataRoute.Property.GetResourceTypeParameterName(),
                     };
+
+                    // Add alias if required
+                    if (cmdletBaseNoun.TryShortenCmdletNoun(out string shortName))
+                    {
+                        string alias = $"{cmdlet.Name.Verb}-{shortName}";
+                        cmdlet.Aliases.Add(alias);
+                    }
 
                     // Figure out if this method is a function or an action
                     string methodType;
