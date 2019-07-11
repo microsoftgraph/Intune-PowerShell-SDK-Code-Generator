@@ -137,7 +137,7 @@ function global:ReleaseSDK {
 
     Write-Host "Copying generated SDK" -f Cyan
     if (Test-Path "$env:sdkSubmoduleSrc") {
-        Remove-Item "$env:sdkSubmoduleSrc\*" -Recurse -Force
+        Remove-Item "$env:sdkSubmoduleSrc\*" -Exclude '.git' -Recurse -Force
     }
 
     Copy-Item "$env:generatedDir\*" -Destination "$env:sdkSubmoduleSrc" -Recurse -Force -Container
