@@ -2,8 +2,8 @@
 - [Table of Contents](#Table-of-Contents)
 - [Intune-PowerShell-SDK](#Intune-PowerShell-SDK)
 - [Getting started](#Getting-started)
-  - [One-time setup (PowerShell Gallery)](#One-time-setup-PowerShell-Gallery)
-  - [One-time setup (GitHub)](#One-time-setup-GitHub)
+  - [Installing from the PowerShell Gallery](#Installing-from-the-PowerShell-Gallery)
+  - [Installing from GitHub](#Installing-from-GitHub)
   - [Before this module is used in your organization](#Before-this-module-is-used-in-your-organization)
   - [Each time you use the module](#Each-time-you-use-the-module)
   - [Discovering available commands](#Discovering-available-commands)
@@ -27,13 +27,13 @@ When you submit a pull request, a CLA-bot will automatically determine whether y
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 # Getting started
-## One-time setup (PowerShell Gallery)
+## Installing from the PowerShell Gallery
 1. Install the Microsoft.Graph.Intune module from: https://www.powershellgallery.com/packages/Microsoft.Graph.Intune
 ```PowerShell
 Install-Module -Name Microsoft.Graph.Intune
 ```
 
-## One-time setup (GitHub)
+## Installing from GitHub
 1. Download the module from the [Releases](https://github.com/Microsoft/Intune-PowerShell-SDK/releases) tab in the GitHub repository.
 2. The "drop\outputs\build\Release\net471" folder in the zip file contains the module.
     - If you are using Windows, extract the "net471" folder.  **You must have .NET 4.7.1 or higher installed**.
