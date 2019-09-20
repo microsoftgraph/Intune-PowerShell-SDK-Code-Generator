@@ -83,7 +83,7 @@ namespace Microsoft.Intune.PowerShellGraphSDK
                 else
                 {
                     // This must be an array, so cast it as one
-                    object[] values = (object[])value;
+                    IEnumerable values = (IEnumerable)value;
 
                     // We need to build the JSON string for the array of values
                     StringBuilder result = new StringBuilder();
