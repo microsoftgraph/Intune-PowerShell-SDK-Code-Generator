@@ -1,0 +1,14 @@
+page_type: sample
+products:
+  - ms-graph
+languages:
+  - csharp
+extensions:
+  contentType: tools
+  technologies:
+    - Microsoft Graph
+  services:
+    - Intune
+  createdDate: '6/15/2018 9:32:53 AM'
+title: Intune-PowerShell-SDK-Code-Generator
+description: Custom ODCM Writer built atop Vipr to auto-generate PowerShell cmdlets corresponding to CRUD operations for Microsoft Intune Graph Api. 
